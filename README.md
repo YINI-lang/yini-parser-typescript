@@ -1,5 +1,13 @@
 # yini-lib-ts
 
+**YINI Parser Library in TypeScript**
+
+## Dev Documentation
+
+- https://github.com/antlr/antlr4/blob/master/doc/typescript-target.md
+
+---
+
 ## License
 This project is licensed under the Apache-2.0 license - see the [LICENSE](<./LICENSE>) file for details.
 
