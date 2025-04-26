@@ -1,6 +1,6 @@
-# yini-lib-ts
+# YINI-Reader-TS
 
-**YINI Parser Library in TypeScript**
+**YINI Reader/Parser Library in TypeScript**
 
 ## Dev Documentation
 
