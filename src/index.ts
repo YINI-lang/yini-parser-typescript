@@ -9,6 +9,11 @@
 	/END
 */
 
+import { CharStreams, CommonTokenStream } from 'antlr4';
+import  YiniLexer  from './grammar/YiniLexer';
+import  YiniParser, { YiniContext }  from './grammar/YiniParser';
+import  YINIParseVisitor  from './grammar/YiniParserVisitor';
+
 //import { Solution } from './solution';
 console.log('*** Started index.ts of ' + 'e_test'.toUpperCase() + ' ***');
 
@@ -23,6 +28,32 @@ const debugTestObj = {
 	name: 'e_test',
 	lang: 'TypeScript'
 };
+console.log('debugTestObj:');
 console.log(debugTestObj);
+console.log();
+
+const input = `
+# Config
+name = "Alice"
+age = 30
+items = ["a", "b", "c"]
+/END
+`;
+console.log('input:');
+console.log(input);
+console.log();
+
+const inputStream = CharStreams.fromString(input);
+const lexer = new YiniLexer(inputStream);
+const tokenStream = new CommonTokenStream(lexer);
+const parser = new YiniParser(tokenStream);
+
+//const tree = parser.yini;  // Start rule.
+const tree : YiniContext = parser.yini();  // Start rule.
+
+const visitor = new YINIParseVisitor();
+const result = visitor.visit(tree as any);
+
+console.log(result);
 
 console.log();

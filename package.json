@@ -12,6 +12,7 @@
   "license": "",
   "description": "",
   "dependencies": {
+    "antlr4": "^4.13.2"
   },
   "devDependencies": {
     "eslint": "^9.22.0",
