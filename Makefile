@@ -5,6 +5,8 @@ LEXER_FILE=specs/v1.0.0-beta.3/YiniLexer.g4
 # Output dir for ANTL.
 DIR_OUTPUT=src/grammar
 
+START_RULE="yini"
+
 generate:
 	@echo off
 	echo Generate sources for the grammar...
@@ -12,6 +14,10 @@ generate:
 
 # to-sources:
 #	copy gen-output/* src/grammar
+
+tokens:
+# antlr4-parse $PATH_PARSER $PATH_LEXER $START_RULE sample.yini -tokens
+	antlr4-parse $(PARSER_FILE) $(LEXER_FILE) $(START_RULE) sample.yini -tokens
 
 cls-gen:
 	del "gen-output"
