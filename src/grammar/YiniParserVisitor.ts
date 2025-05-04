@@ -33,13 +33,80 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitYini?: (ctx: YiniContext) => Result;
+	// visitYini?: (ctx: YiniContext) => Result;
+	visitYini = (ctx: YiniContext): Result => {
+		const res: any = {};
+
+		ctx.children?.forEach((child: any)=>{
+			const value = child.accept(this);
+			Object.assign(res, value);
+		})
+
+		return res;
+	}
+
 	/**
 	 * Visit a parse tree produced by `YiniParser.section`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitSection?: (ctx: SectionContext) => Result;
+	// visitSection?: (ctx: SectionContext) => Result;
+	visitSection = (ctx: SectionContext): Result => {
+		const res: Record<string, any> = {};
+		// ctx.getText();
+		// console.log(`@getText() = >>>${ ctx.getText() }<<<`);
+		// console.log('@name = ' + ctx.SECTION_HEAD);
+
+		console.log('start');
+		// ctx.children?.forEach((child: any)=>{
+		// 	console.log('@child = ' + child);
+		// })
+		console.log('XXXX'+ctx.SECTION_HEAD());
+		console.log('end\n');
+
+		const line = '' + ctx.SECTION_HEAD();		
+		console.log('line = ' + line);
+
+		const lineLen: number = line.length
+		let level = 0;
+
+		for(let pos=0; pos<lineLen; pos++){
+			if(line.charAt(pos)==='#' || line.charAt(pos)==='~' || line.charAt(pos)==='>'){
+				level++
+			}else{
+				break;
+			}
+		}
+		console.log('level = ' + level);
+
+
+		// const sectionName: string = "DymmySectionName"
+		let subLine: string = line.substring(level)
+		let isDone = false
+		do {
+			// console.log('subLine = ' + subLine);
+
+			if(subLine.startsWith(' ') || subLine.startsWith('\t')){
+				subLine = subLine.substring(1)	// Consume left most character.
+			}else{
+				isDone = true
+			}
+		} while(!isDone)
+
+		const sectionName: string = subLine.trim()
+
+		// console.log('last subLine = ' + subLine);
+		// if(!subLine.endsWith('\\n')){
+		// 	console.error(`ERROR: No newline <Enter> after section head"`)
+		// 	process.exit(1)
+		// }
+
+		//return '' as Result;
+		return {
+			[sectionName]: res
+		} as Result
+	}
+
 	/**
 	 * Visit a parse tree produced by `YiniParser.terminal_line`.
 	 * @param ctx the parse tree

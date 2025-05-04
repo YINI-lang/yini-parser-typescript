@@ -15,6 +15,7 @@
     "antlr4": "^4.13.2"
   },
   "devDependencies": {
+    "@types/node": "^22.15.3",
     "eslint": "^9.22.0",
     "typescript": "^5.7.3"
   }

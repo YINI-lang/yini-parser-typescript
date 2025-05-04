@@ -8,3 +8,6 @@ https://github.com/coreybutler/nvm-windows/releases
 ## TODO
 
 - Add package from https://github.com/IanVS/prettier-plugin-sort-imports
+
+In Git Bash type:
+> npm start
