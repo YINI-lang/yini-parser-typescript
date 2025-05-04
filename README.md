@@ -2,7 +2,7 @@
 
 # YINI Parser - TypeScript
 
-**YINI Reader/Parser Library in TypeScript**
+**YINI Parser/Reader Library in TypeScript**
 
 ## Dev Documentation
 
