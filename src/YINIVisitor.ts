@@ -1,23 +1,23 @@
-// Generated from specs/v1.0.0-beta.4/YiniParser.g4 by ANTLR 4.13.2
 
 import {ParseTreeVisitor} from 'antlr4';
 
+import  YiniParserVisitor  from "./grammar/YiniParserVisitor";
 
-import { YiniContext } from "./YiniParser.js";
-import { SectionContext } from "./YiniParser.js";
-import { Terminal_lineContext } from "./YiniParser.js";
-import { Section_membersContext } from "./YiniParser.js";
-import { MemberContext } from "./YiniParser.js";
-import { Member_colon_listContext } from "./YiniParser.js";
-import { ValueContext } from "./YiniParser.js";
-import { ListContext } from "./YiniParser.js";
-import { List_in_bracketsContext } from "./YiniParser.js";
-import { ElementsContext } from "./YiniParser.js";
-import { ElementContext } from "./YiniParser.js";
-import { Number_literalContext } from "./YiniParser.js";
-import { String_literalContext } from "./YiniParser.js";
-import { String_concatContext } from "./YiniParser.js";
-import { Boolean_literalContext } from "./YiniParser.js";
+import { YiniContext } from "./grammar/YiniParser.js";
+import { SectionContext } from "./grammar/YiniParser.js";
+import { Terminal_lineContext } from "./grammar/YiniParser.js";
+import { Section_membersContext } from "./grammar/YiniParser.js";
+import { MemberContext } from "./grammar/YiniParser.js";
+import { Member_colon_listContext } from "./grammar/YiniParser.js";
+import { ValueContext } from "./grammar/YiniParser.js";
+import { ListContext } from "./grammar/YiniParser.js";
+import { List_in_bracketsContext } from "./grammar/YiniParser.js";
+import { ElementsContext } from "./grammar/YiniParser.js";
+import { ElementContext } from "./grammar/YiniParser.js";
+import { Number_literalContext } from "./grammar/YiniParser.js";
+import { String_literalContext } from "./grammar/YiniParser.js";
+import { String_concatContext } from "./grammar/YiniParser.js";
+import { Boolean_literalContext } from "./grammar/YiniParser.js";
 
 
 /**
@@ -27,19 +27,98 @@ import { Boolean_literalContext } from "./YiniParser.js";
  * @param <Result> The return type of the visit operation. Use `void` for
  * operations with no return type.
  */
-export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> {
+export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
 	/**
 	 * Visit a parse tree produced by `YiniParser.yini`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	 visitYini?: (ctx: YiniContext) => Result;
+	// visitYini?: (ctx: YiniContext) => Result;
+	visitYini = (ctx: YiniContext): Result => {
+		const res: any = {};
+
+		ctx.children?.forEach((child: any)=>{
+			const value = child.accept(this);
+			Object.assign(res, value);
+		})
+
+		return res;
+	}
+
 	/**
 	 * Visit a parse tree produced by `YiniParser.section`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitSection?: (ctx: SectionContext) => Result;	
+	// visitSection?: (ctx: SectionContext) => Result;
+	visitSection = (ctx: SectionContext): Result => {
+		const res: Record<string, any> = {};
+		// ctx.getText();
+		// console.log(`@getText() = >>>${ ctx.getText() }<<<`);
+		// console.log('@name = ' + ctx.SECTION_HEAD);
+
+		console.log('start');
+		// ctx.children?.forEach((child: any)=>{
+		// 	console.log('@child = ' + child);
+		// })
+		console.log('XXXX'+ctx.SECTION_HEAD());
+		console.log('end\n');
+
+		const line = '' + ctx.SECTION_HEAD();		
+		console.log('line = ' + line);
+
+		const lineLen: number = line.length
+		let level = 0;
+
+		for(let pos=0; pos<lineLen; pos++){
+			if(line.charAt(pos)==='#' || line.charAt(pos)==='~' || line.charAt(pos)==='>'){
+				level++
+			}else{
+				break;
+			}
+		}
+		console.log('level = ' + level);
+
+
+		// const sectionName: string = "DymmySectionName"
+		let subLine: string = line.substring(level)
+		let isDone = false
+		do {
+			// console.log('subLine = ' + subLine);
+
+			if(subLine.startsWith(' ') || subLine.startsWith('\t')){
+				subLine = subLine.substring(1)	// Consume left most character.
+			}else{
+				isDone = true
+			}
+		} while(!isDone)
+
+		const sectionName: string = subLine.trim()
+
+		// console.log('last subLine = ' + subLine);
+		// if(!subLine.endsWith('\\n')){
+		// 	console.error(`ERROR: No newline <Enter> after section head"`)
+		// 	process.exit(1)
+		// }
+		/*
+		const payload: any = {
+			[sectionName]: res,
+		}
+
+		//return '' as Result;
+		return {
+			'payload': payload,
+			'_meta': {}
+		} as any
+		*/
+
+		//TODO: Maybe put all this inside another container (supertype) or root.
+		return {
+			[sectionName]: res,
+			'_meta': {}
+		} as Result
+	}
+
 	/**
 	 * Visit a parse tree produced by `YiniParser.terminal_line`.
 	 * @param ctx the parse tree

@@ -12,7 +12,7 @@
 import { CharStreams, CommonTokenStream } from 'antlr4';
 import  YiniLexer  from './grammar/YiniLexer';
 import  YiniParser, { YiniContext }  from './grammar/YiniParser';
-import  YINIParseVisitor from './grammar/YiniParserVisitor';
+import  YINIVisitor from './YINIVisitor';
 
 //import { Solution } from './solution';
 console.log('*** Started index.ts of ' + 'e_test'.toUpperCase() + ' ***');
@@ -56,7 +56,7 @@ console.log('\n==== Start parsing ==========================');
 //const tree = parser.yini;  // Start rule.
 const tree : YiniContext = parser.yini();  // Start rule.
 
-const visitor = new YINIParseVisitor();
+const visitor = new YINIVisitor();
 const result = visitor.visit(tree as any);
 console.log('==== End parsing ==========================\n');
 
