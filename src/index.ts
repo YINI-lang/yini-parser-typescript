@@ -45,6 +45,7 @@ const input = `
 age = 30
 name = "Alice"
 items = ["a", "b", "c"]
+	^^Extra
 /END
 `;
 

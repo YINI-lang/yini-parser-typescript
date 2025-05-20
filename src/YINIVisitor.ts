@@ -22,6 +22,10 @@ import { Boolean_literalContext } from "./grammar/YiniParser.js";
 const SECTION_MARKER1 = '^';
 const SECTION_MARKER2 = '~';
 
+interface YiniDocument {
+	sections: Record<string, any>
+  }
+
 /**
  * This interface defines a complete generic visitor for a parse tree produced
  * by `YiniParser`.
@@ -29,7 +33,9 @@ const SECTION_MARKER2 = '~';
  * @param <Result> The return type of the visit operation. Use `void` for
  * operations with no return type.
  */
-export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
+ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
+//export default class YINIVisitor extends YiniParserVisitor<any> {
+
 	/**
 	 * Visit a parse tree produced by `YiniParser.yini`.
 	 * @param ctx the parse tree
@@ -40,14 +46,40 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
 		console.log('-> Entered visitYini(..)');
 		const res: any = {};
 
-		ctx.children?.forEach((child: any)=>{
-			const value = child.accept(this);
-			Object.assign(res, value);
+		// ctx.children?.forEach((child: any)=>{
+			// ctx.children?.forEach((child: any)=>{
+			ctx.section_list().forEach((section:any)=>{
+				// const { name, members } = this.visit(section);
+				// console.log('In forEach, got child = ' + name + ', got value = ' + members)
+
+				// console.log(child);
+				// console.log(section);
+				// const value = child.accept(this);
+				const value = section.accept(this);
+				// console.log('In forEach, got child = ' + child + ', got value = ' + value)
+				console.log('In forEach, got child = ' + section + ', got value = ' + value)
+				if(!value){
+					console.log('* skipped adding')
+				}else{
+					Object.assign(res, value)
+				}
 		})
 
 		return res;
 	}
-
+	/*
+	visitYini(ctx: YiniContext): YiniDocument {
+		const sections: Record<string, any> = {}
+		// for (const section of ctx.section()) {
+			ctx.section_list().forEach((section:any)=>{
+				const { name, members } = this.visit(section);
+				sections[name] = members;
+	  
+			})
+		}
+		return { sections };
+	  }
+*/
 	/**
 	 * Visit a parse tree produced by `YiniParser.section`.
 	 * @param ctx the parse tree
@@ -55,8 +87,8 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
 	 */
 	// visitSection?: (ctx: SectionContext) => Result;
 	visitSection = (ctx: SectionContext): Result => {
-		console.log('-> Entered visitSection(..)');
-
+		console.log('-> Entered visitSection(..)')
+		
 		const res: Record<string, any> = {};
 		// ctx.getText();
 		// console.log(`@getText() = >>>${ ctx.getText() }<<<`);
@@ -66,7 +98,8 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
 		// ctx.children?.forEach((child: any)=>{
 		// 	console.log('@child = ' + child);
 		// })
-		console.log('XXXX'+ctx.SECTION_HEAD());
+		console.log('XXXX1'+ctx.SECTION_HEAD());
+		// console.log('XXXX2'+ctx.section.);
 		console.log('end\n');
 
 		const line = '' + ctx.SECTION_HEAD();		
@@ -107,23 +140,16 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
 		// 	console.error(`ERROR: No newline <Enter> after section head"`)
 		// 	process.exit(1)
 		// }
-		/*
-		const payload: any = {
-			[sectionName]: res,
-		}
 
-		//return '' as Result;
-		return {
-			'payload': payload,
-			'_meta': {}
-		} as any
-		*/
+		console.log('visitSection.ctx' + ctx.section_members)
 
 		//TODO: Maybe put all this inside another container (supertype) or root.
 		return {
 			[sectionName]: res,
 			'_meta': {}
 		} as Result
+		
+		// return {} as Result
 	}
 
 	/**
