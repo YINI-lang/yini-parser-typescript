@@ -3,9 +3,6 @@ node_modules
 # ANTLR4 output directory where all output is generated to
 gen-output
 
-.interp
-.tokens
-
 # Logs
 logs
 *.log

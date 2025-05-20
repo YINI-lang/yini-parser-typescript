@@ -10,7 +10,7 @@ START_RULE="yini"
 generate:
 	@echo off
 	echo Generate sources for the grammar...
-	antlr4 -o $(DIR_OUTPUT) -Dlanguage=TypeScript specs/v1.0.0-beta.4/YiniParser.g4 specs/v1.0.0-beta.4/YiniLexer.g4 -no-listener -visitor
+	antlr4 -o $(DIR_OUTPUT) -Dlanguage=TypeScript $(PARSER_FILE) $(LEXER_FILE) -no-listener -visitor
 
 # to-sources:
 #	copy gen-output/* src/grammar

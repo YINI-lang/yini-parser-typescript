@@ -1,4 +1,4 @@
-// Generated from specs/v1.0.0-beta.4/YiniParser.g4 by ANTLR 4.13.2
+// Generated from specs/v1.0.0-beta.6/YiniParser.g4 by ANTLR 4.13.2
 
 import {ParseTreeVisitor} from 'antlr4';
 
@@ -33,13 +33,13 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	 visitYini?: (ctx: YiniContext) => Result;
+	visitYini?: (ctx: YiniContext) => Result;
 	/**
 	 * Visit a parse tree produced by `YiniParser.section`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitSection?: (ctx: SectionContext) => Result;	
+	visitSection?: (ctx: SectionContext) => Result;
 	/**
 	 * Visit a parse tree produced by `YiniParser.terminal_line`.
 	 * @param ctx the parse tree
