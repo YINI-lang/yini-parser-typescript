@@ -24,7 +24,6 @@ const SECTION_MARKER2 = '~';
 
 interface YiniDocument {
 	sections: Record<string, any>
-	terminal?: string
   }
 
 /**
@@ -43,17 +42,14 @@ interface YiniDocument {
 	 * @return the visitor result
 	 */
 	// visitYini?: (ctx: YiniContext) => Result;
-	// visitYini = (ctx: YiniContext): Result => {
-		visitYini = (ctx: YiniContext): any => {
-			console.log('-> Entered visitYini(..)');
-		// const res: any = {};
-		const sections: Record<string, any> = {}
+	visitYini = (ctx: YiniContext): Result => {
+		console.log('-> Entered visitYini(..)');
+		const res: any = {};
 
 		// ctx.children?.forEach((child: any)=>{
 			// ctx.children?.forEach((child: any)=>{
-			// ctx.section_list().forEach((section:any)=>{
-		ctx.section_list().forEach((section:any)=>{
-					// const { name, members } = this.visit(section);
+			ctx.section_list().forEach((section:any)=>{
+				// const { name, members } = this.visit(section);
 				// console.log('In forEach, got child = ' + name + ', got value = ' + members)
 
 				// console.log(child);
@@ -62,26 +58,15 @@ interface YiniDocument {
 				const value = section.accept(this);
 				// console.log('In forEach, got child = ' + child + ', got value = ' + value)
 				console.log('In forEach, got child = ' + section + ', got value = ' + value)
-
-				const result:any = this.visit(section)
-				console.log('result = ' + result)
-				console.log('result:')
-				console.log(result)
-				if(result?.name) sections[result.name] = result.members
-
-				// if(!value){
-				// 	console.log('* skipped adding')
-				// }else{
-					//Object.assign(res, value)
-				// }
+				if(!value){
+					console.log('* skipped adding')
+				}else{
+					Object.assign(res, value)
+				}
 		})
 
-		// return res
-		const terminal = ctx.terminal_line()?.getText().trim();
-    return { sections, terminal }
-		
+		return res;
 	}
-
 	/*
 	visitYini(ctx: YiniContext): YiniDocument {
 		const sections: Record<string, any> = {}
@@ -101,10 +86,8 @@ interface YiniDocument {
 	 * @return the visitor result
 	 */
 	// visitSection?: (ctx: SectionContext) => Result;
-	
-	// visitSection = (ctx: SectionContext): Result => {
-	visitSection = (ctx: SectionContext): any => {
-			console.log('-> Entered visitSection(..)')
+	visitSection = (ctx: SectionContext): Result => {
+		console.log('-> Entered visitSection(..)')
 		
 		const res: Record<string, any> = {};
 		// ctx.getText();
@@ -116,7 +99,7 @@ interface YiniDocument {
 		// 	console.log('@child = ' + child);
 		// })
 		console.log('XXXX1'+ctx.SECTION_HEAD());
-		console.log('XXXX2'+ctx.section());
+		// console.log('XXXX2'+ctx.section.);
 		console.log('end\n');
 
 		const line = '' + ctx.SECTION_HEAD();		
@@ -158,38 +141,16 @@ interface YiniDocument {
 		// 	process.exit(1)
 		// }
 
-		console.log('visit(ctx.section_members()')
-		const members = ctx.section_members() ? this.visit(ctx.section_members()) : {}
+		console.log('visitSection.ctx' + ctx.section_members)
 
 		//TODO: Maybe put all this inside another container (supertype) or root.
-		// return {
-		// 	[sectionName]: res,
-		// 	'_meta': {}
-		// } as Result
-		 return { name:sectionName, members }
+		return {
+			[sectionName]: res,
+			'_meta': {}
+		} as Result
 		
 		// return {} as Result
 	}
-		
-		
-		// visitSection = (ctx: SectionContext): Result => {
-		// visitSection = (ctx: SectionContext): any => {
-
-		// // visitSection(ctx: SectionContext) {
-		// 	const head = ctx.SECTION_HEAD();
-		// 	const nested = ctx.section();
-		// 	if (head && !nested) {
-		// 	  const name = head.getText().replace(/^\^+\s*/, '').trim();
-		// 	  const members = ctx.section_members() ? this.visit(ctx.section_members()) : {};
-		// 	  console.log('2name = ' + name);
-
-		// 	  return { name, members };
-		// 	}
-		// 	if (!head && ctx.section_members()) {
-		// 	  return { name: '', members: this.visit(ctx.section_members()) };
-		// 	}
-		// 	return null;
-		//   }
 
 	/**
 	 * Visit a parse tree produced by `YiniParser.terminal_line`.
