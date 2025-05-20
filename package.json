@@ -32,10 +32,5 @@
         "src/**/*.{js,jsx,json,ts,tsx,css,scss}": [
             "prettier --config ./.prettierrc --write"
         ]
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
     }
 }
