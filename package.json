@@ -1,12 +1,12 @@
 {
-    "name": "YINI Parser-TypeScript",
+    "name": "yini-parser-typescript",
     "version": "0.1.0",
     "private": true,
     "main": "src/index.ts",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "ts-node src/index.ts",
-        "lint": "next lint",
+        "lint": "eslint src --ext .ts",
         "prepare": "husky install"
     },
     "author": "Marko Seppänen",
