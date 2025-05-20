@@ -106,7 +106,7 @@ interface YiniDocument {
 	
 	// visitSection = (ctx: SectionContext): Result => {
 	visitSection = (ctx: SectionContext): any => {
-			console.log('-> Entered visitSection(..)')
+		console.log('-> Entered visitSection(..)')
 		
 		const res: Record<string, any> = {};
 		// ctx.getText();
@@ -199,23 +199,57 @@ interface YiniDocument {
 	 * @return the visitor result
 	 */
 	visitTerminal_line?: (ctx: Terminal_lineContext) => Result;
+
 	/**
 	 * Visit a parse tree produced by `YiniParser.section_members`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitSection_members = (ctx: Section_membersContext): Result =>{
-		console.log('-> Entered visitSection_members(..)')
+	// visitSection_members = (ctx: Section_membersContext): Result =>{
+	// 	console.log('-> Entered visitSection_members(..)')
 		
-		return {} as Result
-	}
+	// 	return {} as Result
+	// }
+	// visitSection_members = (ctx: Section_membersContext): Record<string, any> => {
+	visitSection_members = (ctx: Section_membersContext): any => {
+		console.log('-> Entered visitSection_members(..)')
+
+		const members: Record<string, any> = {};
+		// for (const m of ctx?.member()) {
+			ctx?.children?.forEach((member: any)=>{
+				// const { key, value } = this.visit(m);
+				// members[key] = value
+				// const res: any= this.visit(m)
+				// console.log('member of visitSection_members:')
+				// console.log('res.key = ' + res?.key)
+				// console.log('res.value = ' + res?.value)
+				const { key, value}: any= this.visit(member)
+				console.log('member of visitSection_members:')
+				console.log('res.key = ' + key)
+				console.log('res.value = ' + value)
+	
+				members[key] = value
+	})
+		//   const { key, value } = this.visit(m);
+		//   members[key] = value;
+		
+		return members
+	  }
 
 	/**
 	 * Visit a parse tree produced by `YiniParser.member`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitMember?: (ctx: MemberContext) => Result;
+	// visitMember?: (ctx: MemberContext) => Result;
+	visitMember = (ctx: MemberContext) => {
+		console.log('-> Entered visitMember(..)')
+
+		const key = ctx.KEY().getText();
+		const value = ctx.value() ? this.visit(ctx.value()) : null;
+		return { key, value } as any
+	  }
+
 	/**
 	 * Visit a parse tree produced by `YiniParser.member_colon_list`.
 	 * @param ctx the parse tree

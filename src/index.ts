@@ -42,10 +42,11 @@ items = ["a", "b", "c"]
 
 const input = `
 ^ 	Config
-age = 30
-name = "Alice"
-items = ["a", "b", "c"]
+varAge = 30
+varName = "Alice"
+listItems = ["a", "b", "c"]
 	^^Extra
+	isExtra = true
 /END
 `;
 
