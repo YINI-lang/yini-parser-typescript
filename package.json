@@ -1,32 +1,39 @@
 {
-  "name": "YINI Parser-TypeScript",
-  "version": "0.1.0",
-  "private": true,
-  "main": "src/index.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx ts-node src/index",
-    "lint": "next lint"
-  },
-  "author": "Marko Seppänen",
-  "license": "",
-  "description": "",
-  "dependencies": {
-    "antlr4": "^4.13.2"
-  },
-  "devDependencies": {
-    "@types/node": "^22.15.3",
-    "@typescript-eslint/eslint-plugin": "^8.32.1",
-    "@typescript-eslint/parser": "^8.32.1",
-    "eslint": "^9.27.0",
-    "eslint-config-prettier": "^10.1.5",
-    "eslint-plugin-prettier": "^5.4.0",
-    "prettier": "^3.5.3",
-    "typescript": "^5.7.3"
-  },
-  "lint-staged": {
-    "src/**/*.{js,jsx,json,ts,tsx,css,scss}": [
-      "prettier --config ./.prettierrc --write"
-    ]
-  }
+    "name": "YINI Parser-TypeScript",
+    "version": "0.1.0",
+    "private": true,
+    "main": "src/index.ts",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "npx ts-node src/index",
+        "lint": "next lint"
+    },
+    "author": "Marko Seppänen",
+    "license": "",
+    "description": "",
+    "dependencies": {
+        "antlr4": "^4.13.2"
+    },
+    "devDependencies": {
+        "@types/node": "^22.15.3",
+        "@typescript-eslint/eslint-plugin": "^8.32.1",
+        "@typescript-eslint/parser": "^8.32.1",
+        "eslint": "^9.27.0",
+        "eslint-config-prettier": "^10.1.5",
+        "eslint-plugin-prettier": "^5.4.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^16.0.0",
+        "prettier": "^3.5.3",
+        "typescript": "^5.7.3"
+    },
+    "lint-staged": {
+        "src/**/*.{js,jsx,json,ts,tsx,css,scss}": [
+            "prettier --config ./.prettierrc --write"
+        ]
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    }
 }
