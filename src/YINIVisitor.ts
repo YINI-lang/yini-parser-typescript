@@ -23,8 +23,10 @@ const SECTION_MARKER1 = '^';
 const SECTION_MARKER2 = '~';
 
 interface YiniDocument {
-	sections: Record<string, any>
-	terminal?: string
+	// sections: Record<string, any>
+	_root: Record<string, any>
+	// terminal?: string
+	_hasTerminal?: boolean
   }
 
 /**
@@ -78,7 +80,7 @@ interface YiniDocument {
 
 		// return res
 		const terminal = ctx.terminal_line()?.getText().trim();
-    return { sections, terminal }
+    return { _root: sections, _hasTerminal: !!terminal }
 		
 	}
 
