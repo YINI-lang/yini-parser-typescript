@@ -19,6 +19,8 @@ import { String_literalContext } from "./grammar/YiniParser.js";
 import { String_concatContext } from "./grammar/YiniParser.js";
 import { Boolean_literalContext } from "./grammar/YiniParser.js";
 
+const SECTION_MARKER1 = '^';
+const SECTION_MARKER2 = '~';
 
 /**
  * This interface defines a complete generic visitor for a parse tree produced
@@ -35,6 +37,7 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
 	 */
 	// visitYini?: (ctx: YiniContext) => Result;
 	visitYini = (ctx: YiniContext): Result => {
+		console.log('-> Entered visitYini(..)');
 		const res: any = {};
 
 		ctx.children?.forEach((child: any)=>{
@@ -52,6 +55,8 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
 	 */
 	// visitSection?: (ctx: SectionContext) => Result;
 	visitSection = (ctx: SectionContext): Result => {
+		console.log('-> Entered visitSection(..)');
+
 		const res: Record<string, any> = {};
 		// ctx.getText();
 		// console.log(`@getText() = >>>${ ctx.getText() }<<<`);
@@ -65,13 +70,13 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
 		console.log('end\n');
 
 		const line = '' + ctx.SECTION_HEAD();		
-		console.log('line = ' + line);
+		console.log(`Got line = >>>${ line }<<<`);
 
 		const lineLen: number = line.length
 		let level = 0;
 
 		for(let pos=0; pos<lineLen; pos++){
-			if(line.charAt(pos)==='#' || line.charAt(pos)==='~' || line.charAt(pos)==='>'){
+			if(line.charAt(pos)===SECTION_MARKER1 || line.charAt(pos)===SECTION_MARKER2 ){
 				level++
 			}else{
 				break;
@@ -88,12 +93,14 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
 
 			if(subLine.startsWith(' ') || subLine.startsWith('\t')){
 				subLine = subLine.substring(1)	// Consume left most character.
+				console.log('* consumed left most char!!')
 			}else{
 				isDone = true
 			}
 		} while(!isDone)
 
 		const sectionName: string = subLine.trim()
+		console.log(`Parsed sectionName = >>>${ sectionName }<<<`);
 
 		// console.log('last subLine = ' + subLine);
 		// if(!subLine.endsWith('\\n')){
@@ -130,7 +137,12 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitSection_members?: (ctx: Section_membersContext) => Result;
+	visitSection_members = (ctx: Section_membersContext): Result =>{
+		console.log('-> Entered visitSection_members(..)')
+		
+		return {} as Result
+	}
+
 	/**
 	 * Visit a parse tree produced by `YiniParser.member`.
 	 * @param ctx the parse tree

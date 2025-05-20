@@ -32,10 +32,18 @@ console.log('debugTestObj:');
 console.log(debugTestObj);
 console.log();
 
-const input = `
+const invalidInput = `
 # 	Config
-name = "Alice"
 age = 30
+name = "Alice"
+items = ["a", "b", "c"]
+/END
+`;
+
+const input = `
+^ 	Config
+age = 30
+name = "Alice"
 items = ["a", "b", "c"]
 /END
 `;
