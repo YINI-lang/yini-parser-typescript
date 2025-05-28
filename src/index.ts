@@ -43,6 +43,7 @@ const input1 = `
 ^ 	SectionName
 varInt = 30
 varBool = true
+varBool2 = off
 varStr = "Alice"
 listItems = ["a", "b", "c"]
 /END

@@ -28,6 +28,22 @@ interface YiniDocument {
     _hasTerminal?: boolean
 }
 
+type TDataType = undefined | 'Integer' | 'Real' | 'Boolean'
+/*
+class CResult {
+    private dataType: TDataType = undefined
+    private valueBool: boolean | undefined = undefined
+
+    //constructor() {}
+    getType = (): TDataType => this.dataType
+
+    makeBoolean = (isTrue: boolean) => {
+        this.dataType = 'Boolean'
+        this.valueBool = isTrue
+    }
+}
+*/
+
 /**
  * This interface defines a complete generic visitor for a parse tree produced
  * by `YiniParser`.
@@ -46,7 +62,7 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
     // visitYini?: (ctx: YiniContext) => Result;
     // visitYini = (ctx: YiniContext): Result => {
     visitYini = (ctx: YiniContext): any => {
-        console.log('-> Entered visitYini(..)')
+        console.log('\n-> Entered visitYini(..)')
         // const res: any = {};
         const sections: Record<string, any> = {}
 
@@ -78,8 +94,9 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
         })
 
         // return res
-        const terminal = ctx.terminal_line()?.getText().trim()
-        return { _root: sections, _hasTerminal: !!terminal }
+        //const terminal = ctx.terminal_line()?.getText().trim()
+        const hasTerminal = !!ctx.terminal_line()
+        return { _root: sections, _hasTerminal: hasTerminal }
     }
 
     /*
@@ -104,7 +121,7 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
 
     // visitSection = (ctx: SectionContext): Result => {
     visitSection = (ctx: SectionContext): any => {
-        console.log('-> Entered visitSection(..)')
+        console.log('\n-> Entered visitSection(..)')
 
         const res: Record<string, any> = {}
         // ctx.getText();
@@ -119,7 +136,7 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
         console.log('XXXX2' + ctx.section())
         console.log('end\n')
 
-        const line = '' + ctx.SECTION_HEAD()
+        const line = '' + ctx.SECTION_HEAD().getText()
         console.log(`Got line = >>>${line}<<<`)
 
         const lineLen: number = line.length
@@ -220,11 +237,19 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
             // console.log('res.key = ' + res?.key)
             // console.log('res.value = ' + res?.value)
             const { key, value }: any = this.visit(member)
+            const value0 = value[0] // First value at index 0.
             console.log('member of visitSection_members:')
+            console.log(value0)
             console.log('res.key = ' + key)
-            console.log('res.value = ' + value)
+            console.log('res.value.dataType = ' + value0.type)
+            console.log('res.value.value = ' + value0.value)
+            // if(value instanceof Result){
 
-            members[key] = value
+            // console.log('--- member: ---')
+            // console.log(member)
+            // console.log('---------------\n')
+
+            members[key] = value0.value
         })
         //   const { key, value } = this.visit(m);
         //   members[key] = value;
@@ -301,10 +326,23 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      * @return the visitor result
      */
     visitString_concat?: (ctx: String_concatContext) => Result
+
     /**
      * Visit a parse tree produced by `YiniParser.boolean_literal`.
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitBoolean_literal?: (ctx: Boolean_literalContext) => Result
+    //visitBoolean_literal?: (ctx: Boolean_literalContext) => Result
+    visitBoolean_literal = (ctx: Boolean_literalContext): Result => {
+        const text = ctx.getText().toLowerCase()
+        //return ['true', 'yes', 'on'].includes(text) as Result
+        const value: boolean = ['true', 'yes', 'on'].includes(text)
+
+        return { type: 'Boolean', value } as Result
+
+        // const result = new CResult()
+        // result.makeBoolean(value)
+
+        // return result as CResult
+    }
 }
