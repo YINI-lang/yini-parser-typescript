@@ -1,6 +1,6 @@
 
-PARSER_FILE=specs/v1.0.0-beta.6/YiniParser.g4
-LEXER_FILE=specs/v1.0.0-beta.6/YiniLexer.g4
+PARSER_FILE=specs/v1.0.0-beta.6x/YiniParser.g4
+LEXER_FILE=specs/v1.0.0-beta.6x/YiniLexer.g4
 
 # Output dir for ANTLR.
 DIR_OUTPUT=src/grammar
