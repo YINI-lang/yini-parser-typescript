@@ -139,6 +139,7 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
         const line = '' + ctx.SECTION_HEAD().getText()
         console.log(`Got line = >>>${line}<<<`)
 
+        // --- Determine nesting level. ---------
         const lineLen: number = line.length
         let level = 0
 
@@ -150,8 +151,9 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
             }
         }
         console.log('level = ' + level)
+        // ------------------------------------
 
-        // const sectionName: string = "DymmySectionName"
+        // --- Extract section name after markers and whitespace. ---------
         let subLine: string = line.substring(level)
         let isDone = false
         do {
@@ -167,6 +169,7 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
 
         const sectionName: string = subLine.trim()
         console.log(`Parsed sectionName = >>>${sectionName}<<<`)
+        // ---------------------------------------------------------------
 
         // console.log('last subLine = ' + subLine);
         // if(!subLine.endsWith('\\n')){

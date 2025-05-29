@@ -1,4 +1,12 @@
+# Ignore dependencies
 node_modules
+
+# Ignore compiled output
+dist
+
+# Ignore all compiled JavaScript files (trans-compiled from TypeScript)
+**/*.js
+**/*.js.map
 
 # ANTLR4 output directory where all output is generated to
 gen-output

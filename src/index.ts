@@ -14,6 +14,31 @@ import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
 import YINIVisitor from './YINIVisitor'
 
+export default class YINI {
+    public static parse = (yiniInput: string) => {
+        console.log('\n-> Entered static parse(..) in class YINI\n')
+
+        const inputStream = CharStreams.fromString(yiniInput)
+        const lexer = new YiniLexer(inputStream)
+        const tokenStream = new CommonTokenStream(lexer)
+        const parser = new YiniParser(tokenStream)
+
+        console.log('\n==== Start parsing ==========================')
+        //const tree = parser.yini;  // Start rule.
+        const tree: YiniContext = parser.yini() // Start rule.
+
+        const visitor = new YINIVisitor()
+        const result = visitor.visit(tree as any)
+        console.log('==== End parsing ==========================\n')
+
+        console.log('result:')
+        console.log(result)
+        console.log()
+
+        return true
+    }
+}
+
 //import { Solution } from './solution';
 console.log('*** Started index.ts of ' + 'e_test'.toUpperCase() + ' ***')
 
@@ -70,19 +95,4 @@ console.log('input1:')
 console.log(input1)
 console.log()
 
-const inputStream = CharStreams.fromString(input1)
-const lexer = new YiniLexer(inputStream)
-const tokenStream = new CommonTokenStream(lexer)
-const parser = new YiniParser(tokenStream)
-
-console.log('\n==== Start parsing ==========================')
-//const tree = parser.yini;  // Start rule.
-const tree: YiniContext = parser.yini() // Start rule.
-
-const visitor = new YINIVisitor()
-const result = visitor.visit(tree as any)
-console.log('==== End parsing ==========================\n')
-
-console.log(result)
-
-console.log()
+YINI.parse(input2)
