@@ -41,11 +41,15 @@ items = ["a", "b", "c"]
 
 const input1 = `
 ^ 	SectionName
-varInt = 30
 varBool = true
 varBool2 = off
+varInt = 30
+varFloat = 12.34
 varStr = "Alice"
 listItems = ["a", "b", "c"]
+varE1 = 1e4
+varE2 = 1.23e4
+varE3 = 6.5E23
 /END
 `
 

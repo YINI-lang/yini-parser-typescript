@@ -237,19 +237,24 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
             // console.log('res.key = ' + res?.key)
             // console.log('res.value = ' + res?.value)
             const { key, value }: any = this.visit(member)
-            const value0 = value[0] // First value at index 0.
-            console.log('member of visitSection_members:')
-            console.log(value0)
-            console.log('res.key = ' + key)
-            console.log('res.value.dataType = ' + value0.type)
-            console.log('res.value.value = ' + value0.value)
-            // if(value instanceof Result){
+            if (!value) {
+                console.log('Warning res.key = ' + key + ' found as undefined')
+            } else {
+                const value0 = value[0] // First value at index 0.
+                console.log('\nmember of visitSection_members:')
+                console.log(value0)
+                console.log(value)
+                console.log('res.key = ' + key)
+                console.log('res.value.dataType = ' + value0?.type)
+                console.log('res.value.value = ' + value0?.value)
+                // if(value instanceof Result){
 
-            // console.log('--- member: ---')
-            // console.log(member)
-            // console.log('---------------\n')
+                // console.log('--- member: ---')
+                // console.log(member)
+                // console.log('---------------\n')
 
-            members[key] = value0.value
+                members[key] = value0?.value
+            }
         })
         //   const { key, value } = this.visit(m);
         //   members[key] = value;
@@ -265,11 +270,14 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
     // visitMember?: (ctx: MemberContext) => Result;
     visitMember = (ctx: MemberContext) => {
         console.log('-> Entered visitMember(..)')
+        console.log('key   = ' + ctx.KEY().getText())
+        console.log('ctx.value() = ' + ctx.value())
 
         const key = ctx.KEY().getText()
         const value = ctx.value() ? this.visit(ctx.value()) : null
+        console.log('value = ' + value)
 
-        return { key, value } as any
+        return { key, value } as Result
     }
 
     /**
@@ -277,13 +285,36 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitMember_colon_list?: (ctx: Member_colon_listContext) => Result
+    //visitMember_colon_list?: (ctx: Member_colon_listContext) => Result
+    visitMember_colon_list = (ctx: Member_colon_listContext): Result => {
+        console.log('-> Entered visitMember_colon_list(..)')
+
+        const key = ctx.KEY().getText()
+        const values = this.visit(ctx.elements())
+        return { key, value: values } as Result
+    }
+
     /**
      * Visit a parse tree produced by `YiniParser.value`.
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitValue?: (ctx: ValueContext) => Result
+    // visitValue?: (ctx: ValueContext) => Result
+    /*
+    visitValue = (ctx: ValueContext): any => {
+        console.log('-> Entered visitValue(..)')
+
+        console.log('ctx.number_literal(): ' + ctx.number_literal())
+        console.log('ctx.boolean_literal(): ' + ctx.boolean_literal())
+
+        if (ctx.number_literal()) return this.visit(ctx.number_literal())
+        if (ctx.string_literal()) return this.visit(ctx.string_literal())
+        if (ctx.boolean_literal()) return this.visit(ctx.boolean_literal())
+        //   if (ctx.list()) return this.visit(ctx.list())
+        //   if (ctx.string_concat()) return this.visit(ctx.string_concat())
+        return null
+    }
+        */
     /**
      * Visit a parse tree produced by `YiniParser.list`.
      * @param ctx the parse tree
@@ -313,7 +344,27 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitNumber_literal?: (ctx: Number_literalContext) => Result
+    // visitNumber_literal?: (ctx: Number_literalContext) => Result
+    visitNumber_literal = (ctx: Number_literalContext): Result => {
+        const text = ctx.getText()
+        // if (/^0[xX]/.test(text)) return parseInt(text, 16)
+        // if (/^#/.test(text)) return parseInt(text.slice(1), 16)
+        // if (/^0b/.test(text) || /^%/.test(text)) return parseInt(text.replace(/^%/, '0b'), 2)
+        // if (/^0o/.test(text)) return parseInt(text, 8)
+        // Duodecimal (0z...) not supported, fallback to number
+
+        // In a regex literal the dot must be escaped (\.) to match a literal '.'
+        if (/\./.test(text)) {
+            return { type: 'Float', value: parseFloat(text) } as Result
+        }
+
+        return { type: 'Integer', value: parseInt(text) } as Result
+
+        // TODO: Depending, on mode, below continue or break on error
+        console.error('Error: Failed to parse number value: ' + text)
+        return { type: 'Number', value: undefined } as Result
+    }
+
     /**
      * Visit a parse tree produced by `YiniParser.string_literal`.
      * @param ctx the parse tree
@@ -334,15 +385,12 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      */
     //visitBoolean_literal?: (ctx: Boolean_literalContext) => Result
     visitBoolean_literal = (ctx: Boolean_literalContext): Result => {
+        console.log('-> Entered visitBoolean_literal(..)')
+
         const text = ctx.getText().toLowerCase()
-        //return ['true', 'yes', 'on'].includes(text) as Result
+        // return ['true', 'yes', 'on'].includes(text) as Result
         const value: boolean = ['true', 'yes', 'on'].includes(text)
 
         return { type: 'Boolean', value } as Result
-
-        // const result = new CResult()
-        // result.makeBoolean(value)
-
-        // return result as CResult
     }
 }
