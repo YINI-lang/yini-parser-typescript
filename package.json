@@ -1,26 +1,28 @@
 {
-    "name": "yini-parser-typescript",
+    "name": "yini-parser-ts",
     "version": "0.1.0",
     "private": true,
-    "main": "src/index.ts",
+    "main": "dist/index.js",
     "scripts": {
-        "test": "jest",
+        "test": "cross-env IS_DEBUG=0 jest",
         "tsc": "npx tsc -p ./tsconfig.json",
-        "start": "ts-node src/index.ts",
+        "start": "cross-env IS_DEBUG=1 ts-node src/index.ts",
         "lint": "eslint src --ext .ts",
         "prepare": "husky install"
     },
-    "author": "Marko Seppänen",
+    "author": "Marko K. Seppänen",
     "license": "Apache-2.0",
     "description": "A TypeScript parser for the YINI configuration format.",
     "dependencies": {
         "antlr4": "^4.13.2"
     },
     "devDependencies": {
+        "@ianvs/prettier-plugin-sort-imports": "^4.4.2",
         "@types/jest": "^29.5.14",
         "@types/node": "^22.15.3",
         "@typescript-eslint/eslint-plugin": "^8.32.1",
         "@typescript-eslint/parser": "^8.32.1",
+        "cross-env": "^7.0.3",
         "eslint": "^9.27.0",
         "eslint-config-prettier": "^10.1.5",
         "eslint-plugin-prettier": "^5.4.0",

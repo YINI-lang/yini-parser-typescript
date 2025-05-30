@@ -1,3 +1,5 @@
+// import { isDebug&&console.log } from './utils/general'
+
 /*
 	https://pauloe-me.medium.com/typescript-npm-package-publishing-a-beginners-guide-40b95908e69c
 	
@@ -16,14 +18,18 @@ import YINIVisitor from './YINIVisitor'
 
 export default class YINI {
     public static parse = (yiniInput: string) => {
-        console.log('\n-> Entered static parse(..) in class YINI\n')
+        const isDebug = !!process.env.IS_DEBUG
+
+        isDebug && console.log()
+        isDebug && console.log('-> Entered static parse(..) in class YINI\n')
 
         const inputStream = CharStreams.fromString(yiniInput)
         const lexer = new YiniLexer(inputStream)
         const tokenStream = new CommonTokenStream(lexer)
         const parser = new YiniParser(tokenStream)
 
-        console.log('\n==== Start parsing ==========================')
+        isDebug && console.log()
+        console.log('==== Start parsing ==========================')
         //const tree = parser.yini;  // Start rule.
         const tree: YiniContext = parser.yini() // Start rule.
 
@@ -54,6 +60,12 @@ const debugTestObj = {
 }
 console.log('debugTestObj:')
 console.log(debugTestObj)
+console.log()
+
+const isDebug = !!process.env.IS_DEBUG
+console.log('env.IS_DEBUG:')
+console.log(process.env.IS_DEBUG)
+console.log('isDebug = ' + isDebug)
 console.log()
 
 const invalidInput = `
