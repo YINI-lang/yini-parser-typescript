@@ -14,31 +14,32 @@
 import { debugPrint } from './utils/general'
 import YINI from './YINI'
 
-export * from './YINI'
+export { default } from './YINI'
 
-const isDebug = !!process.env.IS_DEBUG
-console.log('env.IS_DEBUG:')
-console.log(process.env.IS_DEBUG)
-console.log('isDebug = ' + isDebug)
+// const isDebug = !!process.env.IS_DEBUG
+// console.log('env.IS_DEBUG:')
+// console.log(process.env.IS_DEBUG)
+// console.log('isDebug = ' + isDebug)
 debugPrint()
-console.log()
+debugPrint('QWERTY')
+debugPrint('QWERTY')
 
 //import { Solution } from './solution';
-console.log('*** Started index.ts of ' + 'e_test'.toUpperCase() + ' ***')
+debugPrint('*** Started index.ts of ' + 'e_test'.toUpperCase() + ' ***')
 
 // const s : Solution = new Solution();
 
-// console.log('Result, getBuyDay index:  ', s.getBuyDay());
-// console.log('Result, getSellDay index: ', s.getSellDay());
-// console.log();
+// debugPrint('Result, getBuyDay index:  ', s.getBuyDay());
+// debugPrint('Result, getSellDay index: ', s.getSellDay());
+// debugPrint();
 
 const debugTestObj = {
     name: 'e_test',
     lang: 'TypeScript',
 }
-console.log('debugTestObj:')
-console.log(debugTestObj)
-console.log()
+debugPrint('debugTestObj:')
+debugPrint(debugTestObj)
+debugPrint()
 
 const invalidInput = `
 # 	Config
@@ -75,8 +76,8 @@ listItems = ["a", "b", "c"]
 // const input = `
 // # 	Config`;
 
-console.log('input1:')
-console.log(input1)
-console.log()
+debugPrint('input1:')
+debugPrint(input1)
+debugPrint()
 
 YINI.parse(input2)

@@ -3,48 +3,52 @@ import { debugPrint } from './utils/general'
 
 export default class YINI {
     public static parse = (yiniInput: string) => {
-        const isDebug = !!process.env.IS_DEBUG
+        // const isDebug = !!process.env.IS_DEBUG
 
-        isDebug && console.log()
-        isDebug && console.log('-> Entered static parse(..) in class YINI\n')
+        debugPrint()
+        debugPrint('ABCDE')
+        debugPrint('ABCDE')
 
-        isDebug && console.log()
-        console.log('==== Start parsing ==========================')
+        debugPrint
+        debugPrint('-> Entered static parse(..) in class YINI\n')
+
+        debugPrint()
+        debugPrint('==== Start parsing ==========================')
         //const tree = parser.yini;  // Start rule.
         const result = doParse(yiniInput)
-        console.log('==== End parsing ==========================\n')
+        debugPrint('==== End parsing ==========================\n')
 
-        console.log('YINI.parse(..): result:')
+        debugPrint('YINI.parse(..): result:')
 
-        console.log(result)
-        console.log()
+        debugPrint(result)
+        debugPrint()
 
         return true
     }
 }
 
 //import { Solution } from './solution';
-console.log('*** Started index.ts of ' + 'e_test'.toUpperCase() + ' ***')
+debugPrint('*** Started index.ts of ' + 'e_test'.toUpperCase() + ' ***')
 
 // const s : Solution = new Solution();
 
-// console.log('Result, getBuyDay index:  ', s.getBuyDay());
-// console.log('Result, getSellDay index: ', s.getSellDay());
-// console.log();
+// debugPrint('Result, getBuyDay index:  ', s.getBuyDay());
+// debugPrint('Result, getSellDay index: ', s.getSellDay());
+// debugPrint();
 
 const debugTestObj = {
     name: 'e_test',
     lang: 'TypeScript',
 }
-console.log('debugTestObj:')
-console.log(debugTestObj)
-console.log()
+debugPrint('debugTestObj:')
+debugPrint(debugTestObj)
+debugPrint()
 
 const isDebug = !!process.env.IS_DEBUG
-console.log('env.IS_DEBUG:')
-console.log(process.env.IS_DEBUG)
-console.log('isDebug = ' + isDebug)
-console.log()
+debugPrint('env.IS_DEBUG:')
+debugPrint(process.env.IS_DEBUG)
+debugPrint('isDebug = ' + isDebug)
+debugPrint()
 
 const invalidInput = `
 # 	Config
@@ -81,8 +85,8 @@ listItems = ["a", "b", "c"]
 // const input = `
 // # 	Config`;
 
-console.log('input1:')
-console.log(input1)
-console.log()
+debugPrint('input1:')
+debugPrint(input1)
+debugPrint()
 
 YINI.parse(input2)

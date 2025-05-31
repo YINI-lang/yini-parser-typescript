@@ -6,7 +6,7 @@
     "scripts": {
         "test": "cross-env IS_DEBUG=0 jest",
         "tsc": "npx tsc -p ./tsconfig.json",
-        "start": "cross-env IS_DEBUG=1 ts-node src/index.ts",
+        "start": "npm run tsc && cross-env IS_DEBUG=1 ts-node src/index.ts",
         "lint": "eslint src --ext .ts",
         "prepare": "husky install"
     },

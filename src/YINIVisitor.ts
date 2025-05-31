@@ -20,7 +20,7 @@ import {
 import YiniParserVisitor from './grammar/YiniParserVisitor'
 import { debugPrint } from './utils/general'
 
-const isDebug = !!process.env.IS_DEBUG
+// const isDebug = !!process.env.IS_DEBUG
 
 const SECTION_MARKER1 = '^'
 const SECTION_MARKER2 = '~'
@@ -66,7 +66,12 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
     // visitYini?: (ctx: YiniContext) => Result;
     // visitYini = (ctx: YiniContext): Result => {
     visitYini = (ctx: YiniContext): any => {
-        debugPrint('\n-> Entered visitYini(..)')
+        debugPrint()
+        debugPrint('abcde')
+        debugPrint('-> Entered visitYini(..)')
+        debugPrint('QQQQ')
+        console.log('QQQQ')
+        throw Error('QQQQ')
         // const res: any = {};
         const sections: Record<string, any> = {}
 
@@ -127,23 +132,24 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
 
     // visitSection = (ctx: SectionContext): Result => {
     visitSection = (ctx: SectionContext): any => {
-        isDebug && console.log('\n-> Entered visitSection(..)')
+        debugPrint()
+        debugPrint('-> Entered visitSection(..)')
 
         const res: Record<string, any> = {}
         // ctx.getText();
         // isDebug&&console.log(`@getText() = >>>${ ctx.getText() }<<<`);
         // isDebug&&console.log('@name = ' + ctx.SECTION_HEAD);
 
-        isDebug && console.log('start')
+        debugPrint('start')
         // ctx.children?.forEach((child: any)=>{
         // 	isDebug&&console.log('@child = ' + child);
         // })
-        isDebug && console.log('XXXX1' + ctx.SECTION_HEAD())
-        isDebug && console.log('XXXX2' + ctx.section())
-        isDebug && console.log('end\n')
+        debugPrint('XXXX1' + ctx.SECTION_HEAD())
+        debugPrint('XXXX2' + ctx.section())
+        debugPrint('end\n')
 
         const line = '' + ctx.SECTION_HEAD().getText()
-        isDebug && console.log(`Got line = >>>${line}<<<`)
+        debugPrint(`Got line = >>>${line}<<<`)
 
         // --- Determine nesting level. ---------
         const lineLen: number = line.length
@@ -159,7 +165,7 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
                 break
             }
         }
-        isDebug && console.log('level = ' + level)
+        debugPrint('level = ' + level)
         // ------------------------------------
 
         // --- Extract section name after markers and whitespace. ---------
@@ -170,14 +176,14 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
 
             if (subLine.startsWith(' ') || subLine.startsWith('\t')) {
                 subLine = subLine.substring(1) // Consume left most character.
-                isDebug && console.log('* consumed left most char!!')
+                debugPrint('* consumed left most char!!')
             } else {
                 isDone = true
             }
         } while (!isDone)
 
         const sectionName: string = subLine.trim()
-        isDebug && console.log(`Parsed sectionName = >>>${sectionName}<<<`)
+        debugPrint(`Parsed sectionName = >>>${sectionName}<<<`)
         // ---------------------------------------------------------------
 
         // isDebug&&console.log('last subLine = ' + subLine);
@@ -186,7 +192,7 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
         // 	process.exit(1)
         // }
 
-        isDebug && console.log('visit(ctx.section_members()')
+        debugPrint('visit(ctx.section_members()')
         const members = ctx.section_members()
             ? this.visit(ctx.section_members())
             : {}
@@ -239,7 +245,7 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
     // }
     // visitSection_members = (ctx: Section_membersContext): Record<string, any> => {
     visitSection_members = (ctx: Section_membersContext): any => {
-        isDebug && console.log('-> Entered visitSection_members(..)')
+        debugPrint('-> Entered visitSection_members(..)')
 
         const members: Record<string, any> = {}
         // for (const m of ctx?.member()) {
@@ -252,18 +258,15 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
             // isDebug&&console.log('res.value = ' + res?.value)
             const { key, value }: any = this.visit(member)
             if (!value) {
-                isDebug &&
-                    console.log(
-                        'Warning res.key = ' + key + ' found as undefined',
-                    )
+                debugPrint('Warning res.key = ' + key + ' found as undefined')
             } else {
                 const value0 = value[0] // First value at index 0.
-                isDebug && console.log('\nmember of visitSection_members:')
-                isDebug && console.log(value0)
-                isDebug && console.log(value)
-                isDebug && console.log('res.key = ' + key)
-                isDebug && console.log('res.value.dataType = ' + value0?.type)
-                isDebug && console.log('res.value.value = ' + value0?.value)
+                debugPrint('\nmember of visitSection_members:')
+                debugPrint(value0)
+                debugPrint(value)
+                debugPrint('res.key = ' + key)
+                debugPrint('res.value.dataType = ' + value0?.type)
+                debugPrint('res.value.value = ' + value0?.value)
                 // if(value instanceof Result){
 
                 // isDebug&&console.log('--- member: ---')
@@ -286,13 +289,13 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      */
     // visitMember?: (ctx: MemberContext) => Result;
     visitMember = (ctx: MemberContext) => {
-        isDebug && console.log('-> Entered visitMember(..)')
-        isDebug && console.log('key   = ' + ctx.KEY().getText())
-        isDebug && console.log('ctx.value() = ' + ctx.value())
+        debugPrint('-> Entered visitMember(..)')
+        debugPrint('key   = ' + ctx.KEY().getText())
+        debugPrint('ctx.value() = ' + ctx.value())
 
         const key = ctx.KEY().getText()
         const value = ctx.value() ? this.visit(ctx.value()) : null
-        isDebug && console.log('value = ' + value)
+        debugPrint('value = ' + value)
 
         return { key, value } as Result
     }
@@ -304,7 +307,7 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      */
     //visitMember_colon_list?: (ctx: Member_colon_listContext) => Result
     visitMember_colon_list = (ctx: Member_colon_listContext): Result => {
-        isDebug && console.log('-> Entered visitMember_colon_list(..)')
+        debugPrint('-> Entered visitMember_colon_list(..)')
 
         const key = ctx.KEY().getText()
         const values = this.visit(ctx.elements())
@@ -402,7 +405,7 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      */
     //visitBoolean_literal?: (ctx: Boolean_literalContext) => Result
     visitBoolean_literal = (ctx: Boolean_literalContext): Result => {
-        isDebug && console.log('-> Entered visitBoolean_literal(..)')
+        debugPrint('-> Entered visitBoolean_literal(..)')
 
         const text = ctx.getText().toLowerCase()
         // return ['true', 'yes', 'on'].includes(text) as Result
