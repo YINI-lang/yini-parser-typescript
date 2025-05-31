@@ -1,0 +1,11 @@
+^ ListTests
+bracketed = [1, 2, 3]
+bracketedNested = [[ "a", "b" ], [ "c", "d" ]]
+
+colonInline: "x", "y", "z"
+colonMultiline:
+  10,
+  20,
+  30,
+
+mixedList = [true, "no", null]

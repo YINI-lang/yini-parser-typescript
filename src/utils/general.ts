@@ -1,3 +1,7 @@
+export const isDebug = (): boolean => {
+    return !!process.env.IS_DEBUG
+}
+
 export const debugPrint = (str: any = '') => {
     const isDebug = !!process.env.IS_DEBUG
     isDebug && console.debug('DEBUG: ' + str)

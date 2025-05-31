@@ -1,10 +1,18 @@
 import { CharStreams, CommonTokenStream } from 'antlr4'
 import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
-import { debugPrint } from './utils/general'
+import { debugPrint, isDebug } from './utils/general'
 import YINIVisitor from './YINIVisitor'
 
-export const doParse = (yiniInput: string) => {
+interface IOptions {
+    strict: boolean
+    bailSensitivy: 0 | 1 | 2
+}
+
+export const parseYINI = (
+    yiniContent: string,
+    options: IOptions = { strict: false, bailSensitivy: 0 },
+) => {
     //     const isDebug = !!process.env.IS_DEBUG
 
     debugPrint()
@@ -13,7 +21,7 @@ export const doParse = (yiniInput: string) => {
     debugPrint()
     debugPrint('-> Entered doParse(..) in parseEntry\n')
 
-    const inputStream = CharStreams.fromString(yiniInput)
+    const inputStream = CharStreams.fromString(yiniContent)
     const lexer = new YiniLexer(inputStream)
     const tokenStream = new CommonTokenStream(lexer)
     const parser = new YiniParser(tokenStream)
@@ -27,8 +35,17 @@ export const doParse = (yiniInput: string) => {
     const result = visitor.visit(tree as any)
     debugPrint('==== End parsing ==========================\n')
 
-    debugPrint('doParse(..): result:')
-    debugPrint(result)
+    debugPrint('visitor.visit(..): result:')
+    if (isDebug()) {
+        console.debug(result)
+    }
     debugPrint()
-    return result
+
+    if (options.strict) {
+        throw Error('ERROR: Strict-mode not yet implemented')
+    } else {
+        debugPrint('visitor.visit(..): result:')
+        console.debug(result)
+        return (result as any)?._base
+    }
 }

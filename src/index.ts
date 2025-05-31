@@ -11,27 +11,10 @@
 	/END
 */
 
-import { debugPrint } from './utils/general'
+import { debugPrint, isDebug } from './utils/general'
 import YINI from './YINI'
 
 export { default } from './YINI'
-
-// const isDebug = !!process.env.IS_DEBUG
-// console.log('env.IS_DEBUG:')
-// console.log(process.env.IS_DEBUG)
-// console.log('isDebug = ' + isDebug)
-debugPrint()
-debugPrint('QWERTY')
-debugPrint('QWERTY')
-
-//import { Solution } from './solution';
-debugPrint('*** Started index.ts of ' + 'e_test'.toUpperCase() + ' ***')
-
-// const s : Solution = new Solution();
-
-// debugPrint('Result, getBuyDay index:  ', s.getBuyDay());
-// debugPrint('Result, getSellDay index: ', s.getSellDay());
-// debugPrint();
 
 const debugTestObj = {
     name: 'e_test',
@@ -76,8 +59,9 @@ listItems = ["a", "b", "c"]
 // const input = `
 // # 	Config`;
 
-debugPrint('input1:')
-debugPrint(input1)
-debugPrint()
+debugPrint('input2:')
+if (isDebug()) {
+    console.debug(input2)
+}
 
 YINI.parse(input2)
