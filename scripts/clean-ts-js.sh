@@ -46,4 +46,4 @@ while IFS= read -r -d '' jsfile; do
   fi
 done
 
-echo "✅ Done. All .js files with a sibling .ts have been removed."
+echo "All *.js cleaned! - All .js files with a sibling .ts have been deleted."
