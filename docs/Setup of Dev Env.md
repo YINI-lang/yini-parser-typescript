@@ -2,6 +2,14 @@
 
 ## Pre-requisites
 
+**In Windows:**
+- `Git Bash`
+
+**All:**
+- `NVM`
+
+---
+
 ## Quick Start
 
 **To run the parser:**
@@ -23,6 +31,8 @@ Generating source code from grammar files with ANTLR4. Usually this is not neede
 
 1. In `Git Bash`, `Bash` (or possibly in `CMD` depending on your setup). In the root, type:
     > make generate
+
+---
 
 ## Packages
 

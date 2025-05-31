@@ -68,10 +68,16 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
     visitYini = (ctx: YiniContext): any => {
         debugPrint()
         debugPrint('abcde')
-        debugPrint('-> Entered visitYini(..)')
+        debugPrint('-> Entered visitYini(..) in YINIVisitor')
         debugPrint('QQQQ')
-        console.log('QQQQ')
-        throw Error('QQQQ')
+
+        // const isDebug = !!process.env.IS_DEBUG
+        // debugPrint('env.IS_DEBUG:')
+        // debugPrint(process.env.IS_DEBUG)
+        // console.log('isDebug = ' + isDebug)
+        // debugPrint('isDebug = ' + isDebug)
+        // debugPrint()
+
         // const res: any = {};
         const sections: Record<string, any> = {}
 

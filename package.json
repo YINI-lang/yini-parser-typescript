@@ -4,11 +4,12 @@
     "private": true,
     "main": "dist/index.js",
     "scripts": {
-        "test": "cross-env IS_DEBUG=0 jest",
+        "test": "cross-env IS_DEBUG='' jest",
         "tsc": "npx tsc -p ./tsconfig.json",
-        "start": "npm run tsc && cross-env IS_DEBUG=1 ts-node src/index.ts",
+        "start": "npm run tsc && npm run clean:ts-js && cross-env IS_DEBUG=1 ts-node src/index.ts",
         "lint": "eslint src --ext .ts",
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "clean:ts-js": "bash scripts/clean-ts-js.sh"
     },
     "author": "Marko K. Seppänen",
     "license": "Apache-2.0",

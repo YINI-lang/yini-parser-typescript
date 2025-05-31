@@ -19,8 +19,21 @@ listItems = ["a", "b", "c"]
  */
 describe('Smoke Tests', () => {
     beforeAll(() => {
-        // init({ countryCode: 'DK', currencyCode: 'EUR', language: 'en' })
         console.log('beforeAll')
+
+        const isDebug = !!process.env.IS_DEBUG
+        if (!isDebug) {
+            console.log('process.env.IS_DEBUG is false, OK')
+        } else {
+            console.error('process.env.IS_DEBUG is true, FAIL')
+            console.error(
+                'Detected that IS_DEBUG is true, is should be false when testing',
+            )
+            console.error('process.env.IS_DEBUG:')
+            console.error(process.env.IS_DEBUG)
+
+            throw Error('ERROR: A variable in ENV has wrong state')
+        }
     })
 
     test('Counts addition correctly.', () => {
