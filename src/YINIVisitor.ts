@@ -1,23 +1,24 @@
 // import { isDebug&&console.log } from './utils/general'
 import { ParseTreeVisitor } from 'antlr4'
-
+import {
+    Boolean_literalContext,
+    ElementContext,
+    ElementsContext,
+    List_in_bracketsContext,
+    ListContext,
+    Member_colon_listContext,
+    MemberContext,
+    Number_literalContext,
+    Section_membersContext,
+    SectionContext,
+    String_concatContext,
+    String_literalContext,
+    Terminal_lineContext,
+    ValueContext,
+    YiniContext,
+} from './grammar/YiniParser.js'
 import YiniParserVisitor from './grammar/YiniParserVisitor'
-
-import { YiniContext } from './grammar/YiniParser.js'
-import { SectionContext } from './grammar/YiniParser.js'
-import { Terminal_lineContext } from './grammar/YiniParser.js'
-import { Section_membersContext } from './grammar/YiniParser.js'
-import { MemberContext } from './grammar/YiniParser.js'
-import { Member_colon_listContext } from './grammar/YiniParser.js'
-import { ValueContext } from './grammar/YiniParser.js'
-import { ListContext } from './grammar/YiniParser.js'
-import { List_in_bracketsContext } from './grammar/YiniParser.js'
-import { ElementsContext } from './grammar/YiniParser.js'
-import { ElementContext } from './grammar/YiniParser.js'
-import { Number_literalContext } from './grammar/YiniParser.js'
-import { String_literalContext } from './grammar/YiniParser.js'
-import { String_concatContext } from './grammar/YiniParser.js'
-import { Boolean_literalContext } from './grammar/YiniParser.js'
+import { debugPrint } from './utils/general'
 
 const isDebug = !!process.env.IS_DEBUG
 
@@ -65,7 +66,7 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
     // visitYini?: (ctx: YiniContext) => Result;
     // visitYini = (ctx: YiniContext): Result => {
     visitYini = (ctx: YiniContext): any => {
-        isDebug && console.log('\n-> Entered visitYini(..)')
+        debugPrint('\n-> Entered visitYini(..)')
         // const res: any = {};
         const sections: Record<string, any> = {}
 
@@ -81,12 +82,14 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
             // const value = child.accept(this);
             const value = section.accept(this)
             // isDebug&&console.log('In forEach, got child = ' + child + ', got value = ' + value)
-            isDebug && console.log('In forEach, got child = ' + section + ', got value = ' + value)
+            debugPrint(
+                'In forEach, got child = ' + section + ', got value = ' + value,
+            )
 
             const result: any = this.visit(section)
-            isDebug && console.log('result = ' + result)
-            isDebug && console.log('result:')
-            isDebug && console.log(result)
+            debugPrint('result = ' + result)
+            debugPrint('result:')
+            debugPrint(result)
             if (result?.name) sections[result.name] = result.members
 
             // if(!value){
@@ -147,7 +150,10 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
         let level = 0
 
         for (let pos = 0; pos < lineLen; pos++) {
-            if (line.charAt(pos) === SECTION_MARKER1 || line.charAt(pos) === SECTION_MARKER2) {
+            if (
+                line.charAt(pos) === SECTION_MARKER1 ||
+                line.charAt(pos) === SECTION_MARKER2
+            ) {
                 level++
             } else {
                 break
@@ -181,7 +187,9 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
         // }
 
         isDebug && console.log('visit(ctx.section_members()')
-        const members = ctx.section_members() ? this.visit(ctx.section_members()) : {}
+        const members = ctx.section_members()
+            ? this.visit(ctx.section_members())
+            : {}
 
         //TODO: Maybe put all this inside another container (supertype) or root.
         // return {
@@ -244,7 +252,10 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
             // isDebug&&console.log('res.value = ' + res?.value)
             const { key, value }: any = this.visit(member)
             if (!value) {
-                isDebug && console.log('Warning res.key = ' + key + ' found as undefined')
+                isDebug &&
+                    console.log(
+                        'Warning res.key = ' + key + ' found as undefined',
+                    )
             } else {
                 const value0 = value[0] // First value at index 0.
                 isDebug && console.log('\nmember of visitSection_members:')

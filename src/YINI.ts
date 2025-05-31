@@ -1,27 +1,27 @@
-// import { isDebug&&console.log } from './utils/general'
-
-/*
-	https://pauloe-me.medium.com/typescript-npm-package-publishing-a-beginners-guide-40b95908e69c
-	
-	Run the code with the following command:
-		npx ts-node index
-	or
-		npm start
-	
-	/END
-*/
-
+import { doParse } from './parseEntry'
 import { debugPrint } from './utils/general'
-import YINI from './YINI'
 
-export * from './YINI'
+export default class YINI {
+    public static parse = (yiniInput: string) => {
+        const isDebug = !!process.env.IS_DEBUG
 
-const isDebug = !!process.env.IS_DEBUG
-console.log('env.IS_DEBUG:')
-console.log(process.env.IS_DEBUG)
-console.log('isDebug = ' + isDebug)
-debugPrint()
-console.log()
+        isDebug && console.log()
+        isDebug && console.log('-> Entered static parse(..) in class YINI\n')
+
+        isDebug && console.log()
+        console.log('==== Start parsing ==========================')
+        //const tree = parser.yini;  // Start rule.
+        const result = doParse(yiniInput)
+        console.log('==== End parsing ==========================\n')
+
+        console.log('YINI.parse(..): result:')
+
+        console.log(result)
+        console.log()
+
+        return true
+    }
+}
 
 //import { Solution } from './solution';
 console.log('*** Started index.ts of ' + 'e_test'.toUpperCase() + ' ***')
@@ -38,6 +38,12 @@ const debugTestObj = {
 }
 console.log('debugTestObj:')
 console.log(debugTestObj)
+console.log()
+
+const isDebug = !!process.env.IS_DEBUG
+console.log('env.IS_DEBUG:')
+console.log(process.env.IS_DEBUG)
+console.log('isDebug = ' + isDebug)
 console.log()
 
 const invalidInput = `
