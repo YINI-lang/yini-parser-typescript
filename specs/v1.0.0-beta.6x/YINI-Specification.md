@@ -8,13 +8,15 @@ _YINI: A lightweight configuration file format — clean, readable, structured._
 > **Note:** This specification of the YINI format may introduce changes that are not backward-compatible (see Section 13.2, "Versioning Strategy").
 
 ```yini
-^ YINI
+~ YINI
 Yet_another = 'INI'
 ```
 © 2025 Marko K. Seppänen. Licensed under the Apache License, Version 2.0.
 See the full license text at the end of this document.
 
 ---
+
+[⇨ Table of Contents](./YINI-Specification.md#table-of-contents)
 
 ## Preface
 **YINI was designed with a simple idea in mind:** configuration files should be easy for humans to write, read, and understand — without sacrificing structure or future flexibility. It aims to stay minimal, yet flexible enough to express a wide range of configuration needs.
@@ -43,22 +45,24 @@ For more feedback details, see section D.2, _“Acknowledgments & Special Thanks
 
 ---
 
+([⇨ Preface](./YINI-Specification.md#preface))  
+
 ### **Part I – Introduction and Fundamentals**
 
-**1. Introduction**  
+**1. Introduction** ([Link ⇨](./YINI-Specification.md#1-introduction))  
 &nbsp;&nbsp;&nbsp;&nbsp;1.1. What is YINI?  
 &nbsp;&nbsp;&nbsp;&nbsp;1.2. Purpose and Design Goals  
 &nbsp;&nbsp;&nbsp;&nbsp;1.3. Background and Intent  
 &nbsp;&nbsp;&nbsp;&nbsp;1.4. Key Features  
 &nbsp;&nbsp;&nbsp;&nbsp;1.5. Terminology
 
-**2. File Structure**  
+**2. File Structure** ([Link ⇨](./YINI-Specification.md#2-file-structure))  
 &nbsp;&nbsp;&nbsp;&nbsp;2.1. File Encoding  
 &nbsp;&nbsp;&nbsp;&nbsp;2.2. File Extension  
 &nbsp;&nbsp;&nbsp;&nbsp;2.3. Optional Shebang (`#!`)  
 &nbsp;&nbsp;&nbsp;&nbsp;2.4. Reserved: Optional Header (`@yini`) *(for future use)*
 
-**3. Syntax Overview**  
+**3. Syntax Overview** ([Link ⇨](./YINI-Specification.md#3-syntax-overview))  
 &nbsp;&nbsp;&nbsp;&nbsp;3.1. General Syntax Rules  
 &nbsp;&nbsp;&nbsp;&nbsp;3.2. Whitespace and Indentation  
 &nbsp;&nbsp;&nbsp;&nbsp;3.3. Comments  
@@ -73,17 +77,17 @@ For more feedback details, see section D.2, _“Acknowledgments & Special Thanks
 
 ### **Part II – Grammar and Literals**
 
-**4. Keys and Values**  
+**4. Keys and Values** ([Link ⇨](./YINI-Specification.md#4-keys-and-values))  
 &nbsp;&nbsp;&nbsp;&nbsp;4.1. Key Naming Rules  
 &nbsp;&nbsp;&nbsp;&nbsp;4.2. Value Types (Simple, Compound, Special)  
 &nbsp;&nbsp;&nbsp;&nbsp;4.3. Type Rules
 
-**5. Section Headers**  
+**5. Section Headers** ([Link ⇨](./YINI-Specification.md#5-section-headers))  
 &nbsp;&nbsp;&nbsp;&nbsp;5.1. Syntax  
 &nbsp;&nbsp;&nbsp;&nbsp;5.2. Section Markers (`^`, `~`)  
 &nbsp;&nbsp;&nbsp;&nbsp;5.3. Sections in Sections (Nested Sections)
 
-**6. String Literals**  
+**6. String Literals** ([Link ⇨](./YINI-Specification.md#6-string-literals))  
 &nbsp;&nbsp;&nbsp;&nbsp;6.1. Raw Strings (R-Strings)  
 &nbsp;&nbsp;&nbsp;&nbsp;6.2. Classic Strings (C-Strings)  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6.2.1. Escape Characters  
@@ -93,33 +97,33 @@ For more feedback details, see section D.2, _“Acknowledgments & Special Thanks
 &nbsp;&nbsp;&nbsp;&nbsp;6.6. String Concatenation  
 &nbsp;&nbsp;&nbsp;&nbsp;6.7. String Type Mixing
 
-**7. Number Literals**  
+**7. Number Literals** ([Link ⇨](./YINI-Specification.md#7-number-literals))  
 &nbsp;&nbsp;&nbsp;&nbsp;7.1. Numbers  
 &nbsp;&nbsp;&nbsp;&nbsp;7.2. Exponent Format  
 &nbsp;&nbsp;&nbsp;&nbsp;7.3. Number Formats
 
-**8. Boolean and Null Literals**  
+**8. Boolean and Null Literals** ([Link ⇨](./YINI-Specification.md#8-boolean-and-null-literals))  
 &nbsp;&nbsp;&nbsp;&nbsp;8.1. Booleans  
 &nbsp;&nbsp;&nbsp;&nbsp;8.2. Null Literal
 
-**9. List Literals**  
+**9. List Literals** ([Link ⇨](./YINI-Specification.md#9-list-literals))  
 &nbsp;&nbsp;&nbsp;&nbsp;9.1. Bracketed Lists (using `=`)  
 &nbsp;&nbsp;&nbsp;&nbsp;9.2. Colon-Based List (using `:`)
 
-**10. Advanced Constructs**  
+**10. Advanced Constructs** ([Link ⇨](./YINI-Specification.md#10-advanced-constructs))  
 &nbsp;&nbsp;&nbsp;&nbsp;10.1. Future / Reserved Features _(For Future Use)_  
 
 ---
 
 ### **Part III – Validation, Implementation & Compatibility**
 
-**11. Validation Rules**  
+**11. Validation Rules** ([Link ⇨](./YINI-Specification.md#11-validation-rules))  
 &nbsp;&nbsp;&nbsp;&nbsp;11.1. Reserved Syntax  
 &nbsp;&nbsp;&nbsp;&nbsp;11.2. Well-Formedness Requirements  
 &nbsp;&nbsp;&nbsp;&nbsp;11.3. Lenient vs. Strict Modes _(Optional Feature)_  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;11.3.1. Table: Lenient vs. Strict Mode
 
-**12. Implementation Notes**  
+**12. Implementation Notes** ([Link ⇨](./YINI-Specification.md#12-implementation-notes))  
 &nbsp;&nbsp;&nbsp;&nbsp;12.1. Top-Level Sections and Implicit Root  
 &nbsp;&nbsp;&nbsp;&nbsp;12.2. Line Handling and Whitespace  
 &nbsp;&nbsp;&nbsp;&nbsp;12.3. Value and NULL Handling  
@@ -131,7 +135,7 @@ For more feedback details, see section D.2, _“Acknowledgments & Special Thanks
 &nbsp;&nbsp;&nbsp;&nbsp;12.9. Error Handling Recommendations  
 &nbsp;&nbsp;&nbsp;&nbsp;12.10. Bonus Tips for Implementation
 
-**13. Compatibility and Versioning**  
+**13. Compatibility and Versioning** ([Link ⇨](./YINI-Specification.md#13-compatibility-and-versioning))  
 &nbsp;&nbsp;&nbsp;&nbsp;13.1. Fallback Rules  
 &nbsp;&nbsp;&nbsp;&nbsp;13.2. Versioning Strategy  
 &nbsp;&nbsp;&nbsp;&nbsp;13.3. Encoding Notes  
@@ -141,13 +145,13 @@ For more feedback details, see section D.2, _“Acknowledgments & Special Thanks
 
 ### **Part IV – Examples and Appendices**
 
-**14. Examples**  
+**14. Examples** ([Link ⇨](./YINI-Specification.md#14-examples))  
 &nbsp;&nbsp;&nbsp;&nbsp;14.1. Minimal Example  
 &nbsp;&nbsp;&nbsp;&nbsp;14.2. Realistic Config Use Cases  
 &nbsp;&nbsp;&nbsp;&nbsp;14.3. Examples of YINI → JSON Mapping  
 &nbsp;&nbsp;&nbsp;&nbsp;14.4. Examples of JSON → YINI Mapping  
 
-**15. Appendices and Reserved Areas**  
+**15. Appendices and Reserved Areas** ([Link ⇨](./YINI-Specification.md#15-appendices-and-reserved-areas))  
 &nbsp;&nbsp;&nbsp;&nbsp;15.1. License  
 &nbsp;&nbsp;&nbsp;&nbsp;15.2. Acknowledgments  
 &nbsp;&nbsp;&nbsp;&nbsp;15.3. Author(s)  
@@ -227,7 +231,7 @@ The following key terms are used consistently throughout this specification. Und
 | Section                   | A logical grouping of members, introduced by a header using a section marker like `^`, `~`. |
 | Section Marker            | A special character (`^`, alternative is `~`) that denotes a new section header. |
 | Strict Mode               | An optional parsing mode where all structural and validation rules (incl. the document terminator) are strictly enforced. Not the default. |
-| Triple-Quoted String      | A string enclosed in `""" ... """`, allowing multi-line raw content without escapes. |
+| Triple-Quoted String      | A string enclosed in `""" ... """`that may span multiple lines and, by default, preserves all content (including whitespace and line breaks) exactly; when prefixed with `C`, it recognizes standard escape sequences. |
 | Value                     | The data assigned to a key. Can be of type string, number, boolean, null, or list. |
 | YINI document             | A complete YINI configuration. In this specification, "document" and "file" mean the same thing. |
 | YINI file                 | A complete YINI configuration. In this specification, "file" and "document" mean the same thing. |
@@ -611,6 +615,9 @@ Or, with indentations (only for human readability):
 ## 6. String Literals
 
 **Prefix Glossary Table:**
+
+Prefix letters are **case-insensitive**, e.g. lowercase `h` behaves identically to `H`.
+
 |Prefix| Type Name      | Behavior Summary|
 |------|----------------|---|
 |_none_| Raw String     | Raw (default) if no prefix is used |
@@ -629,7 +636,7 @@ String literals in YINI **must be enclosed** in either single quotes `'` or doub
 
 If no prefix is used, the string is treated as a **Raw string literal** by default.
 
-Triple-quoted strings (`"""`) do not support any prefix character. Therefore, the prefix is only applicable to single-line Hyper-strings (`H`), Classic-strings (`C`), and optionally Raw-strings (`R`).
+**Note:** Triple-quoted strings (`"""`) only support the `R` and `C` prefixes. If no prefix is given, a Triple-quoted string is treated as raw. 
 
 **Rules and Behavior for Strings:**
 - All string literals **must start and finish on the same line**, except for **H-Strings** (see section 6.4.) and **Triple-Quoted Strings** (see section 6.3.), which can span multiple lines.
@@ -714,6 +721,7 @@ Hyper Strings are designed to be **multi-line friendly** and **visually readable
 - Hyper Strings **can span multiple lines**, and indentation using `<Unicode-WS>` is allowed to improve human readability.
 - Multiple consecutive newlines (`<NL>`) and/or whitespace (`<Unicode-WS>`) are normalized into a **single space** (`U+0020`).
 - Leading and trailing `<NL>` and/or `<Unicode-WS>` are trimmed.
+- For the complete set of characters in <Unicode-WS>, refer to section 15.7 — [Unicode Whitespace Characters.](./YINI-Specification.md#157--unicode-whitespace-characters)
 
 Hyper Strings behave similarly to how text is rendered in HTML: extra spacing and line breaks are reduced to clean, flowing text.
 
@@ -984,13 +992,19 @@ linkItems:
 ### 10.1. Future / Reserved Features _(For Future Use)_
 The following features are reserved for potential support in future versions of the YINI specification. They are **not currently active** in this version, but their syntax and keywords **are reserved**.
 
-#### 10.1.1. Anchors and Aliases
+#### 10.1.1. Short-hand Section Marker
+Support for an alternative, shorter version of the section marker is planned to be added in the near future. 
+
+#### 10.1.2. Inline Objects
+Support for inline objects (e.g., within lists) is planned in the near future. 
+
+#### 10.1.3. Anchors and Aliases
 YINI may introduce a mechanism similar to YAML’s anchors and aliases. These constructs would allow users to define reusable fragments within a configuration.
 
   - **Anchors (`@`):** Or some other token, to assign a name to a key, section, or structure.
   - **Aliases (`use`):** Reference a previously defined anchor using the use keyword.
 
-#### 10.1.2. Includes
+#### 10.1.4. Includes
 YINI may support modular configuration files via external file inclusion.
   - **Directive:** `@include "<path/to/file>"`
   - **Description:** Imports the contents of another YINI file into the current one.
@@ -998,7 +1012,7 @@ YINI may support modular configuration files via external file inclusion.
 
 These features, while not implemented in this version, are reserved and must not be repurposed by user-defined syntax.
 
-#### 10.1.3. Date-time Type
+#### 10.1.5. Date-time Type
 
 Currently, the YINI types in the specification map 1-to-1 to native JSON types. With that said YINI does not currently support native date, time, or date-time types. All date and time values **must currently** be represented as strings.
 
@@ -1161,7 +1175,7 @@ See also [Section 11.2: Well-Formedness Requirements] for formal validation crit
 
 * If a document contains **multiple top-level sections** (i.e., multiple level-1 sections), they must be considered **children of an implicit root**.
 * The implicit root section:
-  - **Has no name**, or may be labeled "`root`" or similar (implementation-defined).
+  - **Has no name**, or may be labeled "`base`", "`root`" or similar (implementation-defined).
 * Section hierarchy must be respected:
   - A level-3 section **must follow** a level-2 section.
   - Skipping levels (e.g., directly from level-1 to level-3) is invalid.
@@ -1237,12 +1251,13 @@ See also [Section 11.2: Well-Formedness Requirements] for formal validation crit
 ### 12.7 String Literal Types
 **Note:** If a string is not quoted, it's not a string — period.
 
-| Type                | Prefix           | Example    | Behavior |
-|---------------------|------------------|------------|----------|
-| (Raw) String        | None, `R`, or `r`| "Some text"| Text is as-is (raw), no escaping,  backslash is literal, preserves all whitespace|
-| Classic String      | `C` or `c`       | `C"..."`   | Escape sequences are interpreted|
-| Hyper String        | `H` or `h`       | `H"..."`   | (*) Multi-line, whitespace-collapsing, trimmed |
-| Triple-quoted String| None       | `"""..."""`   | Can be multi-line, text is as-is (raw), preserves all whitespace, including line breaks |
+| Type                   | Prefix           | Example    | Behavior |
+|------------------------|------------------|------------|----------|
+| (Raw) String           | _None_, `R`, or `r`| "Some text"| Text is as-is (raw), no escaping,  backslash is literal, preserves all whitespace|
+| Classic String         | `C` or `c`       | `C"..."`   | Escape sequences are interpreted|
+| Hyper String           | `H` or `h`       | `H"..."`   | (*) Multi-line, whitespace-collapsing, trimmed |
+| Triple-quoted String   | _None_, `R`, or `r`       | `"""..."""`   | Can be multi-line, text is as-is (raw), preserves all whitespace, including line breaks |
+| C-Triple-quoted String | `C`, or `c`       | `C"""..."""`   | Can be multi-line, escapes interpreted, preserves all whitespace, including line breaks |
 
 (*) Hyper string behavior:
   * Allow multi-line strings.
@@ -1277,6 +1292,11 @@ Developers are encouraged to implement the following features to improve parser 
   - `true` / `false`
   - `null`
 - Support both `strict` as well as `lenient` parsing modes.
+- Support different **Abort Sensitivity Levels** while parsing a YINI document:
+  (AKA severity threshold)
+  - Level 0 = ignore everything
+  - Level 1 = abort on errors only
+  - Level 2 = abort even on warnings
 - **Extra Bonus:** In strings, if C/C++-style octal escape codes like `\1` to `\377` are used (which are not valid in YINI), parsers should treat this as an error in strict mode (and suggest the correct YINI syntax). In lenient mode, parsers may optionally emit a warning and suggest the correct YINI syntax: `\o1` to `\o377`, and interpret the octal code as intended.
 
 ## 13. Compatibility and Versioning
@@ -1284,10 +1304,10 @@ This section covers YINI's compatibility and interoperability principles.
 
 ### 13.1. Fallback Rules
 #### 13.1.1. Invalid Sections or Keys
-- Invalid key names or section headers should be retained as-is but ignored if in lenient mode, or issue a warning or error if in strict mode.
+- Invalid key names or section headers **should be retained as-is** if possible and/or illegal characters remapped (both in lenient and strict mode, and optionally also support "Abort Sensitivity Levels"), though at least a warning should be issued depending on it's severity.
   
 #### 13.1.2. Graceful Degradation
-- Parsers may issue warnings instead of errors when encountering unrecognized features (e.g., unknown directives, anchors, or section markers).
+- Parsers should issue warnings instead of errors when encountering unrecognized features (e.g., unknown directives, anchors, or section markers).
 - Implementations should strive to process known-valid content even if advanced features are not supported.
 
 ### 13.2. Versioning Strategy
@@ -1631,11 +1651,17 @@ Notes:
 - All dates in international format, YYYY-MM-DD.
 
 
-v1.0.0 Beta 6 + Updates
+v1.0XX.0 Beta + Updates
 - Clarified where special/control characters (U+0000–U+001F) are allowed in Backticked Identifiers, Raw Strings, Classic Strings, and Triple-Quoted Strings. These characters are now disallowed in Backticked Identifiers and Classic Strings unless they are escaped, with exceptions for TAB and SPACE in the latter.
 - Updated Hyper Strings to support <Unicode-WS> for indentation and whitespace normalization.
 - Added table of all "Unicode Whitespace Characters" in <Unicode-WS>.
 - Added support for Triple-quoted strings with the prefix `C`, which interprets escape codes. Additionally, they can optionally be prefixed with `R` but this is not required since they are Raw by default.
+- Added "`base`"  as an alternative name for the implicit root section, in addition to the previously suggested "`root`".
+- Changed policy in 13.1, "Fallback Rules" to keep invalid key names or section headers as-is.
+- Added note about optional "Abort Sensitivity Levels" in parsing.
+- Added a couple of sections in future:
+  * 10.1.1, "Short-hand Section Marker"
+  * 10.1.2, "Inline Objects"
 
 v1.0.0 Beta 6, 2025-05-20
 - Reworked the use of `#` **based on feedback**: it is no longer a section marker and is now used exclusively as a comment symbol (more in line with formats like classic INI, Bash, etc).

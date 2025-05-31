@@ -1,92 +1,100 @@
-import { doParse } from './parseEntry'
-import { debugPrint } from './utils/general'
+import fs from 'fs'
+import { parseYINI } from './parseEntry'
+import { debugPrint, isDebug } from './utils/general'
 
 export default class YINI {
-    public static parse = (yiniInput: string) => {
-        // const isDebug = !!process.env.IS_DEBUG
-
-        debugPrint()
-        debugPrint('ABCDE')
-        debugPrint('ABCDE')
-
-        debugPrint
+    public static parse = (yiniContent: string): any => {
         debugPrint('-> Entered static parse(..) in class YINI\n')
 
         debugPrint()
-        debugPrint('==== Start parsing ==========================')
+        debugPrint('==== Call parse ==========================')
         //const tree = parser.yini;  // Start rule.
-        const result = doParse(yiniInput)
-        debugPrint('==== End parsing ==========================\n')
+        const result = parseYINI(yiniContent)
+        debugPrint('==== End call parse ==========================\n')
 
         debugPrint('YINI.parse(..): result:')
+        if (isDebug()) {
+            console.debug(result)
+        }
 
-        debugPrint(result)
-        debugPrint()
+        return result
+    }
 
-        return true
+    /**
+     *
+     * @param yiniFile Full path to the YINI file.
+     */
+    public static parseFile = (fullPath: string): any => {
+        debugPrint('Current directory = ' + process.cwd())
+
+        const content = fs.readFileSync(fullPath, 'utf8')
+
+        const result = parseYINI(content)
+
+        return result
     }
 }
 
-//import { Solution } from './solution';
-debugPrint('*** Started index.ts of ' + 'e_test'.toUpperCase() + ' ***')
+// //import { Solution } from './solution';
+// debugPrint('*** Started index.ts of ' + 'e_test'.toUpperCase() + ' ***')
 
-// const s : Solution = new Solution();
+// // const s : Solution = new Solution();
 
-// debugPrint('Result, getBuyDay index:  ', s.getBuyDay());
-// debugPrint('Result, getSellDay index: ', s.getSellDay());
-// debugPrint();
+// // debugPrint('Result, getBuyDay index:  ', s.getBuyDay());
+// // debugPrint('Result, getSellDay index: ', s.getSellDay());
+// // debugPrint();
 
-const debugTestObj = {
-    name: 'e_test',
-    lang: 'TypeScript',
-}
-debugPrint('debugTestObj:')
-debugPrint(debugTestObj)
-debugPrint()
+// const debugTestObj = {
+//     name: 'e_test',
+//     lang: 'TypeScript',
+// }
+// debugPrint('debugTestObj:')
+// debugPrint(debugTestObj)
+// debugPrint()
 
-const isDebug = !!process.env.IS_DEBUG
-debugPrint('env.IS_DEBUG:')
-debugPrint(process.env.IS_DEBUG)
-debugPrint('isDebug = ' + isDebug)
-debugPrint()
+// const isDebug = !!process.env.IS_DEBUG
+// debugPrint('env.IS_DEBUG:')
+// debugPrint(process.env.IS_DEBUG)
+// debugPrint('isDebug = ' + isDebug)
+// debugPrint()
 
-const invalidInput = `
-# 	Config
-age = 30
-name = "Alice"
-items = ["a", "b", "c"]
-/END
-`
+// const invalidInput = `
+// # 	Config
+// age = 30
+// name = "Alice"
+// items = ["a", "b", "c"]
+// /END
+// `
 
-const input1 = `
-^ 	SectionName
-varBool = true
-varBool2 = off
-varInt = 30
-varFloat = 12.34
-varStr = "Alice"
-listItems = ["a", "b", "c"]
-varE1 = 1e4
-varE2 = 1.23e4
-varE3 = 6.5E23
-/END
-`
+// const input1 = `
+// ^ 	SectionName
+// varBool = true
+// varBool2 = off
+// varInt = 30
+// varFloat = 12.34
+// varStr = "Alice"
+// listItems = ["a", "b", "c"]
+// varE1 = 1e4
+// varE2 = 1.23e4
+// varE3 = 6.5E23
+// /END
+// `
 
-const input2 = `
-^ 	Config
-varAge = 30
-varName = "Alice"
-listItems = ["a", "b", "c"]
-	^^Extra
-	isExtra = true
-/END
-`
+// const input2 = `
+// ^ 	Config
+// varAge = 30
+// varName = "Alice"
+// listItems = ["a", "b", "c"]
+// 	^^Extra
+// 	isExtra = true
+// /END
+// `
 
-// const input = `
-// # 	Config`;
+// // const input = `
+// // # 	Config`;
 
-debugPrint('input1:')
-debugPrint(input1)
-debugPrint()
+// debugPrint('input1:')
+// debugPrint(input1)
+// debugPrint()
 
-YINI.parse(input2)
+// YINI.parse(input2)

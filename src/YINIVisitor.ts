@@ -27,7 +27,7 @@ const SECTION_MARKER2 = '~'
 
 interface YiniDocument {
     // sections: Record<string, any>
-    _root: Record<string, any>
+    _base: Record<string, any>
     // terminal?: string
     _hasTerminal?: boolean
 }
@@ -113,7 +113,7 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
         // return res
         //const terminal = ctx.terminal_line()?.getText().trim()
         const hasTerminal = !!ctx.terminal_line()
-        return { _root: sections, _hasTerminal: hasTerminal }
+        return { _base: sections, _hasTerminal: hasTerminal }
     }
 
     /*
