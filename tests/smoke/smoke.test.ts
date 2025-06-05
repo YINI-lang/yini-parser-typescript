@@ -1,8 +1,10 @@
 //import { describe, expect, test } from '@jest/globals'
-//import * from '../fixtures/Simple-1.yini'
+//import * from '../smoke-fixtures/Simple-1.yini'
 
 import path from 'path'
 import YINI from '../../src'
+
+const DIR_OF_FIXTURES = 'smoke-fixtures'
 
 const fixtureYini = `
 ^ SmokeConfig
@@ -83,7 +85,7 @@ xdescribe('Smoke Parse & Eval Tests:', () => {
  */
 describe('Smoke ParseFile & Eval Tests:', () => {
     // Dir with smoke fixtures.
-    const baseDir = path.join(__dirname, 'fixtures')
+    const baseDir = path.join(__dirname, DIR_OF_FIXTURES)
 
     beforeAll(() => {})
 

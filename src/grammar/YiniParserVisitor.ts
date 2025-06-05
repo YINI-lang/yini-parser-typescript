@@ -10,11 +10,15 @@ import { Section_membersContext } from "./YiniParser.js";
 import { MemberContext } from "./YiniParser.js";
 import { Member_colon_listContext } from "./YiniParser.js";
 import { ValueContext } from "./YiniParser.js";
+import { Object_literalContext } from "./YiniParser.js";
+import { ObjectMemberListContext } from "./YiniParser.js";
+import { ObjectMemberContext } from "./YiniParser.js";
 import { ListContext } from "./YiniParser.js";
 import { List_in_bracketsContext } from "./YiniParser.js";
 import { ElementsContext } from "./YiniParser.js";
 import { ElementContext } from "./YiniParser.js";
 import { Number_literalContext } from "./YiniParser.js";
+import { Null_literalContext } from "./YiniParser.js";
 import { String_literalContext } from "./YiniParser.js";
 import { String_concatContext } from "./YiniParser.js";
 import { Boolean_literalContext } from "./YiniParser.js";
@@ -71,6 +75,24 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 */
 	visitValue?: (ctx: ValueContext) => Result;
 	/**
+	 * Visit a parse tree produced by `YiniParser.object_literal`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitObject_literal?: (ctx: Object_literalContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.objectMemberList`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitObjectMemberList?: (ctx: ObjectMemberListContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.objectMember`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitObjectMember?: (ctx: ObjectMemberContext) => Result;
+	/**
 	 * Visit a parse tree produced by `YiniParser.list`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -100,6 +122,12 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 * @return the visitor result
 	 */
 	visitNumber_literal?: (ctx: Number_literalContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.null_literal`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitNull_literal?: (ctx: Null_literalContext) => Result;
 	/**
 	 * Visit a parse tree produced by `YiniParser.string_literal`.
 	 * @param ctx the parse tree

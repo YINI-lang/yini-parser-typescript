@@ -8,7 +8,11 @@ import {
     ListContext,
     Member_colon_listContext,
     MemberContext,
+    Null_literalContext,
     Number_literalContext,
+    Object_literalContext,
+    ObjectMemberContext,
+    ObjectMemberListContext,
     Section_membersContext,
     SectionContext,
     String_concatContext,
@@ -339,8 +343,27 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
         //   if (ctx.list()) return this.visit(ctx.list())
         //   if (ctx.string_concat()) return this.visit(ctx.string_concat())
         return null
-    }
-        */
+    }*/
+
+    /**
+     * Visit a parse tree produced by `YiniParser.object_literal`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitObject_literal?: (ctx: Object_literalContext) => Result
+    /**
+     * Visit a parse tree produced by `YiniParser.objectMemberList`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitObjectMemberList?: (ctx: ObjectMemberListContext) => Result
+    /**
+     * Visit a parse tree produced by `YiniParser.objectMember`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitObjectMember?: (ctx: ObjectMemberContext) => Result
+
     /**
      * Visit a parse tree produced by `YiniParser.list`.
      * @param ctx the parse tree
@@ -403,6 +426,13 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      * @return the visitor result
      */
     visitString_concat?: (ctx: String_concatContext) => Result
+
+    /**
+     * Visit a parse tree produced by `YiniParser.null_literal`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitNull_literal?: (ctx: Null_literalContext) => Result
 
     /**
      * Visit a parse tree produced by `YiniParser.boolean_literal`.

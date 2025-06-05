@@ -20,15 +20,43 @@
 
 lexer grammar YiniLexer;
 
+/*
+ DISABLE_LINE:
+ Skip lines starting with `--`.
+ NOTE: Must at very top of lexer rules.
+ */
+DISABLE_LINE: ('--' ~[\r\n]*) -> skip;
+
 fragment EBD: ('0' | '1') ('0' | '1') ('0' | '1');
 
 // COMMENT: BLOCK_COMMENT | LINE_COMMENT;
 
 //SECTION_HEAD: HASH+ [ \t]+ WS* IDENT NL+;
-SECTION_HEAD: SECTION_MARKER [ \t]* WS* IDENT NL+;
+SECTION_HEAD: [ \t]* SECTION_MARKER [ \t]* WS* IDENT NL+;
 
-//SECTION_MARKER: SS+ | EUR+ | GT+; SECTION_MARKER : [\u00A7\u20AC\u003E]+; // §, €
-fragment SECTION_MARKER: CARET+ | TILDE+ | SS+ | EUR+;
+// Section markers: '^', '~', '§', '€'.
+// – Up to six repeated markers are allowed (the parser must enforce the ≤ 6 rule).
+// – For levels beyond 6, use the numeric shorthand form (e.g. ^7, ~12, §100, €42).
+fragment SECTION_MARKER
+    : SECTION_MARKER_BASIC_REPEAT
+    | SECTION_MARKER_SHORTHAND
+    ;
+
+// Match one or more of the same marker.  Parser must check "count ≤ 6.",
+// this check is deferred to the parser, which
+// gives more control and enables better user feedback
+fragment SECTION_MARKER_BASIC_REPEAT
+    : CARET+   // up to 6 carets (parser will reject more than 6)
+    | TILDE+   // up to 6 tildes
+    | SS+      // up to 6 '§' characters
+    | EUR+     // up to 6 '€' characters
+    ;
+
+// Shorthand: a single marker followed by a positive integer (1 or larger).
+// Examples: ^7, ~12, §100, €42
+fragment SECTION_MARKER_SHORTHAND
+    : (CARET | TILDE | SS | EUR) [1-9] DIGIT*
+    ;
 
 TERMINAL_TOKEN options {
 	caseInsensitive = true;
@@ -46,6 +74,8 @@ COMMA: ',';
 COLON: ':';
 OB: '['; // Opening Bracket.
 CB: ']'; // Closing Bracket.
+OC: '{'; // Opening Curly Brace.
+CC: '}'; // Closing Curly Brace.
 PLUS: '+';
 DOLLAR: '$';
 // ASTERIX: '*';
@@ -65,6 +95,7 @@ NULL options {
 	caseInsensitive = true;
 }: 'null';
 
+EMPTY_OBJECT: '{' '}';
 EMPTY_LIST: '[' ']';
 
 SHEBANG: '#!' ~[\n\r\b\f\t]* NL;
@@ -91,37 +122,65 @@ NUMBER:
 		| HEX_INTEGER
 	);
 
-STRING:
-	RAW_STRING
-	| HYPER_STRING
-	| CLASSIC_STRING
-	| TRIPLE_QUOTED_STRING
-	| C_TRIPLE_QUOTED_STRING;
+// Illegal prefix characters and characters inside strings are deferred to the
+// parser, which gives more control and enables better user feedback (e.g.,
+// pinpointing the exact location of invalid characters, etc).
+
+// STRING:
+// 	RAW_STRING
+// 	| HYPER_STRING
+// 	| CLASSIC_STRING
+// 	| TRIPLE_QUOTED_STRING
+// 	| C_TRIPLE_QUOTED_STRING;
+STRING
+    : TRIPLE_QUOTED_STRING
+    | SINGLE_OR_DOUBLE
+    ;
 
 TRIPLE_QUOTED_STRING:
 	//'"""' (~["] | '"' ~["] | '""' ~["])* '"""';
-	[Rr]? '"""' .*? '"""'; // Greedy-safe because of .*? (non-greedy).
+	[RrCc]? '"""' .*? '"""'
+	; // Greedy-safe because of .*? (non-greedy).
 
-C_TRIPLE_QUOTED_STRING: [Cc] '"""' (ESC_SEQ | ~["])* '"""';
+SINGLE_OR_DOUBLE:
+	R_AND_C_STRING
+	| HYPER_STRING
+	;
+
+// C_TRIPLE_QUOTED_STRING: [Cc] '"""' (ESC_SEQ | ~["])* '"""';
 
 // Raw string literal, treats the backslash character (\) as a literal.
-RAW_STRING:
-	//('r' | 'R')? '\'' ~(['\n\r\b\f\t])* '\'' | ('r' | 'R')? '"' ~(["\n\r\b\f\t])* '"';
-	[Rr]? '\'' ~['\r\n]* '\''
-	| [Rr]? '"'
-		{ _input.LA(2) != '"' }?    // <-- make sure we’re not looking at C""…
-		 ~["\r\n]* '"';
+// RAW_STRING:
+// 	//('r' | 'R')? '\'' ~(['\n\r\b\f\t])* '\'' | ('r' | 'R')? '"' ~(["\n\r\b\f\t])* '"';
+// 	[Rr]? '\'' ~['\r\n]* '\''
+// 	| [Rr]? '"'
+// 		 ~["\r\n]* '"';
+
+// Classic string literal.
+// CLASSIC_STRING:
+// 	[Cc] '\'' (ESC_SEQ | ~[\u0000-\u001F '])* '\''
+//   	| [Cc] '"'
+//     	(ESC_SEQ | ~[\u0000-\u001F "])* '"';
+
+/**
+ * Common rule for RAW and CLASSIC string literals.
+ * Illegal characters are deferred to the parser, which gives more control
+ * and enables better user feedback (e.g., pinpointing the exact location of
+ * invalid characters). Additionally, this simplifies the lexer rule.
+ *
+ * Rather than having the lexer reject on any "illegal" character, lets the
+ * parser catch it so you can give a more precise error message. 
+ *
+ * @note If refactoring rule(s), make sure C-strings can include \' and \" as well.
+ */
+R_AND_C_STRING:
+	[RrCc]? '\'' 	('\\\'' | ~['\r\n])* '\''
+	| [RrCc]? '"'	('\\"' | ~["\r\n])* '"';
+
 
 // Hyper string literal.
 HYPER_STRING: [Hh] '\'' (~['])* '\''
 	| [Hh] '"' ( ~["])* '"';
-
-// Classic string literal.
-CLASSIC_STRING:
-	[Cc] '\'' (ESC_SEQ | ~[\u0000-\u001F '])* '\''
-  	| [Cc] '"'
-  		{ _input.LA(2) != '"' }?    // <-- make sure we’re not looking at C""…
-    	(ESC_SEQ | ~[\u0000-\u001F "])* '"';
 
 // Note: Like 8.2 in specification.
 ESC_SEQ: '\\' (["']) | ESC_SEQ_BASE;
@@ -167,11 +226,14 @@ SINGLE_NL: ('\r' '\n'? | '\n');
 WS: [ \t]+ -> skip;
 
 /*
- DISABLE_LINE:
- Skip lines starting with `--`.
+ BLOCK_COMMENT:
+ Can appear anywhere, spanning multiple lines.
+ Remains in input, but hidden
+ (doesn't interfere with parsing).
  */
-DISABLE_LINE: ('--' ~[\r\n]*) -> skip;
-
+BLOCK_COMMENT:
+	'/*' .*? '*/' -> channel(HIDDEN); // Block AKA Multi-line comment.
+	
 COMMENT: LINE_COMMENT | INLINE_COMMENT | BLOCK_COMMENT;
 /*
  FULL_LINE_COMMENT:
@@ -185,12 +247,3 @@ LINE_COMMENT: (';' ~[\r\n]*) -> channel(HIDDEN);
  Remains in input, but hidden (doesn't interfere with parsing).
  */
 INLINE_COMMENT: ('//' | '#' [ \t]+) ~[\r\n]* -> channel(HIDDEN);
-
-/*
- BLOCK_COMMENT:
- Can appear anywhere, spanning multiple lines.
- Remains in input, but hidden
- (doesn't interfere with parsing).
- */
-BLOCK_COMMENT:
-	'/*' .*? '*/' -> channel(HIDDEN); // Block AKA Multi-line comment.
