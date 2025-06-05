@@ -330,12 +330,11 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      * @return the visitor result
      */
     // visitValue?: (ctx: ValueContext) => Result
-    /*
     visitValue = (ctx: ValueContext): any => {
-        isDebug&&console.log('-> Entered visitValue(..)')
+        debugPrint('-> Entered visitValue(..)')
 
-        isDebug&&console.log('ctx.number_literal(): ' + ctx.number_literal())
-        isDebug&&console.log('ctx.boolean_literal(): ' + ctx.boolean_literal())
+        debugPrint('ctx.number_literal(): ' + ctx.number_literal())
+        debugPrint('ctx.boolean_literal(): ' + ctx.boolean_literal())
 
         if (ctx.number_literal()) return this.visit(ctx.number_literal())
         if (ctx.string_literal()) return this.visit(ctx.string_literal())
@@ -343,7 +342,7 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
         //   if (ctx.list()) return this.visit(ctx.list())
         //   if (ctx.string_concat()) return this.visit(ctx.string_concat())
         return null
-    }*/
+    }
 
     /**
      * Visit a parse tree produced by `YiniParser.object_literal`.
@@ -395,6 +394,8 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      */
     // visitNumber_literal?: (ctx: Number_literalContext) => Result
     visitNumber_literal = (ctx: Number_literalContext): Result => {
+        debugPrint('-> Entered visitNumber_literal(..)')
+
         const text = ctx.getText()
         // if (/^0[xX]/.test(text)) return parseInt(text, 16)
         // if (/^#/.test(text)) return parseInt(text.slice(1), 16)
@@ -419,7 +420,16 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitString_literal?: (ctx: String_literalContext) => Result
+    // visitString_literal?: (ctx: String_literalContext) => Result
+    visitString_literal = (ctx: String_literalContext): Result => {
+        debugPrint('-> Entered visitString_literal(..)')
+
+        let raw = ctx.getText()
+        debugPrint('raw = >>>' + raw + '<<<')
+
+        return raw as Result
+    }
+
     /**
      * Visit a parse tree produced by `YiniParser.string_concat`.
      * @param ctx the parse tree
@@ -432,7 +442,13 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitNull_literal?: (ctx: Null_literalContext) => Result
+    visitNull_literal = (ctx: Null_literalContext): Result => {
+        debugPrint('-> Entered visitNull_literal(..)')
+
+        //const txt = ctx.getText().toLowerCase()
+
+        return { type: 'Null', value: 'Null' } as Result
+    }
 
     /**
      * Visit a parse tree produced by `YiniParser.boolean_literal`.
@@ -443,9 +459,13 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
     visitBoolean_literal = (ctx: Boolean_literalContext): Result => {
         debugPrint('-> Entered visitBoolean_literal(..)')
 
-        const text = ctx.getText().toLowerCase()
+        const txt = ctx.getText().toLowerCase()
         // return ['true', 'yes', 'on'].includes(text) as Result
-        const value: boolean = ['true', 'yes', 'on'].includes(text)
+        const value: boolean = !!(
+            txt === 'true' ||
+            txt === 'yes' ||
+            txt === 'on'
+        )
 
         return { type: 'Boolean', value } as Result
     }
