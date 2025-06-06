@@ -285,6 +285,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         if (ctx.number_literal()) return this.visit(ctx.number_literal())
         if (ctx.boolean_literal()) return this.visit(ctx.boolean_literal())
         if (ctx.null_literal()) return this.visit(ctx.null_literal())
+        if (ctx.object_literal()) return this.visit(ctx.object_literal())
         //   if (ctx.list()) return this.visit(ctx.list())
         //   if (ctx.string_concat()) return this.visit(ctx.string_concat())
         return null
@@ -323,7 +324,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         // and quotes at the start (prefix.length + quoteType.length) and the
         // quotes at the end (-quoteType.length).
         let inner = raw.slice(
-            (0 | prefix?.length) + quoteType.length,
+            (prefix?.length || 0) + quoteType.length,
             -quoteType.length,
         )
         debugPrint('inner (raw) = ' + inner)
@@ -411,10 +412,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      */
     visitNull_literal = (ctx: Null_literalContext): IResult => {
         debugPrint('-> Entered visitNull_literal(..)')
-
-        //const txt = ctx.getText().toLowerCase()
-
-        return { type: 'Null', value: 'Null' } as IResult
+        return { type: 'Null', value: null } as IResult
     }
 
     /**
@@ -422,35 +420,60 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitObject_literal?: (ctx: Object_literalContext) => IResult
+    // visitObject_literal?: (ctx: Object_literalContext) => IResult
+    visitObject_literal = (ctx: Object_literalContext): IResult => {
+        const members = ctx.objectMemberList()
+            ? this.visit(ctx.objectMemberList())
+            : {}
+        return { type: 'Object', value: members } as IResult
+    }
 
     /**
      * Visit a parse tree produced by `YiniParser.objectMemberList`.
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitObjectMemberList?: (ctx: ObjectMemberListContext) => IResult
+    //visitObjectMemberList?: (ctx: ObjectMemberListContext) => IResult
+    visitObjectMemberList = (ctx: ObjectMemberListContext): IResult => {
+        const obj: Record<string, any> = {}
+        ctx.objectMember_list().forEach((member) => {
+            const { key, value }: any = this.visit(member)
+            obj[key] = value
+        })
+        return obj as IResult
+    }
 
     /**
      * Visit a parse tree produced by `YiniParser.objectMember`.
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitObjectMember?: (ctx: ObjectMemberContext) => IResult
+    // visitObjectMember?: (ctx: ObjectMemberContext) => IResult
+    visitObjectMember = (ctx: ObjectMemberContext): IResult => {
+        const key = ctx.KEY().getText()
+        const value = ctx.value() ? this.visit(ctx.value()) : null
+        return { key, value } as IResult
+    }
 
     /**
      * Visit a parse tree produced by `YiniParser.list`.
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitList?: (ctx: ListContext) => IResult
+    // visitList?: (ctx: ListContext) => IResult
+    visitList = (ctx: ListContext): IResult =>
+        this.visit(ctx.list_in_brackets())
 
     /**
      * Visit a parse tree produced by `YiniParser.list_in_brackets`.
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitList_in_brackets?: (ctx: List_in_bracketsContext) => IResult
+    // visitList_in_brackets?: (ctx: List_in_bracketsContext) => IResult
+    visitList_in_brackets = (ctx: List_in_bracketsContext): IResult => {
+        const elements = ctx.elements() ? this.visit(ctx.elements()) : []
+        return { type: 'List', value: elements } as IResult
+    }
 
     /**
      * Visit a parse tree produced by `YiniParser.elements`.
@@ -464,7 +487,14 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitElement?: (ctx: ElementContext) => IResult
+    // visitElement?: (ctx: ElementContext) => IResult
+    visitElement = (ctx: ElementContext): IResult => {
+        if (ctx.value()) {
+            return this.visit(ctx.value())
+        } else {
+            return { type: 'Null', value: null } as any
+        }
+    }
 
     /**
      * Visit a parse tree produced by `YiniParser.string_concat`.
