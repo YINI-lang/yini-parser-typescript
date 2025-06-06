@@ -1,4 +1,3 @@
-// import { isDebug&&console.log } from './utils/general'
 import { ParseTreeVisitor } from 'antlr4'
 import {
     Boolean_literalContext,
@@ -52,6 +51,12 @@ class CResult {
 }
 */
 
+interface YResult {
+    key: string
+    value: any
+    type: TDataType
+}
+
 /**
  * This interface defines a complete generic visitor for a parse tree produced
  * by `YiniParser`.
@@ -71,7 +76,7 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
     // visitYini = (ctx: YiniContext): Result => {
     visitYini = (ctx: YiniContext): any => {
         debugPrint()
-        debugPrint('abcde')
+        debugPrint('abcde99')
         debugPrint('-> Entered visitYini(..) in YINIVisitor')
         debugPrint('QQQQ')
 
@@ -257,6 +262,7 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
     visitSection_members = (ctx: Section_membersContext): any => {
         debugPrint('-> Entered visitSection_members(..)')
 
+        /*
         const members: Record<string, any> = {}
         // for (const m of ctx?.member()) {
         ctx?.children?.forEach((member: any) => {
@@ -270,13 +276,13 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
             if (!value) {
                 debugPrint('Warning res.key = ' + key + ' found as undefined')
             } else {
-                const value0 = value[0] // First value at index 0.
+                const value0 = value || value[0] // First value at index 0.
                 debugPrint('\nmember of visitSection_members:')
                 debugPrint(value0)
                 debugPrint(value)
-                debugPrint('res.key = ' + key)
-                debugPrint('res.value.dataType = ' + value0?.type)
-                debugPrint('res.value.value = ' + value0?.value)
+                debugPrint('res.key = >>>' + key + '<<<')
+                debugPrint('res.value.dataType = >>>' + value0?.type + '<<<')
+                debugPrint('res.value.value = >>>' + value0?.value + '<<<')
                 // if(value instanceof Result){
 
                 // isDebug&&console.log('--- member: ---')
@@ -288,6 +294,22 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
         })
         //   const { key, value } = this.visit(m);
         //   members[key] = value;
+        */
+        const members: any = {}
+        ctx.member_list().forEach((member) => {
+            const { key, value, type }: any = this.visit(member)
+            debugPrint('Item of member_list:')
+            debugPrint('key = >>>' + key + '<<<')
+            debugPrint('value = >>>' + value + '<<<')
+            debugPrint('type = >>>' + type + '<<<')
+            debugPrint('--')
+
+            members[key] = value
+        })
+        // ctx..member_colon_list().forEach((mcl) => {
+        //     const { key, value } = this.visit(mcl)
+        //     members[key] = value
+        // })
 
         return members
     }
@@ -305,9 +327,10 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
 
         const key = ctx.KEY().getText()
         const value = ctx.value() ? this.visit(ctx.value()) : null
-        debugPrint('value = ' + value)
+        debugPrint('value = ' + value + '  @visitMember(..)')
 
-        return { key, value } as Result
+        // return { key, value } as Result
+        return { key, value, type: 'Integer' } as YResult
     }
 
     /**

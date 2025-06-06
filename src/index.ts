@@ -16,6 +16,10 @@ import YINI from './YINI'
 
 export { default } from './YINI'
 
+debugPrint()
+debugPrint('-> Entered index.ts')
+debugPrint()
+
 const debugTestObj = {
     name: 'e_test',
     lang: 'TypeScript',

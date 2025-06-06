@@ -5,21 +5,21 @@ import { debugPrint, isDebug } from './utils/general'
 import YINIVisitor from './YINIVisitor'
 
 interface IOptions {
-    strict: boolean
+    isStrict: boolean
     bailSensitivy: 0 | 1 | 2
 }
 
 export const parseYINI = (
     yiniContent: string,
-    options: IOptions = { strict: false, bailSensitivy: 0 },
+    options: IOptions = { isStrict: false, bailSensitivy: 0 },
 ) => {
-    //     const isDebug = !!process.env.IS_DEBUG
+    debugPrint()
+    debugPrint('-> Entered parseYINI(..) in parseEntry')
+    debugPrint('isStrict mode = ' + options.isStrict)
+    debugPrint('bailSensitivy = ' + options.bailSensitivy)
 
     debugPrint()
     debugPrint('RTYU')
-
-    debugPrint()
-    debugPrint('-> Entered doParse(..) in parseEntry\n')
 
     const inputStream = CharStreams.fromString(yiniContent)
     const lexer = new YiniLexer(inputStream)
@@ -41,7 +41,7 @@ export const parseYINI = (
     }
     debugPrint()
 
-    if (options.strict) {
+    if (options.isStrict) {
         throw Error('ERROR: Strict-mode not yet implemented')
     } else {
         debugPrint('visitor.visit(..): result:')
