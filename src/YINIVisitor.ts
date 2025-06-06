@@ -21,7 +21,7 @@ import {
     YiniContext,
 } from './grammar/YiniParser.js'
 import YiniParserVisitor from './grammar/YiniParserVisitor'
-import { debugPrint } from './utils/general'
+import { debugPrint, isDebug } from './utils/general'
 
 // const isDebug = !!process.env.IS_DEBUG
 
@@ -39,7 +39,7 @@ type TDataType =
     | undefined
     | 'String'
     | 'Number-Integer'
-    | 'Number-Real'
+    | 'Number-Float'
     | 'Boolean'
     | 'Null'
     | 'Object'
@@ -303,9 +303,10 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         //   const { key, value } = this.visit(m);
         //   members[key] = value;
         */
-        const members: any = {}
+        // const members: any = {}
+        const members: Record<string, any> = {}
         ctx.member_list().forEach((member) => {
-            const { key, value, type }: any = this.visit(member)
+            const { key, value }: any = this.visit(member)
             // const { key, value }: Result = this.visit(member)
             debugPrint('Item of member_list:')
             debugPrint('key = >>>' + key + '<<<')
@@ -397,7 +398,38 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         let raw = ctx.getText()
         debugPrint('raw = >>>' + raw + '<<<')
 
-        return { type: 'String', value: raw } as IResult
+        const prefixMatch = raw.match(/^(C|c|H|h)?("""|"|')/)
+        debugPrint('prefixMatch:')
+        if (isDebug()) {
+            console.debug(prefixMatch)
+        }
+
+        let prefix = prefixMatch ? prefixMatch[1]?.toUpperCase() : ''
+        debugPrint('          prefix = ' + prefix)
+
+        let quoteType = prefixMatch ? prefixMatch[2] : ''
+        debugPrint('       quoteType = ' + quoteType)
+        debugPrint('quoteType.length = ' + quoteType.length)
+
+        let inner = raw.slice(
+            (0 | prefix?.length) + quoteType.length,
+            -quoteType.length,
+            // raw.length - 2 * quoteType.length,
+        )
+        debugPrint('inner (raw) = ' + inner)
+
+        if (prefix === 'C') {
+            inner = inner
+                .replace(/\\n/g, '\n')
+                .replace(/\\t/g, '\t')
+                .replace(/\\r/g, '\r')
+        } else if (prefix === 'H') {
+            inner = inner.replace(/[\s\n\r]+/g, ' ').trim()
+        }
+
+        debugPrint('inner (reformat) = ' + inner)
+
+        return { type: 'String', value: inner } as IResult
     }
 
     /**
@@ -410,15 +442,29 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('-> Entered visitNumber_literal(..)')
 
         const text = ctx.getText()
-        // if (/^0[xX]/.test(text)) return parseInt(text, 16)
-        // if (/^#/.test(text)) return parseInt(text.slice(1), 16)
-        // if (/^0b/.test(text) || /^%/.test(text)) return parseInt(text.replace(/^%/, '0b'), 2)
-        // if (/^0o/.test(text)) return parseInt(text, 8)
-        // Duodecimal (0z...) not supported, fallback to number
+        if (/^0[xX]|#/.test(text))
+            // Prefix: 0x, 0X, #
+            return {
+                type: 'Number-Integer',
+                value: parseInt(text.replace('#', '0x'), 16),
+            } as any
+        if (/^0[bB]|%/.test(text))
+            // Prefix: 0b, 0B, %
+            return {
+                type: 'Number-Integer',
+                value: parseInt(text.replace('%', '0b'), 2),
+            } as any
+        if (/^0[oO]/.test(text))
+            // Prefix: 0o, 0O
+            return {
+                type: 'Number-Integer',
+                value: parseInt(text, 8),
+            } as any
+        // Duodecimal (0z...) not yet supported, fallback to number
 
         // In a regex literal the dot must be escaped (\.) to match a literal '.'
         if (/\./.test(text)) {
-            return { type: 'Number-Real', value: parseFloat(text) } as IResult
+            return { type: 'Number-Float', value: parseFloat(text) } as IResult
         }
 
         return { type: 'Number-Integer', value: parseInt(text) } as IResult
