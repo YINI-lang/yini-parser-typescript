@@ -35,9 +35,17 @@ interface YiniDocument {
     _hasTerminal?: boolean
 }
 
-type TDataType = undefined | 'Integer' | 'Real' | 'Boolean'
+type TDataType =
+    | undefined
+    | 'String'
+    | 'Number-Integer'
+    | 'Number-Real'
+    | 'Boolean'
+    | 'Null'
+    | 'Object'
+    | 'List'
 /*
-class CResult {
+class CIResult {
     private dataType: TDataType = undefined
     private valueBool: boolean | undefined = undefined
 
@@ -51,7 +59,7 @@ class CResult {
 }
 */
 
-interface YResult {
+interface YIResult {
     key: string
     value: any
     type: TDataType
@@ -61,10 +69,10 @@ interface YResult {
  * This interface defines a complete generic visitor for a parse tree produced
  * by `YiniParser`.
  *
- * @param <Result> The return type of the visit operation. Use `void` for
+ * @param <IResult> The return type of the visit operation. Use `void` for
  * operations with no return type.
  */
-export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
+export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     //export default class YINIVisitor extends YiniParserVisitor<any> {
 
     /**
@@ -72,8 +80,8 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    // visitYini?: (ctx: YiniContext) => Result;
-    // visitYini = (ctx: YiniContext): Result => {
+    // visitYini?: (ctx: YiniContext) => IResult;
+    // visitYini = (ctx: YiniContext): IResult => {
     visitYini = (ctx: YiniContext): any => {
         debugPrint()
         debugPrint('abcde99')
@@ -143,9 +151,9 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    // visitSection?: (ctx: SectionContext) => Result;
+    // visitSection?: (ctx: SectionContext) => IResult;
 
-    // visitSection = (ctx: SectionContext): Result => {
+    // visitSection = (ctx: SectionContext): IResult => {
     visitSection = (ctx: SectionContext): any => {
         debugPrint()
         debugPrint('-> Entered visitSection(..)')
@@ -216,13 +224,13 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
         // return {
         // 	[sectionName]: res,
         // 	'_meta': {}
-        // } as Result
+        // } as IResult
         return { name: sectionName, members }
 
-        // return {} as Result
+        // return {} as IResult
     }
 
-    // visitSection = (ctx: SectionContext): Result => {
+    // visitSection = (ctx: SectionContext): IResult => {
     // visitSection = (ctx: SectionContext): any => {
 
     // // visitSection(ctx: SectionContext) {
@@ -246,17 +254,17 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitTerminal_line?: (ctx: Terminal_lineContext) => Result
+    visitTerminal_line?: (ctx: Terminal_lineContext) => IResult
 
     /**
      * Visit a parse tree produced by `YiniParser.section_members`.
      * @param ctx the parse tree
      * @return the visitor result
      */
-    // visitSection_members = (ctx: Section_membersContext): Result =>{
+    // visitSection_members = (ctx: Section_membersContext): IResult =>{
     // 	isDebug&&console.log('-> Entered visitSection_members(..)')
 
-    // 	return {} as Result
+    // 	return {} as IResult
     // }
     // visitSection_members = (ctx: Section_membersContext): Record<string, any> => {
     visitSection_members = (ctx: Section_membersContext): any => {
@@ -283,7 +291,7 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
                 debugPrint('res.key = >>>' + key + '<<<')
                 debugPrint('res.value.dataType = >>>' + value0?.type + '<<<')
                 debugPrint('res.value.value = >>>' + value0?.value + '<<<')
-                // if(value instanceof Result){
+                // if(value instanceof IResult){
 
                 // isDebug&&console.log('--- member: ---')
                 // isDebug&&console.log(member)
@@ -298,13 +306,17 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
         const members: any = {}
         ctx.member_list().forEach((member) => {
             const { key, value, type }: any = this.visit(member)
+            // const { key, value }: Result = this.visit(member)
             debugPrint('Item of member_list:')
             debugPrint('key = >>>' + key + '<<<')
             debugPrint('value = >>>' + value + '<<<')
-            debugPrint('type = >>>' + type + '<<<')
+            debugPrint('value?.value = >>>' + value?.value + '<<<')
+            // debugPrint('type = >>>' + type + '<<<')
+            debugPrint('value?.type = >>>' + value?.type + '<<<')
             debugPrint('--')
 
-            members[key] = value
+            // members[key] = value
+            members[key] = value?.value
         })
         // ctx..member_colon_list().forEach((mcl) => {
         //     const { key, value } = this.visit(mcl)
@@ -319,7 +331,7 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    // visitMember?: (ctx: MemberContext) => Result;
+    // visitMember?: (ctx: MemberContext) => IResult;
     visitMember = (ctx: MemberContext) => {
         debugPrint('-> Entered visitMember(..)')
         debugPrint('key   = ' + ctx.KEY().getText())
@@ -329,8 +341,8 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
         const value = ctx.value() ? this.visit(ctx.value()) : null
         debugPrint('value = ' + value + '  @visitMember(..)')
 
-        // return { key, value } as Result
-        return { key, value, type: 'Integer' } as YResult
+        // return { key, value } as IResult
+        return { key, value, type: 'Integer' } as IResult
     }
 
     /**
@@ -338,13 +350,13 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    //visitMember_colon_list?: (ctx: Member_colon_listContext) => Result
-    visitMember_colon_list = (ctx: Member_colon_listContext): Result => {
+    //visitMember_colon_list?: (ctx: Member_colon_listContext) => IResult
+    visitMember_colon_list = (ctx: Member_colon_listContext): IResult => {
         debugPrint('-> Entered visitMember_colon_list(..)')
 
         const key = ctx.KEY().getText()
         const values = this.visit(ctx.elements())
-        return { key, value: values } as Result
+        return { key, value: values } as IResult
     }
 
     /**
@@ -352,7 +364,7 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    // visitValue?: (ctx: ValueContext) => Result
+    // visitValue?: (ctx: ValueContext) => IResult
     visitValue = (ctx: ValueContext): any => {
         debugPrint('-> Entered visitValue(..)')
 
@@ -372,51 +384,51 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitObject_literal?: (ctx: Object_literalContext) => Result
+    visitObject_literal?: (ctx: Object_literalContext) => IResult
     /**
      * Visit a parse tree produced by `YiniParser.objectMemberList`.
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitObjectMemberList?: (ctx: ObjectMemberListContext) => Result
+    visitObjectMemberList?: (ctx: ObjectMemberListContext) => IResult
     /**
      * Visit a parse tree produced by `YiniParser.objectMember`.
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitObjectMember?: (ctx: ObjectMemberContext) => Result
+    visitObjectMember?: (ctx: ObjectMemberContext) => IResult
 
     /**
      * Visit a parse tree produced by `YiniParser.list`.
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitList?: (ctx: ListContext) => Result
+    visitList?: (ctx: ListContext) => IResult
     /**
      * Visit a parse tree produced by `YiniParser.list_in_brackets`.
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitList_in_brackets?: (ctx: List_in_bracketsContext) => Result
+    visitList_in_brackets?: (ctx: List_in_bracketsContext) => IResult
     /**
      * Visit a parse tree produced by `YiniParser.elements`.
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitElements?: (ctx: ElementsContext) => Result
+    visitElements?: (ctx: ElementsContext) => IResult
     /**
      * Visit a parse tree produced by `YiniParser.element`.
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitElement?: (ctx: ElementContext) => Result
+    visitElement?: (ctx: ElementContext) => IResult
     /**
      * Visit a parse tree produced by `YiniParser.number_literal`.
      * @param ctx the parse tree
      * @return the visitor result
      */
-    // visitNumber_literal?: (ctx: Number_literalContext) => Result
-    visitNumber_literal = (ctx: Number_literalContext): Result => {
+    // visitNumber_literal?: (ctx: Number_literalContext) => IResult
+    visitNumber_literal = (ctx: Number_literalContext): IResult => {
         debugPrint('-> Entered visitNumber_literal(..)')
 
         const text = ctx.getText()
@@ -428,14 +440,14 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
 
         // In a regex literal the dot must be escaped (\.) to match a literal '.'
         if (/\./.test(text)) {
-            return { type: 'Float', value: parseFloat(text) } as Result
+            return { type: 'Number-Real', value: parseFloat(text) } as IResult
         }
 
-        return { type: 'Integer', value: parseInt(text) } as Result
+        return { type: 'Number-Integer', value: parseInt(text) } as IResult
 
         // TODO: Depending, on mode, below continue or break on error
         console.error('Error: Failed to parse number value: ' + text)
-        return { type: 'Number', value: undefined } as Result
+        return { type: 'Number', value: undefined } as IResult
     }
 
     /**
@@ -444,13 +456,13 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      * @return the visitor result
      */
     // visitString_literal?: (ctx: String_literalContext) => Result
-    visitString_literal = (ctx: String_literalContext): Result => {
+    visitString_literal = (ctx: String_literalContext): IResult => {
         debugPrint('-> Entered visitString_literal(..)')
 
         let raw = ctx.getText()
         debugPrint('raw = >>>' + raw + '<<<')
 
-        return raw as Result
+        return { value: raw, type: 'String' } as any
     }
 
     /**
@@ -458,19 +470,19 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitString_concat?: (ctx: String_concatContext) => Result
+    visitString_concat?: (ctx: String_concatContext) => IResult
 
     /**
      * Visit a parse tree produced by `YiniParser.null_literal`.
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitNull_literal = (ctx: Null_literalContext): Result => {
+    visitNull_literal = (ctx: Null_literalContext): IResult => {
         debugPrint('-> Entered visitNull_literal(..)')
 
         //const txt = ctx.getText().toLowerCase()
 
-        return { type: 'Null', value: 'Null' } as Result
+        return { type: 'Null', value: 'Null' } as IResult
     }
 
     /**
@@ -478,18 +490,18 @@ export default class YINIVisitor<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    //visitBoolean_literal?: (ctx: Boolean_literalContext) => Result
-    visitBoolean_literal = (ctx: Boolean_literalContext): Result => {
+    //visitBoolean_literal?: (ctx: Boolean_literalContext) => IResult
+    visitBoolean_literal = (ctx: Boolean_literalContext): IResult => {
         debugPrint('-> Entered visitBoolean_literal(..)')
 
         const txt = ctx.getText().toLowerCase()
-        // return ['true', 'yes', 'on'].includes(text) as Result
+        // return ['true', 'yes', 'on'].includes(text) as IResult
         const value: boolean = !!(
             txt === 'true' ||
             txt === 'yes' ||
             txt === 'on'
         )
 
-        return { type: 'Boolean', value } as Result
+        return { type: 'Boolean', value } as IResult
     }
 }
