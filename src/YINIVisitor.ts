@@ -98,18 +98,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         // const res: any = {};
         const sections: Record<string, any> = {}
 
-        // ctx.children?.forEach((child: any)=>{
-        // ctx.children?.forEach((child: any)=>{
-        // ctx.section_list().forEach((section:any)=>{
         ctx.section_list().forEach((section: any) => {
-            // const { name, members } = this.visit(section);
-            // isDebug&&console.log('In forEach, got child = ' + name + ', got value = ' + members)
-
-            // isDebug&&console.log(child);
-            // isDebug&&console.log(section);
-            // const value = child.accept(this);
             const value = section.accept(this)
-            // isDebug&&console.log('In forEach, got child = ' + child + ', got value = ' + value)
             debugPrint(
                 'In forEach, got child = ' + section + ', got value = ' + value,
             )
@@ -119,33 +109,12 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             debugPrint('result:')
             debugPrint(result)
             if (result?.name) sections[result.name] = result.members
-
-            // if(!value){
-            // 	isDebug&&console.log('* skipped adding')
-            // }else{
-            //Object.assign(res, value)
-            // }
         })
 
-        // return res
-        //const terminal = ctx.terminal_line()?.getText().trim()
         const hasTerminal = !!ctx.terminal_line()
         return { _base: sections, _hasTerminal: hasTerminal }
     }
 
-    /*
-	visitYini(ctx: YiniContext): YiniDocument {
-		const sections: Record<string, any> = {}
-		// for (const section of ctx.section()) {
-			ctx.section_list().forEach((section:any)=>{
-				const { name, members } = this.visit(section);
-				sections[name] = members;
-	  
-			})
-		}
-		return { sections };
-	  }
-*/
     /**
      * Visit a parse tree produced by `YiniParser.section`.
      * @param ctx the parse tree
@@ -153,7 +122,6 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      */
     // visitSection?: (ctx: SectionContext) => IResult;
 
-    // visitSection = (ctx: SectionContext): IResult => {
     visitSection = (ctx: SectionContext): any => {
         debugPrint()
         debugPrint('-> Entered visitSection(..)')
@@ -209,12 +177,6 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint(`Parsed sectionName = >>>${sectionName}<<<`)
         // ---------------------------------------------------------------
 
-        // isDebug&&console.log('last subLine = ' + subLine);
-        // if(!subLine.endsWith('\\n')){
-        // 	console.error(`ERROR: No newline <Enter> after section head"`)
-        // 	process.exit(1)
-        // }
-
         debugPrint('visit(ctx.section_members()')
         const members = ctx.section_members()
             ? this.visit(ctx.section_members())
@@ -230,25 +192,6 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         // return {} as IResult
     }
 
-    // visitSection = (ctx: SectionContext): IResult => {
-    // visitSection = (ctx: SectionContext): any => {
-
-    // // visitSection(ctx: SectionContext) {
-    // 	const head = ctx.SECTION_HEAD();
-    // 	const nested = ctx.section();
-    // 	if (head && !nested) {
-    // 	  const name = head.getText().replace(/^\^+\s*/, '').trim();
-    // 	  const members = ctx.section_members() ? this.visit(ctx.section_members()) : {};
-    // 	  isDebug&&console.log('2name = ' + name);
-
-    // 	  return { name, members };
-    // 	}
-    // 	if (!head && ctx.section_members()) {
-    // 	  return { name: '', members: this.visit(ctx.section_members()) };
-    // 	}
-    // 	return null;
-    //   }
-
     /**
      * Visit a parse tree produced by `YiniParser.terminal_line`.
      * @param ctx the parse tree
@@ -261,49 +204,10 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    // visitSection_members = (ctx: Section_membersContext): IResult =>{
-    // 	isDebug&&console.log('-> Entered visitSection_members(..)')
-
-    // 	return {} as IResult
-    // }
     // visitSection_members = (ctx: Section_membersContext): Record<string, any> => {
     visitSection_members = (ctx: Section_membersContext): any => {
         debugPrint('-> Entered visitSection_members(..)')
 
-        /*
-        const members: Record<string, any> = {}
-        // for (const m of ctx?.member()) {
-        ctx?.children?.forEach((member: any) => {
-            // const { key, value } = this.visit(m);
-            // members[key] = value
-            // const res: any= this.visit(m)
-            // isDebug&&console.log('member of visitSection_members:')
-            // isDebug&&console.log('res.key = ' + res?.key)
-            // isDebug&&console.log('res.value = ' + res?.value)
-            const { key, value }: any = this.visit(member)
-            if (!value) {
-                debugPrint('Warning res.key = ' + key + ' found as undefined')
-            } else {
-                const value0 = value || value[0] // First value at index 0.
-                debugPrint('\nmember of visitSection_members:')
-                debugPrint(value0)
-                debugPrint(value)
-                debugPrint('res.key = >>>' + key + '<<<')
-                debugPrint('res.value.dataType = >>>' + value0?.type + '<<<')
-                debugPrint('res.value.value = >>>' + value0?.value + '<<<')
-                // if(value instanceof IResult){
-
-                // isDebug&&console.log('--- member: ---')
-                // isDebug&&console.log(member)
-                // isDebug&&console.log('---------------\n')
-
-                members[key] = value0?.value
-            }
-        })
-        //   const { key, value } = this.visit(m);
-        //   members[key] = value;
-        */
-        // const members: any = {}
         const members: Record<string, any> = {}
         ctx.member_list().forEach((member) => {
             const { key, value }: any = this.visit(member)
@@ -398,7 +302,11 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         let raw = ctx.getText()
         debugPrint('raw = >>>' + raw + '<<<')
 
-        const prefixMatch = raw.match(/^(C|c|H|h)?("""|"|')/)
+        /*
+            Extracts an optional prefix (C, c, H, or h) and identifies whether
+            the string is triple-quoted, double-quoted, or single-quoted.
+        */
+        const prefixMatch = raw.match(/^(C|c|H|h|R|r)?("""|"|')/)
         debugPrint('prefixMatch:')
         if (isDebug()) {
             console.debug(prefixMatch)
@@ -411,10 +319,12 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('       quoteType = ' + quoteType)
         debugPrint('quoteType.length = ' + quoteType.length)
 
+        // Extracts the substring after removing the initial prefix (if any)
+        // and quotes at the start (prefix.length + quoteType.length) and the
+        // quotes at the end (-quoteType.length).
         let inner = raw.slice(
             (0 | prefix?.length) + quoteType.length,
             -quoteType.length,
-            // raw.length - 2 * quoteType.length,
         )
         debugPrint('inner (raw) = ' + inner)
 
@@ -513,12 +423,14 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      * @return the visitor result
      */
     visitObject_literal?: (ctx: Object_literalContext) => IResult
+
     /**
      * Visit a parse tree produced by `YiniParser.objectMemberList`.
      * @param ctx the parse tree
      * @return the visitor result
      */
     visitObjectMemberList?: (ctx: ObjectMemberListContext) => IResult
+
     /**
      * Visit a parse tree produced by `YiniParser.objectMember`.
      * @param ctx the parse tree
@@ -532,18 +444,21 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      * @return the visitor result
      */
     visitList?: (ctx: ListContext) => IResult
+
     /**
      * Visit a parse tree produced by `YiniParser.list_in_brackets`.
      * @param ctx the parse tree
      * @return the visitor result
      */
     visitList_in_brackets?: (ctx: List_in_bracketsContext) => IResult
+
     /**
      * Visit a parse tree produced by `YiniParser.elements`.
      * @param ctx the parse tree
      * @return the visitor result
      */
     visitElements?: (ctx: ElementsContext) => IResult
+
     /**
      * Visit a parse tree produced by `YiniParser.element`.
      * @param ctx the parse tree
