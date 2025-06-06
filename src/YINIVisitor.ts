@@ -61,8 +61,8 @@ class CIResult {
 
 interface YIResult {
     key: string
-    value: any
     type: TDataType
+    value: any
 }
 
 /**
@@ -316,7 +316,11 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             debugPrint('--')
 
             // members[key] = value
-            members[key] = value?.value
+            if ((value?.type as TDataType) === 'Null') {
+                members[key] = null
+            } else {
+                members[key] = value?.value
+            }
         })
         // ctx..member_colon_list().forEach((mcl) => {
         //     const { key, value } = this.visit(mcl)
@@ -342,7 +346,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('value = ' + value + '  @visitMember(..)')
 
         // return { key, value } as IResult
-        return { key, value, type: 'Integer' } as IResult
+        // return { key, value, type: 'Integer' } as IResult
+        return { key, value } as IResult
     }
 
     /**
@@ -371,12 +376,89 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('ctx.number_literal(): ' + ctx.number_literal())
         debugPrint('ctx.boolean_literal(): ' + ctx.boolean_literal())
 
-        if (ctx.number_literal()) return this.visit(ctx.number_literal())
         if (ctx.string_literal()) return this.visit(ctx.string_literal())
+        if (ctx.number_literal()) return this.visit(ctx.number_literal())
         if (ctx.boolean_literal()) return this.visit(ctx.boolean_literal())
+        if (ctx.null_literal()) return this.visit(ctx.null_literal())
         //   if (ctx.list()) return this.visit(ctx.list())
         //   if (ctx.string_concat()) return this.visit(ctx.string_concat())
         return null
+    }
+
+    /**
+     * Visit a parse tree produced by `YiniParser.string_literal`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    // visitString_literal?: (ctx: String_literalContext) => Result
+    visitString_literal = (ctx: String_literalContext): IResult => {
+        debugPrint('-> Entered visitString_literal(..)')
+
+        let raw = ctx.getText()
+        debugPrint('raw = >>>' + raw + '<<<')
+
+        return { type: 'String', value: raw } as IResult
+    }
+
+    /**
+     * Visit a parse tree produced by `YiniParser.number_literal`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    // visitNumber_literal?: (ctx: Number_literalContext) => IResult
+    visitNumber_literal = (ctx: Number_literalContext): IResult => {
+        debugPrint('-> Entered visitNumber_literal(..)')
+
+        const text = ctx.getText()
+        // if (/^0[xX]/.test(text)) return parseInt(text, 16)
+        // if (/^#/.test(text)) return parseInt(text.slice(1), 16)
+        // if (/^0b/.test(text) || /^%/.test(text)) return parseInt(text.replace(/^%/, '0b'), 2)
+        // if (/^0o/.test(text)) return parseInt(text, 8)
+        // Duodecimal (0z...) not supported, fallback to number
+
+        // In a regex literal the dot must be escaped (\.) to match a literal '.'
+        if (/\./.test(text)) {
+            return { type: 'Number-Real', value: parseFloat(text) } as IResult
+        }
+
+        return { type: 'Number-Integer', value: parseInt(text) } as IResult
+
+        // TODO: Depending, on mode, below continue or break on error
+        console.error('Error: Failed to parse number value: ' + text)
+        return { type: 'Number', value: undefined } as IResult
+    }
+
+    /**
+     * Visit a parse tree produced by `YiniParser.boolean_literal`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    //visitBoolean_literal?: (ctx: Boolean_literalContext) => IResult
+    visitBoolean_literal = (ctx: Boolean_literalContext): IResult => {
+        debugPrint('-> Entered visitBoolean_literal(..)')
+
+        const txt = ctx.getText().toLowerCase()
+        // return ['true', 'yes', 'on'].includes(text) as IResult
+        const value: boolean = !!(
+            txt === 'true' ||
+            txt === 'yes' ||
+            txt === 'on'
+        )
+
+        return { type: 'Boolean', value } as IResult
+    }
+
+    /**
+     * Visit a parse tree produced by `YiniParser.null_literal`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitNull_literal = (ctx: Null_literalContext): IResult => {
+        debugPrint('-> Entered visitNull_literal(..)')
+
+        //const txt = ctx.getText().toLowerCase()
+
+        return { type: 'Null', value: 'Null' } as IResult
     }
 
     /**
@@ -422,48 +504,6 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      * @return the visitor result
      */
     visitElement?: (ctx: ElementContext) => IResult
-    /**
-     * Visit a parse tree produced by `YiniParser.number_literal`.
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    // visitNumber_literal?: (ctx: Number_literalContext) => IResult
-    visitNumber_literal = (ctx: Number_literalContext): IResult => {
-        debugPrint('-> Entered visitNumber_literal(..)')
-
-        const text = ctx.getText()
-        // if (/^0[xX]/.test(text)) return parseInt(text, 16)
-        // if (/^#/.test(text)) return parseInt(text.slice(1), 16)
-        // if (/^0b/.test(text) || /^%/.test(text)) return parseInt(text.replace(/^%/, '0b'), 2)
-        // if (/^0o/.test(text)) return parseInt(text, 8)
-        // Duodecimal (0z...) not supported, fallback to number
-
-        // In a regex literal the dot must be escaped (\.) to match a literal '.'
-        if (/\./.test(text)) {
-            return { type: 'Number-Real', value: parseFloat(text) } as IResult
-        }
-
-        return { type: 'Number-Integer', value: parseInt(text) } as IResult
-
-        // TODO: Depending, on mode, below continue or break on error
-        console.error('Error: Failed to parse number value: ' + text)
-        return { type: 'Number', value: undefined } as IResult
-    }
-
-    /**
-     * Visit a parse tree produced by `YiniParser.string_literal`.
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    // visitString_literal?: (ctx: String_literalContext) => Result
-    visitString_literal = (ctx: String_literalContext): IResult => {
-        debugPrint('-> Entered visitString_literal(..)')
-
-        let raw = ctx.getText()
-        debugPrint('raw = >>>' + raw + '<<<')
-
-        return { value: raw, type: 'String' } as any
-    }
 
     /**
      * Visit a parse tree produced by `YiniParser.string_concat`.
@@ -471,37 +511,4 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      * @return the visitor result
      */
     visitString_concat?: (ctx: String_concatContext) => IResult
-
-    /**
-     * Visit a parse tree produced by `YiniParser.null_literal`.
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    visitNull_literal = (ctx: Null_literalContext): IResult => {
-        debugPrint('-> Entered visitNull_literal(..)')
-
-        //const txt = ctx.getText().toLowerCase()
-
-        return { type: 'Null', value: 'Null' } as IResult
-    }
-
-    /**
-     * Visit a parse tree produced by `YiniParser.boolean_literal`.
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    //visitBoolean_literal?: (ctx: Boolean_literalContext) => IResult
-    visitBoolean_literal = (ctx: Boolean_literalContext): IResult => {
-        debugPrint('-> Entered visitBoolean_literal(..)')
-
-        const txt = ctx.getText().toLowerCase()
-        // return ['true', 'yes', 'on'].includes(text) as IResult
-        const value: boolean = !!(
-            txt === 'true' ||
-            txt === 'yes' ||
-            txt === 'on'
-        )
-
-        return { type: 'Boolean', value } as IResult
-    }
 }

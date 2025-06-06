@@ -54,6 +54,7 @@ const input2 = `
 ^ 	Config
 varAge = 30
 varName = "Alice"
+varNull = NULL
 listItems = ["a", "b", "c"]
 	^^Extra
 	isExtra = true
