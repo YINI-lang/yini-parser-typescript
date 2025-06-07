@@ -1,0 +1,40 @@
+name: Run Smoke Test
+
+on:
+    push:
+        branches: ['develop', 'staging']
+    pull_request:
+        branches: ['develop', 'staging']
+    workflow_dispatch: # allows manual run from GitHub UI
+
+jobs:
+    run-smoke-test:
+        #    runs-on: ubuntu-latest
+        #    runs-on: windows-latest
+        # strategy:
+        #     matrix:
+        #         # Available GitHub-hosted runner types see:
+        #         # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#choosing-github-hosted-runners
+        #         os: [ubuntu-latest, macos-latest, ubuntu-20.04, macos-11]
+        # runs-on: ${{ matrix.os }}
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20' # adjust as needed
+
+            - name: Print Node.js version
+              run: node --version
+
+            - name: Install dependencies
+              run: npm ci # npm clean-install (installs without changing package-lock.json)
+
+            - name: Run Specific Test
+              run: |
+                  echo "Running test: ${{ github.event.inputs.testName }}"
+                  npm run test:smoke
