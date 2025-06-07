@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "main": "dist/index.js",
+    "type": "module",
     "scripts": {
         "test": "jest",
         "test:smoke": "cross-env IS_DEBUG='' jest tests/smoke",
