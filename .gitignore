@@ -8,6 +8,9 @@ dist
 **/*.js
 **/*.js.map
 
+# But DO NOT ignore jest.config.js
+!jest.config.js
+
 # ANTLR4 output directory where all output is generated to
 gen-output
 
