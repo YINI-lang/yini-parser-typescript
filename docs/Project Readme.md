@@ -1,12 +1,6 @@
 YINI Parser TypeScript - Project Readme
 =======================================
 
-## Project Structure
-```
-/src
---TODO--
-```
-
 ## Naming Conventions
 The following naming conventions help maintain consistency across the project. Contributors should follow them where applicable.
 
