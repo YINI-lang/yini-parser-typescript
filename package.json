@@ -3,7 +3,6 @@
     "version": "0.1.0",
     "private": true,
     "main": "dist/index.js",
-    "type": "module",
     "scripts": {
         "test": "jest",
         "test:smoke": "cross-env IS_DEBUG='' jest tests/smoke",
@@ -11,7 +10,6 @@
         "start": "cross-env IS_DEBUG=1 ts-node src/index.ts",
         "start-w-clean": "npm run tsc && npm run clean:ts-js && npm run start",
         "lint": "eslint src --ext .ts",
-        "prepare": "husky install",
         "clean:ts-js": "bash scripts/clean-ts-js.sh"
     },
     "author": "Marko K. Seppänen",
