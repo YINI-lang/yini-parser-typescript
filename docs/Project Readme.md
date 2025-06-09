@@ -1,6 +1,14 @@
 YINI Parser TypeScript - Project Readme
 =======================================
 
+## Main Techs
+- Node.js + TypeScript
+- Jest
+- CJS (CommonJS)
+
+## CJS (CommonJS) vs ESM (ECMAScript Modules)
+This project uses CommonJS (and not Pure ESM), due to it's currently better compatible with Jest and other tools.
+
 ## Naming Conventions
 The following naming conventions help maintain consistency across the project. Contributors should follow them where applicable.
 
