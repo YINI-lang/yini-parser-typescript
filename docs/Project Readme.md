@@ -2,9 +2,11 @@ YINI Parser TypeScript - Project Readme
 =======================================
 
 ## Main Techs
-- Node.js + TypeScript
+- Node.js
+- TypeScript
 - Jest
 - CJS (CommonJS)
+- ANTLR4 grammar integration
 
 ## CJS (CommonJS) vs ESM (ECMAScript Modules)
 This project uses CommonJS (and not Pure ESM), due to it's currently better compatible with Jest and other tools.
