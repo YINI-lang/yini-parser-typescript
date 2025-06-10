@@ -1,7 +1,5 @@
 import { debugPrint, isDebug } from '../utils/general'
 
-// export default parseStringLiteral
-
 const parseStringLiteral = (raw: string): string => {
     debugPrint('-> Entered parseStringLiteral(..)')
     debugPrint('raw = >>>' + raw + '<<<')

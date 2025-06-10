@@ -21,7 +21,9 @@ import {
     YiniContext,
 } from './grammar/YiniParser.js'
 import YiniParserVisitor from './grammar/YiniParserVisitor'
-import parseStringLiteral from './literal-parsers/parseStringLiteral'
+import parseBooleanLiteral from './literal-parsers/parseBoolean'
+import parseNumberLiteral from './literal-parsers/parseNumber'
+import parseStringLiteral from './literal-parsers/parseString'
 import { debugPrint, isDebug } from './utils/general'
 
 // const isDebug = !!process.env.IS_DEBUG
@@ -36,7 +38,7 @@ interface YiniDocument {
     _hasTerminal?: boolean
 }
 
-type TDataType =
+export type TDataType =
     | undefined
     | 'String'
     | 'Number-Integer'
@@ -341,8 +343,9 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         // }
 
         // debugPrint('inner (reformat) = ' + inner)
+        const value: string = parseStringLiteral(raw)
 
-        return { type: 'String', value: parseStringLiteral(raw) } as IResult
+        return { type: 'String', value } as IResult
     }
 
     /**
@@ -354,37 +357,10 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     visitNumber_literal = (ctx: Number_literalContext): IResult => {
         debugPrint('-> Entered visitNumber_literal(..)')
 
-        const text = ctx.getText()
-        if (/^0[xX]|#/.test(text))
-            // Prefix: 0x, 0X, #
-            return {
-                type: 'Number-Integer',
-                value: parseInt(text.replace('#', '0x'), 16),
-            } as any
-        if (/^0[bB]|%/.test(text))
-            // Prefix: 0b, 0B, %
-            return {
-                type: 'Number-Integer',
-                value: parseInt(text.replace('%', '0b'), 2),
-            } as any
-        if (/^0[oO]/.test(text))
-            // Prefix: 0o, 0O
-            return {
-                type: 'Number-Integer',
-                value: parseInt(text, 8),
-            } as any
-        // Duodecimal (0z...) not yet supported, fallback to number
+        const txt = ctx.getText()
+        const { type, value } = parseNumberLiteral(txt)
 
-        // In a regex literal the dot must be escaped (\.) to match a literal '.'
-        if (/\./.test(text)) {
-            return { type: 'Number-Float', value: parseFloat(text) } as IResult
-        }
-
-        return { type: 'Number-Integer', value: parseInt(text) } as IResult
-
-        // TODO: Depending, on mode, below continue or break on error
-        console.error('Error: Failed to parse number value: ' + text)
-        return { type: 'Number', value: undefined } as IResult
+        return { type, value } as IResult
     }
 
     /**
@@ -398,11 +374,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
         const txt = ctx.getText().toLowerCase()
         // return ['true', 'yes', 'on'].includes(text) as IResult
-        const value: boolean = !!(
-            txt === 'true' ||
-            txt === 'yes' ||
-            txt === 'on'
-        )
+        const value: boolean = parseBooleanLiteral(txt)
 
         return { type: 'Boolean', value } as IResult
     }
