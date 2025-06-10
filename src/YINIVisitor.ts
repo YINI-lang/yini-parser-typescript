@@ -21,9 +21,10 @@ import {
     YiniContext,
 } from './grammar/YiniParser.js'
 import YiniParserVisitor from './grammar/YiniParserVisitor'
-import parseBooleanLiteral from './literal-parsers/parseBoolean'
-import parseNumberLiteral from './literal-parsers/parseNumber'
-import parseStringLiteral from './literal-parsers/parseString'
+import parseBooleanLiteral from './main-literal-parsers/parseBoolean'
+import parseNullLiteral from './main-literal-parsers/parseNull'
+import parseNumberLiteral from './main-literal-parsers/parseNumber'
+import parseStringLiteral from './main-literal-parsers/parseString'
 import { debugPrint, isDebug } from './utils/general'
 
 // const isDebug = !!process.env.IS_DEBUG
@@ -307,42 +308,6 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         const raw = ctx.getText()
         debugPrint('raw = >>>' + raw + '<<<')
 
-        // /*
-        //     Extracts an optional prefix (C, c, H, or h) and identifies whether
-        //     the string is triple-quoted, double-quoted, or single-quoted.
-        // */
-        // const prefixMatch = raw.match(/^(C|c|H|h|R|r)?("""|"|')/)
-        // debugPrint('prefixMatch:')
-        // if (isDebug()) {
-        //     console.debug(prefixMatch)
-        // }
-
-        // let prefix = prefixMatch ? prefixMatch[1]?.toUpperCase() : ''
-        // debugPrint('          prefix = ' + prefix)
-
-        // let quoteType = prefixMatch ? prefixMatch[2] : ''
-        // debugPrint('       quoteType = ' + quoteType)
-        // debugPrint('quoteType.length = ' + quoteType.length)
-
-        // // Extracts the substring after removing the initial prefix (if any)
-        // // and quotes at the start (prefix.length + quoteType.length) and the
-        // // quotes at the end (-quoteType.length).
-        // let inner = raw.slice(
-        //     (prefix?.length || 0) + quoteType.length,
-        //     -quoteType.length,
-        // )
-        // debugPrint('inner (raw) = ' + inner)
-
-        // if (prefix === 'C') {
-        //     inner = inner
-        //         .replace(/\\n/g, '\n')
-        //         .replace(/\\t/g, '\t')
-        //         .replace(/\\r/g, '\r')
-        // } else if (prefix === 'H') {
-        //     inner = inner.replace(/[\s\n\r]+/g, ' ').trim()
-        // }
-
-        // debugPrint('inner (reformat) = ' + inner)
         const value: string = parseStringLiteral(raw)
 
         return { type: 'String', value } as IResult
@@ -386,7 +351,10 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      */
     visitNull_literal = (ctx: Null_literalContext): IResult => {
         debugPrint('-> Entered visitNull_literal(..)')
-        return { type: 'Null', value: null } as IResult
+        const txt = ctx.getText()
+        const value: null = parseNullLiteral(txt)
+
+        return { type: 'Null', value } as IResult
     }
 
     /**
