@@ -1,10 +1,26 @@
---WIP--
-
 # YINI Parser - TypeScript
 
-**YINI Parser/Reader Library in TypeScript**
+**YINI Parser for TypeScript** — an simple, human-friendly parser and reader for the YINI configuration file format. This library implements the official YINI specification using TypeScript + ANTLR4.
 
 ---
+
+## ✨ Features
+--TODO/WIP--
+
+---
+
+## 🏗 Main Techs
+- Node.js
+- TypeScript
+- Jest (tests)
+- ESLint (code style / linting)
+- ANTLR4 grammar integration
+- GitHub Actions (CI)
+
+---
+
+## 🚀 Getting Started
+--TODO/WIP--
 
 ## Project Structure
 Here's an overview of the project's directory structure — to help users understand where things are and how the project is organized.
@@ -46,6 +62,11 @@ Here's an overview of the project's directory structure — to help users unders
 ```
 
 ---
+
+## 📚 Documentation
+
+- [Development Setup](./docs/Development%20Setup.md) — How to run, test, and build the project.
+- [Style Guide](./docs/Style%20Guide.md) — Project conventions, naming patterns, and coding style.
 
 ## License
 This project is licensed under the Apache-2.0 license - see the [LICENSE](<./LICENSE>) file for details.
