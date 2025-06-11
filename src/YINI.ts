@@ -6,6 +6,10 @@ export default class YINI {
     public static parse = (yiniContent: string): any => {
         debugPrint('-> Entered static parse(..) in class YINI\n')
 
+        if (!yiniContent.endsWith('\n')) {
+            yiniContent += '\n'
+        }
+
         debugPrint()
         debugPrint('==== Call parse ==========================')
         //const tree = parser.yini;  // Start rule.
@@ -27,9 +31,21 @@ export default class YINI {
     public static parseFile = (fullPath: string): any => {
         debugPrint('Current directory = ' + process.cwd())
 
-        const content = fs.readFileSync(fullPath, 'utf8')
+        let content = fs.readFileSync(fullPath, 'utf8')
+        let hasNoNewlineAtEOF = false
+
+        if (!content.endsWith('\n')) {
+            content += '\n'
+            hasNoNewlineAtEOF = true
+        }
 
         const result = parseYINI(content)
+
+        if (hasNoNewlineAtEOF) {
+            console.warn(
+                "No newline at end of file, it's a good practice (and etc.) to end a file with a newline",
+            )
+        }
 
         return result
     }

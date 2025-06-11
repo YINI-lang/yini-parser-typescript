@@ -20,8 +20,31 @@ listItems = ["a", "b", "c"]
 /**
  * Parse Inline Smoke Tests.
  */
-xdescribe('Parse Inline Smoke Tests:', () => {
+describe('Parse Inline Smoke Tests:', () => {
     beforeAll(() => {})
+
+    //@todo Need to fix so a single member is attached or returned with the implicit base object.
+    xtest('1. Minimal Valid Code (a single member).', () => {
+        // Arrange.
+        const validYini = 'number = 42'
+        // Act.
+        const result = YINI.parse(validYini)
+        console.log(result)
+        // Assert.
+        expect(result.number).toEqual(42)
+    })
+
+    test('2. Minimal Valid Code (section with a single member).', () => {
+        // Arrange.
+        const validYini = `^title
+    another = 64`
+        // Act.
+        const result = YINI.parse(validYini)
+        console.log(result)
+        // Assert.
+        expect(result.title.another).toEqual(64)
+    })
+
     test('Parse inline config string.', () => {
         // Arrange.
         // Act.

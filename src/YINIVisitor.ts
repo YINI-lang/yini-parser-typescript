@@ -155,7 +155,9 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             this.readLines.push(line)
         } catch (error) {
             const len = this.readLines.length
-            const syntaxLine: string = this.readLines[len - 1].trim()
+            const syntaxLine: string = !len
+                ? ''
+                : this.readLines[len - 1].trim()
             let msg: string =
                 'Syntax is wrong somewhere in or after around the following (YINI):\n'
             msg += '\`' + syntaxLine + '\`'

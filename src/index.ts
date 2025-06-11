@@ -70,14 +70,18 @@ listItems = ["a", "b", "c"]
 // const input = `
 // # 	Config`;
 
-debugPrint('input2:')
-if (isDebug()) {
-    console.debug(input2)
-}
-YINI.parse(input2)
+// debugPrint('input2:')
+// if (isDebug()) {
+//     console.debug(input2)
+// }
+// YINI.parse(input2)
 
 // debugPrint('invalidInput1:')
 // if (isDebug()) {
 //     console.debug(invalidInput1)
 // }
 // YINI.parse(invalidInput1)
+
+YINI.parse(`^title
+    another = 64`)
+// YINI.parse(`number = 42`)
