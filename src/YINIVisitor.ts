@@ -21,6 +21,7 @@ import {
     YiniContext,
 } from './grammar/YiniParser.js'
 import YiniParserVisitor from './grammar/YiniParserVisitor'
+import { InvalidDataHandler } from './InvalidDataHandler'
 import parseBooleanLiteral from './main-literal-parsers/parseBoolean'
 import parseNullLiteral from './main-literal-parsers/parseNull'
 import parseNumberLiteral from './main-literal-parsers/parseNumber'
@@ -79,6 +80,9 @@ interface YIResult {
 export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     //export default class YINIVisitor extends YiniParserVisitor<any> {
 
+    private invalidDataInstance: InvalidDataHandler | null = null
+    private readLines: string[] = []
+
     /**
      * Visit a parse tree produced by `YiniParser.yini`.
      * @param ctx the parse tree
@@ -87,6 +91,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     // visitYini?: (ctx: YiniContext) => IResult;
     // visitYini = (ctx: YiniContext): IResult => {
     visitYini = (ctx: YiniContext): any => {
+        this.invalidDataInstance =
+            InvalidDataHandler.getInstance('1-Abort-on-Errors')
         debugPrint()
         debugPrint('abcde99')
         debugPrint('-> Entered visitYini(..) in YINIVisitor')
@@ -143,7 +149,18 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('XXXX2' + ctx.section())
         debugPrint('end\n')
 
-        const line = '' + ctx.SECTION_HEAD().getText()
+        let line: string = ''
+        try {
+            line = '' + ctx.SECTION_HEAD().getText()
+            this.readLines.push(line)
+        } catch (error) {
+            const len = this.readLines.length
+            const syntaxLine: string = this.readLines[len - 1].trim()
+            let msg: string =
+                'Syntax is wrong somewhere in or after around the following (YINI):\n'
+            msg += '\`' + syntaxLine + '\`'
+            this.invalidDataInstance!.handleData('Syntax-Error', msg)
+        }
         debugPrint(`Got line = >>>${line}<<<`)
 
         // --- Determine nesting level. ---------

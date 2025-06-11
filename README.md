@@ -35,7 +35,7 @@ Here's an overview of the project's directory structure — to help users unders
 │   ├── grammar/                  // Generated ANTLR4 parser/lexer/visitor (.ts)
 │   ├── literal-parsers/          // Literal parser implementations
 │   ├── utils/                    // Utility modules
-│   └── index.ts                  // Entry point of the parser
+│   └── index.ts                  // Main entry point of the parser
 |
 ├── tests/                        // Test code
 │   ├── fixtures/                 // Test fixture data (for unit/integration tests)

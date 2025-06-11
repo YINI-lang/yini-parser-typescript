@@ -28,12 +28,18 @@ debugPrint('debugTestObj:')
 debugPrint(debugTestObj)
 debugPrint()
 
-const invalidInput = `
-# 	Config
-age = 30
-name = "Alice"
-items = ["a", "b", "c"]
-/END
+const invalidInput1 = `
+^ Settings
+fruit = "Pear"
+number = 5
+value q= "something"
+`
+
+const invalidInput2 = `
+^ 	Config
+varAge = 30
+varName = abcd
+varNull = NULL
 `
 
 const input1 = `
@@ -68,5 +74,10 @@ debugPrint('input2:')
 if (isDebug()) {
     console.debug(input2)
 }
-
 YINI.parse(input2)
+
+// debugPrint('invalidInput1:')
+// if (isDebug()) {
+//     console.debug(invalidInput1)
+// }
+// YINI.parse(invalidInput1)
