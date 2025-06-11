@@ -207,6 +207,24 @@ isSysOp = YES
     ~~ prefs
     theme = "light"
     notifications = OFF
+
+^1 user2
+^2 prefs
+^3 deepSection
+^4 deeperSection
+key = "Level 4 section"
+^5 yetDeeperSection
+key = "Level 5 section"
+item = 77
+
+~1 user3
+username = 'tester three'
+isSysOp = NO
+
+    ~~2 prefs
+    theme = "dark"
+    notifications = ON
+
 `
 
         // Act.
