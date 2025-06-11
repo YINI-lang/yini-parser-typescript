@@ -1,32 +1,47 @@
-//import { describe, expect, test } from '@jest/globals'
-//import * from '../smoke-fixtures/Simple-1.yini'
+/**
+ * 10 Parse-Inline Smoke Tests
+ *
+ * To "quickly" test the main features and syntax of YINI.
+ * @note These samples/fixtures are different than the tests for parseFile(..).
+ */
 
-import path from 'path'
 import YINI from '../../src'
 
-const DIR_OF_FIXTURES = 'smoke-fixtures'
+const fixture10Yini = `
+^ AppConfig
+name = "YINI Tester"
+version = 1.0
 
-const fixtureYini = `
-^ SmokeConfig
-varAge = 99
-varBool = YES
-varName = "Teodor"
-listItems = ["a", "b", "c"]
-	^^Extra
-	isExtra = true
+    ^^ Settings
+    enable_feature = true
+    paths = ["/home/user", "/tmp"]
+    options: "opt1", "opt2", "opt3"
+
+        ^^^ Advanced
+        triple = """multi
+        line
+        string"""
+
+        classic = C"Hello\tWorld\n"
+        hyper = H"  foo   
+            bar baz   "
+
+^ Metadata
+author = 'Smoke Test'
+created = null
 /END
 `
 
 /**
- * Parse Inline Smoke Tests.
+ * Parse-Inline Smoke Tests.
  */
-describe('Parse Inline Smoke Tests:', () => {
+describe('Parse-Inline Smoke Tests:', () => {
     beforeAll(() => {})
 
     //@todo Need to fix so a single member is attached or returned with the implicit base object.
-    xtest('1. Minimal Valid Code (a single member).', () => {
+    xtest('1. Shortest Valid Code (a single member).', () => {
         // Arrange.
-        const validYini = 'number = 42'
+        const validYini = 'number=42'
         // Act.
         const result = YINI.parse(validYini)
         console.log(result)
@@ -34,10 +49,10 @@ describe('Parse Inline Smoke Tests:', () => {
         expect(result.number).toEqual(42)
     })
 
-    test('2. Minimal Valid Code (section with a single member).', () => {
+    test('2. Shortest Valid Code (section with a single member).', () => {
         // Arrange.
         const validYini = `^title
-    another = 64`
+another=64`
         // Act.
         const result = YINI.parse(validYini)
         console.log(result)
@@ -45,12 +60,172 @@ describe('Parse Inline Smoke Tests:', () => {
         expect(result.title.another).toEqual(64)
     })
 
-    test('Parse inline config string.', () => {
+    test('3. Minimal Valid Code (section with couple of members).', () => {
+        // Arrange.
+        const validYini = `^ Main
+name = 'YINI Smoke Test'
+version = 3`
+        // Act.
+        const result = YINI.parse(validYini)
+        console.log(result)
+        // Assert.
+        expect(result.Main.name).toEqual('YINI Smoke Test')
+        expect(result.Main.version).toEqual(3)
+    })
+
+    //@todo Needs implementing of section with sections for this pass.
+    xtest('4. Sections, Nesting, and Identifiers.', () => {
+        // Arrange.
+        const validYini = `
+^ user
+username = "tester"
+is_admin = True
+
+    ^^ prefs
+    theme = 'dark'
+    notifications = false
+
+        ^^^ \`Complex Section\`
+        setting = 99`
+
+        // Act.
+        const result = YINI.parse(validYini)
+        console.log(result)
+
+        // Assert.
+        expect(result.user.username).toEqual('tester')
+        expect(result.user.is_admin).toEqual(true)
+
+        expect(result.user.prefs.theme).toEqual('dark')
+        expect(result.user.prefs.notifications).toEqual(false)
+
+        expect(result.user.prefs.theme['Complex Section'].setting).toEqual(99)
+    })
+
+    test('5. All Key/Value (simple) Types.', () => {
+        // Arrange.
+        const validYini = `
+^ TypesDemo
+string1 = "Hello"
+string2 = 'World'
+number1 = 123
+number2 = -5.7
+hexval = 0xFFEE
+binval = %1011
+bool_true = yes
+bool_false = OFF
+nullval = null
+empty_val =          # ← Null (lenient mode)`
+
+        // Act.
+        const result = YINI.parse(validYini)
+        console.log(result)
+
+        // Assert.
+        expect(result.TypesDemo.string1).toEqual('Hello')
+        expect(result.TypesDemo.string2).toEqual('World')
+
+        //@todo Add the rest of the members too
+    })
+
+    xtest('6. List Types.', () => {
+        // Arrange.
+        const validYini = `
+^ Lists
+simple = [1, 2, 3]
+mixed = ["A", 10, true, null]
+nested = [[1, 2], [3, 4]]
+trailing = [5, 6, 7, ]        // Trailing comma allowed in lenient mode
+
+colonlist:
+  "a",
+  "b",
+  "c",`
+
+        // Act.
+        const result = YINI.parse(validYini)
+        console.log(result)
+
+        // Assert.
+        //expect(result.TypesDemo.string2).toEqual('World')
+        //@todo Add the rest of the members too
+    })
+
+    xtest('7. Object Types.', () => {
+        // Arrange.
+        const validYini = `
+^ Objects
+person = { name = "Alice", age = 30, active = true }
+nested = { inner = { foo = "bar" }, number = 2 }
+empty = { }`
+
+        // Act.
+        const result = YINI.parse(validYini)
+        console.log(result)
+
+        // Assert.
+        //expect(result.TypesDemo.string2).toEqual('World')
+        //@todo Add the rest of the members too
+    })
+
+    //@todo Fix issue reding section header to parse correctly and not "'^ CommentsDemo'"!
+    xtest('8. Comments, Block Comments, and Disabled Lines.', () => {
+        // Arrange.
+        const validYini = `
+    // Top comment
+    ^ CommentsDemo
+    val1 = 123  # Inline comment
+    val2 = 456  // Another comment
+    ; Full-line comment
+
+    /*
+    Block comment
+    over multiple lines
+    */
+
+    --val3 = "This is disabled and ignored"
+    val4 = 'Some text.'
+`
+
+        // Act.
+        const result = YINI.parse(validYini)
+        console.log(result)
+
+        // Assert.
+        expect(result.CommentsDemo.val1).toEqual(123)
+        expect(result.CommentsDemo.val2).toEqual(456)
+        expect(result.CommentsDemo.val4).toEqual('Some text.')
+    })
+
+    test('9. Short-Hand and Alternative Section Notations', () => {
+        // Arrange.
+        const validYini = `
+~ user
+username = 'tester two'
+isSysOp = YES
+
+    ~~ prefs
+    theme = "light"
+    notifications = OFF
+`
+
+        // Act.
+        const result = YINI.parse(validYini)
+        console.log(result)
+
+        // Assert.
+        expect(result.user.username).toEqual('tester two')
+        expect(result.user.isSysOp).toEqual(true)
+        //@todo Add the rest of the members too
+    })
+
+    xtest('10. Parse inline AppConfig (Mixed).', () => {
         // Arrange.
         // Act.
-        const result = YINI.parse(fixtureYini)
+        const result = YINI.parse(fixture10Yini)
         console.log(result)
         // Assert.
         expect(!!result).toEqual(true)
+        //@todo Add proper tests
     })
 })

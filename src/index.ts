@@ -82,6 +82,7 @@ listItems = ["a", "b", "c"]
 // }
 // YINI.parse(invalidInput1)
 
-YINI.parse(`^title
-    another = 64`)
+YINI.parse(`^ Main
+app = 'YINI Smoke Test'
+version = 1`)
 // YINI.parse(`number = 42`)
