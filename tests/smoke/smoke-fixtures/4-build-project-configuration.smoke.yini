@@ -1,0 +1,24 @@
+/*
+
+Features:
+  - Sections
+  - Nested sections
+  - Lists
+  - Strings (double quotes), booleans, 
+
+*/
+
+^ Build
+entry = "src/index.ts"
+output = "dist/"
+source_map = true
+minify = true
+target = "ES2022"
+
+    ^^ Plugins
+    enabled = ["eslint", "prettier", "typedoc"]
+
+    ^^ Env
+    NODE_ENV = "production"
+    API_URL = "https://api.example.com"
+    DEBUG = false

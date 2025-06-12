@@ -1,0 +1,23 @@
+/*
+
+Features:
+  - Shorthand section markers
+  - Numbers, booleans
+  - Multi-line triple-quoted strings
+  - Null (upper case)
+
+*/
+
+^1 SMTP
+server = 'smtp.mailserver.com'
+port = 587
+use_tls = true
+username = 'mailer'
+password = 'change_me'
+
+	^2 Defaults
+	from_address = 'noreply@example.com'
+	reply_to = NULL
+	signature = """Kind regards,
+	The Example Team
+	"""

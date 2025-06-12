@@ -40,11 +40,11 @@ Here's an overview of the project's directory structure — to help users unders
 │   └── index.ts                  // Main entry point of the parser
 |
 ├── tests/                        // Test code
-│   ├── fixtures/                 // Test fixture data (for unit/integration tests)
 │   ├── smoke/                    // Smoke tests
 │   │   └── smoke-fixtures/       // Dedicated fixtures for smoke tests
 │   ├── unit/                     // Unit tests
 |   └── integration/              // Integration tests
+│   │   └── fixtures/             // Test fixture data (for integration tests)
 |
 ├── scripts/                      // Utility scripts (e.g. clean-ts-js.sh)
 ├── docs/                         // Project documentation

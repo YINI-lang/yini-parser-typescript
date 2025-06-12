@@ -1,0 +1,24 @@
+/*
+
+Features:
+  - Alternative section marker
+  - Nested sections
+  - Objects
+  - Strings (double quotes)
+  - Numbers, booleans, nulls
+
+*/
+
+~ Database
+type = "postgres"
+host = "localhost"
+port = 5432
+username = "admin"
+password = "s3cr3t"
+db_name = "myapp"
+pool = { max = 10, min = 2, idle = 10000 }
+
+    ~~ Options
+    ssl = off
+    connection_timeout = 30
+    retry_attempts = 3

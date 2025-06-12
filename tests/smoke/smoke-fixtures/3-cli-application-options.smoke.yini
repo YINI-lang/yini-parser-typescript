@@ -1,0 +1,26 @@
+/*
+
+Features:
+  - No newline at end of file
+  - Sections
+  - Strings (double quotes), numbers, booleans
+  - Lists (bracket and colon syntax)
+  - Line comment with ;
+
+*/
+
+^ CLI
+command = "deploy"
+dry_run = false
+verbosity = 2
+include_paths = ["src/", "lib/", "config/"]
+exclude_patterns: "*.test.ts", "*.spec.js"
+timeout = 60
+
+	; Output settings.
+	^^ Output
+	format = "json"
+	color = yes
+	log_level = "debug"
+
+# NOTE: No newline at end of file!

@@ -1,5 +1,5 @@
 /**
- * 10 Parse-Inline Smoke Tests
+ * 10 Parse-Inline (incl. literals) Smoke Tests
  *
  * To "quickly" test the main features and syntax of YINI.
  * @note These samples/fixtures are different than the tests for parseFile(..).

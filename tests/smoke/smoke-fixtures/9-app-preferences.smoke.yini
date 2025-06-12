@@ -1,0 +1,26 @@
+/*
+
+Features:
+  - No (explicit) section
+  - Lists (bracketed and colon)
+  - Strings, booleans, numbers
+  - File paths (with \)
+  - Everything in PascalCase
+  - Comments
+
+*/
+
+// App Preferences
+
+ShowTips = False
+RecentFiles = [
+  "\home\user\docs\report.docx",
+  "\home\user\docs\notes.txt",
+]
+FileFilters: "*.docx", "*.txt", "*.md"    # This is a colon list.
+CacheFolder = Null
+
+; Backup Preferences
+Backup = True
+BackupInterval = 10                       # In minutes.
+BackupPath = "\home\user\backups\"
