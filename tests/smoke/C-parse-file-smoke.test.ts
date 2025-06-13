@@ -6,6 +6,7 @@
 
 import path from 'path'
 import YINI from '../../src'
+import { debugPrint } from '../../src/utils/system'
 
 const DIR_OF_FIXTURES = 'smoke-fixtures'
 
@@ -25,7 +26,7 @@ describe('Parse File Smoke Tests:', () => {
 
         // Act.
         const result = YINI.parseFile(fullPath)
-        console.log(result)
+        debugPrint(result)
 
         // Assert.
         expect(result.Server.max_connections).toEqual(200)
@@ -39,7 +40,7 @@ describe('Parse File Smoke Tests:', () => {
 
         // Act.
         const result = YINI.parseFile(fullPath)
-        console.log(result)
+        debugPrint(result)
 
         // Assert.
         expect(result.profile.username).toEqual('robinkoda')
@@ -53,7 +54,7 @@ describe('Parse File Smoke Tests:', () => {
 
         // Act.
         const result = YINI.parseFile(fullPath)
-        console.log(result)
+        debugPrint(result)
 
         // Assert.
         expect(result.CLI.dry_run).toEqual(false)
@@ -67,7 +68,7 @@ describe('Parse File Smoke Tests:', () => {
 
         // Act.
         const result = YINI.parseFile(fullPath)
-        console.log(result)
+        debugPrint(result)
 
         // Assert.
         expect(result.Build.target).toEqual('ES2022')
@@ -81,7 +82,7 @@ describe('Parse File Smoke Tests:', () => {
 
         // Act.
         const result = YINI.parseFile(fullPath)
-        console.log(result)
+        debugPrint(result)
 
         // Assert.
         expect(result.Database.port).toEqual(5432)
@@ -95,7 +96,7 @@ describe('Parse File Smoke Tests:', () => {
 
         // Act.
         const result = YINI.parseFile(fullPath)
-        console.log(result)
+        debugPrint(result)
 
         // Assert.
         expect(result.Features.experimental_ui).toEqual(false)
@@ -109,7 +110,7 @@ describe('Parse File Smoke Tests:', () => {
 
         // Act.
         const result = YINI.parseFile(fullPath)
-        console.log(result)
+        debugPrint(result)
 
         // Assert.
         expect(result.SMTP.use_tls).toEqual(true)
@@ -123,7 +124,7 @@ describe('Parse File Smoke Tests:', () => {
 
         // Act.
         const result = YINI.parseFile(fullPath)
-        console.log(result)
+        debugPrint(result)
 
         // Assert.
         expect(result.Webhooks.enabled).toEqual(true)
@@ -137,7 +138,7 @@ describe('Parse File Smoke Tests:', () => {
 
         // Act.
         const result = YINI.parseFile(fullPath)
-        console.log(result)
+        debugPrint(result)
 
         // Assert.
         expect(result.base.CacheFolder).toEqual(null)
@@ -151,7 +152,7 @@ describe('Parse File Smoke Tests:', () => {
 
         // Act.
         const result = YINI.parseFile(fullPath)
-        console.log(result)
+        debugPrint(result)
 
         // Assert.
         expect(result.base.Alerts.slack_webhook).toEqual(null)

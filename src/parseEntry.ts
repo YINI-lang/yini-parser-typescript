@@ -1,7 +1,8 @@
 import { CharStreams, CommonTokenStream } from 'antlr4'
+import { isDebug } from './config/env'
 import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
-import { debugPrint, isDebug } from './utils/general'
+import { debugPrint } from './utils/system'
 import YINIVisitor from './YINIVisitor'
 
 interface IOptions {
@@ -36,16 +37,14 @@ export const parseYINI = (
     debugPrint('==== End parsing ==========================\n')
 
     debugPrint('visitor.visit(..): result:')
-    if (isDebug()) {
-        console.debug(result)
-    }
+    isDebug() && console.debug(result)
     debugPrint()
 
     if (options.isStrict) {
         throw Error('ERROR: Strict-mode not yet implemented')
     } else {
         debugPrint('visitor.visit(..): result:')
-        console.debug(result)
+        isDebug() && console.debug(result)
         return (result as any)?._base
     }
 }

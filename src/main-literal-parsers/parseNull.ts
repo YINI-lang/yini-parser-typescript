@@ -1,4 +1,5 @@
-import { debugPrint } from '../utils/general'
+import { isDebug } from '../config/env'
+import { debugPrint } from '../utils/system'
 
 const parseNullLiteral = (txt: string): null => {
     debugPrint('-> Entered parseNullLiteral(..)')

@@ -6,6 +6,7 @@
  */
 
 import YINI from '../../src'
+import { debugPrint } from '../../src/utils/system'
 
 const fixture10Yini = `
 ^ AppConfig
@@ -44,7 +45,7 @@ describe('Parse-Inline Smoke Tests:', () => {
         const validYini = 'number=42'
         // Act.
         const result = YINI.parse(validYini)
-        console.log(result)
+        debugPrint(result)
         // Assert.
         expect(result.number).toEqual(42)
     })
@@ -55,7 +56,7 @@ describe('Parse-Inline Smoke Tests:', () => {
 another=64`
         // Act.
         const result = YINI.parse(validYini)
-        console.log(result)
+        debugPrint(result)
         // Assert.
         expect(result.title.another).toEqual(64)
     })
@@ -67,7 +68,7 @@ name = 'YINI Smoke Test'
 version = 3`
         // Act.
         const result = YINI.parse(validYini)
-        console.log(result)
+        debugPrint(result)
         // Assert.
         expect(result.Main.name).toEqual('YINI Smoke Test')
         expect(result.Main.version).toEqual(3)
@@ -90,7 +91,7 @@ is_admin = True
 
         // Act.
         const result = YINI.parse(validYini)
-        console.log(result)
+        debugPrint(result)
 
         // Assert.
         expect(result.user.username).toEqual('tester')
@@ -119,7 +120,7 @@ empty_val =          # ← Null (lenient mode)`
 
         // Act.
         const result = YINI.parse(validYini)
-        console.log(result)
+        debugPrint(result)
 
         // Assert.
         expect(result.TypesDemo.string1).toEqual('Hello')
@@ -144,7 +145,7 @@ colonlist:
 
         // Act.
         const result = YINI.parse(validYini)
-        console.log(result)
+        debugPrint(result)
 
         // Assert.
         //expect(result.TypesDemo.string2).toEqual('World')
@@ -161,7 +162,7 @@ empty = { }`
 
         // Act.
         const result = YINI.parse(validYini)
-        console.log(result)
+        debugPrint(result)
 
         // Assert.
         //expect(result.TypesDemo.string2).toEqual('World')
@@ -189,7 +190,7 @@ empty = { }`
 
         // Act.
         const result = YINI.parse(validYini)
-        console.log(result)
+        debugPrint(result)
 
         // Assert.
         expect(result.CommentsDemo.val1).toEqual(123)
@@ -229,7 +230,7 @@ isSysOp = NO
 
         // Act.
         const result = YINI.parse(validYini)
-        console.log(result)
+        debugPrint(result)
 
         // Assert.
         expect(result.user.username).toEqual('tester two')
@@ -241,7 +242,7 @@ isSysOp = NO
         // Arrange.
         // Act.
         const result = YINI.parse(fixture10Yini)
-        console.log(result)
+        debugPrint(result)
         // Assert.
         expect(!!result).toEqual(true)
         //@todo Add proper tests

@@ -67,8 +67,8 @@ Here's an overview of the project's directory structure — to help users unders
 
 ## 📚 Documentation
 
-- [Development Setup](./docs/Development%20Setup.md) — How to run, test, and build the project.
-- [Style Guide](./docs/Style%20Guide.md) — Project conventions, naming patterns, and coding style.
+- [Development Setup](./docs/Development%20Setup.md) — How to run, test, and build the project, etc.
+- [Conventions](./docs/Conventions.md) — Project conventions, naming patterns, etc.
 
 ## License
 This project is licensed under the Apache-2.0 license - see the [LICENSE](<./LICENSE>) file for details.

@@ -1,21 +1,27 @@
 {
     "name": "yini-parser-ts",
     "version": "0.1.0",
+    "description": "A TypeScript parser for the YINI configuration format.",
+    "license": "Apache-2.0",
+    "author": "Marko K. Seppänen",
     "private": true,
     "main": "dist/index.js",
     "scripts": {
-        "antlr": "make generate",
-        "test": "jest",
-        "test:smoke": "cross-env IS_DEBUG='' jest tests/smoke",
+        "start": "cross-env NODE_ENV=production APP_ENV=production node dist/index.js",
+        "start:dev": "cross-env NODE_ENV=development APP_ENV=local ts-node src/index.ts",
+        "start:dev:debug": "cross-env IS_DEBUG=1 npm run start:dev",
+        "start-w-clean": "npm run tsc && npm run clean:ts-js && npm run start:dev",
+        "test": "cross-env NODE_ENV=test APP_ENV=local jest --verbose --runInBand",
+        "test:smoke": "cross-env NODE_ENV=test APP_ENV=local jest tests/smoke --verbose --runInBand",
+        "test:debug": "cross-env IS_DEBUG=1 npm run test",
+        "test:smoke:debug": "cross-env IS_DEBUG=1 npm run test:smoke",
+        "ci:test": "cross-env NODE_ENV=test APP_ENV=ci jest --runInBand",
+        "ci:test:smoke": "cross-env NODE_ENV=test APP_ENV=ci jest tests/smoke --runInBand",
         "tsc": "npx tsc -p ./tsconfig.json",
-        "start": "cross-env IS_DEBUG=1 ts-node src/index.ts",
-        "start-w-clean": "npm run tsc && npm run clean:ts-js && npm run start",
         "lint": "eslint src --ext .ts",
-        "clean:ts-js": "bash scripts/clean-ts-js.sh"
+        "clean:ts-js": "bash scripts/clean-ts-js.sh",
+        "antlr": "make generate"
     },
-    "author": "Marko K. Seppänen",
-    "license": "Apache-2.0",
-    "description": "A TypeScript parser for the YINI configuration format.",
     "dependencies": {
         "antlr4": "^4.13.2"
     },

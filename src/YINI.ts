@@ -1,6 +1,7 @@
 import fs from 'fs'
+import { isDebug, isDev } from './config/env'
 import { parseYINI } from './parseEntry'
-import { debugPrint, isDebug } from './utils/general'
+import { debugPrint, devPrint } from './utils/system'
 
 export default class YINI {
     public static parse = (yiniContent: string): any => {
@@ -16,9 +17,10 @@ export default class YINI {
         const result = parseYINI(yiniContent)
         debugPrint('==== End call parse ==========================\n')
 
-        debugPrint('YINI.parse(..): result:')
-        if (isDebug()) {
-            console.debug(result)
+        if (isDev()) {
+            console.log()
+            devPrint('YINI.parse(..): result:')
+            console.log(result)
         }
 
         return result
@@ -43,8 +45,14 @@ export default class YINI {
 
         if (hasNoNewlineAtEOF) {
             console.warn(
-                "No newline at end of file, it's a good practice (and etc.) to end a file with a newline",
+                `No newline at end of file, it\'s recommended to end a file with a newline. File:\n"${fullPath}"`,
             )
+        }
+
+        if (isDev()) {
+            console.log()
+            devPrint('YINI.parseFile(..): result:')
+            console.log(result)
         }
 
         return result

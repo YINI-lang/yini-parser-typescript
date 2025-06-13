@@ -1,6 +1,8 @@
 YINI Parser TypeScript - Project Readme
 =======================================
 
+In this document coding and project practices are outlined.
+
 ## CJS (CommonJS) vs ESM (ECMAScript Modules)
 This project uses CommonJS (and not Pure ESM), due to it's currently better compatible with Jest and other tools.
 

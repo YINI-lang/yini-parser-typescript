@@ -26,7 +26,7 @@ import parseBooleanLiteral from './main-literal-parsers/parseBoolean'
 import parseNullLiteral from './main-literal-parsers/parseNull'
 import parseNumberLiteral from './main-literal-parsers/parseNumber'
 import parseStringLiteral from './main-literal-parsers/parseString'
-import { debugPrint, isDebug } from './utils/general'
+import { debugPrint } from './utils/system'
 
 // const isDebug = !!process.env.IS_DEBUG
 

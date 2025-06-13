@@ -12,7 +12,7 @@
 */
 
 import { APP_ENV, NODE_ENV } from './config/env'
-import { debugPrint, isDebug } from './utils/general'
+import { debugPrint } from './utils/system'
 import YINI from './YINI'
 
 export { default } from './YINI'
