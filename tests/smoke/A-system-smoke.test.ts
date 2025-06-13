@@ -1,10 +1,12 @@
+import { debugPrint } from '../../src/utils/system'
+
 /**
  * System Smoke Tests.
  */
 describe('System Smoke Tests:', () => {
     beforeAll(() => {})
     beforeAll(() => {
-        console.log('beforeAll')
+        debugPrint('beforeAll')
 
         // const isDebug = !!process.env.IS_DEBUG
         // if (!isDebug) {
