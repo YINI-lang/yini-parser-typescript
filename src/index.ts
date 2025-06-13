@@ -11,17 +11,20 @@
 	/END
 */
 
-import { APP_ENV, NODE_ENV } from './config/env'
+import { APP_ENV, isDebug, isDev, NODE_ENV } from './config/env'
 import { debugPrint } from './utils/system'
 import YINI from './YINI'
 
 export { default } from './YINI'
 
-console.log('process.env?.NODE_ENV = ' + process.env?.NODE_ENV)
-console.log('process.env?.APP_ENV = ' + process.env?.APP_ENV)
+if (isDev() || isDebug()) {
+    console.log('process.env?.NODE_ENV = ' + process.env?.NODE_ENV)
+    console.log('process.env?.APP_ENV  = ' + process.env?.APP_ENV)
+    console.log('process.env?.IS_DEBUG = ' + process.env?.IS_DEBUG)
+}
 
-console.log('NODE_ENV = ' + NODE_ENV)
-console.log('APP_ENV = ' + APP_ENV)
+// console.log('NODE_ENV = ' + NODE_ENV)
+// console.log('APP_ENV = ' + APP_ENV)
 
 debugPrint()
 debugPrint('-> Entered index.ts')

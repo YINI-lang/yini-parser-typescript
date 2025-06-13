@@ -2,7 +2,7 @@
 
 ## Pre-requisites
 - `nvm` (Node Version Manager)
-- `java` (Needed to generate new code ANTLR)
+- `java` (Needed to generate new code ANTLR, Java 22+)
 
 **Only if Windows:**
 - `Git Bash`
@@ -34,7 +34,7 @@ package.json    → Node.js dependencies, scripts, etc.
 2. Make sure you are running the correct version of Node, it should match or be higher than the version in the file `.nvmrc`.
     - You can check the current version of node by typing: `node -v`
 3. In here type (to just run the parser quickly):
-    > npm start
+    > npm start:dev
 4. (Optionally) Runs all (Jest) tests.
    > npm test
 
@@ -42,7 +42,7 @@ package.json    → Node.js dependencies, scripts, etc.
 ## Available npm scripts
 Here's a short description of each script (in `package.json`) in this project.
 
-- `npm start` — Runs the parser (`src/index.ts`) directly using `ts-node`.
+- `npm start:dev` — Runs the parser (`src/index.ts`) directly using `ts-node`.
 - `npm test` — Runs all (Jest) tests.
 - `npm run test:smoke` — Runs only the smoke tests (located in `tests/smoke`).
 - `npm run antlr` — Runs the ANTLR4 code generation.

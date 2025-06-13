@@ -1,5 +1,5 @@
-YINI Parser TypeScript - Project Readme
-=======================================
+YINI Parser TypeScript - Project Conventions
+============================================
 
 In this document coding and project practices are outlined.
 

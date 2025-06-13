@@ -8,6 +8,7 @@
     "main": "dist/index.js",
     "scripts": {
         "start": "cross-env NODE_ENV=production APP_ENV=production node dist/index.js",
+        "start:debug": "cross-env IS_DEBUG=1 npm run start",
         "start:dev": "cross-env NODE_ENV=development APP_ENV=local ts-node src/index.ts",
         "start:dev:debug": "cross-env IS_DEBUG=1 npm run start:dev",
         "start-w-clean": "npm run tsc && npm run clean:ts-js && npm run start:dev",
@@ -20,7 +21,8 @@
         "tsc": "npx tsc -p ./tsconfig.json",
         "lint": "eslint src --ext .ts",
         "clean:ts-js": "bash scripts/clean-ts-js.sh",
-        "antlr": "make generate"
+        "antlr": "make generate",
+        "build": "tsc"
     },
     "dependencies": {
         "antlr4": "^4.13.2"
