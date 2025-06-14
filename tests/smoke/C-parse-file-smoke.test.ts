@@ -8,7 +8,7 @@ import path from 'path'
 import YINI from '../../src'
 import { debugPrint } from '../../src/utils/system'
 
-const DIR_OF_FIXTURES = 'smoke-fixtures'
+const DIR_OF_FIXTURES = './smoke-fixtures'
 
 /**
  * Parse File Smoke Tests.
@@ -26,6 +26,7 @@ describe('Parse File Smoke Tests:', () => {
 
         // Act.
         const result = YINI.parseFile(fullPath)
+        debugPrint('fullPath = ' + fullPath)
         debugPrint(result)
 
         // Assert.

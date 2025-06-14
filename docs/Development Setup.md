@@ -9,12 +9,22 @@
 
 ---
 
+## 🏗 Main Techs
+- Node.js
+- TypeScript
+- Jest (tests)
+- GitHub Actions (CI)
+- ESLint (code style / linting)
+- ANTLR4 grammar integration
+
+---
+
 Notes:
 - The parser currently uses CommonJS (CJS module format) module format for maximum compatibility with Jest and Node.js.
 
 ---
 
-## Project Structure
+## Project Overview
 Brief overview of the directory structure in this project:
 ```txt
 src/            → Source code
@@ -23,6 +33,8 @@ docs/           → Documentation files
 dist/           → Build output
 package.json    → Node.js dependencies, scripts, etc.
 ```
+
+See more in the section, "Project Structure".
 
 ---
 
@@ -50,6 +62,7 @@ Here's a short description of each script (in `package.json`) in this project.
 - `npm run start-w-clean` — Runs the TypeScript compiler, cleans old `.js` files, and then starts the project. Useful for clean testing and running the parser.
 - `npm run lint` — Runs ESLint on all `.ts` files in `src/` to check code style and catch possible errors.
 - `npm run clean:ts-js` — Runs `scripts/clean-ts-js.sh` to remove compiled `.js` and `.js.map` files. Helps keep the working directory clean, since we use `ts-node` to run `.ts` files directly.
+- `prepublishOnly` — This is a npm lifecycle script, it runs automatically ONLY when one runs `npm publish` or `npm pack`. This ensures that every time when publishing, the code is linted, tested, and built, just before it goes to npm.
 
 ### Running All Tests
 To run all tests (smoke, unit, integration):
@@ -69,6 +82,47 @@ Generating source code from grammar files with ANTLR4. Usually this is not neede
     > `npm run antlr`
   * B. In `Git Bash`, `Bash` (or possibly in `CMD` depending on your setup). In the root, type:
     > make generate
+
+---
+
+## Project Structure
+Here's an overview of the project's directory structure — to help users understand where things are and how the project is organized.
+
+```txt
+/
+├── grammar/                      // ANTLR4 grammar source files (.g4)
+│   ├── v1.x.x-beta/              // Versioned grammar snapshots  (archived)
+│   └── ...
+|
+├── src/                          // Main source code
+│   ├── grammar/                  // Generated ANTLR4 parser/lexer/visitor (.ts)
+│   ├── literal-parsers/          // Literal parser implementations
+│   ├── utils/                    // Utility modules
+│   └── index.ts                  // Main entry point of the parser
+|
+├── tests/                        // Test code
+│   ├── smoke/                    // Smoke tests
+│   │   └── smoke-fixtures/       // Dedicated fixtures for smoke tests
+│   ├── unit/                     // Unit tests
+|   └── integration/              // Integration tests
+│   │   └── fixtures/             // Test fixture data (for integration tests)
+|
+├── scripts/                      // Utility scripts (e.g. clean-ts-js.sh)
+├── docs/                         // Project documentation
+├── libs/                         // Vendored libraries (e.g. antlr4)
+│   └── antlr4/
+├── dist/                         // Compiled JS artifacts (output local directory)
+├── .github/                      // GitHub workflows (CI/CD)
+│   └── workflows/
+├── .husky/                       // Git hooks (managed by husky)
+├── .vscode/                      // VSCode project settings (optional)
+├── Makefile                      // Build automation (ANTLR4 code generation, etc.)
+├── package.json                  // Node.js dependencies, scripts, etc.
+├── tsconfig.json                 // Config for TypeScript
+├── jest.config.js                // Config for Jest testing
+├── .gitignore                    // Git exclusions
+└── README.md                     // Project overview and documentation
+```
 
 ---
 
