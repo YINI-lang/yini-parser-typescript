@@ -11,7 +11,7 @@
 	/END
 */
 
-import { APP_ENV, isDebug, isDev, NODE_ENV } from './config/env'
+import { APP_ENV, isDebug, isDev, isProd, NODE_ENV } from './config/env'
 import { debugPrint } from './utils/system'
 import YINI from './YINI'
 
@@ -38,21 +38,24 @@ debugPrint('debugTestObj:')
 debugPrint(debugTestObj)
 debugPrint()
 
-const invalidInput1 = `
+if (isProd()) {
+    // Do nothing, and exit.
+} else {
+    const invalidInput1 = `
 ^ Settings
 fruit = "Pear"
 number = 5
 value q= "something"
 `
 
-const invalidInput2 = `
+    const invalidInput2 = `
 ^ 	Config
 varAge = 30
 varName = abcd
 varNull = NULL
 `
 
-const input1 = `
+    const input1 = `
 ^ 	SectionName
 varBool = true
 varBool2 = off
@@ -66,7 +69,7 @@ varE3 = 6.5E23
 /END
 `
 
-const input2 = `
+    const input2 = `
 ^ 	Config
 varAge = 30
 varName = "Alice"
@@ -77,22 +80,23 @@ listItems = ["a", "b", "c"]
 /END
 `
 
-// const input = `
-// # 	Config`;
+    // const input = `
+    // # 	Config`;
 
-// debugPrint('input2:')
-// if (isDebug()) {
-//     console.debug(input2)
-// }
-// YINI.parse(input2)
+    // debugPrint('input2:')
+    // if (isDebug()) {
+    //     console.debug(input2)
+    // }
+    // YINI.parse(input2)
 
-// debugPrint('invalidInput1:')
-// if (isDebug()) {
-//     console.debug(invalidInput1)
-// }
-// YINI.parse(invalidInput1)
+    // debugPrint('invalidInput1:')
+    // if (isDebug()) {
+    //     console.debug(invalidInput1)
+    // }
+    // YINI.parse(invalidInput1)
 
-YINI.parse(`^ Main
+    YINI.parse(`^ Main
 app = 'YINI Smoke Test'
 version = 1`)
-// YINI.parse(`number = 42`)
+    // YINI.parse(`number = 42`)
+}
