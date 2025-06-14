@@ -1,5 +1,5 @@
 /**
- * 10 Parse-Inline (incl. literals) Smoke Tests
+ * Around 10 Parse-Inline (incl. literals) Smoke Tests
  *
  * To "quickly" test the main features and syntax of YINI.
  * @note These samples/fixtures are different than the tests for parseFile(..).
@@ -40,7 +40,7 @@ describe('Parse-Inline Smoke Tests:', () => {
     beforeAll(() => {})
 
     //@todo Need to fix so a single member is attached or returned with the implicit base object.
-    xtest('1. Shortest Valid Code (a single member).', () => {
+    xtest('1.a. Shortest Valid Code (a single member).', () => {
         // Arrange.
         const validYini = 'number=42'
         // Act.
@@ -50,7 +50,17 @@ describe('Parse-Inline Smoke Tests:', () => {
         expect(result.number).toEqual(42)
     })
 
-    test('2. Shortest Valid Code (section with a single member).', () => {
+    test('1.b. Shortest Valid Code (a single section title).', () => {
+        // Arrange.
+        const validYini = '^Title'
+        // Act.
+        const result = YINI.parse(validYini)
+        debugPrint(result)
+        // Assert.
+        expect(result.Title).toBeDefined()
+    })
+
+    test('1.c. Shortest Valid Code (section with a single member).', () => {
         // Arrange.
         const validYini = `^title
 another=64`
@@ -59,6 +69,18 @@ another=64`
         debugPrint(result)
         // Assert.
         expect(result.title.another).toEqual(64)
+    })
+
+    test('2. Short Valid Code (tabbed section with a negative number).', () => {
+        // Arrange.
+        const validYini = `
+    \t^ Section
+    \tnumber = -1`
+        // Act.
+        const result = YINI.parse(validYini)
+        debugPrint(result)
+        // Assert.
+        expect(result.Section.number).toEqual(-1)
     })
 
     test('3. Minimal Valid Code (section with couple of members).', () => {
@@ -75,12 +97,12 @@ version = 3`
     })
 
     //@todo Needs implementing of section with sections for this pass.
-    xtest('4. Sections, Nesting, and Identifiers.', () => {
+    xtest('4. Nested Sections, Tabbed Nesting, Backticked Names.', () => {
         // Arrange.
         const validYini = `
 ^ user
 username = "tester"
-is_admin = True
+\`Is Admin\` = True
 
     ^^ prefs
     theme = 'dark'
@@ -106,17 +128,17 @@ is_admin = True
     test('5. All Key/Value (simple) Types.', () => {
         // Arrange.
         const validYini = `
-^ TypesDemo
-string1 = "Hello"
-string2 = 'World'
-number1 = 123
-number2 = -5.7
-hexval = 0xFFEE
-binval = %1011
-bool_true = yes
-bool_false = OFF
-nullval = null
-empty_val =          # ← Null (lenient mode)`
+    ^ TypesDemo
+    string1 = "Hello"
+    string2 = 'World'
+    number1 = 123
+    number2 = -5.7
+    hexval = 0xFFEE
+    binval = %1011
+    bool_true = yes
+    \`bool false\` = OFF
+    nullval = null
+    empty_val =          # ← Null (lenient mode)`
 
         // Act.
         const result = YINI.parse(validYini)

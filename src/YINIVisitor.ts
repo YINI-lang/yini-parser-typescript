@@ -151,7 +151,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
         let line: string = ''
         try {
-            line = '' + ctx.SECTION_HEAD().getText()
+            line = '' + ctx.SECTION_HEAD().getText().trim()
             this.readLines.push(line)
         } catch (error) {
             const len = this.readLines.length
