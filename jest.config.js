@@ -12,4 +12,5 @@ module.exports = {
     transform: {
         '^.+\\.tsx?$': 'ts-jest',
     },
+    testPathIgnorePatterns: ['/dist/', '/node_modules/'],
 }
