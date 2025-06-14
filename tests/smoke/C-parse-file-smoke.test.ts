@@ -13,7 +13,7 @@ const DIR_OF_FIXTURES = './smoke-fixtures'
 /**
  * Parse File Smoke Tests.
  */
-describe('Parse File Smoke Tests:', () => {
+describe('Parse-File Smoke Tests:', () => {
     // Dir with smoke fixtures.
     const baseDir = path.join(__dirname, DIR_OF_FIXTURES)
 
