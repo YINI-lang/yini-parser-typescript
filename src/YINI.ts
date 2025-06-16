@@ -4,6 +4,8 @@ import { parseYINI } from './parseEntry'
 import { debugPrint, devPrint } from './utils/system'
 
 export default class YINI {
+    public static fullPath: string = '' // Used in error reporting.
+
     public static parse = (yiniContent: string): any => {
         debugPrint('-> Entered static parse(..) in class YINI\n')
 
@@ -41,7 +43,8 @@ export default class YINI {
             hasNoNewlineAtEOF = true
         }
 
-        const result = parseYINI(content)
+        YINI.fullPath = fullPath
+        const result: any = parseYINI(content)
 
         if (hasNoNewlineAtEOF) {
             console.warn(

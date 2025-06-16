@@ -1,7 +1,7 @@
 {
     "name": "yini-parser-ts",
     "version": "0.1.0",
-    "description": "A TypeScript parser for the YINI configuration format.",
+    "description": "A TypeScript parser for YINI, an INI-inspired configuration format.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [

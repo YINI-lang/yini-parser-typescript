@@ -21,7 +21,7 @@ import {
     YiniContext,
 } from './grammar/YiniParser.js'
 import YiniParserVisitor from './grammar/YiniParserVisitor'
-import { InvalidDataHandler } from './InvalidDataHandler'
+import { IErrorContext, InvalidDataHandler } from './InvalidDataHandler'
 import parseBooleanLiteral from './main-literal-parsers/parseBoolean'
 import parseNullLiteral from './main-literal-parsers/parseNull'
 import parseNumberLiteral from './main-literal-parsers/parseNumber'
@@ -80,7 +80,7 @@ interface YIResult {
 export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     //export default class YINIVisitor extends YiniParserVisitor<any> {
 
-    private invalidDataInstance: InvalidDataHandler | null = null
+    private instanceInvalidData: InvalidDataHandler | null = null
     private readLines: string[] = []
 
     /**
@@ -91,7 +91,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     // visitYini?: (ctx: YiniContext) => IResult;
     // visitYini = (ctx: YiniContext): IResult => {
     visitYini = (ctx: YiniContext): any => {
-        this.invalidDataInstance =
+        this.instanceInvalidData =
             InvalidDataHandler.getInstance('1-Abort-on-Errors')
         debugPrint()
         debugPrint('abcde99')
@@ -152,18 +152,12 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         let line: string = ''
         try {
             line = '' + ctx.SECTION_HEAD().getText().trim()
-            this.readLines.push(line)
+            // this.readLines.push(line)
         } catch (error) {
-            const len = this.readLines.length
-            const syntaxLine: string = !len
-                ? ''
-                : this.readLines[len - 1].trim()
-            let msg: string =
-                'Syntax is wrong somewhere in or after around the following (YINI):\n'
-            msg += '\`' + syntaxLine + '\`'
-            this.invalidDataInstance!.handleData('Syntax-Error', msg)
+            const msg: string = `Unexpected syntax while parsing a section head (section marker or section title)`
+            this.instanceInvalidData!.handleData(ctx, 'Syntax-Error', msg)
         }
-        debugPrint(`Got line = >>>${line}<<<`)
+        // debugPrint(`Got line = >>>${line}<<<`)
 
         // --- Determine nesting level. ---------
         const lineLen: number = line.length
@@ -266,10 +260,17 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     // visitMember?: (ctx: MemberContext) => IResult;
     visitMember = (ctx: MemberContext) => {
         debugPrint('-> Entered visitMember(..)')
-        debugPrint('key   = ' + ctx.KEY().getText())
+        debugPrint('key   = ' + ctx.KEY()?.getText())
         debugPrint('ctx.value() = ' + ctx.value())
 
-        const key = ctx.KEY().getText()
+        let key: string = ''
+        try {
+            key = ctx.KEY().getText()
+        } catch (error) {
+            const msg: string = `Unexpected syntax while parsing a member (key-value pair)`
+            this.instanceInvalidData!.handleData(ctx, 'Syntax-Error', msg)
+        }
+
         const value = ctx.value() ? this.visit(ctx.value()) : null
         debugPrint('value = ' + value + '  @visitMember(..)')
 
