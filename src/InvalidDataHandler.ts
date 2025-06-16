@@ -2,30 +2,6 @@ import { isDebug } from './config/env'
 import { debugPrint } from './utils/system'
 import YINI from './YINI'
 
-// class CustomError extends Error {
-//     constructor(
-//         public code: string,
-//         public context: Record<string, unknown>,
-//     ) {
-//         super(code)
-
-//         this.name = 'CustomError'
-//     }
-// }
-
-/*
-export interface IErrorContext {
-    start: {
-        line: number
-        column: number
-    }
-    end?: {
-        line?: number
-        column?: number
-    }
-}
-*/
-
 interface IIssuePayload {
     type: TIssueType
     msgWhatOrWhy: string
@@ -65,9 +41,7 @@ const issueTitle: string[] = [
 
 export class InvalidDataHandler {
     private static singleton: InvalidDataHandler | null = null
-    // `strict` as well as `lenient` parsing modes.
     private bailThreshold: TBailThreshold
-    // private ectx: IErrorContext | null = null
 
     private constructor(threshold: TBailThreshold = '1-Abort-on-Errors') {
         this.bailThreshold = threshold
@@ -138,10 +112,6 @@ export class InvalidDataHandler {
         debugPrint('ctx.stop?.line   = ' + ctx.stop?.line)
         debugPrint('ctx.stop?.column = ' + ctx.stop?.column)
 
-        // this.ectx = {
-        //     start: { line: ctx.start.line, column: ctx.start.line },
-        //     end: { line: ctx.stop?.line, column: ctx.stop?.line },
-        // }
         const lineNum: number = ctx.start.line // Column (1-based).
         const startCol = ++ctx.start.column // Column (0-based).
         const endCol = (ctx.stop?.column || 0) + 1 // Column (0-based).
@@ -153,9 +123,9 @@ export class InvalidDataHandler {
             msgWhatOrWhy += `\nAt line: ${lineNum}, column(s): ${startCol}-${endCol}`
         }
 
-        console.log('bailThreshold = ' + this.bailThreshold)
-        console.log('lineNum = ' + ctx.start.lineNum)
-        console.log()
+        debugPrint('bailThreshold = ' + this.bailThreshold)
+        debugPrint('lineNum = ' + lineNum)
+        debugPrint()
 
         const issue: IIssuePayload = this.makeIssuePayload(
             type,
@@ -164,7 +134,6 @@ export class InvalidDataHandler {
             startCol,
             endCol,
         )
-        // msgHintOrFix: string = '', // Hint or wow to fix.
 
         switch (type) {
             case 'Syntax-Error':
@@ -211,67 +180,28 @@ export class InvalidDataHandler {
         }
     }
 
-    // handleError(error: ValidationError) {
-    //     // log, throw, notify, etc.
-    // }
-
-    // handleWarning(warning: ValidationWarning) {
-    //     // show a warning, log, etc.
-    // }
-
-    // private printLineColInfo = (msg: string) => {
-    //     console.log('XXXQQQWWW = ' + YINI.fullPath)
-    // }
-
     private emitInternalError = (msg: string = 'Something went wrong!') => {
         console.error(issueTitle[0]) // Print the issue title.
         console.error(msg)
-        // console.error() // Newline.
-        // if (YINI.fullPath) {
-        //     const lineNumber = this.ectx?.start.line || 0
-        //     console.error('In file: \"' + YINI.fullPath + '\": ' + lineNumber)
-        // }
-        //        console.error(msg)
-        // this.printLineColInfo(msg)
     }
 
     private emitSyntaxError = (msg: string) => {
         console.error(issueTitle[1]) // Print the issue title.
         console.error(msg)
-        // console.error() // Newline.
-        // if (YINI.fullPath) {
-        //     const lineNumber = this.ectx?.start.line || 0
-        //     console.error('In file: \"' + YINI.fullPath + '\": ' + lineNumber)
-        // }
-        // console.error(msg)
-        // this.printLineColInfo(msg)
     }
 
     private emitSyntaxWarning = (msg: string) => {
         console.warn(issueTitle[2]) // Print the issue title.
-        // console.warn() // Newline.
-        // if (YINI.fullPath) {
-        //     const lineNumber = this.ectx?.start.line || 0
-        //     console.warn('In file: \"' + YINI.fullPath + '\": ' + lineNumber)
-        // }
-        // console.warn(msg)
-        // this.printLineColInfo(msg)
         console.warn(msg)
     }
 
     private emitNotice = (msg: string) => {
         console.warn(issueTitle[3]) // Print the issue title.
-        // YINI.fullPath && console.warn('In file: \"' + YINI.fullPath + '\"')
-        // console.warn(msg)
-        // this.printLineColInfo(msg)
         console.warn(msg)
     }
 
     private emitInfo = (msg: string) => {
         console.info(issueTitle[4]) // Print the issue title.
-        // YINI.fullPath && console.info('In file: \"' + YINI.fullPath + '\"')
-        // console.info(msg) // Newline.
-        // this.printLineColInfo(msg)
         console.info(msg)
     }
 }
