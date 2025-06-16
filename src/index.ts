@@ -99,6 +99,7 @@ listItems = ["a", "b", "c"]
 	^ Main
 app = 'YINI Smoke Test'
 version = 1
+sdf==99
 	^^ SubSection
 	varBool=OFF
 `)

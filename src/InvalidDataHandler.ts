@@ -56,11 +56,11 @@ export type TIssueType =
 // titles, and to easier check that all titles match with relation to
 // the other titles.
 const issueTitle: string[] = [
-    'FATAL ERROR', // 'Internal-Error'.
-    'Syntax Error', // 'Syntax-Error'.
-    'Syntax Warning',
-    'Notice',
-    'Info',
+    'FATAL ERROR!', // 'Internal-Error'.
+    'Syntax error.', // 'Syntax-Error'.
+    'Syntax warning.',
+    'Notice:',
+    'Info:',
 ]
 
 export class InvalidDataHandler {
@@ -225,6 +225,7 @@ export class InvalidDataHandler {
 
     private emitInternalError = (msg: string = 'Something went wrong!') => {
         console.error(issueTitle[0]) // Print the issue title.
+        console.error(msg)
         // console.error() // Newline.
         // if (YINI.fullPath) {
         //     const lineNumber = this.ectx?.start.line || 0
@@ -236,6 +237,7 @@ export class InvalidDataHandler {
 
     private emitSyntaxError = (msg: string) => {
         console.error(issueTitle[1]) // Print the issue title.
+        console.error(msg)
         // console.error() // Newline.
         // if (YINI.fullPath) {
         //     const lineNumber = this.ectx?.start.line || 0
@@ -254,13 +256,15 @@ export class InvalidDataHandler {
         // }
         // console.warn(msg)
         // this.printLineColInfo(msg)
+        console.warn(msg)
     }
 
     private emitNotice = (msg: string) => {
         console.warn(issueTitle[3]) // Print the issue title.
         // YINI.fullPath && console.warn('In file: \"' + YINI.fullPath + '\"')
-        // console.warn(msg) // Newline.
+        // console.warn(msg)
         // this.printLineColInfo(msg)
+        console.warn(msg)
     }
 
     private emitInfo = (msg: string) => {
@@ -268,5 +272,6 @@ export class InvalidDataHandler {
         // YINI.fullPath && console.info('In file: \"' + YINI.fullPath + '\"')
         // console.info(msg) // Newline.
         // this.printLineColInfo(msg)
+        console.info(msg)
     }
 }
