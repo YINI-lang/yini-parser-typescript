@@ -1,3 +1,4 @@
+import { isDebug } from './config/env'
 import { debugPrint } from './utils/system'
 import YINI from './YINI'
 
@@ -12,6 +13,7 @@ import YINI from './YINI'
 //     }
 // }
 
+/*
 export interface IErrorContext {
     start: {
         line: number
@@ -22,8 +24,23 @@ export interface IErrorContext {
         column?: number
     }
 }
+*/
 
-export type TSeverityThreshold =
+interface IIssuePayload {
+    type: TIssueType
+    msgWhatOrWhy: string
+    // msgHintOrFix: string = '', // Hint or wow to fix.
+    start: {
+        line: number
+        column: number
+    }
+    end?: {
+        line?: number
+        column?: number
+    }
+}
+
+export type TBailThreshold =
     | '0-Ignore-Errors'
     | '1-Abort-on-Errors'
     | '2-Abort-Even-on-Warnings'
@@ -49,11 +66,11 @@ const issueTitle: string[] = [
 export class InvalidDataHandler {
     private static singleton: InvalidDataHandler | null = null
     // `strict` as well as `lenient` parsing modes.
-    private severityThreshold: TSeverityThreshold
-    private ectx: IErrorContext | null = null
+    private bailThreshold: TBailThreshold
+    // private ectx: IErrorContext | null = null
 
-    private constructor(threshold: TSeverityThreshold = '1-Abort-on-Errors') {
-        this.severityThreshold = threshold
+    private constructor(threshold: TBailThreshold = '1-Abort-on-Errors') {
+        this.bailThreshold = threshold
     }
 
     /* '1-Abort-on-Errors' is the default.
@@ -66,7 +83,7 @@ export class InvalidDataHandler {
             - Level 2 = abort even on warnings
      */
     public static getInstance = (
-        threshold: TSeverityThreshold = '1-Abort-on-Errors',
+        threshold: TBailThreshold = '1-Abort-on-Errors',
     ) => {
         if (!this.singleton) {
             this.singleton = new InvalidDataHandler(threshold)
@@ -75,13 +92,40 @@ export class InvalidDataHandler {
         return this.singleton
     }
 
-    handleData = (
+    makeIssuePayload = (
+        type: TIssueType,
+        msgWhatOrWhy: string,
+        lineNum: number,
+        startCol: number,
+        endCol: number,
+        // msgHintOrFix: string = '', // Hint or wow to fix.
+    ): IIssuePayload => {
+        const issue: IIssuePayload = {
+            type,
+            msgWhatOrWhy,
+            // msgHintOrFix: string = '', // Hint or wow to fix.
+            start: {
+                line: lineNum,
+                column: startCol,
+            },
+            end: {
+                line: lineNum,
+                column: endCol,
+            },
+        }
+
+        debugPrint('issue:')
+        isDebug() && console.log(issue)
+        return issue
+    }
+
+    pushOrBail = (
         ctx: any,
         type: TIssueType,
-        whyOrInfoMsg: string,
-        // howMsg: string = '',
+        msgWhatOrWhy: string,
+        // msgHintOrFix: string = '', // Hint or wow to fix.
     ) => {
-        debugPrint('-> handleData(..)')
+        debugPrint('-> pushOrBail(..)')
         debugPrint('ctx.exception?.name       =' + ctx.exception?.name)
         debugPrint('ctx.exception?.message    = ' + ctx.exception?.message)
         debugPrint(
@@ -98,57 +142,67 @@ export class InvalidDataHandler {
         //     start: { line: ctx.start.line, column: ctx.start.line },
         //     end: { line: ctx.stop?.line, column: ctx.stop?.line },
         // }
+        const lineNum: number = ctx.start.line // Column (1-based).
+        const startCol = ++ctx.start.column // Column (0-based).
+        const endCol = (ctx.stop?.column || 0) + 1 // Column (0-based).
 
         // Patch message with the offending line number.
-        whyOrInfoMsg += ':' + ctx.start.line
+        msgWhatOrWhy += ':' + ctx.start.line
 
         if (process.env.NODE_ENV === 'test') {
-            const lineNum: number = ctx.start.line // Column (1-based).
-            const startCol = ++ctx.start.column // Column (0-based).
-            const endCol = (ctx.stop?.column || 0) + 1 // Column (0-based).
-            whyOrInfoMsg += `\nAt line: ${lineNum}, column(s): ${startCol}-${endCol}`
+            msgWhatOrWhy += `\nAt line: ${lineNum}, column(s): ${startCol}-${endCol}`
         }
 
-        console.log('severityThreshold = ' + this.severityThreshold)
+        console.log('bailThreshold = ' + this.bailThreshold)
         console.log('lineNum = ' + ctx.start.lineNum)
         console.log()
+
+        const issue: IIssuePayload = this.makeIssuePayload(
+            type,
+            msgWhatOrWhy,
+            lineNum,
+            startCol,
+            endCol,
+        )
+        // msgHintOrFix: string = '', // Hint or wow to fix.
+
         switch (type) {
             case 'Syntax-Error':
-                this.emitSyntaxError(whyOrInfoMsg)
+                this.emitSyntaxError(msgWhatOrWhy)
                 if (
-                    this.severityThreshold === '1-Abort-on-Errors' ||
-                    this.severityThreshold === '2-Abort-Even-on-Warnings'
+                    this.bailThreshold === '1-Abort-on-Errors' ||
+                    this.bailThreshold === '2-Abort-Even-on-Warnings'
                 ) {
                     if (process.env.NODE_ENV === 'test') {
                         // In test, throw an error instead of exiting.
-                        throw new Error(`Syntax-Error: ${'' + whyOrInfoMsg}`)
+                        throw new Error(`Syntax-Error: ${'' + msgWhatOrWhy}`)
                     } else {
                         process.exit(2)
                     }
                 }
                 break
             case 'Syntax-Warning':
-                this.emitSyntaxWarning(whyOrInfoMsg)
-                if (this.severityThreshold === '2-Abort-Even-on-Warnings') {
+                this.emitSyntaxWarning(msgWhatOrWhy)
+                if (this.bailThreshold === '2-Abort-Even-on-Warnings') {
                     if (process.env.NODE_ENV === 'test') {
                         // In test, throw an error instead of exiting.
-                        throw new Error(`Syntax-Warning: ${whyOrInfoMsg}`)
+                        throw new Error(`Syntax-Warning: ${msgWhatOrWhy}`)
                     } else {
                         process.exit(3)
                     }
                 }
                 break
             case 'Notice':
-                this.emitNotice(whyOrInfoMsg)
+                this.emitNotice(msgWhatOrWhy)
                 break
             case 'Info':
-                this.emitInfo(whyOrInfoMsg)
+                this.emitInfo(msgWhatOrWhy)
                 break
             default: // Including 'Internal-Error'.
-                this.emitInternalError(whyOrInfoMsg)
+                this.emitInternalError(msgWhatOrWhy)
                 if (process.env.NODE_ENV === 'test') {
                     // In test, throw an error instead of exiting.
-                    throw new Error(`Internal-Error: ${whyOrInfoMsg}`)
+                    throw new Error(`Internal-Error: ${msgWhatOrWhy}`)
                 } else {
                     // Use this instead of process.exit(1), this will
                     // lead to exit the current thread(s) as well.
@@ -165,55 +219,54 @@ export class InvalidDataHandler {
     //     // show a warning, log, etc.
     // }
 
-    private printLineColInfo = (msg: string) => {
-        console.log('XXXQQQWWW = ' + YINI.fullPath)
-    }
+    // private printLineColInfo = (msg: string) => {
+    //     console.log('XXXQQQWWW = ' + YINI.fullPath)
+    // }
 
     private emitInternalError = (msg: string = 'Something went wrong!') => {
         console.error(issueTitle[0]) // Print the issue title.
-        console.error() // Newline.
-        if (YINI.fullPath) {
-            const lineNumber = this.ectx?.start.line || 0
-            console.error('In file: \"' + YINI.fullPath + '\": ' + lineNumber)
-        }
+        // console.error() // Newline.
+        // if (YINI.fullPath) {
+        //     const lineNumber = this.ectx?.start.line || 0
+        //     console.error('In file: \"' + YINI.fullPath + '\": ' + lineNumber)
+        // }
         //        console.error(msg)
-        this.printLineColInfo(msg)
+        // this.printLineColInfo(msg)
     }
 
     private emitSyntaxError = (msg: string) => {
-        console.log('MNJHK')
         console.error(issueTitle[1]) // Print the issue title.
-        console.error() // Newline.
-        if (YINI.fullPath) {
-            const lineNumber = this.ectx?.start.line || 0
-            console.error('In file: \"' + YINI.fullPath + '\": ' + lineNumber)
-        }
+        // console.error() // Newline.
+        // if (YINI.fullPath) {
+        //     const lineNumber = this.ectx?.start.line || 0
+        //     console.error('In file: \"' + YINI.fullPath + '\": ' + lineNumber)
+        // }
         // console.error(msg)
-        this.printLineColInfo(msg)
+        // this.printLineColInfo(msg)
     }
 
     private emitSyntaxWarning = (msg: string) => {
         console.warn(issueTitle[2]) // Print the issue title.
-        console.warn() // Newline.
-        if (YINI.fullPath) {
-            const lineNumber = this.ectx?.start.line || 0
-            console.warn('In file: \"' + YINI.fullPath + '\": ' + lineNumber)
-        }
+        // console.warn() // Newline.
+        // if (YINI.fullPath) {
+        //     const lineNumber = this.ectx?.start.line || 0
+        //     console.warn('In file: \"' + YINI.fullPath + '\": ' + lineNumber)
+        // }
         // console.warn(msg)
-        this.printLineColInfo(msg)
+        // this.printLineColInfo(msg)
     }
 
     private emitNotice = (msg: string) => {
         console.warn(issueTitle[3]) // Print the issue title.
-        YINI.fullPath && console.warn('In file: \"' + YINI.fullPath + '\"')
+        // YINI.fullPath && console.warn('In file: \"' + YINI.fullPath + '\"')
         // console.warn(msg) // Newline.
-        this.printLineColInfo(msg)
+        // this.printLineColInfo(msg)
     }
 
     private emitInfo = (msg: string) => {
         console.info(issueTitle[4]) // Print the issue title.
-        YINI.fullPath && console.info('In file: \"' + YINI.fullPath + '\"')
+        // YINI.fullPath && console.info('In file: \"' + YINI.fullPath + '\"')
         // console.info(msg) // Newline.
-        this.printLineColInfo(msg)
+        // this.printLineColInfo(msg)
     }
 }
