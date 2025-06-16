@@ -21,11 +21,12 @@ import {
     YiniContext,
 } from './grammar/YiniParser.js'
 import YiniParserVisitor from './grammar/YiniParserVisitor'
-import { IErrorContext, InvalidDataHandler } from './InvalidDataHandler'
+import { /*IErrorContext,*/ InvalidDataHandler } from './InvalidDataHandler'
 import parseBooleanLiteral from './main-literal-parsers/parseBoolean'
 import parseNullLiteral from './main-literal-parsers/parseNull'
 import parseNumberLiteral from './main-literal-parsers/parseNumber'
 import parseStringLiteral from './main-literal-parsers/parseString'
+import { trimBackticks } from './utils/string'
 import { debugPrint } from './utils/system'
 
 // const isDebug = !!process.env.IS_DEBUG
@@ -81,7 +82,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     //export default class YINIVisitor extends YiniParserVisitor<any> {
 
     private instanceInvalidData: InvalidDataHandler | null = null
-    private readLines: string[] = []
+    // private readLines: string[] = []
 
     /**
      * Visit a parse tree produced by `YiniParser.yini`.
@@ -155,7 +156,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             // this.readLines.push(line)
         } catch (error) {
             const msg: string = `Unexpected syntax while parsing a section head (section marker or section title)`
-            this.instanceInvalidData!.handleData(ctx, 'Syntax-Error', msg)
+            this.instanceInvalidData!.pushOrBail(ctx, 'Syntax-Error', msg)
         }
         // debugPrint(`Got line = >>>${line}<<<`)
 
@@ -190,7 +191,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             }
         } while (!isDone)
 
-        const sectionName: string = subLine.trim()
+        let sectionName: string = subLine.trim()
+        sectionName = trimBackticks(sectionName)
         debugPrint(`Parsed sectionName = >>>${sectionName}<<<`)
         // ---------------------------------------------------------------
 
@@ -268,7 +270,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             key = ctx.KEY().getText()
         } catch (error) {
             const msg: string = `Unexpected syntax while parsing a member (key-value pair)`
-            this.instanceInvalidData!.handleData(ctx, 'Syntax-Error', msg)
+            this.instanceInvalidData!.pushOrBail(ctx, 'Syntax-Error', msg)
         }
 
         const value = ctx.value() ? this.visit(ctx.value()) : null

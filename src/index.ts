@@ -99,7 +99,8 @@ listItems = ["a", "b", "c"]
 	^ Main
 app = 'YINI Smoke Test'
 version = 1
-	^^ SubSection
+
+	^^ \`S u b S e c t   ion\`
 	varBool=OFF
 `)
     // YINI.parse(`number = 42`)
