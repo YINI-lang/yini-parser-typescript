@@ -5,30 +5,27 @@ This table shows the implementation status of the YINI parser according to the Y
 
 #### Legend
 - **Status:**
-  * ✅ Yes, all done
+  * ✅ All sub-features done
   * 🚧 Partially or WIP (Work in Progress)
   * 🔲 Not yet
   * ❌ Not planned
 - **Parse:** (parsing implemented)
-  * ✔️ Yes
+  * ✔️ Yes, done
   * 🚧 Partially or WIP (Work in Progress)
-  * 🔲 Not yet
+  * 🔲 Not started
   * ❌ Not planned
 - **Test:** (unit/integration test)
-  * ✔️ Yes
+  * ✔️ Yes, done
   * 🚧 Partially or WIP (Work in Progress)
-  * 🔲 Not yet
+  * 🔲 Not started
   * ❌ Not planned
 
 ### Checklist Table
 <table>
   <tr>
-    <th rowspan="2">Main Feature</th>
-    <th rowspan="2">Status</th>
-    <th rowspan="2">Sub-Feature</th>
-    <th colspan="3">Implementation</th>
-  </tr>
-  <tr>
+    <th>Main Feature</th>
+    <th>Status</th>
+    <th>Sub-Feature / Detail</th>
     <th>Parse</th>
     <th>Test</th>
     <th>Notes</th>
