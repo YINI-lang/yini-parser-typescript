@@ -7,13 +7,15 @@ https://github.com/YINI-lang/YINI-spec
 
 ---
 
-## ✨ Features
---TODO--
+## 🚀 Getting Started
+--TODO/WIP--
 
 ---
 
-## 🚀 Getting Started
---TODO/WIP--
+## ✨ Features
+See [FEATURES-CHECKLIST.md](FEATURES-CHECKLIST.md) for the current checklist of implemented YINI features.
+
+--TODO--
 
 ---
 
