@@ -13,7 +13,7 @@ https://github.com/YINI-lang/YINI-spec
 ---
 
 ## ✨ Features
-See [FEATURES-CHECKLIST.md](./FEATURES-CHECKLIST.md) for the current checklist of implemented YINI features.
+See [FEATURE-CHECKLIST.md](./FEATURE-CHECKLIST.md) for the current checklist of implemented YINI features.
 
 --TODO--
 
