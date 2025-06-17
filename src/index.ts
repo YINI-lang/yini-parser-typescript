@@ -97,8 +97,8 @@ listItems = ["a", "b", "c"]
 
     YINI.parse(`
 	^ Main
-app = 'YINI Smoke Test'
-version = 1
+varStr = 'YINI Smoke Test'
+	\`var Num\` = -987
 
 	^^ \`S u b S e c t   ion\`
 	varBool=OFF
