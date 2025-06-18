@@ -1,7 +1,9 @@
 YINI Parser – Feature Implementation Status
 ===========================================
 
-This table shows the implementation status of the YINI parser according to the YINI Specification v1.0.0 Beta 7xxx.
+This table shows the implementation status of the YINI parser. Features are based on the YINI Specification v1.0.0 Beta 7.
+
+https://github.com/YINI-lang/YINI-spec
 
 #### Legend
 - **Status:** (and **Table Title**)
@@ -25,7 +27,7 @@ This table shows the implementation status of the YINI parser according to the Y
   * 🔲 Not started
   * ❌ Not currently
 
-### 🚧 — Basic Parsing / Members
+### 🚧 — 1. Basic Parsing / Members
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -84,7 +86,7 @@ This table shows the implementation status of the YINI parser according to the Y
   </tr>
 </table>
 
-### 🔲 — File Structure
+### 🔲 — 2. File Structure
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -134,7 +136,7 @@ This table shows the implementation status of the YINI parser according to the Y
   </tr>
 </table>
 
-### 🚧 — Basic / Simple Literals
+### 🚧 — 3. Basic / Simple Literals
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -184,7 +186,7 @@ This table shows the implementation status of the YINI parser according to the Y
   </tr>
 </table>
 
-### 🚧 — Comments + Disable line
+### 🚧 — 4. Comments + Disable line
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -234,7 +236,7 @@ This table shows the implementation status of the YINI parser according to the Y
   </tr>
 </table>
 
-### 🚧 — Extended Parsing
+### 🚧 — 5. Extended Parsing
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -289,7 +291,7 @@ This table shows the implementation status of the YINI parser according to the Y
     <td>🔲</td>
     <td>🔲</td>
     <td>🔲</td>
-    <td><b>⚠️Only in non-strict-mode</b></td>
+    <td><b>⚠️ Only in non-strict-mode</b></td>
   </tr>
   <tr>
     <td>Members without any section</td>
@@ -298,7 +300,7 @@ This table shows the implementation status of the YINI parser according to the Y
     <td>🔲</td>
     <td>🔲</td>
     <td>🔲</td>
-    <td><b>⚠️(Implicit) Base object</b></td>
+    <td><b>⚠️ (Implicit) Base object</b></td>
   </tr>
   <tr>
     <td>Multiple 1-level sections</td>
@@ -308,11 +310,11 @@ This table shows the implementation status of the YINI parser according to the Y
     <td>🔲</td>
     <td>🔲</td>
     <td>🔲</td>
-    <td><b>⚠️(Implicit) Base object</b></td>
+    <td><b>⚠️ (Implicit) Base object</b></td>
   </tr>
 </table>
 
-### 🔲 — Number Literals
+### 🔲 — 6. Number Literals
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -325,17 +327,62 @@ This table shows the implementation status of the YINI parser according to the Y
   </tr>
 
   <tr>
-    <td>-</td>
+    <td>Negative numbers</td>
     <td>🔲</td>
-    <td><code></code></td>
+    <td><code>-123</code>, <code>-9.22</code></td>
     <td>🔲</td>
     <td>🔲</td>
     <td>🔲</td>
     <td></td>
   </tr>
+  <tr>
+    <td>Exponent notation numbers</td>
+    <td>🔲</td>
+    <td><code>3e4</code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Binary numbers</td>
+    <td>🔲</td>
+    <td><code>0b1010</code>, <code>%1010</code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>⚠️ Including alternative notation with %</td>
+  </tr>
+  <tr>
+    <td>Octal numbers</td>
+    <td>🔲</td>
+    <td><code>0o7477</code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>8-base</td>
+  </tr>
+  <tr>
+    <td>Duodecimal (dozenal)</td>
+    <td>🔲</td>
+    <td><code>0z2Ex9</code><code>x</code> = 10, <code>e</code> = 11</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>12-base</td>
+  </tr>
+  <tr>
+    <td>Hexadecimal numbers</td>
+    <td>🔲</td>
+    <td><code>0xF390</code>, <code>#F390</code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>⚠️ 16-base, including alternative notation with #</td>
+  </tr>
 </table>
 
-### 🔲 — String Literals
+### 🔲 — 7. String Literals
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -348,17 +395,62 @@ This table shows the implementation status of the YINI parser according to the Y
   </tr>
 
   <tr>
-    <td>-</td>
+    <td>Raw string (default)</td>
     <td>🔲</td>
-    <td><code></code></td>
+    <td><code>'...'</code>, <code>"..."</code>, no escapes</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>🔲</td>
-    <td></td>
+    <td>Single line, enclosed in ' or "</td>
+  </tr>
+  <tr>
+    <td>Classic string (C-string)</td>
+    <td>🔲</td>
+    <td><code>C'...'</code>, <code>C"..."</code>, with escapes</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Single line, escape codes, prefixed either with C or c</td>
+  </tr>
+  <tr>
+    <td>Hyper string (H-string)</td>
+    <td>🔲</td>
+    <td><code>H'...'</code>, <code>H"..."</code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Multi-line, trims WS, normalizes repeating WS to one WS</td>
+  </tr>
+  <tr>
+    <td>Triple-quoted (raw)</td>
+    <td>🔲</td>
+    <td><code>"""..."""</code>, multi-line</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Raw by default</td>
+  </tr>
+  <tr>
+    <td>C-Triple-quoted</td>
+    <td>🔲</td>
+    <td><code>C"""..."""</code>, with escapes</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Multi-line, supports escapes</td>
+  </tr>
+  <tr>
+    <td>String concatenation</td>
+    <td>🔲</td>
+    <td><code>"foo" + 'bar'</code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>All string types</td>
   </tr>
 </table>
 
-### 🔲 — Object Literals
+### 🔲 — 8. Object Literals
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -371,9 +463,28 @@ This table shows the implementation status of the YINI parser according to the Y
   </tr>
 
   <tr>
-    <td>-</td>
+    <td>Objects</td>
     <td>🔲</td>
-    <td><code></code></td>
+    <td><code>{ key = value, ... }</code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Inline, supports nesting, trailing comma ignored (lenient only)
+    </td>
+  </tr>
+  <tr>
+    <td>Nested objects inside objects</td>
+    <td>🔲</td>
+    <td><code>Objects themselves are literals and can be nested</code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Nested objects inside lists</td>
+    <td>🔲</td>
+    <td><code>Objects themselves are literals and can be nested</code></td>
     <td>🔲</td>
     <td>🔲</td>
     <td>🔲</td>
@@ -381,7 +492,7 @@ This table shows the implementation status of the YINI parser according to the Y
   </tr>
 </table>
 
-### 🔲 — List Literals
+### 🔲 — 9. List Literals
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -394,9 +505,36 @@ This table shows the implementation status of the YINI parser according to the Y
   </tr>
 
   <tr>
-    <td>-</td>
+    <td>Bracketed lists ([])</td>
     <td>🔲</td>
-    <td><code></code></td>
+    <td><code>key = [a, b, c]</code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Trailing comma allowed and is ignored (lenient only)</td>
+  </tr>
+  <tr>
+    <td>Colon-based (:)</td>
+    <td>🔲</td>
+    <td><code>key:"one", <br/>"two"</code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Multi-line, comma required after each item, trailing comma allowed and is ignored (lenient only)</td>
+  </tr>
+  <tr>
+    <td>Nested lists inside lists</td>
+    <td>🔲</td>
+    <td><code>Lists themselves are literals and can be nested</code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Nested lists inside objects</td>
+    <td>🔲</td>
+    <td><code>Lists themselves are literals and can be nested</code></td>
     <td>🔲</td>
     <td>🔲</td>
     <td>🔲</td>
@@ -404,7 +542,7 @@ This table shows the implementation status of the YINI parser according to the Y
   </tr>
 </table>
 
-### 🔲 — Validation Modes
+### 🔲 — 10. Validation Modes
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -445,7 +583,7 @@ This table shows the implementation status of the YINI parser according to the Y
   </tr>
 </table>
 
-### 🔲 — Reserved/Advanced Features
+### 🔲 — 11. Reserved/Advanced Features
 <table>
   <tr>
     <th>Sub-Feature</th>
