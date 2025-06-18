@@ -14,7 +14,7 @@ This table shows the implementation status of the YINI parser according to the Y
   * 🚧 Partially or WIP (Work in Progress)
   * 🔲 Not started
   * ❌ Not currently
-- **Test:** (unit/integration test)
+- **Test:** (unit/integration test, NOTE: smoke tests not counted)
   * ✔️ Yes, done
   * 🚧 Partially or WIP (Work in Progress)
   * 🔲 Not started
@@ -24,29 +24,6 @@ This table shows the implementation status of the YINI parser according to the Y
   * 🚧 Partially or WIP (Work in Progress)
   * 🔲 Not started
   * ❌ Not currently
-
-### 🔲 — File Structure
-<table>
-  <tr>
-    <th>Sub-Feature</th>
-    <th>Status</th>
-    <th>Details</th>
-    <th>Parse</th>
-    <th>Test</th>
-    <th>Verf</th>
-    <th>Notes</th>
-  </tr>
-
-  <tr>
-    <td>-</td>
-    <td>🔲</td>
-    <td><code></code></td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td></td>
-  </tr>
-</table>
 
 ### 🚧 — Basic Parsing / Members
 <table>
@@ -61,7 +38,7 @@ This table shows the implementation status of the YINI parser according to the Y
   </tr>
 
   <tr>
-    <td>Simple identifiers</td>
+    <td>Simple (key and header) identifiers</td>
     <td>🔲</td>
     <td><code></code></td>
     <td>🔲</td>
@@ -104,6 +81,56 @@ This table shows the implementation status of the YINI parser according to the Y
     <td>🔲</td>
     <td>🔲</td>
     <td>Enforce per nesting level</td>
+  </tr>
+</table>
+
+### 🔲 — File Structure
+<table>
+  <tr>
+    <th>Sub-Feature</th>
+    <th>Status</th>
+    <th>Details</th>
+    <th>Parse</th>
+    <th>Test</th>
+    <th>Verf</th>
+    <th>Notes</th>
+  </tr>
+
+  <tr>
+    <td>UTF-8 Encoding</td>
+    <td>🔲</td>
+    <td>BOM detection</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Must handle with/without BOM</td>
+  </tr>
+  <tr>
+    <td>Shebang support</td>
+    <td>🔲</td>
+    <td><code>#!</code> on first line</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Ignored by parser</td>
+  </tr>
+  <tr>
+    <td>@yini optional keyword</td>
+    <td>🔲</td>
+    <td><code>@yini</code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Reserved for future</td>
+  </tr>
+  <tr>
+    <td>Check file extension .yini</td>
+    <td>🔲</td>
+    <td><code></code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Naming convention</td>
   </tr>
 </table>
 
@@ -170,13 +197,40 @@ This table shows the implementation status of the YINI parser according to the Y
   </tr>
 
   <tr>
-    <td>-</td>
+    <td>Full-line comment with `;` </td>
     <td>🔲</td>
-    <td><code></code></td>
+    <td><code>; Line comment</code></td>
     <td>🔲</td>
     <td>🔲</td>
     <td>🔲</td>
     <td></td>
+  </tr>
+  <tr>
+    <td>Inline comment with `#`, `//`</td>
+    <td>🔲</td>
+    <td><code># Comment</code><br/><code>// Comment</code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td># must be followed by space/tab to be a comment</td>
+  </tr>
+  <tr>
+    <td>Block comment</td>
+    <td>🔲</td>
+    <td><code>/* ... */</code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Disable line with `--`</td>
+    <td>🔲</td>
+    <td><code>--This line is ignored</code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>For temporarily ignoring valid code</td>
   </tr>
 </table>
 
@@ -202,13 +256,31 @@ This table shows the implementation status of the YINI parser according to the Y
     <td>Key name in members</td>
   </tr>
   <tr>
-    <td>Backticked sections headers</td>
+    <td>Backticked sections headers (identifiers)</td>
     <td>🔲</td>
     <td><code>^`8.MySection`</code></td>
     <td>🔲</td>
     <td>🔲</td>
     <td>🔲</td>
-    <td>Section identifiers</td>
+    <td>Section names with spaces etc.</td>
+  </tr>
+  <tr>
+    <td>Standard section marks (^, ~)</td>
+    <td>🔲</td>
+    <td><code></code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Repeat up to MAX 6 characters, indent optional</td>
+  </tr>
+  <tr>
+    <td>Shorthand section marker (^7, etc.)</td>
+    <td>🔲</td>
+    <td><code>^7Section</code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Arbitrary nesting</td>
   </tr>
   <tr>
     <td>(Implicit) Null</td>
@@ -237,29 +309,6 @@ This table shows the implementation status of the YINI parser according to the Y
     <td>🔲</td>
     <td>🔲</td>
     <td><b>⚠️(Implicit) Base object</b></td>
-  </tr>
-</table>
-
-### 🔲 — Alternative Section Headers
-<table>
-  <tr>
-    <th>Sub-Feature</th>
-    <th>Status</th>
-    <th>Details</th>
-    <th>Parse</th>
-    <th>Test</th>
-    <th>Verf</th>
-    <th>Notes</th>
-  </tr>
-
-  <tr>
-    <td>-</td>
-    <td>🔲</td>
-    <td><code></code></td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td></td>
   </tr>
 </table>
 
@@ -368,13 +417,31 @@ This table shows the implementation status of the YINI parser according to the Y
   </tr>
 
   <tr>
-    <td>-</td>
+    <td>Lenient mode (default)</td>
     <td>🔲</td>
-    <td><code></code></td>
+    <td>Allows trailing commas, blank/null values, etc</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>🔲</td>
     <td></td>
+  </tr>
+  <tr>
+    <td>Strict mode option</td>
+    <td>🔲</td>
+    <td>Enforce all structure/terminator, etc</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Terminator /END required, no trailing comma, etc</td>
+  </tr>
+  <tr>
+    <td>Document terminator</td>
+    <td>🔲</td>
+    <td><code>/END</code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>/END required in strict mode, optional in lenient</td>
   </tr>
 </table>
 
@@ -391,12 +458,30 @@ This table shows the implementation status of the YINI parser according to the Y
   </tr>
 
   <tr>
-    <td>-</td>
+    <td>Reserved syntax/keywords</td>
     <td>🔲</td>
-    <td><code></code></td>
+    <td>E.g. <code>@include</code></td>
     <td>🔲</td>
     <td>🔲</td>
     <td>🔲</td>
-    <td></td>
+    <td>Error if misused</td>
+  </tr>
+  <tr>
+    <td>Anchors and includes</td>
+    <td>❌</td>
+    <td>Not supported</td>
+    <td>❌</td>
+    <td>❌</td>
+    <td>❌</td>
+    <td>Reserved for future spec</td>
+  </tr>
+  <tr>
+    <td>Date/time types</td>
+    <td>❌</td>
+    <td>Not supported</td>
+    <td>❌</td>
+    <td>❌</td>
+    <td>❌</td>
+    <td>Use string literals</td>
   </tr>
 </table>
