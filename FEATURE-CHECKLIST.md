@@ -27,6 +27,8 @@ https://github.com/YINI-lang/YINI-spec
   * 🔲 Not started
   * ❌ Not currently
 
+---
+
 ### 🚧 — 1. Basic Parsing / Members
 <table>
   <tr>
@@ -86,6 +88,8 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
 </table>
 
+---
+
 ### 🔲 — 2. File Structure
 <table>
   <tr>
@@ -135,6 +139,8 @@ https://github.com/YINI-lang/YINI-spec
     <td>Naming convention</td>
   </tr>
 </table>
+
+---
 
 ### 🚧 — 3. Basic / Simple Literals
 <table>
@@ -186,6 +192,8 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
 </table>
 
+---
+
 ### 🚧 — 4. Comments + Disable line
 <table>
   <tr>
@@ -235,6 +243,8 @@ https://github.com/YINI-lang/YINI-spec
     <td>For temporarily ignoring valid code</td>
   </tr>
 </table>
+
+---
 
 ### 🚧 — 5. Extended Parsing
 <table>
@@ -314,6 +324,8 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
 </table>
 
+---
+
 ### 🔲 — 6. Number Literals
 <table>
   <tr>
@@ -381,6 +393,8 @@ https://github.com/YINI-lang/YINI-spec
     <td>⚠️ 16-base, including alternative notation with #</td>
   </tr>
 </table>
+
+---
 
 ### 🔲 — 7. String Literals
 <table>
@@ -477,6 +491,8 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
 </table>
 
+---
+
 ### 🔲 — 8. Object Literals
 <table>
   <tr>
@@ -518,6 +534,8 @@ https://github.com/YINI-lang/YINI-spec
     <td></td>
   </tr>
 </table>
+
+---
 
 ### 🔲 — 9. List Literals
 <table>
@@ -568,6 +586,8 @@ https://github.com/YINI-lang/YINI-spec
     <td></td>
   </tr>
 </table>
+
+---
 
 ### 🔲 — 10. Special & Validation Modes
 <table>
@@ -620,6 +640,8 @@ https://github.com/YINI-lang/YINI-spec
     <td></td>
   </tr>
 </table>
+
+---
 
 ### 🔲 — 11. Reserved/Advanced Features
 <table>
