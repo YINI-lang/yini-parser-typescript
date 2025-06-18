@@ -1,6 +1,6 @@
 
-PARSER_FILE=grammar/v1.0.0-beta.7/YiniParser.g4
-LEXER_FILE=grammar/v1.0.0-beta.7/YiniLexer.g4
+PARSER_FILE=grammar/v1.0.0-beta.7x/YiniParser.g4
+LEXER_FILE=grammar/v1.0.0-beta.7x/YiniLexer.g4
 
 # Output dir for ANTLR.
 DIR_OUTPUT=src/grammar
@@ -11,6 +11,7 @@ generate:
 	@echo off
 	echo Generate sources for the grammar...
 	antlr4 -o $(DIR_OUTPUT) -Dlanguage=TypeScript $(PARSER_FILE) $(LEXER_FILE) -no-listener -visitor
+	echo Done.
 
 # to-sources:
 #	copy gen-output/* src/grammar

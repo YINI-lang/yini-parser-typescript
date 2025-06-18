@@ -1,7 +1,7 @@
 YINI Parser – Feature Implementation Status
 ===========================================
 
-This table shows the implementation status of the YINI parser. Features are based on the YINI Specification v1.0.0 Beta 7.
+This table shows the implementation status of the YINI parser. Features are based on the YINI Specification v1.0.0 Beta 7 (with possible updates).
 
 https://github.com/YINI-lang/YINI-spec
 
@@ -117,13 +117,13 @@ https://github.com/YINI-lang/YINI-spec
     <td>Ignored by parser</td>
   </tr>
   <tr>
-    <td>@yini optional keyword</td>
+    <td>@yini optional marker/keyword</td>
     <td>🔲</td>
-    <td><code>@yini</code></td>
+    <td>E.g. <code>@yini</code>, <code>@YINI</code>, etc</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>🔲</td>
-    <td>Reserved for future</td>
+    <td>Case-insensitive</td>
   </tr>
   <tr>
     <td>Check file extension .yini</td>
@@ -448,6 +448,33 @@ https://github.com/YINI-lang/YINI-spec
     <td>🔲</td>
     <td>All string types</td>
   </tr>
+  <tr>
+    <td>Escapes: all 2 character sequences</td>
+    <td>🔲</td>
+    <td>E.g. <code>\\</code>, <code>\a</code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Escapes: all 3>= character sequences</td>
+    <td>🔲</td>
+    <td>E.g. <code>\xhh</code>, <code>\uhhhh</code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Concatenation of other types into strings</td>
+    <td>❌</td>
+    <td><code>str = "Hello"+true # NOT SUPPORTED</code></td>
+    <td>❌</td>
+    <td>❌</td>
+    <td>❌</td>
+    <td>Note: Use strings directly.</td>
+  </tr>
 </table>
 
 ### 🔲 — 8. Object Literals
@@ -542,7 +569,7 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
 </table>
 
-### 🔲 — 10. Validation Modes
+### 🔲 — 10. Special & Validation Modes
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -554,6 +581,15 @@ https://github.com/YINI-lang/YINI-spec
     <th>Notes</th>
   </tr>
 
+  <tr>
+    <td>Document terminator <code>/END</code></td>
+    <td>🔲</td>
+    <td><code>/END</code>, non-case-sensitive</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>/END required in strict mode, <b>optional</b> in lenient</td>
+  </tr>
   <tr>
     <td>Lenient mode (default)</td>
     <td>🔲</td>
@@ -573,13 +609,15 @@ https://github.com/YINI-lang/YINI-spec
     <td>Terminator /END required, no trailing comma, etc</td>
   </tr>
   <tr>
-    <td>Document terminator</td>
+    <td>Optional Bail/Abort sensitivity levels</td>
     <td>🔲</td>
-    <td><code>/END</code></td>
+    <td>Level 0 = Ignore errors and try parse anyway (may remap falty key/section names).<br/>
+    Level 1 = Abort on errors only.<br/>
+    Level 2 = Abort even on warnings.</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>🔲</td>
-    <td>/END required in strict mode, optional in lenient</td>
+    <td></td>
   </tr>
 </table>
 
