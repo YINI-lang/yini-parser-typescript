@@ -99,7 +99,7 @@ version = 3`
     //@todo Needs implementing of section with sections for this pass.
     xtest('4. Nested Sections, Tabbed Nesting, Backticked Names.', () => {
         // Arrange.
-        const validYini = `
+        const validYini = `@yini
 ^ user
 username = "tester"
 \`Is Admin\` = True
@@ -154,6 +154,7 @@ username = "tester"
     xtest('6. List Types.', () => {
         // Arrange.
         const validYini = `
+@YINI
 ^ Lists
 simple = [1, 2, 3]
 mixed = ["A", 10, true, null]
@@ -195,6 +196,7 @@ empty = { }`
     xtest('8. Comments, Block Comments, and Disabled Lines.', () => {
         // Arrange.
         const validYini = `
+    @yini    
     // Top comment
     ^ CommentsDemo
     val1 = 123  # Inline comment
