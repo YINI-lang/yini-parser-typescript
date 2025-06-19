@@ -77,7 +77,7 @@ describe('Utils-Path and File Name Unit Tests:', () => {
         expect(result).toEqual('.yini')
     })
 
-    test('9. Get correct extension from file name (with "\" path).', () => {
+    test('9. Get correct extension from file name (with "\\" path).', () => {
         // Arrange.
         const fixture = '\config\general.yini'
         // Act.
