@@ -537,7 +537,7 @@ https://github.com/YINI-lang/YINI-spec
   <tr>
     <td>Nested objects inside objects</td>
     <td>🔲</td>
-    <td><code>Objects themselves are literals and can be nested</code></td>
+    <td>Objects themselves are literals and can be nested</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>🔲</td>
@@ -546,7 +546,7 @@ https://github.com/YINI-lang/YINI-spec
   <tr>
     <td>Nested objects inside lists</td>
     <td>🔲</td>
-    <td><code>Objects themselves are literals and can be nested</code></td>
+    <td>Objects themselves are literals and can be nested</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>🔲</td>
@@ -589,7 +589,7 @@ https://github.com/YINI-lang/YINI-spec
   <tr>
     <td>Nested lists inside lists</td>
     <td>🔲</td>
-    <td><code>Lists themselves are literals and can be nested</code></td>
+    <td>Lists themselves are literals and can be nested</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>🔲</td>
@@ -598,7 +598,7 @@ https://github.com/YINI-lang/YINI-spec
   <tr>
     <td>Nested lists inside objects</td>
     <td>🔲</td>
-    <td><code>Lists themselves are literals and can be nested</code></td>
+    <td>Lists themselves are literals and can be nested</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>🔲</td>
