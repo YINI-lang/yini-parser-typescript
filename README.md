@@ -1,3 +1,5 @@
+>~ YINI  ≡
+---
 # YINI Parser - TypeScript
 
 **YINI Parser for TypeScript** — an simple, human-friendly parser and reader for the YINI configuration file format. This library implements the official YINI specification using TypeScript + ANTLR4.

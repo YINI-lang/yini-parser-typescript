@@ -1,6 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`General Smoke Tests: Sxxxxxx. 1`] = `
-"Syntax-Error: Unexpected syntax while parsing a section head (section marker or section title):1
-At line: 1, column(s): 1-1"
-`;
