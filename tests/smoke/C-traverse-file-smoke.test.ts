@@ -52,7 +52,7 @@ describe('Parse-File Smoke Tests:', () => {
         expect(!!result).toEqual(true)
     })
 
-    //@todo Enable test
+    //@todo Enable test (after can parse list (colon based)).
     xtest('Parse file "3-cli-application-options.*".', () => {
         // Arrange.
         const fileName = '3-cli-application-options.smoke.yini'
@@ -123,7 +123,7 @@ describe('Parse-File Smoke Tests:', () => {
         expect(!!result).toEqual(true)
     })
 
-    //@todo Enable test
+    //@todo Enable test (after can parse colon based lists).
     xtest('Parse file "8-api-keys-integration.*".', () => {
         // Arrange.
         const fileName = '8-api-keys-integration.smoke.yini'
@@ -138,7 +138,7 @@ describe('Parse-File Smoke Tests:', () => {
         expect(!!result).toEqual(true)
     })
 
-    //@todo Enable test
+    //@todo Enable test (after can parse with no section defined, implicit base object).
     xtest('Parse file "9-app-preferences.*".', () => {
         // Arrange.
         const fileName = '9-app-preferences.smoke.yini'

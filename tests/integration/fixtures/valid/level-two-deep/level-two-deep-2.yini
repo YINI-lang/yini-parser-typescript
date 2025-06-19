@@ -1,0 +1,10 @@
+@yini
+
+^ APP
+NAME = "My App Name"
+IS_DARK_THEME = YES
+ID = 8
+
+    ^^ EXTRA
+    FLAG = NO
+    TIME_OUT = 6000

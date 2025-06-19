@@ -1,0 +1,8 @@
+@yini
+
+^ User
+username = "Alice"
+
+^^ Preferences
+theme = "dark"
+notifications = false

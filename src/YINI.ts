@@ -1,6 +1,7 @@
 import fs from 'fs'
 import { isDebug, isDev } from './config/env'
 import { parseYINI } from './parseEntry'
+import { getFileNameExtension } from './utils/path-and-file-name'
 import { debugPrint, devPrint } from './utils/system'
 
 export default class YINI {
@@ -9,6 +10,12 @@ export default class YINI {
     public static parse = (yiniContent: string): any => {
         debugPrint('-> Entered static parse(..) in class YINI\n')
 
+        // Important: First, before anything, trim beginning and trailing whitespaces!
+        yiniContent = yiniContent.trim()
+
+        if (!yiniContent) {
+            throw new Error('Syntax-Error: Unexpected blank YINI input')
+        }
         if (!yiniContent.endsWith('\n')) {
             yiniContent += '\n'
         }
@@ -34,6 +41,15 @@ export default class YINI {
      */
     public static parseFile = (fullPath: string): any => {
         debugPrint('Current directory = ' + process.cwd())
+
+        if (getFileNameExtension(fullPath).toLowerCase() !== '.yini') {
+            console.error('Invalid file extension for YINI file:')
+            console.error(`"${fullPath}"`)
+            console.log(
+                'File does not have a valid ".yini" extension (case-insensitive).',
+            )
+            throw new Error('Error: Unexpected file extension for YINI file')
+        }
 
         let content = fs.readFileSync(fullPath, 'utf8')
         let hasNoNewlineAtEOF = false

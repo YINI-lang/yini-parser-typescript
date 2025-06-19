@@ -45,7 +45,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Simple (key and header) identifiers</td>
     <td>🔲</td>
     <td><code></code></td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>Non backticked</td>
@@ -54,7 +54,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Type inference</td>
     <td>🔲</td>
     <td>String, integer, float, boolean, null</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>Based on value syntax</td>
@@ -63,7 +63,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Key-value pairs</td>
     <td>🔲</td>
     <td>Simple assignment <code>key = value</code></td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>Core syntax</td>
@@ -72,7 +72,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Sub-sections</td>
     <td>🔲</td>
     <td>Section nesting</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td></td>
@@ -90,7 +90,7 @@ https://github.com/YINI-lang/YINI-spec
 
 ---
 
-### 🔲 — 2. File Structure
+### 🚧 — 2. File Structure & Errors
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -122,22 +122,41 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>@yini optional marker/keyword</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>E.g. <code>@yini</code>, <code>@YINI</code>, etc</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>Case-insensitive</td>
   </tr>
   <tr>
     <td>Check file extension .yini</td>
-    <td>🔲</td>
-    <td><code></code></td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>Case-insensitive, otherwise throw error</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>Naming convention</td>
   </tr>
+  <tr>
+    <td>Throw error if parsing some garbage</td>
+    <td>✅</td>
+    <td>⚠️ Incuding trying to parse nothing ("") or invalid characters, etc.</td>
+    <td>➖</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Throw error if parsing unknown file name</td>
+    <td>✅</td>
+    <td>⚠️ Incuding trying to parse a blank file name (""), etc.</td>
+    <td>➖</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td></td>
+  </tr>
+
 </table>
 
 ---
@@ -158,7 +177,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Integer and float numbers</td>
     <td>🔲</td>
     <td><code>123</code>, <code>3.14</code></td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>Basic numbers</td>
@@ -167,7 +186,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Basic strings, single and double quoted</td>
     <td>🔲</td>
     <td><code>'Hello'</code>, <code>"World"</code></td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>Basic strings without prefix</td>
@@ -176,7 +195,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>All Boolean literals</td>
     <td>🔲</td>
     <td><code>true</code>, <code>false</code>, <code>Yes</code>, <code>No</code>, <code>ON</code>, <code>OFF</code></td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td><b>⚠️Case-insensitive</b></td>
@@ -185,7 +204,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>(Explicit) All Null literals</td>
     <td>🔲</td>
     <td><code>null</code>, <code>NULL</code>, <code>Null</code>etc</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td><b>⚠️Case-insensitive</b></td>
@@ -210,7 +229,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Full-line comment with `;` </td>
     <td>🔲</td>
     <td><code>; Line comment</code></td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td></td>
@@ -219,7 +238,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Inline comment with `#`, `//`</td>
     <td>🔲</td>
     <td><code># Comment</code><br/><code>// Comment</code></td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td># must be followed by space/tab to be a comment</td>
@@ -262,7 +281,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Backticked keys (identifiers)</td>
     <td>🔲</td>
     <td><code>`this is a key`</code></td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>Key name in members</td>
@@ -271,7 +290,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Backticked sections headers (identifiers)</td>
     <td>🔲</td>
     <td><code>^`8.MySection`</code></td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>Section names with spaces etc.</td>
@@ -280,7 +299,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Standard section marks (^, ~)</td>
     <td>🔲</td>
     <td><code></code></td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>Repeat up to MAX 6 characters, indent optional</td>
@@ -304,7 +323,7 @@ https://github.com/YINI-lang/YINI-spec
     <td><b>⚠️ Only in non-strict-mode</b></td>
   </tr>
   <tr>
-    <td>Members without any section</td>
+    <td>Members without any defined section</td>
     <td>🔲</td>
     <td>key = 123</td>
     <td>🔲</td>
@@ -342,7 +361,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Negative numbers</td>
     <td>🔲</td>
     <td><code>-123</code>, <code>-9.22</code></td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td></td>
@@ -412,7 +431,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Raw string (default)</td>
     <td>🔲</td>
     <td><code>'...'</code>, <code>"..."</code>, no escapes</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>Single line, enclosed in ' or "</td>
@@ -605,7 +624,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Document terminator <code>/END</code></td>
     <td>🔲</td>
     <td><code>/END</code>, non-case-sensitive</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>/END required in strict mode, <b>optional</b> in lenient</td>
