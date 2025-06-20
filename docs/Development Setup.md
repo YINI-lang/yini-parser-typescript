@@ -102,10 +102,12 @@ Here's an overview of the project's directory structure — to help users unders
 |
 ├── tests/                        // Test code
 │   ├── smoke/                    // Smoke tests
-│   │   └── smoke-fixtures/       // Dedicated fixtures for smoke tests
 │   ├── unit/                     // Unit tests
-|   └── integration/              // Integration tests
-│   │   └── fixtures/             // Test fixture data (for integration tests)
+|   ├── integration/              // Integration tests
+│   └── fixtures/                 // ALL test data (**in one place**)
+│       ├── valid/                // Fixture valid data (mostly for integration tests)
+│       ├── invalid/              // Fixture invalid data (mostly for integration tests)
+│       └── smoke-fixtures/       // More dedicated fixtures for smoke tests
 |
 ├── scripts/                      // Utility scripts (e.g. clean-ts-js.sh)
 ├── docs/                         // Project documentation
