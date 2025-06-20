@@ -83,6 +83,10 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
     private instanceInvalidData: InvalidDataHandler | null = null
     // private readLines: string[] = []
+    private numOfLevel1 = 0 // Num of Level-1 sections.
+
+    private meta_numOfSections = 0 // For stats.
+    private meta_maxLevelSection = 0 // For stats.
 
     /**
      * Visit a parse tree produced by `YiniParser.yini`.
@@ -159,6 +163,21 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             }
         }
         debugPrint('level = ' + level)
+        if (level === 1) {
+            this.numOfLevel1++
+        } else if (level >= 2 && this.numOfLevel1 === 0) {
+            // console.error(
+            //     'Invalid section level, cannot jump over defining sections when increasing nesting.',
+            // )
+            this.instanceInvalidData!.pushOrBail(
+                ctx,
+                'Syntax-Error',
+                'Invalid section level',
+                'There is no section with level 1. Section level ' +
+                    level +
+                    ' may not jump over previous section levels.',
+            )
+        }
         // ------------------------------------
 
         // --- Extract section name after markers and whitespace. ---------
@@ -175,13 +194,19 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
         let sectionName: string = subLine.trim()
         sectionName = trimBackticks(sectionName)
-        debugPrint(`Parsed sectionName = >>>${sectionName}<<<`)
+
+        debugPrint('                        --------------')
+        debugPrint(
+            `Parsed sectionName = >>>${sectionName}<<<, with level = ${level}`,
+        )
+        debugPrint('                        --------------')
         // ---------------------------------------------------------------
 
         debugPrint('visit(ctx.section_members()')
         const members = ctx.section_members()
             ? this.visit(ctx.section_members())
             : {}
+        // ---------------------------------------------------------------
 
         return { name: sectionName, members }
     }

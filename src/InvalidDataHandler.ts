@@ -4,7 +4,7 @@ import YINI from './YINI'
 
 interface IIssuePayload {
     type: TIssueType
-    msgWhatOrWhy: string
+    msgWhat: string
     // msgHintOrFix: string = '', // Hint or wow to fix.
     start: {
         line: number
@@ -68,7 +68,7 @@ export class InvalidDataHandler {
 
     makeIssuePayload = (
         type: TIssueType,
-        msgWhatOrWhy: string,
+        msgWhat: string,
         lineNum: number,
         startCol: number,
         endCol: number,
@@ -76,7 +76,7 @@ export class InvalidDataHandler {
     ): IIssuePayload => {
         const issue: IIssuePayload = {
             type,
-            msgWhatOrWhy,
+            msgWhat,
             // msgHintOrFix: string = '', // Hint or wow to fix.
             start: {
                 line: lineNum,
@@ -96,8 +96,10 @@ export class InvalidDataHandler {
     pushOrBail = (
         ctx: any,
         type: TIssueType,
-        msgWhatOrWhy: string,
-        // msgHintOrFix: string = '', // Hint or wow to fix.
+        msgWhat: string,
+        msgWhy: string = '',
+        // msgWhy: string,
+        msgHint: string = '', // Hint or wow to fix.
     ) => {
         debugPrint('-> pushOrBail(..)')
         debugPrint('ctx.exception?.name       =' + ctx.exception?.name)
@@ -117,10 +119,10 @@ export class InvalidDataHandler {
         const endCol = (ctx.stop?.column || 0) + 1 // Column (0-based).
 
         // Patch message with the offending line number.
-        msgWhatOrWhy += ':' + ctx.start.line
+        msgWhat += ':' + ctx.start.line
 
         if (process.env.NODE_ENV === 'test') {
-            msgWhatOrWhy += `\nAt line: ${lineNum}, column(s): ${startCol}-${endCol}`
+            msgWhat += `\nAt line: ${lineNum}, column(s): ${startCol}-${endCol}`
         }
 
         debugPrint('bailThreshold = ' + this.bailThreshold)
@@ -129,7 +131,7 @@ export class InvalidDataHandler {
 
         const issue: IIssuePayload = this.makeIssuePayload(
             type,
-            msgWhatOrWhy,
+            msgWhat,
             lineNum,
             startCol,
             endCol,
@@ -137,41 +139,41 @@ export class InvalidDataHandler {
 
         switch (type) {
             case 'Syntax-Error':
-                this.emitSyntaxError(msgWhatOrWhy)
+                this.emitSyntaxError(msgWhat, msgWhy, msgHint)
                 if (
                     this.bailThreshold === '1-Abort-on-Errors' ||
                     this.bailThreshold === '2-Abort-Even-on-Warnings'
                 ) {
                     if (process.env.NODE_ENV === 'test') {
                         // In test, throw an error instead of exiting.
-                        throw new Error(`Syntax-Error: ${'' + msgWhatOrWhy}`)
+                        throw new Error(`Syntax-Error: ${'' + msgWhat}`)
                     } else {
                         process.exit(2)
                     }
                 }
                 break
             case 'Syntax-Warning':
-                this.emitSyntaxWarning(msgWhatOrWhy)
+                this.emitSyntaxWarning(msgWhat, msgWhy, msgHint)
                 if (this.bailThreshold === '2-Abort-Even-on-Warnings') {
                     if (process.env.NODE_ENV === 'test') {
                         // In test, throw an error instead of exiting.
-                        throw new Error(`Syntax-Warning: ${msgWhatOrWhy}`)
+                        throw new Error(`Syntax-Warning: ${msgWhat}`)
                     } else {
                         process.exit(3)
                     }
                 }
                 break
             case 'Notice':
-                this.emitNotice(msgWhatOrWhy)
+                this.emitNotice(msgWhat, msgWhy, msgHint)
                 break
             case 'Info':
-                this.emitInfo(msgWhatOrWhy)
+                this.emitInfo(msgWhat, msgWhy, msgHint)
                 break
             default: // Including 'Internal-Error'.
-                this.emitInternalError(msgWhatOrWhy)
+                this.emitInternalError(msgWhat, msgWhy, msgHint)
                 if (process.env.NODE_ENV === 'test') {
                     // In test, throw an error instead of exiting.
-                    throw new Error(`Internal-Error: ${msgWhatOrWhy}`)
+                    throw new Error(`Internal-Error: ${msgWhat}`)
                 } else {
                     // Use this instead of process.exit(1), this will
                     // lead to exit the current thread(s) as well.
@@ -180,28 +182,46 @@ export class InvalidDataHandler {
         }
     }
 
-    private emitInternalError = (msg: string = 'Something went wrong!') => {
+    private emitInternalError = (
+        msgWhat = 'Something went wrong!',
+        msgWhy = '',
+        msgHint = '',
+    ) => {
         console.error(issueTitle[0]) // Print the issue title.
-        console.error(msg)
+        msgWhat && console.error(msgWhat)
+        msgWhy && console.error(msgWhy)
+        msgHint && console.log(msgHint)
     }
 
-    private emitSyntaxError = (msg: string) => {
+    private emitSyntaxError = (msgWhat: string, msgWhy = '', msgHint = '') => {
         console.error(issueTitle[1]) // Print the issue title.
-        console.error(msg)
+        msgWhat && console.error(msgWhat)
+        msgWhy && console.error(msgWhy)
+        msgHint && console.log(msgHint)
     }
 
-    private emitSyntaxWarning = (msg: string) => {
+    private emitSyntaxWarning = (
+        msgWhat: string,
+        msgWhy = '',
+        msgHint = '',
+    ) => {
         console.warn(issueTitle[2]) // Print the issue title.
-        console.warn(msg)
+        msgWhat && console.warn(msgWhat)
+        msgWhy && console.warn(msgWhy)
+        msgHint && console.log(msgHint)
     }
 
-    private emitNotice = (msg: string) => {
+    private emitNotice = (msgWhat: string, msgWhy = '', msgHint = '') => {
         console.warn(issueTitle[3]) // Print the issue title.
-        console.warn(msg)
+        msgWhat && console.warn(msgWhat)
+        msgWhy && console.warn(msgWhy)
+        msgHint && console.log(msgHint)
     }
 
-    private emitInfo = (msg: string) => {
+    private emitInfo = (msgWhat: string, msgWhy = '', msgHint = '') => {
         console.info(issueTitle[4]) // Print the issue title.
-        console.info(msg)
+        msgWhat && console.info(msgWhat)
+        msgWhy && console.info(msgWhy)
+        msgHint && console.log(msgHint)
     }
 }
