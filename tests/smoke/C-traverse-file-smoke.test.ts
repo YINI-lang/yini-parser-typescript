@@ -12,7 +12,7 @@ import path from 'path'
 import YINI from '../../src'
 import { debugPrint } from '../../src/utils/system'
 
-const DIR_OF_FIXTURES = './smoke-fixtures'
+const DIR_OF_FIXTURES = '../fixtures/smoke-fixtures'
 
 /**
  * Parse File Smoke Tests.
