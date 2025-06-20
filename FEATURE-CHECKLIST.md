@@ -29,7 +29,7 @@ https://github.com/YINI-lang/YINI-spec
 
 ---
 
-### 🚧 — 1. Core Parsing / Simple Members
+### 🚧 — 1. Core Parsing / Basic Members
 <table>
   <tr>
     <th>Sub-Feature</th>
