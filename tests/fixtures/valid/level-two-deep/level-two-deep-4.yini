@@ -4,5 +4,5 @@
 username = "Alice"
 
 ^^ Preferences
-theme = "dark"
+theme = "classic"
 notifications = false

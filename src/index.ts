@@ -96,7 +96,7 @@ listItems = ["a", "b", "c"]
     // YINI.parse(invalidInput1)
 
     YINI.parse(`
-	^ Main
+	^^ Main
 varStr = 'YINI Smoke Test'
 	\`var Num\` = -987
 
