@@ -29,7 +29,7 @@ https://github.com/YINI-lang/YINI-spec
 
 ---
 
-### 🚧 — 1. Basic Parsing / Members
+### 🚧 — 1. Core Parsing / Simple Members
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -69,13 +69,24 @@ https://github.com/YINI-lang/YINI-spec
     <td>Core syntax</td>
   </tr>
   <tr>
-    <td>Sub-sections</td>
+    <td>Section nesting: Going deeper</td>
     <td>🔲</td>
-    <td>Section nesting</td>
-    <td>✅</td>
+    <td>Sub-sections with increase nesting</td>
+    <td>🚧</td>
     <td>🔲</td>
     <td>🔲</td>
-    <td></td>
+    <td>Must increment exactly one level at a time. E.g.: `^^` → `^^^` but not `^^` → `^^^^`.
+</td>
+  </tr>
+  <tr>
+    <td>Section nesting: Going shallower</td>
+    <td>🔲</td>
+    <td>Sub-sections with decrease nesting</td>
+    <td>🚧</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>May drop directly to any previous level. E.g.: `^9` → `^^` or `^9` → `^`.
+</td>
   </tr>
   <tr>
     <td>Unique keys (per section)</td>
