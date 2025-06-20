@@ -21,7 +21,7 @@ import {
     YiniContext,
 } from './grammar/YiniParser.js'
 import YiniParserVisitor from './grammar/YiniParserVisitor'
-import { /*IErrorContext,*/ InvalidDataHandler } from './InvalidDataHandler'
+import { InvalidDataHandler } from './InvalidDataHandler'
 import parseBooleanLiteral from './main-literal-parsers/parseBoolean'
 import parseNullLiteral from './main-literal-parsers/parseNull'
 import parseNumberLiteral from './main-literal-parsers/parseNumber'
@@ -99,14 +99,6 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('-> Entered visitYini(..) in YINIVisitor')
         debugPrint('QQQQ')
 
-        // const isDebug = !!process.env.IS_DEBUG
-        // debugPrint('env.IS_DEBUG:')
-        // debugPrint(process.env.IS_DEBUG)
-        // console.log('isDebug = ' + isDebug)
-        // debugPrint('isDebug = ' + isDebug)
-        // debugPrint()
-
-        // const res: any = {};
         const sections: Record<string, any> = {}
 
         ctx.section_list().forEach((section: any) => {
@@ -138,14 +130,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('-> Entered visitSection(..)')
 
         const res: Record<string, any> = {}
-        // ctx.getText();
-        // isDebug&&console.log(`@getText() = >>>${ ctx.getText() }<<<`);
-        // isDebug&&console.log('@name = ' + ctx.SECTION_HEAD);
 
         debugPrint('start')
-        // ctx.children?.forEach((child: any)=>{
-        // 	isDebug&&console.log('@child = ' + child);
-        // })
         debugPrint('XXXX1' + ctx.SECTION_HEAD())
         debugPrint('XXXX2' + ctx.section())
         debugPrint('end\n')
@@ -153,12 +139,10 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         let line: string = ''
         try {
             line = '' + ctx.SECTION_HEAD().getText().trim()
-            // this.readLines.push(line)
         } catch (error) {
             const msg: string = `Unexpected syntax while parsing a section head (section marker or section title)`
             this.instanceInvalidData!.pushOrBail(ctx, 'Syntax-Error', msg)
         }
-        // debugPrint(`Got line = >>>${line}<<<`)
 
         // --- Determine nesting level. ---------
         const lineLen: number = line.length
@@ -181,8 +165,6 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         let subLine: string = line.substring(level)
         let isDone = false
         do {
-            // isDebug&&console.log('subLine = ' + subLine);
-
             if (subLine.startsWith(' ') || subLine.startsWith('\t')) {
                 subLine = subLine.substring(1) // Consume left most character.
                 debugPrint('* consumed left most char!!')
@@ -201,14 +183,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             ? this.visit(ctx.section_members())
             : {}
 
-        //TODO: Maybe put all this inside another container (supertype) or root.
-        // return {
-        // 	[sectionName]: res,
-        // 	'_meta': {}
-        // } as IResult
         return { name: sectionName, members }
-
-        // return {} as IResult
     }
 
     /**
@@ -230,12 +205,10 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         const members: Record<string, any> = {}
         ctx.member_list().forEach((member) => {
             const { key, value }: any = this.visit(member)
-            // const { key, value }: Result = this.visit(member)
             debugPrint('Item of member_list:')
             debugPrint('key = >>>' + key + '<<<')
             debugPrint('value = >>>' + value + '<<<')
             debugPrint('value?.value = >>>' + value?.value + '<<<')
-            // debugPrint('type = >>>' + type + '<<<')
             debugPrint('value?.type = >>>' + value?.type + '<<<')
             debugPrint('--')
 
