@@ -95,7 +95,8 @@ listItems = ["a", "b", "c"]
     // }
     // YINI.parse(invalidInput1)
 
-    YINI.parse(`
+    if (APP_ENV === 'local' && NODE_ENV !== 'test') {
+        YINI.parse(`
 	^^ Main
 varStr = 'YINI Smoke Test'
 	\`var Num\` = -987
@@ -103,5 +104,6 @@ varStr = 'YINI Smoke Test'
 	^^ \`S u b S e c t   ion\`
 	varBool=OFF
 `)
+    }
     // YINI.parse(`number = 42`)
 }

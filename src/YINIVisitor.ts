@@ -163,21 +163,6 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             }
         }
         debugPrint('level = ' + level)
-        if (level === 1) {
-            this.numOfLevel1++
-        } else if (level >= 2 && this.numOfLevel1 === 0) {
-            // console.error(
-            //     'Invalid section level, cannot jump over defining sections when increasing nesting.',
-            // )
-            this.instanceInvalidData!.pushOrBail(
-                ctx,
-                'Syntax-Error',
-                'Invalid section level',
-                'There is no section with level 1. Section level ' +
-                    level +
-                    ' may not jump over previous section levels.',
-            )
-        }
         // ------------------------------------
 
         // --- Extract section name after markers and whitespace. ---------
@@ -207,6 +192,25 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             ? this.visit(ctx.section_members())
             : {}
         // ---------------------------------------------------------------
+
+        if (level === 1) {
+            this.numOfLevel1++
+        } else if (level >= 2 && this.numOfLevel1 === 0) {
+            debugPrint('this.numOfLevel1 = ' + this.numOfLevel1)
+            // console.error(
+            //     'Invalid section level, cannot jump over defining sections when increasing nesting.',
+            // )
+            this.instanceInvalidData!.pushOrBail(
+                ctx,
+                'Syntax-Error',
+                'Invalid section level of section "' + sectionName + '"',
+                'There is no section with level 1. Section "' +
+                    sectionName +
+                    '" with level ' +
+                    level +
+                    ' may not jump over previous section levels.',
+            )
+        }
 
         return { name: sectionName, members }
     }
