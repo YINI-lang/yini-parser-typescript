@@ -82,11 +82,19 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     //export default class YINIVisitor extends YiniParserVisitor<any> {
 
     private instanceInvalidData: InvalidDataHandler | null = null
-    // private readLines: string[] = []
+    //private activeParents: any[] = []
+    // private activeLevelSections: any[] = []
+    // private lastActiveSectionAtLevels: string[] = []
+    private lastActiveAtLevels: string[] = [] // Last active section name at each level.
+
     private numOfLevel1 = 0 // Num of Level-1 sections.
 
     private meta_numOfSections = 0 // For stats.
     private meta_maxLevelSection = 0 // For stats.
+
+    getLevelsDepth = (): number => {
+        return this.lastActiveAtLevels.length
+    }
 
     /**
      * Visit a parse tree produced by `YiniParser.yini`.
@@ -193,6 +201,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             : {}
         // ---------------------------------------------------------------
 
+        /*
         if (level === 1) {
             this.numOfLevel1++
         } else if (level >= 2 && this.numOfLevel1 === 0) {
@@ -210,6 +219,16 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                     level +
                     ' may not jump over previous section levels.',
             )
+        }
+        */
+        debugPrint('          sectionName = ' + sectionName)
+        debugPrint('                level = ' + level)
+        debugPrint('     this.numOfLevel1 = ' + this.numOfLevel1)
+        debugPrint('this.getLevelsDepth() = ' + this.getLevelsDepth())
+        if (level - 1 <= this.getLevelsDepth()) {
+            this.lastActiveAtLevels[level - 1] = sectionName
+        } else {
+            throw new Error('qqqqq')
         }
 
         return { name: sectionName, members }
