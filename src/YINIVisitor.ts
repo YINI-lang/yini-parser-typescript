@@ -1,4 +1,5 @@
 import { ParseTreeVisitor } from 'antlr4'
+import { isDebug } from './config/env'
 import {
     Boolean_literalContext,
     ElementContext,
@@ -28,8 +29,6 @@ import parseNumberLiteral from './main-literal-parsers/parseNumber'
 import parseStringLiteral from './main-literal-parsers/parseString'
 import { trimBackticks } from './utils/string'
 import { debugPrint } from './utils/system'
-
-// const isDebug = !!process.env.IS_DEBUG
 
 const SECTION_MARKER1 = '^'
 const SECTION_MARKER2 = '~'
@@ -97,7 +96,19 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         return this.lastActiveAtLevels.length
     }
     setLastActiveSection = (atLevel: number, sectionName: string) => {
-        this.lastActiveAtLevels[atLevel - 1] = sectionName
+        if (atLevel >= 1) {
+            this.lastActiveAtLevels[atLevel - 1] = sectionName
+        } else {
+            this.instanceInvalidData!.pushOrBail(
+                null,
+                'Internal-Error',
+                'Invalid section level (<1), level: ' +
+                    atLevel +
+                    ', sectionName: "' +
+                    sectionName +
+                    '"',
+            )
+        }
     }
 
     /**
@@ -115,23 +126,53 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('-> Entered visitYini(..) in YINIVisitor')
         debugPrint('QQQQ')
 
-        const sections: Record<string, any> = {}
+        const resultSections: Record<string, any> = {}
 
         ctx.section_list().forEach((section: any) => {
+            debugPrint(
+                '\nStart of each element in forEeach(..) of section_list():',
+            )
+
             const value = section.accept(this)
             debugPrint(
                 'In forEach, got child = ' + section + ', got value = ' + value,
             )
 
-            const result: any = this.visit(section)
-            debugPrint('result = ' + result)
-            debugPrint('result:')
-            debugPrint(result)
-            if (result?.name) sections[result.name] = result.members
+            const sectionResult: any = this.visit(section)
+            const sectionName: string | undefined = sectionResult?.name
+            const sectionMembers: any = sectionResult?.members
+
+            debugPrint('sectionResult:')
+            if (isDebug()) {
+                console.log(sectionResult)
+            }
+
+            debugPrint('sectionName = "' + sectionName + '"')
+            debugPrint('sectionMembers:')
+            if (isDebug()) {
+                console.log(sectionMembers)
+            }
+
+            if (sectionResult?.name) {
+                resultSections[sectionResult.name] = sectionResult.members
+                debugPrint(
+                    '*** Attached section with name "' + sectionName + '"',
+                )
+            }
+
+            debugPrint(
+                '\n=== resultSections: =====================================',
+            )
+            if (isDebug()) {
+                console.log(resultSections)
+            }
+            debugPrint('==============================================\n')
+            debugPrint('End of each element in forEeach(..) of section_list().')
+            debugPrint()
         })
 
         const hasTerminal = !!ctx.terminal_line()
-        return { _base: sections, _hasTerminal: hasTerminal }
+        return { _base: resultSections, _hasTerminal: hasTerminal }
     }
 
     /**
@@ -211,7 +252,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         } else if (level >= 2 && this.numOfLevel1 === 0) {
             debugPrint('this.numOfLevel1 = ' + this.numOfLevel1)
             // console.error(
-            //     'Invalid section level, cannot jump over defining sections when increasing nesting.',
+            //     'Invalid section level, cannot jump over defining resultSections when increasing nesting.',
             // )
             this.instanceInvalidData!.pushOrBail(
                 ctx,
@@ -225,10 +266,12 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             )
         }
         */
+        debugPrint('---------------------------------')
         debugPrint('          sectionName = ' + sectionName)
         debugPrint('                level = ' + level)
         debugPrint('     this.numOfLevel1 = ' + this.numOfLevel1)
         debugPrint('this.getLevelsDepth() = ' + this.getDepthOfLevels())
+        //this.setLastActiveSection(0, 'sdf')
         if (level - 1 <= this.getDepthOfLevels()) {
             //this.lastActiveAtLevels[level - 1] = sectionName
             this.setLastActiveSection(level, sectionName)

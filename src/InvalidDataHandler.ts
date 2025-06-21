@@ -32,8 +32,8 @@ export type TIssueType =
 // titles, and to easier check that all titles match with relation to
 // the other titles.
 const issueTitle: string[] = [
-    'FATAL ERROR!', // 'Internal-Error'.
-    'Syntax error.', // 'Syntax-Error'.
+    'INTERNAL ERROR!', // 'Internal-Error'.
+    'Syntax error!', // 'Syntax-Error'.
     'Syntax warning.',
     'Notice:',
     'Info:',
@@ -102,24 +102,24 @@ export class InvalidDataHandler {
         msgHint: string = '', // Hint or wow to fix.
     ) => {
         debugPrint('-> pushOrBail(..)')
-        debugPrint('ctx.exception?.name       =' + ctx.exception?.name)
-        debugPrint('ctx.exception?.message    = ' + ctx.exception?.message)
+        debugPrint('ctx.exception?.name       =' + ctx?.exception?.name)
+        debugPrint('ctx.exception?.message    = ' + ctx?.exception?.message)
         debugPrint(
-            'exception?.offendingToken = ' + ctx.exception?.offendingToken,
+            'exception?.offendingToken = ' + ctx?.exception?.offendingToken,
         )
         debugPrint()
-        debugPrint('ctx.ruleIndex    = ' + ctx.start.channel)
-        debugPrint('ctx.ruleIndex    = ' + ctx.ruleIndex)
-        debugPrint('ctx.ruleContext  = ' + ctx.ruleContext)
-        debugPrint('ctx.stop?.line   = ' + ctx.stop?.line)
-        debugPrint('ctx.stop?.column = ' + ctx.stop?.column)
+        debugPrint('ctx.ruleIndex    = ' + ctx?.start.channel)
+        debugPrint('ctx.ruleIndex    = ' + ctx?.ruleIndex)
+        debugPrint('ctx.ruleContext  = ' + ctx?.ruleContext)
+        debugPrint('ctx.stop?.line   = ' + ctx?.stop?.line)
+        debugPrint('ctx.stop?.column = ' + ctx?.stop?.column)
 
-        const lineNum: number = ctx.start.line // Column (1-based).
-        const startCol = ++ctx.start.column // Column (0-based).
-        const endCol = (ctx.stop?.column || 0) + 1 // Column (0-based).
+        const lineNum: number = ctx?.start.line || 0 // Column (1-based).
+        const startCol = !ctx ? 0 : ++ctx.start.column // Column (0-based).
+        const endCol = (ctx?.stop?.column || 0) + 1 // Column (0-based).
 
         // Patch message with the offending line number.
-        msgWhat += ', at line: ' + ctx.start.line
+        msgWhat += ', at line: ' + lineNum
 
         if (process.env.NODE_ENV === 'test') {
             msgWhat += `\nAt line: ${lineNum}, column(s): ${startCol}-${endCol}`

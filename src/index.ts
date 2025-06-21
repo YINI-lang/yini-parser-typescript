@@ -97,12 +97,10 @@ listItems = ["a", "b", "c"]
 
     if (APP_ENV === 'local' && NODE_ENV !== 'test') {
         YINI.parse(`
-	^ Main
-varStr = 'YINI Smoke Test'
-	\`var Num\` = -987
-
-	^^^ \`S u b S e c t   ion\`
-	varBool=OFF
+	^ SectionName1
+value = 11
+	^^^ \`Sub section name 2\`
+value = 22
 `)
     }
     // YINI.parse(`number = 42`)
