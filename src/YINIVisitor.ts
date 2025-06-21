@@ -230,8 +230,9 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             }
         } while (!isDone)
 
+        // NOTE: Any comments on next line after the section header, are included in subLine.
         let sectionName: string = subLine.trim()
-        sectionName = stripNLAndAfter(sectionName) // Cut of anything after (and including) any newline (and possible commented next line).
+        sectionName = stripNLAndAfter(sectionName) // Cut of anything after (and including) any newline (and possible commented next lines).
         sectionName = trimBackticks(sectionName)
 
         debugPrint('                        --------------')
