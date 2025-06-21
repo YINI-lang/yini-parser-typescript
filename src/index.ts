@@ -97,10 +97,10 @@ listItems = ["a", "b", "c"]
 
     if (APP_ENV === 'local' && NODE_ENV !== 'test') {
         YINI.parse(`
-	^ SectionName1
-value = 11
+	^ \`Section Name 1\`
+//value = 11
 	^^^ \`Sub section name 2\`
-value = 22
+//value = 22
 `)
     }
     // YINI.parse(`number = 42`)

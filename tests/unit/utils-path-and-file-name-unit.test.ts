@@ -1,97 +1,88 @@
-import { trimBackticks } from '../../src/utils/string'
+import { getFileNameExtension } from '../../src/utils/path-and-file-name'
 import { debugPrint } from '../../src/utils/system'
 
 /**
- * Utils-String Unit Tests.
+ * Utils-Path and File Name Unit Tests.
  */
-describe('Utils-String Unit Tests:', () => {
-    test('Trim backticks test 1.', () => {
+describe('Utils-Path and File Name Unit Tests:', () => {
+    test('1. Get correct extension from file name.', () => {
         // Arrange.
-        const fixture = '`hello`'
+        const fixture = 'config.yini'
         // Act.
-        const result = trimBackticks(fixture)
+        const result = getFileNameExtension(fixture)
         // Assert.
-        expect(result).toEqual('hello')
+        expect(result).toEqual('.yini')
     })
 
-    test('Trim backticks test 2.', () => {
+    test('2. Get correct extension from file name.', () => {
         // Arrange.
-        const fixture = 'hello'
+        const fixture = 'config.YINI'
         // Act.
-        const result = trimBackticks(fixture)
+        const result = getFileNameExtension(fixture)
         // Assert.
-        expect(result).toEqual('hello')
+        expect(result).toEqual('.YINI')
     })
 
-    test('Trim backticks test 3.', () => {
+    test('3. Get correct extension from file name.', () => {
         // Arrange.
-        const fixture = '`hello'
+        const fixture = 'My Config.yini'
         // Act.
-        const result = trimBackticks(fixture)
+        const result = getFileNameExtension(fixture)
         // Assert.
-        expect(result).toEqual('`hello')
+        expect(result).toEqual('.yini')
     })
 
-    test('Trim backticks test 4.', () => {
+    test('4. Get correct extension from file name.', () => {
         // Arrange.
-        const fixture = 'hello`'
+        const fixture = 'My.Config.yini'
         // Act.
-        const result = trimBackticks(fixture)
+        const result = getFileNameExtension(fixture)
         // Assert.
-        expect(result).toEqual('hello`')
+        expect(result).toEqual('.yini')
     })
 
-    test('Trim backticks test 5.', () => {
+    test('5. Get correct extension from file name (edge-case).', () => {
         // Arrange.
-        const fixture = ''
+        const fixture = '' // (!) Blank!
         // Act.
-        const result = trimBackticks(fixture)
+        const result = getFileNameExtension(fixture)
         // Assert.
         expect(result).toEqual('')
     })
 
-    test('Trim backticks test 6.', () => {
+    test('6. Get correct extension from file name (edge-case).', () => {
         // Arrange.
-        const fixture = '``'
+        const fixture = 'Config' // (!) Blank!
         // Act.
-        const result = trimBackticks(fixture)
+        const result = getFileNameExtension(fixture)
         // Assert.
         expect(result).toEqual('')
     })
 
-    test('Trim backticks test 7.', () => {
+    test('7. Get correct extension from file name (with "./" path).', () => {
         // Arrange.
-        const fixture = '`H`'
+        const fixture = './config/general.yini'
         // Act.
-        const result = trimBackticks(fixture)
+        const result = getFileNameExtension(fixture)
         // Assert.
-        expect(result).toEqual('H')
+        expect(result).toEqual('.yini')
     })
 
-    test('Trim backticks test 8.', () => {
+    test('8. Get correct extension from file name (with "../" path).', () => {
         // Arrange.
-        const fixture = '` `'
+        const fixture = '../../../config/general.yini'
         // Act.
-        const result = trimBackticks(fixture)
+        const result = getFileNameExtension(fixture)
         // Assert.
-        expect(result).toEqual(' ')
+        expect(result).toEqual('.yini')
     })
 
-    test('Trim backticks test 9.', () => {
+    test('9. Get correct extension from file name (with "\\" path).', () => {
         // Arrange.
-        const fixture = '`Hello World`'
+        const fixture = '\config\general.yini'
         // Act.
-        const result = trimBackticks(fixture)
+        const result = getFileNameExtension(fixture)
         // Assert.
-        expect(result).toEqual('Hello World')
-    })
-
-    test('Trim backticks test 10.', () => {
-        // Arrange.
-        const fixture = 'Hello World'
-        // Act.
-        const result = trimBackticks(fixture)
-        // Assert.
-        expect(result).toEqual('Hello World')
+        expect(result).toEqual('.yini')
     })
 })

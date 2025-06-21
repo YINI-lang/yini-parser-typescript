@@ -27,7 +27,7 @@ import parseBooleanLiteral from './main-literal-parsers/parseBoolean'
 import parseNullLiteral from './main-literal-parsers/parseNull'
 import parseNumberLiteral from './main-literal-parsers/parseNumber'
 import parseStringLiteral from './main-literal-parsers/parseString'
-import { trimBackticks } from './utils/string'
+import { stripNLAndAfter, trimBackticks } from './utils/string'
 import { debugPrint } from './utils/system'
 
 const SECTION_MARKER1 = '^'
@@ -231,6 +231,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         } while (!isDone)
 
         let sectionName: string = subLine.trim()
+        sectionName = stripNLAndAfter(sectionName) // Cut of anything after (and including) any newline (and possible commented next line).
         sectionName = trimBackticks(sectionName)
 
         debugPrint('                        --------------')
