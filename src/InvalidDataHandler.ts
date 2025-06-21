@@ -119,7 +119,7 @@ export class InvalidDataHandler {
         const endCol = (ctx.stop?.column || 0) + 1 // Column (0-based).
 
         // Patch message with the offending line number.
-        msgWhat += ':' + ctx.start.line
+        msgWhat += ', at line: ' + ctx.start.line
 
         if (process.env.NODE_ENV === 'test') {
             msgWhat += `\nAt line: ${lineNum}, column(s): ${startCol}-${endCol}`

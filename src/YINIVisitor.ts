@@ -92,8 +92,12 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     private meta_numOfSections = 0 // For stats.
     private meta_maxLevelSection = 0 // For stats.
 
-    getLevelsDepth = (): number => {
+    // getLevelsDepth = (): number => {
+    getDepthOfLevels = (): number => {
         return this.lastActiveAtLevels.length
+    }
+    setLastActiveSection = (atLevel: number, sectionName: string) => {
+        this.lastActiveAtLevels[atLevel - 1] = sectionName
     }
 
     /**
@@ -224,11 +228,22 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('          sectionName = ' + sectionName)
         debugPrint('                level = ' + level)
         debugPrint('     this.numOfLevel1 = ' + this.numOfLevel1)
-        debugPrint('this.getLevelsDepth() = ' + this.getLevelsDepth())
-        if (level - 1 <= this.getLevelsDepth()) {
-            this.lastActiveAtLevels[level - 1] = sectionName
+        debugPrint('this.getLevelsDepth() = ' + this.getDepthOfLevels())
+        if (level - 1 <= this.getDepthOfLevels()) {
+            //this.lastActiveAtLevels[level - 1] = sectionName
+            this.setLastActiveSection(level, sectionName)
         } else {
-            throw new Error('qqqqq')
+            //throw new Error('qqqqq')
+            this.instanceInvalidData!.pushOrBail(
+                ctx,
+                'Syntax-Error',
+                'Invalid section level of section header "' + sectionName + '"',
+                'Missing a section with level 1. Section header name "' +
+                    sectionName +
+                    '" with level ' +
+                    level +
+                    ' may not jump over previous section levels.',
+            )
         }
 
         return { name: sectionName, members }
