@@ -84,20 +84,24 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     //private activeParents: any[] = []
     // private activeLevelSections: any[] = []
     // private lastActiveSectionAtLevels: string[] = []
-    private lastActiveAtLevels: string[] = [] // Last active section name at each level.
+    private lastActiveSectionTitlesAtLevels: string[] = [] // Last active section name at each level.
+private lastActiveSectionAtLevels: any[] = []
 
-    private numOfLevel1 = 0 // Num of Level-1 sections.
+    private numOfLevelOnes = 0 // Num of Level-1 sections.
+    private level = 0
+    private prevLevel = 0
+    private lastBuiltSectionObject:any = null
 
     private meta_numOfSections = 0 // For stats.
     private meta_maxLevelSection = 0 // For stats.
 
     // getLevelsDepth = (): number => {
     getDepthOfLevels = (): number => {
-        return this.lastActiveAtLevels.length
+        return this.lastActiveSectionTitlesAtLevels.length
     }
     setLastActiveSection = (atLevel: number, sectionName: string) => {
         if (atLevel >= 1) {
-            this.lastActiveAtLevels[atLevel - 1] = sectionName
+            this.lastActiveSectionTitlesAtLevels[atLevel - 1] = sectionName
         } else {
             this.instanceInvalidData!.pushOrBail(
                 null,
@@ -142,7 +146,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             const sectionName: string | undefined = sectionResult?.name
             const sectionMembers: any = sectionResult?.members
 
-            debugPrint('sectionResult:')
+            debugPrint('\nsectionResult:')
             if (isDebug()) {
                 console.log(sectionResult)
             }
@@ -153,8 +157,9 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 console.log(sectionMembers)
             }
 
-            if (sectionResult?.name) {
-                resultSections[sectionResult.name] = sectionResult.members
+            if (sectionName) {
+                resultSections[sectionName] = sectionMembers
+                this.lastBuiltSectionObject = resultSections
                 debugPrint(
                     '*** Attached section with name "' + sectionName + '"',
                 )
@@ -253,9 +258,9 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
         /*
         if (level === 1) {
-            this.numOfLevel1++
-        } else if (level >= 2 && this.numOfLevel1 === 0) {
-            debugPrint('this.numOfLevel1 = ' + this.numOfLevel1)
+            this.numOfLevelOnes++
+        } else if (level >= 2 && this.numOfLevelOnes === 0) {
+            debugPrint('this.numOfLevelOnes = ' + this.numOfLevelOnes)
             // console.error(
             //     'Invalid section level, cannot jump over defining resultSections when increasing nesting.',
             // )
@@ -271,15 +276,33 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             )
         }
         */
-        debugPrint('---------------------------------')
-        debugPrint('          sectionName = ' + sectionName)
-        debugPrint('                level = ' + level)
-        debugPrint('     this.numOfLevel1 = ' + this.numOfLevel1)
-        debugPrint('this.getLevelsDepth() = ' + this.getDepthOfLevels())
+        let nestDirection: 'lower' | 'same' | 'higher'
+        if (level === this.prevLevel) {
+            nestDirection = 'same'
+        } else if (level < this.prevLevel) {
+            nestDirection = 'lower'
+        } else {
+            nestDirection = 'higher'
+        }
+
+        if (level === 1) {
+            this.numOfLevelOnes++
+        }
+
+        debugPrint('-- Above entity ---------------------------')
+        debugPrint('            sectionName = ' + sectionName)
+        debugPrint('                  level = ' + level)
+        debugPrint('         this.prevLevel = ' + this.prevLevel)
+        debugPrint('          nestDirection = ' + nestDirection)
+        debugPrint('    this.numOfLevelOnes = ' + this.numOfLevelOnes)
+        debugPrint('this.getDepthOfLevels() = ' + this.getDepthOfLevels())
+        debugPrint()
         //this.setLastActiveSection(0, 'sdf')
+
         if (level - 1 <= this.getDepthOfLevels()) {
-            //this.lastActiveAtLevels[level - 1] = sectionName
+            //this.lastActiveSectionTitlesAtLevels[level - 1] = sectionName
             this.setLastActiveSection(level, sectionName)
+            this.lastActiveSectionAtLevels = 
         } else {
             //throw new Error('qqqqq')
             this.instanceInvalidData!.pushOrBail(
@@ -294,6 +317,24 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             )
         }
 
+        if (Math.abs(this.prevLevel - level) >= 2) {
+            this.instanceInvalidData!.pushOrBail(
+                ctx,
+                'Syntax-Error',
+                'Invalid section level jump of section header "' +
+                    sectionName +
+                    '"',
+                'Section header name "' +
+                    sectionName +
+                    '" with level ' +
+                    level +
+                    ' may not jump over previous section levels, from secton with level ' +
+                    this.prevLevel +
+                    '.',
+            )
+        }
+
+        this.prevLevel = level
         return { name: sectionName, members }
     }
 

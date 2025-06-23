@@ -99,11 +99,13 @@ listItems = ["a", "b", "c"]
         YINI.parse(`
 	^ \`Section Name 1\`
 value = 11
-	^^ \`Section Name 2\`
-//value = 22
+	^^ \`Section Name 12\`
+value = 12
+	^ \`Section Name 2\`
+value = 2
 
-	^^^^ \`Sub section name 3\`
-//value = 33
+	^^^ \`Sub section name 24\`
+value = 24
 
 `)
     }
