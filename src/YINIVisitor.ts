@@ -188,18 +188,28 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                         console.log(this.lastBuiltSectionObject)
                     }
 
-                    if (!this.lastBuiltSectionObject) {
-                        resultSections[sectionName] = sectionMembers
-                    } else {
-                        this.lastBuiltSectionObject[sectionName] =
-                            sectionMembers
-                    }
+                    // if (!this.lastBuiltSectionObject) {
+                    //     resultSections[sectionName] = sectionMembers
+                    // } else {
+                    //     this.lastBuiltSectionObject[sectionName] =
+                    //         sectionMembers
+                    // }
                 }
 
-                // resultSections[sectionName] = sectionMembers
+                let mountAt = this.lastActiveSectionAtLevels[this.level - 1]
+                if (!mountAt) {
+                    mountAt = resultSections
+                }
+                mountAt[sectionName] = sectionMembers
                 this.lastActiveSectionAtLevels[this.level] =
-                    resultSections[sectionName]
-                this.lastBuiltSectionObject = resultSections[sectionName]
+                    mountAt[sectionName]
+
+                // resultSections[sectionName] = sectionMembers
+                // this.lastActiveSectionAtLevels[this.level] =
+                //     resultSections[sectionName]
+                // this.lastBuiltSectionObject = resultSections[sectionName]
+                // this.lastActiveSectionAtLevels[this.level] =
+                //     resultSections[sectionName]
                 debugPrint(
                     '*** Attached section with name "' + sectionName + '"',
                 )
@@ -345,16 +355,16 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             // this.lastActiveSectionAtLevels =
         } else {
             //throw new Error('qqqqq')
-            this.instanceInvalidData!.pushOrBail(
-                ctx,
-                'Syntax-Error',
-                'Invalid section level of section header "' + sectionName + '"',
-                'Missing a section with level 1. Section header name "' +
-                    sectionName +
-                    '" with level ' +
-                    this.level +
-                    ' may not jump over previous section levels.',
-            )
+            // this.instanceInvalidData!.pushOrBail(
+            //     ctx,
+            //     'Syntax-Error',
+            //     'Invalid section level of section header "' + sectionName + '"',
+            //     'Missing a section with level 1. Section header name "' +
+            //         sectionName +
+            //         '" with level ' +
+            //         this.level +
+            //         ' may not jump over previous section levels.',
+            // )
         }
 
         if (Math.abs(this.prevLevel - this.level) >= 2) {
