@@ -237,7 +237,10 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
         debugPrint('                        --------------')
         debugPrint(
-            `Parsed sectionName = >>>${sectionName}<<<, with level = ${level}`,
+            `           Parsed subLine = >>>${subLine.trim()}<<<, with level = ${level}`,
+        )
+        debugPrint(
+            `Strip/trimmed sectionName = >>>${sectionName}<<<, with level = ${level}`,
         )
         debugPrint('                        --------------')
         // ---------------------------------------------------------------

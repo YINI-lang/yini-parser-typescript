@@ -122,6 +122,34 @@ describe('Parse Inline with Nested Sections:', () => {
             YINI.parse(fixture)
         }).toThrow()
     })
+
+    test('9. Should throw error if starting with section (without members) ^^ (prev. line is a comment).', () => {
+        // Arrange.
+        const fixture = `
+        // BELOW IS INVALID: Must start with atleast one 1-level section.
+        ^^ InvalidHeader
+        `
+
+        // Act & Assert.
+        expect(() => {
+            YINI.parse(fixture)
+        }).toThrow()
+    })
+
+    test('10. Should throw error if jumping from section (without members) ^^ -> ^^^^.', () => {
+        // Arrange.
+        const fixture = `
+        ^ Section1
+        ^^ Section2
+        --// BELOW INVALID: Invalid to jump over sections when increasing nesting.
+        ^^^^ InvalidHeader
+        `
+
+        // Act & Assert.
+        expect(() => {
+            YINI.parse(fixture)
+        }).toThrow()
+    })
 })
 
 /**
