@@ -85,12 +85,12 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     // private activeLevelSections: any[] = []
     // private lastActiveSectionAtLevels: string[] = []
     private lastActiveSectionTitlesAtLevels: string[] = [] // Last active section name at each level.
-private lastActiveSectionAtLevels: any[] = []
+    private lastActiveSectionAtLevels: any[] = []
 
     private numOfLevelOnes = 0 // Num of Level-1 sections.
     private level = 0
     private prevLevel = 0
-    private lastBuiltSectionObject:any = null
+    private lastBuiltSectionObject: any = null
 
     private meta_numOfSections = 0 // For stats.
     private meta_maxLevelSection = 0 // For stats.
@@ -137,10 +137,10 @@ private lastActiveSectionAtLevels: any[] = []
                 '\nStart of each element in forEeach(..) of section_list():',
             )
 
-            const value = section.accept(this)
-            debugPrint(
-                'In forEach, got child = ' + section + ', got value = ' + value,
-            )
+            // const value = section.accept(this)
+            // debugPrint(
+            //     'In forEach, got child = ' + section + ', got value = ' + value,
+            // )
 
             const sectionResult: any = this.visit(section)
             const sectionName: string | undefined = sectionResult?.name
@@ -158,6 +158,29 @@ private lastActiveSectionAtLevels: any[] = []
             }
 
             if (sectionName) {
+                let nestDirection: 'lower' | 'same' | 'higher'
+                if (this.level === this.prevLevel) {
+                    nestDirection = 'same'
+                } else if (this.level < this.prevLevel) {
+                    nestDirection = 'lower'
+                } else {
+                    nestDirection = 'higher'
+                }
+                this.prevLevel = this.level
+                debugPrint()
+                debugPrint(
+                    '-- Above to build and mount new section ---------------------------',
+                )
+                debugPrint('            sectionName = ' + sectionName)
+                debugPrint('             this.level = ' + this.level)
+                debugPrint('         this.prevLevel = ' + this.prevLevel)
+                debugPrint('          nestDirection = ' + nestDirection)
+                debugPrint('    this.numOfLevelOnes = ' + this.numOfLevelOnes)
+                debugPrint(
+                    'this.getDepthOfLevels() = ' + this.getDepthOfLevels(),
+                )
+                debugPrint()
+
                 resultSections[sectionName] = sectionMembers
                 this.lastBuiltSectionObject = resultSections
                 debugPrint(
@@ -208,23 +231,23 @@ private lastActiveSectionAtLevels: any[] = []
 
         // --- Determine nesting level. ---------
         const lineLen: number = line.length
-        let level = 0
+        this.level = 0
 
         for (let pos = 0; pos < lineLen; pos++) {
             if (
                 line.charAt(pos) === SECTION_MARKER1 ||
                 line.charAt(pos) === SECTION_MARKER2
             ) {
-                level++
+                this.level++
             } else {
                 break
             }
         }
-        debugPrint('level = ' + level)
+        debugPrint('this.level = ' + this.level)
         // ------------------------------------
 
         // --- Extract section name after markers and whitespace. ---------
-        let subLine: string = line.substring(level)
+        let subLine: string = line.substring(this.level)
         let isDone = false
         do {
             if (subLine.startsWith(' ') || subLine.startsWith('\t')) {
@@ -242,10 +265,10 @@ private lastActiveSectionAtLevels: any[] = []
 
         debugPrint('                        --------------')
         debugPrint(
-            `           Parsed subLine = >>>${subLine.trim()}<<<, with level = ${level}`,
+            `           Parsed subLine = >>>${subLine.trim()}<<<, with this.level = ${this.level}`,
         )
         debugPrint(
-            `Strip/trimmed sectionName = >>>${sectionName}<<<, with level = ${level}`,
+            `Strip/trimmed sectionName = >>>${sectionName}<<<, with this.level = ${this.level}`,
         )
         debugPrint('                        --------------')
         // ---------------------------------------------------------------
@@ -277,32 +300,32 @@ private lastActiveSectionAtLevels: any[] = []
         }
         */
         let nestDirection: 'lower' | 'same' | 'higher'
-        if (level === this.prevLevel) {
+        if (this.level === this.prevLevel) {
             nestDirection = 'same'
-        } else if (level < this.prevLevel) {
+        } else if (this.level < this.prevLevel) {
             nestDirection = 'lower'
         } else {
             nestDirection = 'higher'
         }
 
-        if (level === 1) {
+        if (this.level === 1) {
             this.numOfLevelOnes++
         }
 
-        debugPrint('-- Above entity ---------------------------')
-        debugPrint('            sectionName = ' + sectionName)
-        debugPrint('                  level = ' + level)
-        debugPrint('         this.prevLevel = ' + this.prevLevel)
-        debugPrint('          nestDirection = ' + nestDirection)
-        debugPrint('    this.numOfLevelOnes = ' + this.numOfLevelOnes)
-        debugPrint('this.getDepthOfLevels() = ' + this.getDepthOfLevels())
-        debugPrint()
+        // debugPrint('-- Above entity ---------------------------')
+        // debugPrint('            sectionName = ' + sectionName)
+        // debugPrint('             this.level = ' + this.level)
+        // debugPrint('         this.prevLevel = ' + this.prevLevel)
+        // debugPrint('          nestDirection = ' + nestDirection)
+        // debugPrint('    this.numOfLevelOnes = ' + this.numOfLevelOnes)
+        // debugPrint('this.getDepthOfLevels() = ' + this.getDepthOfLevels())
+        // debugPrint()
         //this.setLastActiveSection(0, 'sdf')
 
-        if (level - 1 <= this.getDepthOfLevels()) {
-            //this.lastActiveSectionTitlesAtLevels[level - 1] = sectionName
-            this.setLastActiveSection(level, sectionName)
-            this.lastActiveSectionAtLevels = 
+        if (this.level - 1 <= this.getDepthOfLevels()) {
+            //this.lastActiveSectionTitlesAtLevels[this.level - 1] = sectionName
+            this.setLastActiveSection(this.level, sectionName)
+            // this.lastActiveSectionAtLevels =
         } else {
             //throw new Error('qqqqq')
             this.instanceInvalidData!.pushOrBail(
@@ -312,12 +335,12 @@ private lastActiveSectionAtLevels: any[] = []
                 'Missing a section with level 1. Section header name "' +
                     sectionName +
                     '" with level ' +
-                    level +
+                    this.level +
                     ' may not jump over previous section levels.',
             )
         }
 
-        if (Math.abs(this.prevLevel - level) >= 2) {
+        if (Math.abs(this.prevLevel - this.level) >= 2) {
             this.instanceInvalidData!.pushOrBail(
                 ctx,
                 'Syntax-Error',
@@ -327,14 +350,14 @@ private lastActiveSectionAtLevels: any[] = []
                 'Section header name "' +
                     sectionName +
                     '" with level ' +
-                    level +
+                    this.level +
                     ' may not jump over previous section levels, from secton with level ' +
                     this.prevLevel +
                     '.',
             )
         }
 
-        this.prevLevel = level
+        // this.prevLevel = this.level
         return { name: sectionName, members }
     }
 
