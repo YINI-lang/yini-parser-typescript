@@ -181,8 +181,25 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 )
                 debugPrint()
 
-                resultSections[sectionName] = sectionMembers
-                this.lastBuiltSectionObject = resultSections
+                if (nestDirection === 'higher') {
+                    // this.lastBuiltSectionObject.push(resultSections)
+                    if (isDebug()) {
+                        debugPrint('this.lastBuiltSectionObject:')
+                        console.log(this.lastBuiltSectionObject)
+                    }
+
+                    if (!this.lastBuiltSectionObject) {
+                        resultSections[sectionName] = sectionMembers
+                    } else {
+                        this.lastBuiltSectionObject[sectionName] =
+                            sectionMembers
+                    }
+                }
+
+                // resultSections[sectionName] = sectionMembers
+                this.lastActiveSectionAtLevels[this.level] =
+                    resultSections[sectionName]
+                this.lastBuiltSectionObject = resultSections[sectionName]
                 debugPrint(
                     '*** Attached section with name "' + sectionName + '"',
                 )
