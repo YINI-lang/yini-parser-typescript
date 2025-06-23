@@ -91,6 +91,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     private level = 0
     private prevLevel = 0
     private lastBuiltSectionObject: any = null
+    private danglingTitle: string = ''
 
     private meta_numOfSections = 0 // For stats.
     private meta_maxLevelSection = 0 // For stats.
@@ -152,6 +153,10 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             }
 
             debugPrint('sectionName = "' + sectionName + '"')
+            debugPrint(
+                'Num of Props of sectionResult?.members: ' +
+                    Object.keys(sectionResult?.members).length,
+            )
             debugPrint('sectionMembers:')
             if (isDebug()) {
                 console.log(sectionMembers)
@@ -196,11 +201,26 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                     // }
                 }
 
+                if (this.danglingTitle) {
+                    debugPrint(
+                        'Detected a dangling section "' +
+                            this.danglingTitle +
+                            '"',
+                    )
+                }
+
                 let mountAt = this.lastActiveSectionAtLevels[this.level - 1]
                 if (!mountAt) {
                     mountAt = resultSections
                 }
-                mountAt[sectionName] = sectionMembers
+
+                if (Object.keys(sectionResult?.members).length === 0) {
+                    debugPrint('HITTTT')
+                    mountAt[sectionName] = { dummy: undefined }
+                } else {
+                    mountAt[sectionName] = sectionMembers
+                }
+
                 this.lastActiveSectionAtLevels[this.level] =
                     mountAt[sectionName]
 
@@ -244,8 +264,16 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         const res: Record<string, any> = {}
 
         debugPrint('start')
-        debugPrint('XXXX1' + ctx.SECTION_HEAD())
-        debugPrint('XXXX2' + ctx.section())
+        debugPrint('XXXX1:ctx.SECTION_HEAD() = ' + ctx.SECTION_HEAD())
+        debugPrint('XXXX2:     ctx.section() = ' + ctx.section())
+        // debugPrint('XXXX3: = ' + ctx.getChildCount())
+        // debugPrint('XXXX4: = ' + ctx.ruleContext)
+        // debugPrint('XXXX5: = ' + ctx.section_members.name)
+
+        // ctx.children?.forEach((child: any) => {
+        //     debugPrint('child in section:' + child)
+        // })
+
         debugPrint('end\n')
 
         let line: string = ''
@@ -300,12 +328,24 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('                        --------------')
         // ---------------------------------------------------------------
 
-        debugPrint('visit(ctx.section_members()')
+        if (!ctx.section_members()) {
+            debugPrint('(!) Section has no members!')
+            // this.lastActiveSectionAtLevels[this.level - 1] = { sdf: 354 }
+            this.danglingTitle = sectionName
+        } else {
+            this.danglingTitle = ''
+        }
+
+        debugPrint('About to visit(ctx.section_members()')
         const members = ctx.section_members()
             ? this.visit(ctx.section_members())
-            : {}
-        // ---------------------------------------------------------------
+            : // : {}
+              this.visit(ctx.section())
 
+        // ---------------------------------------------------------------
+        ctx.children?.forEach((child: any) => {
+            debugPrint('* child: ' + child)
+        })
         /*
         if (level === 1) {
             this.numOfLevelOnes++
