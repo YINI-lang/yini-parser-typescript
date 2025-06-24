@@ -302,9 +302,9 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('start')
         debugPrint('XXXX1:ctx.SECTION_HEAD() = ' + ctx.SECTION_HEAD())
         debugPrint('XXXX2:     ctx.section():')
-        if (isDebug()) {
-            ctx.section()
-        }
+        // if (isDebug()) {
+        //     ctx.section()
+        // }
         // debugPrint('XXXX3: = ' + ctx.getChildCount())
         // debugPrint('XXXX4: = ' + ctx.ruleContext)
         // debugPrint('XXXX5: = ' + ctx.section_members.name)
@@ -367,49 +367,61 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('                        --------------')
         // ---------------------------------------------------------------
 
-        if (!ctx.section_members()) {
-            debugPrint('(!) Section has no members!')
-            // this.lastActiveSectionAtLevels[this.level - 1] = { sdf: 354 }
-            this.danglingTitle = sectionName
-        } else {
-            this.danglingTitle = ''
-        }
+        // if (!ctx.section_members()) {
+        //     debugPrint('(!) Section has no members!')
+        //     // this.lastActiveSectionAtLevels[this.level - 1] = { sdf: 354 }
+        //     this.danglingTitle = sectionName
+        // } else {
+        //     this.danglingTitle = ''
+        // }
 
-        debugPrint('About to visit(ctx.section_members()')
+        debugPrint('About to visit members of section...')
         // const members = ctx.section_members()
         //     ? this.visit(ctx.section_members())
         //     : // : {}
         //       this.visit(ctx.section())
         let members: any
 
-        if (ctx.section_members()) {
-            members = this.visitSection_members(ctx.section_members())
+        if (!ctx.section_members()) {
+            debugPrint('(!) Section has no members!')
+            this.danglingTitle = sectionName
         } else {
-            // Has no members!
-            // this.visit(ctx.section())
-            // const dummyMember: Record<string, any> = {}
-            // dummyMember['dummy'] = 999
-            // const dummyMember = { dummy: 999 }
-            // members = dummyMember
-            // this.mountSection(this.level, sectionName, dummyMember)
-            // // this.prevLevel++
-            // // this.level++
-            // debugPrint(
-            //     '\n=== resultSections after mounting of memberless section: =====================================',
-            // )
-            // if (isDebug()) {
-            //     console.log(this.resultSections)
-            // }
-            // this.visit(ctx.section())
-            // Handle nested sections (recursively)
-            // Below does not seem to work!!
-            // ctx?.section_list?.()?.forEach((section: any) => {
-            // for (let section of mCtx.section?.() ?? []) {
-            debugPrint('\n(!) 2Detected nested section')
-
-            const secObj = this.visitSection(ctx.section())
-            Object.assign(members, secObj)
+            this.danglingTitle = ''
+            members = this.visitSection_members(ctx.section_members())
         }
+
+        // if (ctx.section()) {
+        // Has no members!
+        // this.visit(ctx.section())
+        // const dummyMember: Record<string, any> = {}
+        // dummyMember['dummy'] = 999
+        // const dummyMember = { dummy: 999 }
+        // members = dummyMember
+        // this.mountSection(this.level, sectionName, dummyMember)
+        // // this.prevLevel++
+        // // this.level++
+        // debugPrint(
+        //     '\n=== resultSections after mounting of memberless section: =====================================',
+        // )
+        // if (isDebug()) {
+        //     console.log(this.resultSections)
+        // }
+        // this.visit(ctx.section())
+        // Handle nested sections (recursively)
+        // Below does not seem to work!!
+        // ctx?.section_list?.()?.forEach((section: any) => {
+        // for (let section of mCtx.section?.() ?? []) {
+        //     debugPrint(
+        //         '(!) Detected that this is a memberless section, section title: ' +
+        //             sectionName,
+        //     )
+
+        //     debugPrint('getDepthOfLevels = ' + this.getDepthOfLevels())
+        //     const nested = this.visitSection(ctx.section())
+        //     // Object.assign(members, nested)
+        //     this.mountSection(this.level, sectionName, nested)
+        //     debugPrint('getDepthOfLevels = ' + this.getDepthOfLevels())
+        // }
 
         // members = !sCtx.section_members()
         //     ? null
@@ -521,11 +533,20 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             debugPrint('value?.type = >>>' + value?.type + '<<<')
             debugPrint('--')
 
-            // members[key] = value
-            if ((value?.type as TDataType) === 'Null') {
-                members[key] = null
+            if (members[key] !== undefined) {
+                this.instanceInvalidData!.pushOrBail(
+                    ctx,
+                    'Syntax-Error',
+                    'Key already exists in this section scope (in this main section), key name: ' +
+                        key,
+                )
             } else {
-                members[key] = value?.value
+                // members[key] = value
+                if ((value?.type as TDataType) === 'Null') {
+                    members[key] = null
+                } else {
+                    members[key] = value?.value
+                }
             }
         })
 
@@ -534,6 +555,15 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         //     const { key, value } = this.visit(mcl)
         //     members[key] = value
         // })
+
+        // if (ctx.section?.()) {
+        //     debugPrint(
+        //         '(!) 22Detected that this is a memberless section, section title: ',
+        //     )
+
+        //     const secObj = this.visitSection(ctx!.section())
+        //     Object.assign(members, secObj)
+        // }
 
         return members
     }
