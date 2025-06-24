@@ -96,20 +96,32 @@ listItems = ["a", "b", "c"]
     // YINI.parse(invalidInput1)
 
     if (APP_ENV === 'local' && NODE_ENV !== 'test') {
-        YINI.parse(`
+        /*
+		YINI.parse(`
 --^ Section0
 	--value = 0
 ^ Section1
-//	value = 1
+	value = 1
 
 ^^ Section11
 	value = 11
-// 	^^^ Section111
-	// value = 111
+
+ 	^^^ Section111
+	 value = 111
 //^^^^ Section2104
 	value = 24
 
+^ Section2
+	value = 2
 `)
     }
-    // YINI.parse(`number = 42`)
+*/
+        // YINI.parse(`number = 42`)
+        YINI.parse(`
+^ Section0
+	//value = 0
+    ^^ Section11
+    value = 11
+`)
+    }
 }
