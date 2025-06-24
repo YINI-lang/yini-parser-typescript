@@ -103,12 +103,20 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         sectionName: string,
         sectionMembers: any,
     ) => {
+        if (!sectionName) {
+            this.instanceInvalidData!.pushOrBail(
+                null,
+                'Internal-Error',
+                'Invalid sectionName: ' + sectionName,
+            )
+        }
+
         let mountAt = this.lastActiveSectionAtLevels[level - 1]
         if (!mountAt) {
             mountAt = this.resultSections
         }
 
-        if (Object.keys(sectionMembers).length === 0) {
+        if (sectionMembers && Object.keys(sectionMembers).length === 0) {
             debugPrint('HITTTT2')
             mountAt[sectionName] = { dummy: undefined }
         } else {
@@ -155,7 +163,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
         // const resultSections: Record<string, any> = {}
 
-        ctx.section_list().forEach((section: any) => {
+        ctx.section_list()?.forEach((section: any) => {
+            // ctx?.section_list()?.forEach((section: any) => {
             debugPrint(
                 '\nStart of each element in forEeach(..) of section_list():',
             )
@@ -165,7 +174,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             //     'In forEach, got child = ' + section + ', got value = ' + value,
             // )
 
-            const sectionResult: any = this.visit(section)
+            // const sectionResult: any = this.visit(section)
+            const sectionResult: any = this.visitSection(section)
             const sectionName: string | undefined = sectionResult?.name
             const sectionMembers: any = sectionResult?.members
 
@@ -175,10 +185,11 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             }
 
             debugPrint('sectionName = "' + sectionName + '"')
-            debugPrint(
-                'Num of Props of sectionResult?.members: ' +
-                    Object.keys(sectionResult?.members).length,
-            )
+            sectionResult?.members &&
+                debugPrint(
+                    'Num of Props of sectionResult?.members: ' +
+                        Object.keys(sectionResult?.members).length,
+                )
             debugPrint('sectionMembers:')
             if (isDebug()) {
                 console.log(sectionMembers)
@@ -278,7 +289,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     /**
      * Visit a parse tree produced by `YiniParser.section`.
      * @param ctx the parse tree
-     * @return the visitor result
+     * @returns { [sectionName]: sectionObj }
      */
     // visitSection?: (ctx: SectionContext) => IResult;
 
@@ -370,6 +381,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         //     : // : {}
         //       this.visit(ctx.section())
         let members: any
+        /*
         if (ctx.section_members()) {
             members = this.visit(ctx.section_members())
         } else {
@@ -390,6 +402,10 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             }
             this.visit(ctx.section())
         }
+        */
+        members = !ctx.section_members()
+            ? null
+            : this.visitSection_members(ctx.section_members())
 
         // ---------------------------------------------------------------
         ctx.children?.forEach((child: any) => {
@@ -468,7 +484,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     /**
      * Visit a parse tree produced by `YiniParser.section_members`.
      * @param ctx the parse tree
-     * @return the visitor result
+     * @returns { key: value, ... }
      */
     // visitSection_members = (ctx: Section_membersContext): Record<string, any> => {
     visitSection_members = (ctx: Section_membersContext): any => {
@@ -476,7 +492,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
         const members: Record<string, any> = {}
         ctx.member_list().forEach((member) => {
-            const { key, value }: any = this.visit(member)
+            const { key, value }: any = this.visitMember(member)
             debugPrint('Item of member_list:')
             debugPrint('key = >>>' + key + '<<<')
             debugPrint('value = >>>' + value + '<<<')
@@ -500,9 +516,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     }
 
     /**
-     * Visit a parse tree produced by `YiniParser.member`.
-     * @param ctx the parse tree
-     * @return the visitor result
+     * Visit a single key=value or key=[...] member.
+     * @returns { key, value }
      */
     // visitMember?: (ctx: MemberContext) => IResult;
     visitMember = (ctx: MemberContext) => {
@@ -518,7 +533,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             this.instanceInvalidData!.pushOrBail(ctx, 'Syntax-Error', msg)
         }
 
-        const value = ctx.value() ? this.visit(ctx.value()) : null
+        const value = ctx.value() ? this.visitValue(ctx.value()) : null
         debugPrint('value = ' + value + '  @visitMember(..)')
 
         // return { key, value } as IResult
