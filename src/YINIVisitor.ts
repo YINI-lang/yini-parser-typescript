@@ -381,31 +381,50 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         //     : // : {}
         //       this.visit(ctx.section())
         let members: any
-        /*
+
         if (ctx.section_members()) {
-            members = this.visit(ctx.section_members())
+            members = this.visitSection_members(ctx.section_members())
         } else {
             // Has no members!
             // this.visit(ctx.section())
             // const dummyMember: Record<string, any> = {}
             // dummyMember['dummy'] = 999
-            const dummyMember = { dummy: 999 }
-            members = dummyMember
-            this.mountSection(this.level, sectionName, dummyMember)
-            // this.prevLevel++
-            // this.level++
-            debugPrint(
-                '\n=== resultSections after mounting of memberless section: =====================================',
-            )
-            if (isDebug()) {
-                console.log(this.resultSections)
-            }
-            this.visit(ctx.section())
+            // const dummyMember = { dummy: 999 }
+            // members = dummyMember
+            // this.mountSection(this.level, sectionName, dummyMember)
+            // // this.prevLevel++
+            // // this.level++
+            // debugPrint(
+            //     '\n=== resultSections after mounting of memberless section: =====================================',
+            // )
+            // if (isDebug()) {
+            //     console.log(this.resultSections)
+            // }
+            // this.visit(ctx.section())
+            // Handle nested sections (recursively)
+            // Below does not seem to work!!
+            // ctx?.section_list?.()?.forEach((section: any) => {
+            // for (let section of mCtx.section?.() ?? []) {
+            debugPrint('\n(!) 2Detected nested section')
+
+            const secObj = this.visitSection(ctx.section())
+            Object.assign(members, secObj)
         }
-        */
-        members = !ctx.section_members()
-            ? null
-            : this.visitSection_members(ctx.section_members())
+
+        // members = !sCtx.section_members()
+        //     ? null
+        //     : this.visitSection_members(sCtx.section_members())
+
+        // ----------------
+
+        // (?) traverse nested section
+        // yCtx?.section_list()?.forEach((section: any) => {
+        //     // ctx?.section_list()?.forEach((section: any) => {
+        //     debugPrint(
+        //         '\n(!) Detected nested section (yCtx.section_list() item):' +
+        //             section,
+        //     )
+        // })
 
         // ---------------------------------------------------------------
         ctx.children?.forEach((child: any) => {
@@ -487,10 +506,12 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      * @returns { key: value, ... }
      */
     // visitSection_members = (ctx: Section_membersContext): Record<string, any> => {
+    // visitSection_members = (ctx: Section_membersContext): any => {
     visitSection_members = (ctx: Section_membersContext): any => {
         debugPrint('-> Entered visitSection_members(..)')
 
         const members: Record<string, any> = {}
+
         ctx.member_list().forEach((member) => {
             const { key, value }: any = this.visitMember(member)
             debugPrint('Item of member_list:')
@@ -507,6 +528,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 members[key] = value?.value
             }
         })
+
+        //@todo handle member colon list
         // ctx..member_colon_list().forEach((mcl) => {
         //     const { key, value } = this.visit(mcl)
         //     members[key] = value

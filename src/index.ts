@@ -118,8 +118,8 @@ listItems = ["a", "b", "c"]
 */
         // YINI.parse(`number = 42`)
         YINI.parse(`
-^ Section0
-	//value = 0
+^ Section1
+	//value = 1
     ^^ Section11
     value = 11
 `)
