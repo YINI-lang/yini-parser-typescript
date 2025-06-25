@@ -130,8 +130,12 @@ Expected JS output:
 	value = 1
     ^^ Section11
         value = 11
+        ^^ Section111
+            value = 111
 ^ Section2
 	value = 2
+    ^^ Section2
+	    value = 21
 `)
     }
 }

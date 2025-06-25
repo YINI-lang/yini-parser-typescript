@@ -156,6 +156,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             InvalidDataHandler.getInstance('1-Abort-on-Errors')
         debugPrint()
         debugPrint('abcde99')
+        isDebug() && console.log()
         debugPrint('-> Entered visitYini(..) in YINIVisitor')
         debugPrint('QQQQ')
 
@@ -257,7 +258,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      */
     // visitSection?: (ctx: SectionContext) => IResult;
     visitSection = (ctx: SectionContext): any => {
-        debugPrint()
+        isDebug() && console.log()
         debugPrint('-> Entered visitSection(..)')
 
         const res: Record<string, any> = {}
@@ -427,6 +428,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     // visitSection_members = (ctx: Section_membersContext): Record<string, any> => {
     // visitSection_members = (ctx: Section_membersContext): any => {
     visitSection_members = (ctx: Section_membersContext): any => {
+        isDebug() && console.log()
         debugPrint(
             '************************************************************',
         )
@@ -481,7 +483,6 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         })
 
         if (isDebug()) {
-            console.log()
             debugPrint(
                 '~~~ After mounting in visitSection_members(..) ~~~~~~~~~~',
             )
@@ -490,7 +491,6 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             debugPrint(
                 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
             )
-            console.log()
         }
 
         //@todo handle member colon list
@@ -498,6 +498,13 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         //     const { key, value } = this.visit(mcl)
         //     members[key] = value
         // })
+        debugPrint()
+        debugPrint('<- Leaving visitSection_members(..)')
+        if (isDebug()) {
+            console.log('returning:')
+            console.log(members)
+            console.log()
+        }
 
         return members
     }
@@ -508,8 +515,10 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      */
     // visitMember?: (ctx: MemberContext) => IResult;
     visitMember = (ctx: MemberContext) => {
+        isDebug() && console.log()
         debugPrint('-> Entered visitMember(..)')
-        debugPrint('key   = ' + ctx.KEY()?.getText())
+        debugPrint('           key   = ' + ctx.KEY()?.getText())
+        debugPrint('Or, section head = ' + ctx.SECTION_HEAD()?.getText().trim())
         debugPrint('ctx.value() = ' + ctx.value())
 
         let key: string = ''
@@ -551,6 +560,14 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         //@todo if a section, use the section key as key, its members
         // as value, and return as section
         // the function receiving this must know this is a section!!!
+        debugPrint()
+        debugPrint('<- Leaving visitMember(..)')
+        if (isDebug()) {
+            console.log('returning:')
+            console.log({ key, value })
+            console.log()
+        }
+
         return { key, value } as IResult
     }
 
@@ -561,6 +578,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      */
     //visitMember_colon_list?: (ctx: Member_colon_listContext) => IResult
     visitMember_colon_list = (ctx: Member_colon_listContext): IResult => {
+        isDebug() && console.log()
         debugPrint('-> Entered visitMember_colon_list(..)')
 
         const key = ctx.KEY().getText()
@@ -575,6 +593,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      */
     // visitValue?: (ctx: ValueContext) => IResult
     visitValue = (ctx: ValueContext): any => {
+        isDebug() && console.log()
         debugPrint('-> Entered visitValue(..)')
 
         debugPrint('ctx.number_literal(): ' + ctx.number_literal())
