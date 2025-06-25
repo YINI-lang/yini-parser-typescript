@@ -565,6 +565,10 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             debugPrint('(!) Detected a section head instead: ' + line)
             anotherSection = this.visitSection(ctx)
             //  Object.assign(members, sectionObj)
+            debugPrint('Got object from following, anotherSection:')
+            if (isDebug()) {
+                console.log(anotherSection)
+            }
 
             resultValue[anotherSection?.name] = anotherSection?.members
             resultKey = anotherSection!.name
