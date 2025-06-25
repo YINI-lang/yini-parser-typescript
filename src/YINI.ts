@@ -7,6 +7,10 @@ import { debugPrint, devPrint } from './utils/system'
 export default class YINI {
     public static fullPath: string = '' // Used in error reporting.
 
+    /**
+     * @param yiniContent Full path to the YINI file.
+     * @note The order of properties (members) in each JavaScript object (section) may differ from the order in the input YINI content.
+     */
     public static parse = (yiniContent: string): any => {
         debugPrint('-> Entered static parse(..) in class YINI\n')
 
@@ -40,8 +44,8 @@ export default class YINI {
     }
 
     /**
-     *
      * @param yiniFile Full path to the YINI file.
+     * @note The order of properties (members) in each JavaScript object (section) may differ from the order in the input YINI file.
      */
     public static parseFile = (fullPath: string): any => {
         debugPrint('Current directory = ' + process.cwd())
@@ -74,8 +78,12 @@ export default class YINI {
 
         if (isDev()) {
             console.log()
-            devPrint('YINI.parseFile(..): result:')
+            devPrint('YINI.parse(..): result:')
             console.log(result)
+
+            devPrint('Complete result:')
+            const str = JSON.stringify(result, null, 4)
+            console.log(str)
         }
 
         return result
