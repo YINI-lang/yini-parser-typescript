@@ -121,7 +121,7 @@ listItems = ["a", "b", "c"]
 ^ Section1
 	value = 1
     ^^ Section11
-    value = 11
+        value = 11
 ^ Section2
 	value = 2
 `)
