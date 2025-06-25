@@ -528,7 +528,11 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     /**
      * Visit every single section or member (any key-value pair such as
      * key=value or key=[...] etc.).
-     * @returns { key, value }
+     * @returns {
+            type: resultType,
+            key: resultKey,
+            value: resultValue,
+        }: IResult
      */
     // visitMember?: (ctx: MemberContext) => IResult;
     visitMember = (ctx: MemberContext) => {
@@ -538,11 +542,13 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('Or, section head = ' + ctx.SECTION_HEAD()?.getText().trim())
         debugPrint('     ctx.value() = ' + ctx.value())
 
+        // For logging and debugging purposes.
         let entityType: 'Member-Key' | 'Section-Head' | 'Unknown' = 'Unknown'
 
+        let resultType: TDataType = undefined
         let resultKey: string = ''
         let resultValue: any = {}
-        let builtSection: any = null
+        let nestedSection: any = null
 
         // NOTE: (!) It can never be both a key and section head.
         if (ctx.KEY()?.getText().trim()) {
@@ -556,23 +562,30 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 this.instanceInvalidData!.pushOrBail(ctx, 'Syntax-Error', msg)
             }
 
-            resultValue = ctx.value() ? this.visitValue(ctx.value()) : null
-            debugPrint('value = ' + resultValue + '  @visitMember(..)')
+            const result: IResult = ctx.value()
+                ? this.visitValue(ctx.value())
+                : null
+            resultType = (<any>result).type
+            resultValue = (<any>result).value
+            debugPrint(' type = ' + resultType + '          @visitValue(..)')
+            debugPrint('value = ' + resultValue + '          @visitValue(..)')
         } else if (ctx.SECTION_HEAD()?.getText().trim()) {
             entityType = 'Section-Head'
 
             const line = '' + ctx.SECTION_HEAD().getText().trim()
             debugPrint('(!) Detected a section head instead: ' + line)
 
-            builtSection = this.visitSection(ctx)
+            nestedSection = this.visitSection(ctx)
             //  Object.assign(members, sectionObj)
             debugPrint('Got constructed object of builtSection:')
             if (isDebug()) {
-                console.log(builtSection)
+                console.log(nestedSection)
             }
 
-            resultValue[builtSection?.name] = builtSection?.members
-            resultKey = builtSection!.name
+            //@todo Mount the nested object correctly!
+            resultType = 'Object'
+            resultValue[nestedSection?.name] = nestedSection?.members
+            resultKey = nestedSection!.name
             debugPrint('Mounted/assigned a section onto resultValue...')
             // Object.assign(value, { dummy: 6767 })
         }
@@ -580,6 +593,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint()
         debugPrint('*** Constructed JS object ***')
         debugPrint("entity      = '" + entityType + "'")
+        debugPrint("resultType  = '" + resultType + "'")
         debugPrint("resultKey   = '" + resultKey + "'")
         debugPrint('resultValue:')
         if (isDebug()) {
@@ -601,11 +615,19 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('<- Leaving visitMember(..)')
         if (isDebug()) {
             console.log('returning:')
-            console.log({ key: resultKey, value: resultValue })
+            console.log({
+                type: resultType,
+                key: resultKey,
+                value: resultValue,
+            })
             console.log()
         }
 
-        return { key: resultKey, value: resultValue } as IResult
+        return {
+            type: resultType,
+            key: resultKey,
+            value: resultValue,
+        } as IResult
     }
 
     /**
