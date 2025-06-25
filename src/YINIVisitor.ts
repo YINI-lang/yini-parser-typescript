@@ -484,6 +484,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             // )
         }
 
+        /*
         if (Math.abs(this.prevLevel - this.level) >= 2) {
             this.instanceInvalidData!.pushOrBail(
                 ctx,
@@ -500,7 +501,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                     '.',
             )
         }
-
+*/
         // this.prevLevel = this.level
         return { name: sectionName, members }
     }
@@ -520,17 +521,27 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     // visitSection_members = (ctx: Section_membersContext): Record<string, any> => {
     // visitSection_members = (ctx: Section_membersContext): any => {
     visitSection_members = (ctx: Section_membersContext): any => {
+        // visitSection_members = (
+        //     ctx: Section_membersContext | MemberContext,
+        // ): any => {
         debugPrint('-> Entered visitSection_members(..)')
+
+        // const sCtx: Section_membersContext = ctx as Section_membersContext
+        // const mCtx: MemberContext = ctx as MemberContext
 
         const members: Record<string, any> = {}
 
         ctx.member_list().forEach((member) => {
             const { key, value }: any = this.visitMember(member)
-            debugPrint('Item of member_list:')
+            debugPrint('* Item of member_list:')
+            if (isDebug()) {
+                console.log(value)
+            }
             debugPrint('key = >>>' + key + '<<<')
             debugPrint('value = >>>' + value + '<<<')
             debugPrint('value?.value = >>>' + value?.value + '<<<')
             debugPrint('value?.type = >>>' + value?.type + '<<<')
+            debugPrint('value[key] = >>>' + value[key] + '<<<')
             debugPrint('--')
 
             if (members[key] !== undefined) {
@@ -545,7 +556,11 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 if ((value?.type as TDataType) === 'Null') {
                     members[key] = null
                 } else {
-                    members[key] = value?.value
+                    // NOTE: (!) Only if nested section.
+                    Object.assign(members, { [key]: value[key] })
+
+                    // Otherwise, if append section, do the below:
+                    Object.assign(this.resultSections, { [key]: value[key] })
                 }
             }
         })
@@ -556,13 +571,16 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         //     members[key] = value
         // })
 
-        // if (ctx.section?.()) {
-        //     debugPrint(
-        //         '(!) 22Detected that this is a memberless section, section title: ',
-        //     )
+        // const line = '' + mCtx.SECTION_HEAD().getText().trim()
+        // if (line) {
+        //     debugPrint('222 Found section head instead: ' + line)
+        //     // if (ctx.section?.()) {
+        //     //     debugPrint(
+        //     //         '(!) 22Detected that this is a memberless section, section title: ',
+        //     //     )
 
-        //     const secObj = this.visitSection(ctx!.section())
-        //     Object.assign(members, secObj)
+        //     const sectionObj = this.visitSection(mCtx)
+        //     Object.assign(members, sectionObj)
         // }
 
         return members
@@ -579,18 +597,44 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('ctx.value() = ' + ctx.value())
 
         let key: string = ''
+        let anotherSection: any = null
         try {
             key = ctx.KEY().getText()
         } catch (error) {
-            const msg: string = `Unexpected syntax while parsing a member (key-value pair)`
-            this.instanceInvalidData!.pushOrBail(ctx, 'Syntax-Error', msg)
+            debugPrint('in catch..')
+            const line = '' + ctx.SECTION_HEAD().getText().trim()
+            debugPrint('(!) Detected a section head instead: ' + line)
+            // const msg: string = `Unexpected syntax while parsing a member (key-value pair)`
+            // this.instanceInvalidData!.pushOrBail(ctx, 'Syntax-Error', msg)
+
+            anotherSection = this.visitSection(ctx)
+            //  Object.assign(members, sectionObj)
         }
 
-        const value = ctx.value() ? this.visitValue(ctx.value()) : null
+        let value = ctx.value() ? this.visitValue(ctx.value()) : null
         debugPrint('value = ' + value + '  @visitMember(..)')
+
+        if (!value) value = {}
+
+        if (anotherSection) {
+            debugPrint('Has constructed a following section, mounting...')
+            // Object.assign(value, { dummy: 6767 })
+            value[anotherSection?.name] = anotherSection?.members
+            key = anotherSection!.name
+            //this.mountSection(this.level + 1, 'dummy', anotherSection)
+        }
+
+        debugPrint('\nConstructed value (for key: ' + key + '):')
+        if (isDebug()) {
+            console.log(value)
+        }
 
         // return { key, value } as IResult
         // return { key, value, type: 'Integer' } as IResult
+
+        //@todo if a section, use the section key as key, its members
+        // as value, and return as section
+        // the function receiving this must know this is a section!!!
         return { key, value } as IResult
     }
 
