@@ -191,49 +191,49 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             }
 
             if (sectionName) {
-                let nestDirection: 'lower' | 'same' | 'higher'
-                if (this.level === this.prevLevel) {
-                    nestDirection = 'same'
-                } else if (this.level < this.prevLevel) {
-                    nestDirection = 'lower'
-                } else {
-                    nestDirection = 'higher'
-                }
-                this.prevLevel = this.level
+                // let nestDirection: 'lower' | 'same' | 'higher'
+                // if (this.level === this.prevLevel) {
+                //     nestDirection = 'same'
+                // } else if (this.level < this.prevLevel) {
+                //     nestDirection = 'lower'
+                // } else {
+                //     nestDirection = 'higher'
+                // }
+                // this.prevLevel = this.level
                 debugPrint()
                 debugPrint(
                     '-- Just extracted TOP/FIRST section info ---------------------------',
                 )
-                debugPrint('            sectionName = ' + sectionName)
+                debugPrint('  TOP/FIRST sectionName = ' + sectionName)
                 debugPrint('             this.level = ' + this.level)
-                debugPrint('         this.prevLevel = ' + this.prevLevel)
-                debugPrint('          nestDirection = ' + nestDirection)
-                debugPrint('    this.numOfLevelOnes = ' + this.numOfLevelOnes)
-                debugPrint(
-                    'this.getDepthOfLevels() = ' + this.getDepthOfLevels(),
-                )
-                debugPrint()
+                // debugPrint('         this.prevLevel = ' + this.prevLevel)
+                // debugPrint('          nestDirection = ' + nestDirection)
+                // debugPrint('    this.numOfLevelOnes = ' + this.numOfLevelOnes)
+                // debugPrint(
+                //     'this.getDepthOfLevels() = ' + this.getDepthOfLevels(),
+                // )
+                // debugPrint()
 
-                if (nestDirection === 'higher') {
-                    if (isDebug()) {
-                        debugPrint('this.lastBuiltSectionObject:')
-                        console.log(this.lastBuiltSectionObject)
-                    }
-                }
+                // if (nestDirection === 'higher') {
+                //     if (isDebug()) {
+                //         debugPrint('this.lastBuiltSectionObject:')
+                //         console.log(this.lastBuiltSectionObject)
+                //     }
+                // }
 
-                if (this.danglingTitle) {
-                    debugPrint(
-                        'Detected a dangling section "' +
-                            this.danglingTitle +
-                            '"',
-                    )
-                }
+                // if (this.danglingTitle) {
+                //     debugPrint(
+                //         'Detected a dangling section "' +
+                //             this.danglingTitle +
+                //             '"',
+                //     )
+                // }
 
-                this.mountSection(this.level, sectionName, sectionMembers)
+                // this.mountSection(this.level, sectionName, sectionMembers)
 
-                debugPrint(
-                    '*** Attached section with name "' + sectionName + '"',
-                )
+                // debugPrint(
+                //     '*** Attached section with name "' + sectionName + '"',
+                // )
             }
 
             debugPrint(
@@ -252,7 +252,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     }
 
     /**
-     * Visit a parse tree produced by `YiniParser.section`.
+     * Will visit here on EVERY section.
      * @param ctx the parse tree
      * @returns { [sectionName]: sectionObj }
      */
@@ -279,6 +279,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
         // --- Determine nesting level. ---------
         const lineLen: number = line.length
+        this.prevLevel = this.level
         this.level = 0
 
         for (let pos = 0; pos < lineLen; pos++) {
@@ -329,7 +330,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         } else {
             nestDirection = 'higher'
         }
-        debugPrint('-- Above entity ---------------------------')
+        debugPrint('-- In visitSection(..) ---------------------------')
         debugPrint('            sectionName = ' + sectionName)
         debugPrint('             this.level = ' + this.level)
         debugPrint('         this.prevLevel = ' + this.prevLevel)
@@ -436,6 +437,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
         const members: Record<string, any> = {}
 
+        debugPrint('Will loop through each member (or section head)...')
         ctx.member_list().forEach((member) => {
             const { key, value }: any = this.visitMember(member)
             debugPrint('* Item of member_list:')
@@ -471,13 +473,21 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 if ((value?.type as TDataType) === 'Null') {
                     members[key] = null
                 } else {
+                    isDebug() && console.log()
                     // NOTE: (!) Only if nested section.
+                    debugPrint(
+                        '+++++++++++++++++++++++++++++++++++++++++++++++++++++',
+                    )
+                    debugPrint(
+                        'About to mount section/object onto members or onto this.restultSections...',
+                    )
                     Object.assign(members, { [key]: value[key] })
                     debugPrint('+ Added as nested section: "' + key + '"')
 
                     // Otherwise, if append section, do the below:
                     Object.assign(this.resultSections, { [key]: value[key] })
                     debugPrint('+ Append new section: "' + key + '"')
+                    isDebug() && console.log()
                 }
             }
         })
@@ -510,7 +520,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     }
 
     /**
-     * Visit a single key=value or key=[...] member.
+     * Visit every single section or member (any key-value pair such as
+     * key=value or key=[...] etc.).
      * @returns { key, value }
      */
     // visitMember?: (ctx: MemberContext) => IResult;
