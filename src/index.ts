@@ -134,13 +134,13 @@ Expected JS output:
             sValue = 111
 ^ Section2
 	sValue = 2
-    // ^^ Section21
-	//     sValue = 21
-    //     ^^^ Section211
-	//         sValue = 211
-    // ^^ Section3
-	//     // sValue = 3
-    //     bSection3 = on
+    ^^ Section21
+	    sValue = 21
+        ^^^ Section211
+	        sValue = 211
+    ^^ Section3
+	    // sValue = 3
+        bSection3 = on
 `)
     }
 }

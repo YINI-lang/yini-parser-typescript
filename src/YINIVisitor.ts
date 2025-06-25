@@ -390,9 +390,20 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
         // this.prevLevel = this.level
         //------------------------
-        if (nestDirection === 'lower') {
+        if (nestDirection === 'same') {
+            this.instanceInvalidData!.pushOrBail(
+                ctx,
+                'Internal-Error',
+                'NestDirection',
+            )
+        } else if (nestDirection === 'lower') {
             this.mountSection(this.level, sectionName, members)
-            debugPrint('Mounted section onto level: ' + this.level)
+            debugPrint(
+                'Mounted section onto level: ' +
+                    this.level +
+                    ', sectionName: ' +
+                    sectionName,
+            )
             sectionName = ''
             members = undefined
         }

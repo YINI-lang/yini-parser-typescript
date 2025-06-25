@@ -30,6 +30,10 @@ export default class YINI {
             console.log()
             devPrint('YINI.parse(..): result:')
             console.log(result)
+
+            devPrint('Complete result:')
+            const str = JSON.stringify(result, null, 4)
+            console.log(str)
         }
 
         return result
