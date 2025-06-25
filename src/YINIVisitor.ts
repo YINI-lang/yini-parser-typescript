@@ -273,8 +273,14 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         try {
             line = '' + ctx.SECTION_HEAD().getText().trim()
         } catch (error) {
-            const msg: string = `Unexpected syntax while parsing a section head (section marker or section title)`
-            this.instanceInvalidData!.pushOrBail(ctx, 'Syntax-Error', msg)
+            const msgWhat: string = `Unexpected syntax while parsing a member or section head`
+            const msgWhy: string = `Found unexpected syntax while trying to read a key-value pair or a section header (such as a section marker or section name).`
+            this.instanceInvalidData!.pushOrBail(
+                ctx,
+                'Syntax-Error',
+                msgWhat,
+                msgWhy,
+            )
         }
 
         // --- Determine nesting level. ---------
@@ -528,15 +534,30 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     visitMember = (ctx: MemberContext) => {
         isDebug() && console.log()
         debugPrint('-> Entered visitMember(..)')
+        debugPrint('           key   = ' + ctx.KEY()?.getText().trim())
+        debugPrint('Or, section head = ' + ctx.SECTION_HEAD()?.getText().trim())
+        debugPrint('     ctx.value() = ' + ctx.value())
 
         let entityType: 'Member-Key' | 'Section-Head' | 'Unknown' = 'Unknown'
 
-        let key: string = ''
+        let resultKey: string = ''
+        let resultValue: any = {}
         let anotherSection: any = null
 
         // NOTE: (!) It can never be both a key and section head.
         if (ctx.KEY()?.getText().trim()) {
             entityType = 'Member-Key'
+
+            try {
+                resultKey = ctx.KEY().getText()
+            } catch (error) {
+                debugPrint('in catch..')
+                const msg: string = `Unexpected syntax while parsing a member (key-value pair)`
+                this.instanceInvalidData!.pushOrBail(ctx, 'Syntax-Error', msg)
+            }
+
+            resultValue = ctx.value() ? this.visitValue(ctx.value()) : null
+            debugPrint('value = ' + resultValue + '  @visitMember(..)')
         } else if (ctx.SECTION_HEAD()?.getText().trim()) {
             entityType = 'Section-Head'
 
@@ -544,41 +565,26 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             debugPrint('(!) Detected a section head instead: ' + line)
             anotherSection = this.visitSection(ctx)
             //  Object.assign(members, sectionObj)
-        }
 
-        debugPrint('           key   = ' + ctx.KEY()?.getText().trim())
-        debugPrint('Or, section head = ' + ctx.SECTION_HEAD()?.getText().trim())
-        debugPrint('      entityType = ' + entityType)
-        debugPrint('     ctx.value() = ' + ctx.value())
-
-        let value: any = {}
-        if (entityType === 'Member-Key') {
-            try {
-                key = ctx.KEY().getText()
-            } catch (error) {
-                debugPrint('in catch..')
-                const msg: string = `Unexpected syntax while parsing a member (key-value pair)`
-                this.instanceInvalidData!.pushOrBail(ctx, 'Syntax-Error', msg)
-            }
-
-            value = ctx.value() ? this.visitValue(ctx.value()) : null
-            debugPrint('value = ' + value + '  @visitMember(..)')
-
-            // if (!value) value = {}
-        }
-
-        if (anotherSection) {
-            debugPrint('Has constructed a following section, mounting...')
+            resultValue[anotherSection?.name] = anotherSection?.members
+            resultKey = anotherSection!.name
+            debugPrint('Mounted/assigned a section onto resultValue...')
             // Object.assign(value, { dummy: 6767 })
-            value[anotherSection?.name] = anotherSection?.members
-            key = anotherSection!.name
-            //this.mountSection(this.level + 1, 'dummy', anotherSection)
         }
 
-        debugPrint('\nConstructed value (for key: ' + key + '):')
+        debugPrint()
+        debugPrint('*** Constructed JS object ***')
+        debugPrint("entity      = '" + entityType + "'")
+        debugPrint("resultKey   = '" + resultKey + "'")
+        debugPrint('resultValue:')
         if (isDebug()) {
-            console.log(value)
+            console.log(resultValue)
         }
+
+        // debugPrint('\nConstructed a member (a key-value pair):')
+        // if (isDebug()) {
+        //     console.log(resultValue)
+        // }
 
         // return { key, value } as IResult
         // return { key, value, type: 'Integer' } as IResult
@@ -590,11 +596,11 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('<- Leaving visitMember(..)')
         if (isDebug()) {
             console.log('returning:')
-            console.log({ key, value })
+            console.log({ key: resultKey, value: resultValue })
             console.log()
         }
 
-        return { key, value } as IResult
+        return { key: resultKey, value: resultValue } as IResult
     }
 
     /**
