@@ -117,6 +117,14 @@ listItems = ["a", "b", "c"]
     }
 */
         // YINI.parse(`number = 42`)
+        /*
+Expected JS output:
+{ 
+  Section1: { value: 1, Section2: { value: 11 }},
+  Section2: { value: 2 }
+}
+
+*/
         YINI.parse(`
 ^ Section1
 	value = 1

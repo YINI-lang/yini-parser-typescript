@@ -184,7 +184,9 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 console.log(sectionResult)
             }
 
-            debugPrint('sectionName = "' + sectionName + '"')
+            debugPrint(
+                'Found section head, sectionName = "' + sectionName + '"',
+            )
             sectionResult?.members &&
                 debugPrint(
                     'Num of Props of sectionResult?.members: ' +
@@ -503,6 +505,14 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         }
 */
         // this.prevLevel = this.level
+        debugPrint()
+        debugPrint('<- Leaving visitSection(..)')
+        if (isDebug()) {
+            console.log('returning:')
+            console.log({ name: sectionName, members })
+            console.log()
+        }
+
         return { name: sectionName, members }
     }
 
@@ -524,6 +534,9 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         // visitSection_members = (
         //     ctx: Section_membersContext | MemberContext,
         // ): any => {
+        debugPrint(
+            '************************************************************',
+        )
         debugPrint('-> Entered visitSection_members(..)')
 
         // const sCtx: Section_membersContext = ctx as Section_membersContext
@@ -552,18 +565,43 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                         key,
                 )
             } else {
+                let nestDirection: 'lower' | 'same' | 'higher'
+                if (this.level === this.prevLevel) {
+                    nestDirection = 'same'
+                } else if (this.level < this.prevLevel) {
+                    nestDirection = 'lower'
+                } else {
+                    nestDirection = 'higher'
+                }
+                debugPrint('nestDirection = ' + nestDirection)
+
                 // members[key] = value
                 if ((value?.type as TDataType) === 'Null') {
                     members[key] = null
                 } else {
                     // NOTE: (!) Only if nested section.
                     Object.assign(members, { [key]: value[key] })
+                    debugPrint('+ Added as nested section: "' + key + '"')
 
                     // Otherwise, if append section, do the below:
                     Object.assign(this.resultSections, { [key]: value[key] })
+                    debugPrint('+ Append new section: "' + key + '"')
                 }
             }
         })
+
+        if (isDebug()) {
+            console.log()
+            debugPrint(
+                '~~~ After mounting in visitSection_members(..) ~~~~~~~~~~',
+            )
+            debugPrint('this.resultSections:')
+            console.log(this.resultSections)
+            debugPrint(
+                '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
+            )
+            console.log()
+        }
 
         //@todo handle member colon list
         // ctx..member_colon_list().forEach((mcl) => {
