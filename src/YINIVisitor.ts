@@ -542,7 +542,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
         let resultKey: string = ''
         let resultValue: any = {}
-        let anotherSection: any = null
+        let builtSection: any = null
 
         // NOTE: (!) It can never be both a key and section head.
         if (ctx.KEY()?.getText().trim()) {
@@ -563,15 +563,16 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
             const line = '' + ctx.SECTION_HEAD().getText().trim()
             debugPrint('(!) Detected a section head instead: ' + line)
-            anotherSection = this.visitSection(ctx)
+
+            builtSection = this.visitSection(ctx)
             //  Object.assign(members, sectionObj)
-            debugPrint('Got object from following, anotherSection:')
+            debugPrint('Got constructed object of builtSection:')
             if (isDebug()) {
-                console.log(anotherSection)
+                console.log(builtSection)
             }
 
-            resultValue[anotherSection?.name] = anotherSection?.members
-            resultKey = anotherSection!.name
+            resultValue[builtSection?.name] = builtSection?.members
+            resultKey = builtSection!.name
             debugPrint('Mounted/assigned a section onto resultValue...')
             // Object.assign(value, { dummy: 6767 })
         }
