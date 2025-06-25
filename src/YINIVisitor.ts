@@ -528,29 +528,44 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     visitMember = (ctx: MemberContext) => {
         isDebug() && console.log()
         debugPrint('-> Entered visitMember(..)')
-        debugPrint('           key   = ' + ctx.KEY()?.getText())
-        debugPrint('Or, section head = ' + ctx.SECTION_HEAD()?.getText().trim())
-        debugPrint('ctx.value() = ' + ctx.value())
+
+        let entityType: 'Member-Key' | 'Section-Head' | 'Unknown' = 'Unknown'
 
         let key: string = ''
         let anotherSection: any = null
-        try {
-            key = ctx.KEY().getText()
-        } catch (error) {
-            debugPrint('in catch..')
+
+        // NOTE: (!) It can never be both a key and section head.
+        if (ctx.KEY()?.getText().trim()) {
+            entityType = 'Member-Key'
+        } else if (ctx.SECTION_HEAD()?.getText().trim()) {
+            entityType = 'Section-Head'
+
             const line = '' + ctx.SECTION_HEAD().getText().trim()
             debugPrint('(!) Detected a section head instead: ' + line)
-            // const msg: string = `Unexpected syntax while parsing a member (key-value pair)`
-            // this.instanceInvalidData!.pushOrBail(ctx, 'Syntax-Error', msg)
-
             anotherSection = this.visitSection(ctx)
             //  Object.assign(members, sectionObj)
         }
 
-        let value = ctx.value() ? this.visitValue(ctx.value()) : null
-        debugPrint('value = ' + value + '  @visitMember(..)')
+        debugPrint('           key   = ' + ctx.KEY()?.getText().trim())
+        debugPrint('Or, section head = ' + ctx.SECTION_HEAD()?.getText().trim())
+        debugPrint('      entityType = ' + entityType)
+        debugPrint('     ctx.value() = ' + ctx.value())
 
-        if (!value) value = {}
+        let value: any = {}
+        if (entityType === 'Member-Key') {
+            try {
+                key = ctx.KEY().getText()
+            } catch (error) {
+                debugPrint('in catch..')
+                const msg: string = `Unexpected syntax while parsing a member (key-value pair)`
+                this.instanceInvalidData!.pushOrBail(ctx, 'Syntax-Error', msg)
+            }
+
+            value = ctx.value() ? this.visitValue(ctx.value()) : null
+            debugPrint('value = ' + value + '  @visitMember(..)')
+
+            // if (!value) value = {}
+        }
 
         if (anotherSection) {
             debugPrint('Has constructed a following section, mounting...')
