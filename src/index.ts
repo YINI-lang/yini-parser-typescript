@@ -143,6 +143,8 @@ Expected JS output:
     ^^ Section22
 	    // sValue = 22
         bValue3 = on
+        ^^^ Section221
+            sValue = 221
     ^^ Section23
 	    // sValue = 23
         bValue3 = on
