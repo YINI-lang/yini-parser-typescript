@@ -127,20 +127,20 @@ Expected JS output:
 */
         YINI.parse(`
 ^ Section1
-    bSection1 = YES
+    bValue1 = YES
     ^^ Section11
         sValue = 11
         ^^^ Section111
             sValue = 111
 ^ Section2
 	sValue = 2
-    ^^ Section21
-	    sValue = 21
-        ^^^ Section211
-	        sValue = 211
-    ^^ Section3
-	    // sValue = 3
-        bSection3 = on
+    // ^^ Section21
+	//     sValue = 21
+    //     ^^^ Section211
+	//         sValue = 211
+    // ^^ Section3
+	//     // sValue = 3
+    //     bValue3 = on
 `)
     }
 }

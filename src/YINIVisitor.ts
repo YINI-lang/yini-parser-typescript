@@ -28,7 +28,7 @@ import parseNullLiteral from './main-literal-parsers/parseNull'
 import parseNumberLiteral from './main-literal-parsers/parseNumber'
 import parseStringLiteral from './main-literal-parsers/parseString'
 import { stripNLAndAfter, trimBackticks } from './utils/string'
-import { debugPrint } from './utils/system'
+import { debugPrint, printObject } from './utils/system'
 
 const SECTION_MARKER1 = '^'
 const SECTION_MARKER2 = '~'
@@ -121,7 +121,22 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             mountAt[sectionName] = sectionMembers
         }
 
-        this.lastActiveSectionAtLevels[level] = mountAt[sectionName]
+        this.lastActiveSectionAtLevels[level - 1] = mountAt[sectionName]
+        this.lastActiveSectionTitlesAtLevels[level - 1] = '' + sectionName
+        if (isDebug()) {
+            console.log()
+            debugPrint('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+            debugPrint(
+                `mountSection(..): level = ${level}, sectioName = ${sectionName}`,
+            )
+            debugPrint('lastActiveSectionAtLevels:')
+            printObject(this.lastActiveSectionAtLevels)
+            console.log()
+            debugPrint('lastActiveSectionTitlesAtLevels:')
+            printObject(this.lastActiveSectionTitlesAtLevels)
+            debugPrint('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+            console.log()
+        }
     }
 
     // getLevelsDepth = (): number => {
@@ -482,11 +497,13 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                     isDebug() && console.log()
                     // NOTE: (!) Only if nested section.
                     debugPrint(
-                        'About to mount section/object onto members or onto this.restultSections...',
+                        'About to mount a single member or section onto members...',
                     )
                     // Object.assign(members, { [key]: value[key] })
                     Object.assign(members, { [key]: value })
-                    debugPrint('+ Added as nested section: "' + key + '"')
+                    debugPrint(
+                        '+ Added member or section onto members: "' + key + '"',
+                    )
 
                     // Otherwise, if append section, do the below:
                     // Object.assign(this.resultSections, { [key]: value[key] })

@@ -7,3 +7,8 @@ export const debugPrint = (str: any = '') => {
 export const devPrint = (str: any = '') => {
     isDev() && console.log('DEV: ' + str)
 }
+
+export const printObject = (obj: any) => {
+    const str = JSON.stringify(obj, null, 4)
+    console.log(str)
+}

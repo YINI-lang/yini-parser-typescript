@@ -2,7 +2,7 @@ import fs from 'fs'
 import { isDebug, isDev } from './config/env'
 import { parseYINI } from './parseEntry'
 import { getFileNameExtension } from './utils/path-and-file-name'
-import { debugPrint, devPrint } from './utils/system'
+import { debugPrint, devPrint, printObject } from './utils/system'
 
 export default class YINI {
     public static fullPath: string = '' // Used in error reporting.
@@ -36,8 +36,7 @@ export default class YINI {
             console.log(result)
 
             devPrint('Complete result:')
-            const str = JSON.stringify(result, null, 4)
-            console.log(str)
+            printObject(result)
         }
 
         return result
@@ -74,16 +73,6 @@ export default class YINI {
             console.warn(
                 `No newline at end of file, it\'s recommended to end a file with a newline. File:\n"${fullPath}"`,
             )
-        }
-
-        if (isDev()) {
-            console.log()
-            devPrint('YINI.parse(..): result:')
-            console.log(result)
-
-            devPrint('Complete result:')
-            const str = JSON.stringify(result, null, 4)
-            console.log(str)
         }
 
         return result
