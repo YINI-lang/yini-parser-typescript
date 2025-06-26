@@ -228,6 +228,9 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 this.mountSection(1, topSectionName, topSectionMembers)
                 debugPrint('Mounted/assigned section onto resultSections...')
 
+                if (!this.lastActiveSectionAtLevels2[this.level - 1]) {
+                    this.lastActiveSectionAtLevels2[this.level - 1] = {}
+                }
                 this.lastActiveSectionAtLevels2[this.level - 1] = {
                     ...topSectionMembers,
                 }
@@ -424,8 +427,11 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             //         sectionName,
             // )
             isDebug() && console.log({ [sectionName]: members })
+            if (!this.lastActiveSectionAtLevels2[this.level - 1]) {
+                this.lastActiveSectionAtLevels2[this.level - 1] = {}
+            }
             this.lastActiveSectionAtLevels2[this.level - 1] = {
-                ...{ [sectionName]: members },
+                ...members,
             }
 
             // let nestDirection: 'lower' | 'same' | 'higher'
