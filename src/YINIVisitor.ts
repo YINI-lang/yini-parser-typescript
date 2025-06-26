@@ -455,7 +455,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 // },
                 [sectionName]: { ...members },
             }
-            this.lastActiveSectionTitlesAtLevels2[this.level - 1] = sectionName
+            this.lastActiveSectionTitlesAtLevels2[thisLevel - 1] = sectionName
             debugPrint('Mounted as append')
 
             // if (this.prevLevel === 1) {
@@ -493,7 +493,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 this.lastActiveSectionAtLevels2[this.level - 1] = {
                     ...members,
                 }
-                this.lastActiveSectionTitlesAtLevels2[this.level - 1] =
+                this.lastActiveSectionTitlesAtLevels2[thisLevel - 1] =
                     sectionName
                 debugPrint('Mounted as assigned')
 
