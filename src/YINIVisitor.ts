@@ -30,6 +30,41 @@ import parseStringLiteral from './main-literal-parsers/parseString'
 import { stripNLAndAfter, trimBackticks } from './utils/string'
 import { debugPrint, printObject } from './utils/system'
 
+/*
+    A Nested Linear Branch in tree data structures is:
+    - Each section level has at most one nested section on each level (never more nested sections on each level).
+    - Branch within a tree where each section has exactly one nested section, forming a straight path down through multiple continuous levels of nested section.
+    - If having nested section, the nested sections must be straigt path, e.g. Section level 3, has nested Section level 4, has nested Section level 5.
+    - Is part of a tree (not necessarily the root (the top section)), or sometimes also the whole tree.
+    - Eech section includes its members (on that level).
+    - It is a single path from start section to the last nested end section.
+    - A branch that forms a continuous sequence of nested sections.
+    
+    Example:
+    "
+        ^ Section1
+        sValue = 1
+            ^^ Section11
+            sValue = 11
+            bValue = OFF
+        ^ Section2
+        sValue = 2
+    "
+
+    Has two Nested Linear Branches:
+    1: "^ Section1
+        sValue = 1
+            ^^ Section11
+            sValue = 11
+            bValue = OFF"
+    2: "^ Section2
+        sValue = 2"
+
+ */
+interface IAbstractTree {
+    originLevel: number
+}
+
 const SECTION_MARKER1 = '^'
 const SECTION_MARKER2 = '~'
 
