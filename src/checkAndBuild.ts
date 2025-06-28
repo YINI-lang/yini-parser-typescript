@@ -31,7 +31,7 @@ export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
         }
 
         prevObjectPaths = []
-        prevObjectPaths = getObjectPropertyPaths(objChain)
+        prevObjectPaths = getObjectPropertyPaths(jsObject)
     })
 
     return jsObject
