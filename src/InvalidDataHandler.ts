@@ -171,13 +171,18 @@ export class InvalidDataHandler {
                 break
             default: // Including 'Internal-Error'.
                 this.emitInternalError(msgWhat, msgWhy, msgHint)
-                if (process.env.NODE_ENV === 'test') {
-                    // In test, throw an error instead of exiting.
-                    throw new Error(`Internal-Error: ${msgWhat}`)
-                } else {
-                    // Use this instead of process.exit(1), this will
-                    // lead to exit the current thread(s) as well.
-                    process.exitCode = 1
+                if (
+                    this.bailThreshold === '1-Abort-on-Errors' ||
+                    this.bailThreshold === '2-Abort-Even-on-Warnings'
+                ) {
+                    if (process.env.NODE_ENV === 'test') {
+                        // In test, throw an error instead of exiting.
+                        throw new Error(`Internal-Error: ${msgWhat}`)
+                    } else {
+                        // Use this instead of process.exit(1), this will
+                        // lead to exit the current thread(s) as well.
+                        process.exitCode = 1
+                    }
                 }
         }
     }
