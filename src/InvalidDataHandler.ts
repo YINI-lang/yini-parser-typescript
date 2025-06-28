@@ -22,6 +22,7 @@ export type TBailThreshold =
     | '2-Abort-Even-on-Warnings'
 
 export type TIssueType =
+    | 'Fatal-Error'
     | 'Internal-Error'
     | 'Syntax-Error'
     | 'Syntax-Warning'
@@ -32,8 +33,9 @@ export type TIssueType =
 // titles, and to easier check that all titles match with relation to
 // the other titles.
 const issueTitle: string[] = [
-    'INTERNAL ERROR!', // 'Internal-Error'.
-    'Syntax error!', // 'Syntax-Error'.
+    'FATAL ERROR!',
+    'Internal error!', // 'Internal-Error'.
+    'Syntax error.', // 'Syntax-Error'.
     'Syntax warning.',
     'Notice:',
     'Info:',
@@ -138,38 +140,7 @@ export class InvalidDataHandler {
         )
 
         switch (type) {
-            case 'Syntax-Error':
-                this.emitSyntaxError(msgWhat, msgWhy, msgHint)
-                if (
-                    this.bailThreshold === '1-Abort-on-Errors' ||
-                    this.bailThreshold === '2-Abort-Even-on-Warnings'
-                ) {
-                    if (process.env.NODE_ENV === 'test') {
-                        // In test, throw an error instead of exiting.
-                        throw new Error(`Syntax-Error: ${'' + msgWhat}`)
-                    } else {
-                        process.exit(2)
-                    }
-                }
-                break
-            case 'Syntax-Warning':
-                this.emitSyntaxWarning(msgWhat, msgWhy, msgHint)
-                if (this.bailThreshold === '2-Abort-Even-on-Warnings') {
-                    if (process.env.NODE_ENV === 'test') {
-                        // In test, throw an error instead of exiting.
-                        throw new Error(`Syntax-Warning: ${msgWhat}`)
-                    } else {
-                        process.exit(3)
-                    }
-                }
-                break
-            case 'Notice':
-                this.emitNotice(msgWhat, msgWhy, msgHint)
-                break
-            case 'Info':
-                this.emitInfo(msgWhat, msgWhy, msgHint)
-                break
-            default: // Including 'Internal-Error'.
+            case 'Internal-Error':
                 this.emitInternalError(msgWhat, msgWhy, msgHint)
                 if (
                     this.bailThreshold === '1-Abort-on-Errors' ||
@@ -181,13 +152,56 @@ export class InvalidDataHandler {
                     } else {
                         // Use this instead of process.exit(1), this will
                         // lead to exit the current thread(s) as well.
-                        process.exitCode = 1
+                        process.exit(2)
                     }
+                }
+                break
+            case 'Syntax-Error':
+                this.emitSyntaxError(msgWhat, msgWhy, msgHint)
+                if (
+                    this.bailThreshold === '1-Abort-on-Errors' ||
+                    this.bailThreshold === '2-Abort-Even-on-Warnings'
+                ) {
+                    if (process.env.NODE_ENV === 'test') {
+                        // In test, throw an error instead of exiting.
+                        throw new Error(`Syntax-Error: ${'' + msgWhat}`)
+                    } else {
+                        process.exit(3)
+                    }
+                }
+                break
+            case 'Syntax-Warning':
+                this.emitSyntaxWarning(msgWhat, msgWhy, msgHint)
+                if (this.bailThreshold === '2-Abort-Even-on-Warnings') {
+                    if (process.env.NODE_ENV === 'test') {
+                        // In test, throw an error instead of exiting.
+                        throw new Error(`Syntax-Warning: ${msgWhat}`)
+                    } else {
+                        process.exit(4)
+                    }
+                }
+                break
+            case 'Notice':
+                this.emitNotice(msgWhat, msgWhy, msgHint)
+                break
+            case 'Info':
+                this.emitInfo(msgWhat, msgWhy, msgHint)
+                break
+            default: // Including 'Internal-Error'.
+                this.emitFatalError(msgWhat, msgWhy, msgHint)
+                // CANNOT recover fatal errors, will lead to an exit!
+                if (process.env.NODE_ENV === 'test') {
+                    // In test, throw an error instead of exiting.
+                    throw new Error(`Internal-Error: ${msgWhat}`)
+                } else {
+                    // Use this instead of process.exit(1), this will
+                    // lead to exit the current thread(s) as well.
+                    process.exitCode = 1
                 }
         }
     }
 
-    private emitInternalError = (
+    private emitFatalError = (
         msgWhat = 'Something went wrong!',
         msgWhy = '',
         msgHint = '',
@@ -198,8 +212,19 @@ export class InvalidDataHandler {
         msgHint && console.log(msgHint)
     }
 
-    private emitSyntaxError = (msgWhat: string, msgWhy = '', msgHint = '') => {
+    private emitInternalError = (
+        msgWhat = 'Something went wrong!',
+        msgWhy = '',
+        msgHint = '',
+    ) => {
         console.error(issueTitle[1]) // Print the issue title.
+        msgWhat && console.error(msgWhat)
+        msgWhy && console.error(msgWhy)
+        msgHint && console.log(msgHint)
+    }
+
+    private emitSyntaxError = (msgWhat: string, msgWhy = '', msgHint = '') => {
+        console.error(issueTitle[2]) // Print the issue title.
         msgWhat && console.error(msgWhat)
         msgWhy && console.error(msgWhy)
         msgHint && console.log(msgHint)
@@ -210,21 +235,21 @@ export class InvalidDataHandler {
         msgWhy = '',
         msgHint = '',
     ) => {
-        console.warn(issueTitle[2]) // Print the issue title.
-        msgWhat && console.warn(msgWhat)
-        msgWhy && console.warn(msgWhy)
-        msgHint && console.log(msgHint)
-    }
-
-    private emitNotice = (msgWhat: string, msgWhy = '', msgHint = '') => {
         console.warn(issueTitle[3]) // Print the issue title.
         msgWhat && console.warn(msgWhat)
         msgWhy && console.warn(msgWhy)
         msgHint && console.log(msgHint)
     }
 
+    private emitNotice = (msgWhat: string, msgWhy = '', msgHint = '') => {
+        console.warn(issueTitle[4]) // Print the issue title.
+        msgWhat && console.warn(msgWhat)
+        msgWhy && console.warn(msgWhy)
+        msgHint && console.log(msgHint)
+    }
+
     private emitInfo = (msgWhat: string, msgWhy = '', msgHint = '') => {
-        console.info(issueTitle[4]) // Print the issue title.
+        console.info(issueTitle[5]) // Print the issue title.
         msgWhat && console.info(msgWhat)
         msgWhy && console.info(msgWhy)
         msgHint && console.log(msgHint)

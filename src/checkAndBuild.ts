@@ -3,8 +3,129 @@
  */
 
 import { isDebug } from './config/env'
+import { InvalidDataHandler } from './InvalidDataHandler'
 import { IChainContainer, TSyntaxTreeContainer } from './types'
 import { debugPrint, printObject } from './utils/system'
+
+let instanceInvalidData: InvalidDataHandler | null = null
+
+export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
+    const bulder = new CheckerAndBuilder(syntaxTreeC)
+    const jsObject = bulder.doCheckAndBuild()
+
+    return jsObject
+}
+
+class CheckerAndBuilder {
+    private syntaxTreeC: TSyntaxTreeContainer | undefined = undefined
+
+    constructor(syntaxTreeC: TSyntaxTreeContainer) {
+        debugPrint('-> CheckerAndBuilder: constructor(..)')
+
+        this.syntaxTreeC = syntaxTreeC
+    }
+
+    public doCheckAndBuild = (): any => {
+        if (!this.syntaxTreeC) {
+            instanceInvalidData!.pushOrBail(
+                null,
+                'Fatal-Error',
+                'SyntaxTreeC is undefined',
+                'This is most likely caused by an internal error somewhere. The process cannot recover fully from this, sorry.',
+            )
+        }
+
+        const fullSubTreeList: IChainContainer[] =
+            this.checkAndBuildFullSubTrees(this.syntaxTreeC!)
+
+        const jsObject = this.constructFinalObject(fullSubTreeList)
+
+        return jsObject
+    }
+
+    private checkAndBuildFullSubTrees = (
+        syntaxTreeC: TSyntaxTreeContainer,
+    ): IChainContainer[] => {
+        debugPrint('-> checkAndBuild(..)')
+        isDebug() && console.log()
+
+        const fullSubTreeList: IChainContainer[] = [] // List of FULL sub-trees.
+
+        // let prevObjChain: any = undefined
+        let prevObjectPaths: string[] = []
+
+        // Current Working Full Sub-Tree (starting at level 1).
+        let currentFullSubTree = syntaxTreeC._syntaxTree[0] // (!) Any tree MUST START at level 1.
+
+        const len = syntaxTreeC._syntaxTree.length
+        // syntaxTreeC._syntaxTree.forEach((cContainer: IChainContainer, i) => {
+        for (let i = 1; i < len; i++) {
+            const cContainer = syntaxTreeC._syntaxTree[i]
+            // debugPrint('loopIndex: ' + i + ', ' + cContainer.originLevel)
+            const level = cContainer.originLevel
+            const chain: any = cContainer.chain
+            const nestingIndex = level - 1 // For debugging purposes.
+
+            debugPrint('* level: ' + level + ' (i=' + i + '), chain: ' + chain)
+
+            // if (nestingIndex === 0) {
+            //     Object.assign(jsObject, cContainer.chain)
+            // } else {
+            //     debugPrint(
+            //         '  - nestingIndex: ' +
+            //             nestingIndex +
+            //             ', objectPaths: ' +
+            //             prevObjectPaths,
+            //     )
+            // }
+
+            // prevObjectPaths = []
+            // prevObjectPaths = getObjectPropertyPaths(jsObject)
+            if (level === 1) {
+                debugPrint('HIT - Detected level 1')
+                fullSubTreeList.push(currentFullSubTree)
+                currentFullSubTree = syntaxTreeC._syntaxTree[i] // (!) The tree MUST START at level 1.
+            }
+        }
+
+        fullSubTreeList.push(currentFullSubTree)
+
+        if (isDebug()) {
+            console.log()
+            console.log(
+                '--- fullSubTreeList: (list of FULL sub-trees.) -------',
+            )
+            printObject(fullSubTreeList)
+            console.log()
+        }
+
+        return fullSubTreeList
+    }
+
+    // Contruct the final JS object from the list of full sub-trees.
+    private constructFinalObject = (
+        fullSubTreeList: IChainContainer[],
+    ): any => {
+        const jsObject = {}
+
+        for (const chainC of fullSubTreeList) {
+            if (chainC.originLevel == 1) {
+                Object.assign(jsObject, chainC.chain)
+            } else {
+                instanceInvalidData!.pushOrBail(
+                    null,
+                    'Internal-Error',
+                    'Detected incorrect full sub-tree, start section has level: ' +
+                        chainC.originLevel,
+                    'Full sub-trees must start with a section with level 1',
+                    '' + printObject(chainC),
+                )
+            }
+        }
+
+        return jsObject
+    }
+}
 
 /*
 export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
@@ -40,7 +161,7 @@ export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
 }
     */
 
-//@todo Pass tree into a class and run OOP on there..
+/*
 export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
     debugPrint('-> checkAndBuild(..)')
     isDebug() && console.log()
@@ -99,12 +220,20 @@ export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
         if (chainC.originLevel == 1) {
             Object.assign(jsObject, chainC.chain)
         } else {
-            //
+            instanceInvalidData!.pushOrBail(
+                null,
+                'Internal-Error',
+                'Detected incorrect full sub-tree, start section has level: ' +
+                    chainC.originLevel,
+                'Full sub-trees must start with a section with level 1',
+                '' + printObject(chainC),
+            )
         }
     }
 
     return jsObject
 }
+*/
 
 /**
  * Recursively collects all property paths that point to objects only (not primitives/arrays).
