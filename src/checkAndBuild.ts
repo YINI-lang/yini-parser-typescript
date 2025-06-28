@@ -5,6 +5,7 @@
 import { IChainContainer, TSyntaxTreeContainer } from './types'
 import { debugPrint } from './utils/system'
 
+//@todo Pass tree into a class and run OOP on there..
 export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
     debugPrint('-> checkAndBuild(..)')
 
@@ -61,3 +62,101 @@ function getObjectPropertyPaths(obj: object, prefix: string = ''): string[] {
 
     return result
 }
+
+//////////////////
+
+//     if (!sectionName) {
+//         this.instanceInvalidData!.pushOrBail(
+//             null,
+//             'Internal-Error',
+//             'Invalid sectionName: ' + sectionName,
+//         )
+//     }
+
+/*
+        if (atLevel >= 1) {
+            this.lastActiveSectionNameAtLevels2[atLevel - 1] = sectionName
+        } else {
+            this.instanceInvalidData!.pushOrBail(
+                null,
+                'Internal-Error',
+                'Invalid section level (<1), level: ' +
+                    atLevel +
+                    ', sectionName: "' +
+                    sectionName +
+                    '"',
+            )
+        }
+    */
+
+/*
+        if (this.level - 1 <= this.getDepthOfLevels()) {
+            //this.lastActiveSectionTitlesAtLevels[this.level - 1] = sectionName
+            // this.setLastActiveSection(this.level, sectionName)
+            // this.lastActiveSectionAtLevels =
+        } else {
+            debugPrint('(?) Maybe error?')
+            //throw new Error('qqqqq')
+            // this.instanceInvalidData!.pushOrBail(
+            //     ctx,
+            //     'Syntax-Error',
+            //     'Invalid section level of section header "' + sectionName + '"',
+            //     'Missing a section with level 1. Section header name "' +
+            //         sectionName +
+            //         '" with level ' +
+            //         this.level +
+            //         ' may not jump over previous section levels.',
+            // )
+        }
+
+        */
+/*
+        if (Math.abs(this.prevLevel - this.level) >= 2) {
+            this.instanceInvalidData!.pushOrBail(
+                ctx,
+                'Syntax-Error',
+                'Invalid section level jump of section header "' +
+                    sectionName +
+                    '"',
+                'Section header name "' +
+                    sectionName +
+                    '" with level ' +
+                    this.level +
+                    ' may not jump over previous section levels, from secton with level ' +
+                    this.prevLevel +
+                    '.',
+            )
+        }
+        */
+/*
+    // getLevelsDepth = (): number => {
+    getDepthOfLevels = (): number => {
+        return this.lastActiveSectionNameAtLevels2.length
+    }
+    */
+/*
+    setLastActiveSection = (atLevel: number, sectionName: string) => {
+        if (atLevel >= 1) {
+            this.lastActiveSectionNameAtLevels2[atLevel - 1] = sectionName
+        } else {
+            this.instanceInvalidData!.pushOrBail(
+                null,
+                'Internal-Error',
+                'Invalid section level (<1), level: ' +
+                    atLevel +
+                    ', sectionName: "' +
+                    sectionName +
+                    '"',
+            )
+        }
+    }
+    */
+// let nestDirection: 'lower' | 'same' | 'higher'
+// if (this.level === this.prevLevel) {
+//     nestDirection = 'same'
+// } else if (this.level < this.prevLevel) {
+//     nestDirection = 'lower'
+// } else {
+//     nestDirection = 'higher'
+// }
+// this.prevLevel = this.level
