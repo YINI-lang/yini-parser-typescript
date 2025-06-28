@@ -27,43 +27,14 @@ import parseBooleanLiteral from './main-literal-parsers/parseBoolean'
 import parseNullLiteral from './main-literal-parsers/parseNull'
 import parseNumberLiteral from './main-literal-parsers/parseNumber'
 import parseStringLiteral from './main-literal-parsers/parseString'
+import {
+    IChainContainer,
+    ISectionResult,
+    TSyntaxTreeContainer,
+    TSyntaxTreeReversed,
+} from './types'
 import { stripNLAndAfter, trimBackticks } from './utils/string'
 import { debugPrint, printObject } from './utils/system'
-
-/*
-    A Nested Linear Branch in tree data structures is:
-    - Each section level has at most one nested section on each level (never more nested sections on each level).
-    - Branch within a tree where each section has exactly one nested section, forming a straight path down through multiple continuous levels of nested section.
-    - If having nested section, the nested sections must be straigt path, e.g. Section level 3, has nested Section level 4, has nested Section level 5.
-    - Is part of a tree (not necessarily the root (the top section)), or sometimes also the whole tree.
-    - Eech section includes its members (on that level).
-    - It is a single path from start section to the last nested end section.
-    - A branch that forms a continuous sequence of nested sections.
-    
-    Example:
-    "
-        ^ Section1
-        sValue = 1
-            ^^ Section11
-            sValue = 11
-            bValue = OFF
-        ^ Section2
-        sValue = 2
-    "
-
-    Has two Nested Linear Branches:
-    1: "^ Section1
-        sValue = 1
-            ^^ Section11
-            sValue = 11
-            bValue = OFF"
-    2: "^ Section2
-        sValue = 2"
-
- */
-interface IAbstractTree {
-    originLevel: number
-}
 
 const SECTION_MARKER1 = '^'
 const SECTION_MARKER2 = '~'
@@ -115,6 +86,8 @@ interface YIResult {
 export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     //export default class YINIVisitor extends YiniParserVisitor<any> {
 
+    private tree: TSyntaxTreeReversed = []
+
     private instanceInvalidData: InvalidDataHandler | null = null
 
     // private lastActiveSectionTitlesAtLevels: string[] = [] // Last active section name at each level.
@@ -129,6 +102,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     // private lastBuiltSectionObject: any = null
     // private danglingTitle: string = ''
 
+    private meta_numOfChains = 0 // For stats.
     private meta_numOfSections = 0 // For stats.
     private meta_maxLevelSection = 0 // For stats.
 
@@ -177,6 +151,16 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     //     }
     // }
 
+    pushOnTree = (sReslult: ISectionResult): void => {
+        const chain: IChainContainer = {
+            originLevel: sReslult.level,
+            chain: { [sReslult.name]: sReslult.members },
+        }
+
+        this.tree.push(chain)
+        this.meta_numOfChains++
+    }
+
     // getLevelsDepth = (): number => {
     getDepthOfLevels = (): number => {
         return this.lastActiveSectionNameAtLevels2.length
@@ -221,9 +205,11 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 '\nStart of each element in forEeach(..) of section_list():',
             )
 
-            const topSectionResult: any = this.visitSection(section)
+            const topSectionResult: ISectionResult = this.visitSection(section)
+            this.pushOnTree(topSectionResult)
             const topSectionName: string | undefined = topSectionResult?.name
             const topSectionMembers: any = topSectionResult?.members
+            const topSectionLevel: any = topSectionResult?.level // This must have a value of 1.
 
             debugPrint('\ntopSectionResult (visitSection(..)):')
             if (isDebug()) {
@@ -258,6 +244,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                     '-- Just extracted TOP/FIRST section info ---------------------------',
                 )
                 debugPrint('  TOP/FIRST topSectionName = ' + topSectionName)
+                debugPrint('           topSectionLevel = ' + topSectionLevel)
                 debugPrint('                this.level = ' + this.level)
 
                 // this.mountSection(1, topSectionName, topSectionMembers)
@@ -293,10 +280,34 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         if (isDebug()) {
             console.log('At end of YINI(..), this.resultSections:')
             printObject(this.resultSections)
+
+            console.log()
+            console.log(
+                '=========================================================================',
+            )
+            console.log(
+                '=== this.tree: ==========================================================',
+            )
+            printObject(this.tree)
+            console.log(
+                '=========================================================================',
+            )
+            console.log(
+                '=========================================================================',
+            )
+            console.log()
         }
 
         const hasTerminal = !!ctx.terminal_line()
-        return { _base: this.resultSections, _hasTerminal: hasTerminal }
+
+        // Returns an Intermediate Tree (could even be an AST).
+        const syntaxTreeC: TSyntaxTreeContainer = {
+            // _base: this.resultSections,
+            _syntaxTree: this.tree, // The Intermediate Tree, or AST.
+            _hasTerminal: hasTerminal,
+            _meta_numOfChains: this.meta_numOfChains,
+        }
+        return syntaxTreeC
     }
 
     /**
@@ -347,6 +358,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             }
         }
         debugPrint('this.level = ' + this.level)
+        const level = this.level
         // ------------------------------------
 
         // --- Extract section name after markers and whitespace. ---------
@@ -388,6 +400,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         }
         debugPrint('-- In visitSection(..) ---------------------------')
         debugPrint('            sectionName = ' + sectionName)
+        debugPrint('                  level = ' + level)
         debugPrint('             this.level = ' + this.level)
         debugPrint('         this.prevLevel = ' + this.prevLevel)
         debugPrint('          nestDirection = ' + nestDirection)
@@ -489,6 +502,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 // },
                 [sectionName]: { ...members },
             }
+            this.pushOnTree({ level: level, name: sectionName, members })
             // this.lastActiveSectionNameAtLevels2[thisLevel - 1] = sectionName
             debugPrint('Mounted as append')
 
@@ -595,11 +609,15 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('<- Leaving visitSection(..)')
         if (isDebug()) {
             console.log('returning:')
-            console.log({ name: sectionName, members })
+            console.log({ level: level, name: sectionName, members: members })
             console.log()
         }
 
-        return { name: sectionName, members }
+        return {
+            level: level,
+            name: sectionName,
+            members: members,
+        } as ISectionResult
     }
 
     /**
@@ -741,7 +759,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         let resultType: TDataType = undefined
         let resultKey: string = ''
         let resultValue: any = {}
-        let followingSection: any = null
+        let followingSection: ISectionResult | null = null
 
         // NOTE: (!) It can never be both a key and section head.
         if (ctx.KEY()?.getText().trim()) {

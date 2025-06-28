@@ -1,7 +1,9 @@
 import { CharStreams, CommonTokenStream } from 'antlr4'
+import { checkAndBuild } from './checkAndBuild'
 import { isDebug } from './config/env'
 import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
+import { TSyntaxTreeContainer } from './types'
 import { debugPrint } from './utils/system'
 import YINIVisitor from './YINIVisitor'
 
@@ -30,21 +32,26 @@ export const parseYINI = (
     debugPrint()
     debugPrint('==== Start parsing ==========================')
     //const tree = parser.yini;  // Start rule.
-    const tree: YiniContext = parser.yini() // Start rule.
+    const parseTree: YiniContext = parser.yini() // Start rule.
 
     const visitor = new YINIVisitor()
-    const result = visitor.visit(tree as any)
+    const syntaxTreeC: TSyntaxTreeContainer = visitor.visit(
+        parseTree as any,
+    ) as TSyntaxTreeContainer
+
+    // Semantic check and construct.
+    const finalResult = checkAndBuild(syntaxTreeC)
     debugPrint('==== End parsing ==========================\n')
 
-    debugPrint('visitor.visit(..): result:')
-    isDebug() && console.debug(result)
+    debugPrint('visitor.visit(..): finalResult:')
+    isDebug() && console.debug(finalResult)
     debugPrint()
 
     if (options.isStrict) {
         throw Error('ERROR: Strict-mode not yet implemented')
     } else {
         debugPrint('visitor.visit(..): result:')
-        isDebug() && console.debug(result)
-        return (result as any)?._base
+        isDebug() && console.debug(finalResult)
+        return finalResult as any
     }
 }
