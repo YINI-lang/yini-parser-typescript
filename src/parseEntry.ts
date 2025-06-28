@@ -4,7 +4,7 @@ import { isDebug } from './config/env'
 import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
 import { TSyntaxTreeContainer } from './types'
-import { debugPrint } from './utils/system'
+import { debugPrint, printObject } from './utils/system'
 import YINIVisitor from './YINIVisitor'
 
 interface IOptions {
@@ -38,6 +38,23 @@ export const parseYINI = (
     const syntaxTreeC: TSyntaxTreeContainer = visitor.visit(
         parseTree as any,
     ) as TSyntaxTreeContainer
+    if (isDebug()) {
+        console.log()
+        console.log(
+            '**************************************************************************',
+        )
+        console.log(
+            '*** syntaxTreeContainer: *************************************************',
+        )
+        printObject(syntaxTreeC)
+        console.log(
+            '**************************************************************************',
+        )
+        console.log(
+            '**************************************************************************',
+        )
+        console.log()
+    }
 
     // Semantic check and construct.
     const finalResult = checkAndBuild(syntaxTreeC)

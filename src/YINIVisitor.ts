@@ -203,7 +203,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
         const syntaxTree: TSyntaxTree = this.reversedTree.reverse()
 
-        if (isDebug()) {
+        if (false && isDebug()) {
             console.log()
             console.log(
                 '=========================================================================',
@@ -301,8 +301,6 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         sectionName = stripNLAndAfter(sectionName) // Cut of anything after (and including) any newline (and possible commented next lines).
         sectionName = trimBackticks(sectionName)
 
-        const thisLevel = this.level
-
         debugPrint('                        --------------')
         debugPrint(
             `           Parsed subLine = >>>${subLine.trim()}<<<, with this.level = ${this.level}`,
@@ -349,16 +347,15 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             this.numOfLevelOnes++
         }
 
-        // this.prevLevel = this.level
         //------------------------
         if (nestDirection !== 'higher') {
             debugPrint('About to reset result')
             console.log({ [sectionName]: members })
-            console.log(`Current lastActiveSectionAtLevels2[${thisLevel - 1}]`)
-            printObject(this.lastActiveSectionAtLevels2[thisLevel - 1])
+            console.log(`Current lastActiveSectionAtLevels2[${this.level - 1}]`)
+            printObject(this.lastActiveSectionAtLevels2[this.level - 1])
 
             // Mount as append
-            this.lastActiveSectionAtLevels2[thisLevel - 1] = {
+            this.lastActiveSectionAtLevels2[this.level - 1] = {
                 [sectionName]: { ...members },
             }
             this.pushOnTree({ level: level, name: sectionName, members })
@@ -366,15 +363,15 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
             if (isDebug()) {
                 console.log(
-                    `After append lastActiveSectionAtLevels2[${thisLevel - 1}]`,
+                    `After append lastActiveSectionAtLevels2[${this.level - 1}]`,
                 )
-                printObject(this.lastActiveSectionAtLevels2[thisLevel - 1])
+                printObject(this.lastActiveSectionAtLevels2[this.level - 1])
 
                 debugPrint('Before this.lastActiveSectionNameAtLevels2:')
                 printObject(this.lastActiveSectionNameAtLevels2)
 
                 // Reset.
-                let i = thisLevel
+                let i = this.level
                 while (this.lastActiveSectionNameAtLevels2[i]) {
                     this.lastActiveSectionNameAtLevels2[i++] = undefined
                 }
@@ -385,19 +382,19 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 'HIT!!! - Just a lower or same level section, a continues full (nested) section,',
             )
             debugPrint(
-                `Has above in lastActiveSectionAtLevels2[${thisLevel - 1}]`,
+                `Has above in lastActiveSectionAtLevels2[${this.level - 1}]`,
             )
             debugPrint('    this.level: ' + this.level)
             debugPrint('this.prevLevel: ' + this.prevLevel)
-            debugPrint('     thisLevel: ' + thisLevel)
+            debugPrint('     this.level: ' + this.level)
 
             debugPrint()
             debugPrint(
-                ' HERE.... Should mount section to correct section at thisLevel: ' +
-                    thisLevel,
+                ' HERE.... Should mount section to correct section at this.level: ' +
+                    this.level,
             )
 
-            this.lastActiveSectionNameAtLevels2[thisLevel - 1] = sectionName
+            this.lastActiveSectionNameAtLevels2[this.level - 1] = sectionName
 
             debugPrint()
             debugPrint('Resetted local result')
@@ -409,14 +406,14 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         if (isDebug()) {
             if (members) {
                 console.log({ [sectionName]: members })
-                this.lastActiveSectionAtLevels2[thisLevel - 1] = {
+                this.lastActiveSectionAtLevels2[this.level - 1] = {
                     ...members,
                 }
-                // this.lastActiveSectionNameAtLevels2[thisLevel - 1] = sectionName
+                // this.lastActiveSectionNameAtLevels2[this.level - 1] = sectionName
                 debugPrint('Mounted as assigned')
 
-                console.log(`lastActiveSectionAtLevels2[${thisLevel - 1}]`)
-                printObject(this.lastActiveSectionAtLevels2[thisLevel - 1])
+                console.log(`lastActiveSectionAtLevels2[${this.level - 1}]`)
+                printObject(this.lastActiveSectionAtLevels2[this.level - 1])
             }
         }
 
@@ -429,7 +426,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             printObject(this.lastActiveSectionNameAtLevels2)
             debugPrint('    this.level: ' + this.level)
             debugPrint('this.prevLevel: ' + this.prevLevel)
-            debugPrint('     thisLevel: ' + thisLevel)
+            debugPrint('     this.level: ' + this.level)
             debugPrint('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
             debugPrint('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
             console.log()

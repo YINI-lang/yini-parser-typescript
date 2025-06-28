@@ -2,9 +2,11 @@
  * Semantic check and construct the final result.
  */
 
+import { isDebug } from './config/env'
 import { IChainContainer, TSyntaxTreeContainer } from './types'
-import { debugPrint } from './utils/system'
+import { debugPrint, printObject } from './utils/system'
 
+/*
 export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
     debugPrint('-> checkAndBuild(..)')
 
@@ -36,14 +38,14 @@ export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
 
     return jsObject
 }
+    */
 
 //@todo Pass tree into a class and run OOP on there..
-/*
 export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
     debugPrint('-> checkAndBuild(..)')
+    isDebug() && console.log()
 
-    // const jsObject = {}
-    const fullSubTreeList = []
+    const fullSubTreeList = [] // List of FULL sub-trees.
 
     // let prevObjChain: any = undefined
     let prevObjectPaths: string[] = []
@@ -60,7 +62,7 @@ export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
         const chain: any = cContainer.chain
         const nestingIndex = level - 1 // For debugging purposes.
 
-        debugPrint('* level: ' + level + '(' + i + '), chain: ' + chain)
+        debugPrint('* level: ' + level + ' (i=' + i + '), chain: ' + chain)
 
         // if (nestingIndex === 0) {
         //     Object.assign(jsObject, cContainer.chain)
@@ -77,12 +79,32 @@ export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
         // prevObjectPaths = getObjectPropertyPaths(jsObject)
         if (level === 1) {
             debugPrint('HIT - Detected level 1')
+            fullSubTreeList.push(currentFullSubTree)
+            currentFullSubTree = syntaxTreeC._syntaxTree[i] // (!) The tree MUST START at level 1.
         }
     }
 
-    return { dummy: 'wip' }
+    fullSubTreeList.push(currentFullSubTree)
+
+    if (isDebug()) {
+        console.log()
+        console.log('--- fullSubTreeList: (list of FULL sub-trees.) -------')
+        printObject(fullSubTreeList)
+        console.log()
+    }
+
+    // Contruct the final JS object.
+    const jsObject = {}
+    for (const chainC of fullSubTreeList) {
+        if (chainC.originLevel == 1) {
+            Object.assign(jsObject, chainC.chain)
+        } else {
+            //
+        }
+    }
+
+    return jsObject
 }
-    */
 
 /**
  * Recursively collects all property paths that point to objects only (not primitives/arrays).
