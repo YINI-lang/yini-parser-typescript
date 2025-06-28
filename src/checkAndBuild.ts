@@ -10,16 +10,28 @@ export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
 
     const jsObject = {}
 
+    // let prevObjChain: any = undefined
+    let prevObjectPaths: string[] = []
     syntaxTreeC._syntaxTree.forEach((cContainer: IChainContainer, i) => {
-        debugPrint('Index: ' + i + ', ' + cContainer.originLevel)
-        const objChain = cContainer.chain
-        const originIndex = cContainer.originLevel - 1
+        // let i = 0
+        // for (const cContainer of syntaxTreeC._syntaxTree) {
+        debugPrint('loopIndex: ' + i + ', ' + cContainer.originLevel)
+        const nestingIndex = cContainer.originLevel - 1
+        const objChain: any = cContainer.chain
 
-        // const objectPaths = getObjectPropertyPaths(objChain)
-
-        if (originIndex === 0) {
+        if (nestingIndex === 0) {
             Object.assign(jsObject, cContainer.chain)
+        } else {
+            debugPrint(
+                '  - nestingIndex: ' +
+                    nestingIndex +
+                    ', objectPaths: ' +
+                    prevObjectPaths,
+            )
         }
+
+        prevObjectPaths = []
+        prevObjectPaths = getObjectPropertyPaths(objChain)
     })
 
     return jsObject
