@@ -34,16 +34,16 @@ sValue = 2
  */
 
 export type TSyntaxTreeContainer = {
-    _syntaxTree: TSyntaxTreeReversed
+    _syntaxTree: TSyntaxTree
     _hasTerminal: boolean
     _meta_numOfChains: number
 }
 
-export type TSyntaxTreeReversed = IChainContainer[]
+export type TSyntaxTree = IChainContainer[]
 
 export interface IChainContainer {
     originLevel: number
-    chain: any // Full linear branch.
+    chain: any // NOTE: (!) Full linear branch.
 }
 
 export interface ISectionResult {

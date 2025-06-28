@@ -30,8 +30,8 @@ import parseStringLiteral from './main-literal-parsers/parseString'
 import {
     IChainContainer,
     ISectionResult,
+    TSyntaxTree,
     TSyntaxTreeContainer,
-    TSyntaxTreeReversed,
 } from './types'
 import { stripNLAndAfter, trimBackticks } from './utils/string'
 import { debugPrint, printObject } from './utils/system'
@@ -86,7 +86,7 @@ interface YIResult {
 export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     //export default class YINIVisitor extends YiniParserVisitor<any> {
 
-    private tree: TSyntaxTreeReversed = []
+    private reversedTree: TSyntaxTree = []
 
     private instanceInvalidData: InvalidDataHandler | null = null
 
@@ -157,7 +157,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             chain: { [sReslult.name]: sReslult.members },
         }
 
-        this.tree.push(chain)
+        this.reversedTree.push(chain)
         this.meta_numOfChains++
     }
 
@@ -277,6 +277,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             debugPrint()
         })
 
+        const syntaxTree: TSyntaxTree = this.reversedTree.reverse()
+
         if (isDebug()) {
             console.log('At end of YINI(..), this.resultSections:')
             printObject(this.resultSections)
@@ -286,9 +288,9 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 '=========================================================================',
             )
             console.log(
-                '=== this.tree: ==========================================================',
+                '=== syntaxTree: ==========================================================',
             )
-            printObject(this.tree)
+            printObject(syntaxTree)
             console.log(
                 '=========================================================================',
             )
@@ -303,7 +305,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         // Returns an Intermediate Tree (could even be an AST).
         const syntaxTreeC: TSyntaxTreeContainer = {
             // _base: this.resultSections,
-            _syntaxTree: this.tree, // The Intermediate Tree, or AST.
+            _syntaxTree: syntaxTree, // The Intermediate Tree, or AST.
             _hasTerminal: hasTerminal,
             _meta_numOfChains: this.meta_numOfChains,
         }
