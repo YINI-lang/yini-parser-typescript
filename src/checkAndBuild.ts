@@ -5,7 +5,6 @@
 import { IChainContainer, TSyntaxTreeContainer } from './types'
 import { debugPrint } from './utils/system'
 
-//@todo Pass tree into a class and run OOP on there..
 export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
     debugPrint('-> checkAndBuild(..)')
 
@@ -37,6 +36,53 @@ export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
 
     return jsObject
 }
+
+//@todo Pass tree into a class and run OOP on there..
+/*
+export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
+    debugPrint('-> checkAndBuild(..)')
+
+    // const jsObject = {}
+    const fullSubTreeList = []
+
+    // let prevObjChain: any = undefined
+    let prevObjectPaths: string[] = []
+
+    // Current Working Full Sub-Tree (starting at level 1).
+    let currentFullSubTree = syntaxTreeC._syntaxTree[0] // (!) Any tree MUST START at level 1.
+
+    const len = syntaxTreeC._syntaxTree.length
+    // syntaxTreeC._syntaxTree.forEach((cContainer: IChainContainer, i) => {
+    for (let i = 1; i < len; i++) {
+        const cContainer = syntaxTreeC._syntaxTree[i]
+        // debugPrint('loopIndex: ' + i + ', ' + cContainer.originLevel)
+        const level = cContainer.originLevel
+        const chain: any = cContainer.chain
+        const nestingIndex = level - 1 // For debugging purposes.
+
+        debugPrint('* level: ' + level + '(' + i + '), chain: ' + chain)
+
+        // if (nestingIndex === 0) {
+        //     Object.assign(jsObject, cContainer.chain)
+        // } else {
+        //     debugPrint(
+        //         '  - nestingIndex: ' +
+        //             nestingIndex +
+        //             ', objectPaths: ' +
+        //             prevObjectPaths,
+        //     )
+        // }
+
+        // prevObjectPaths = []
+        // prevObjectPaths = getObjectPropertyPaths(jsObject)
+        if (level === 1) {
+            debugPrint('HIT - Detected level 1')
+        }
+    }
+
+    return { dummy: 'wip' }
+}
+    */
 
 /**
  * Recursively collects all property paths that point to objects only (not primitives/arrays).
