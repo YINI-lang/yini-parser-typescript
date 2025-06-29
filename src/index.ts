@@ -158,8 +158,6 @@ Expected JS output:
         // sValue = 23
         bValue3 = on
 `)*/
-        YINI.parse(`^Title
-            --another=64
-            `)
+        YINI.parse(`^Title`)
     }
 }

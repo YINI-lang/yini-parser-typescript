@@ -102,13 +102,46 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     private meta_maxLevelSection = 0 // For stats.
 
     pushOnTree = (sReslult: ISectionResult): void => {
-        const chain: IChainContainer = {
-            originLevel: sReslult.level,
-            chain: { [sReslult.name]: sReslult.members },
+        if (isDebug()) {
+            console.log()
+            debugPrint('--- In pushOnTree(..) --------')
+            debugPrint('sReslult:')
+            printObject(sReslult)
         }
 
-        this.reversedTree.push(chain)
+        if (
+            sReslult.level === 0 &&
+            (!sReslult.name || sReslult.name === 'undefined')
+        ) {
+            // NOTE: This is a nasty fix, should try to do another way!
+            debugPrint('HIT, Doing NASTY fix!!')
+            // A memberless section, e.g. `^ Section` and then input ends.
+            // Lift up the member in "members" to top.
+
+            // --- Get the key-name of the entry in "members" ----------
+            // "members": {
+            //     "Title": {}
+            //  }
+            const sectionName = Object.keys(sReslult.members)[0]
+            // ---------------------------------------------------------
+
+            debugPrint('sectionName = ' + sectionName)
+            const chain: IChainContainer = {
+                originLevel: 1,
+                chain: { [sectionName]: {} },
+            }
+            this.reversedTree.push(chain)
+        } else {
+            const chain: IChainContainer = {
+                originLevel: sReslult.level,
+                chain: { [sReslult.name]: sReslult.members },
+            }
+            this.reversedTree.push(chain)
+        }
         this.meta_numOfChains++
+        debugPrint('this.reversedTree: [list]')
+        printObject(this.reversedTree)
+        debugPrint('--- /end of pushOnTree(..) --------')
     }
 
     getDepthOfLevels = (): number => {
@@ -246,14 +279,18 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         const res: Record<string, any> = {}
 
         debugPrint('start')
-        debugPrint('XXXX1:ctx.SECTION_HEAD() = ' + ctx.SECTION_HEAD())
+        debugPrint('XXXX1:ctx.SECTION_HEAD()       = ' + ctx.SECTION_HEAD())
+        debugPrint(
+            'XXXX1:SECTION_HEAD().getText() = ' +
+                ctx.SECTION_HEAD()?.getText().trim(),
+        )
         debugPrint('XXXX2:     ctx.section():')
 
         debugPrint('end\n')
 
         let line: string = ''
         try {
-            line = '' + ctx.SECTION_HEAD().getText().trim()
+            line = '' + ctx.SECTION_HEAD()?.getText().trim()
         } catch (error) {
             const msgWhat: string = `Unexpected syntax while parsing a member or section head`
             const msgWhy: string = `Found unexpected syntax while trying to read a key-value pair or a section header (such as a section marker or section name).`
@@ -351,15 +388,52 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         if (nestDirection !== 'higher') {
             debugPrint('About to reset result')
             console.log({ [sectionName]: members })
+
             console.log(`Current lastActiveSectionAtLevels2[${this.level - 1}]`)
             printObject(this.lastActiveSectionAtLevels2[this.level - 1])
 
-            // Mount as append
-            this.lastActiveSectionAtLevels2[this.level - 1] = {
-                [sectionName]: { ...members },
+            if (
+                (level === 0 && !sectionName) ||
+                (sectionName === 'undefined' && !!members)
+            ) {
+                debugPrint('HIT2!!!!')
+                debugPrint(
+                    '(!) Detected a member (that does not have a sectionName), but a memberless object in "members"',
+                )
+                const sectionName = Object.keys(members)[0]
+                debugPrint('sectionName = ' + sectionName)
+                members = {}
+                this.lastActiveSectionAtLevels2[0] = { [sectionName]: {} }
+
+                this.pushOnTree({ level: 1, name: sectionName, members: {} })
+                debugPrint('Mounted as append as memberless section')
+                debugPrint('<- Leaving visitSection(..) EARLY')
+                if (isDebug()) {
+                    console.log('returning (a memberless section):')
+                    console.log({
+                        level: 1,
+                        name: sectionName,
+                        members: members,
+                    })
+                    console.log()
+                }
+
+                return {
+                    level: level,
+                    name: sectionName,
+                    members: members,
+                } as ISectionResult
+            } else {
+                // Mount as append
+                this.lastActiveSectionAtLevels2[this.level - 1] = {
+                    [sectionName]: { ...members },
+                }
+                this.pushOnTree({ level: level, name: sectionName, members })
+                debugPrint('Mounted as append')
             }
-            this.pushOnTree({ level: level, name: sectionName, members })
-            debugPrint('Mounted as append')
+
+            console.log(`After: lastActiveSectionAtLevels2[${this.level - 1}]`)
+            printObject(this.lastActiveSectionAtLevels2[this.level - 1])
 
             if (isDebug()) {
                 console.log(
@@ -394,7 +468,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                     this.level,
             )
 
-            this.lastActiveSectionNameAtLevels2[this.level - 1] = sectionName
+            //this.lastActiveSectionNameAtLevels2[this.level - 1] = sectionName
 
             debugPrint()
             debugPrint('Resetted local result')
@@ -502,7 +576,12 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                     )
                     isDebug() && console.log({ [key]: value })
 
+                    //@todo Maybe should assign as [key]: { type: type, value: value }
+                    // or maybe even as [key]: { type: type, key: key, value: value }
                     Object.assign(members, { [key]: value })
+                    // Object.assign(members, {
+                    //     [key]: { type: type, value: value },
+                    // })
                     debugPrint(
                         '+ Added member or section onto members: "' + key + '"',
                     )
@@ -551,7 +630,11 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         isDebug() && console.log()
         debugPrint('-> Entered visitMember(..)')
         debugPrint('           key   = ' + ctx.KEY()?.getText().trim())
-        debugPrint('Or, section head = ' + ctx.SECTION_HEAD()?.getText().trim())
+        debugPrint(
+            'Or, section head = ' +
+                ctx.SECTION_HEAD()?.getText().trim() +
+                ' (head WITHOUT any members (ONLY detected here))',
+        )
         debugPrint('     ctx.value() = ' + ctx.value())
 
         // For logging and debugging purposes.
@@ -599,7 +682,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             //@todo Mount the nested object correctly!
             resultType = 'Object'
             // resultValue[nestedSection?.name] = nestedSection?.members
-            resultValue = followingSection?.members
+            resultValue = followingSection?.members || {}
             resultKey = followingSection!.name
             debugPrint('Mounted/assigned a section onto resultValue...')
             // Object.assign(value, { dummy: 6767 })
