@@ -109,35 +109,36 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             printObject(sReslult)
         }
 
-        if (
-            sReslult.level === 0 &&
-            (!sReslult.name || sReslult.name === 'undefined')
-        ) {
-            // NOTE: This is a nasty fix, should try to do another way!
-            debugPrint('HIT, Doing NASTY fix!!')
-            // A memberless section, e.g. `^ Section` and then input ends.
-            // Lift up the member in "members" to top.
+        // if (
+        //     sReslult.level === 0 &&
+        //     (!sReslult.name || sReslult.name === 'undefined')
+        // ) {
+        //     // NOTE: This is a nasty fix, should try to do another way!
+        //     debugPrint('HIT, Doing NASTY fix!!')
+        //     // A memberless section, e.g. `^ Section` and then input ends.
+        //     // Lift up the member in "members" to top.
 
-            // --- Get the key-name of the entry in "members" ----------
-            // "members": {
-            //     "Title": {}
-            //  }
-            const sectionName = Object.keys(sReslult.members)[0]
-            // ---------------------------------------------------------
+        //     // --- Get the key-name of the entry in "members" ----------
+        //     // "members": {
+        //     //     "Title": {}
+        //     //  }
+        //     const sectionName = Object.keys(sReslult.members)[0]
+        //     // ---------------------------------------------------------
 
-            debugPrint('sectionName = ' + sectionName)
-            const chain: IChainContainer = {
-                originLevel: 1,
-                chain: { [sectionName]: {} },
-            }
-            this.reversedTree.push(chain)
-        } else {
-            const chain: IChainContainer = {
-                originLevel: sReslult.level,
-                chain: { [sReslult.name]: sReslult.members },
-            }
-            this.reversedTree.push(chain)
+        //     debugPrint('sectionName = ' + sectionName)
+        //     const chain: IChainContainer = {
+        //         originLevel: 1,
+        //         chain: { [sectionName]: {} },
+        //     }
+        //     this.reversedTree.push(chain)
+        // } else {
+
+        const chain: IChainContainer = {
+            originLevel: sReslult.level,
+            chain: { [sReslult.name]: sReslult.members },
         }
+        this.reversedTree.push(chain)
+        // }
         this.meta_numOfChains++
         debugPrint('this.reversedTree: [list]')
         printObject(this.reversedTree)
@@ -400,13 +401,16 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 debugPrint(
                     '(!) Detected a member (that does not have a sectionName), but a memberless object in "members"',
                 )
-                const sectionName = Object.keys(members)[0]
+                sectionName = Object.keys(members)[0]
                 debugPrint('sectionName = ' + sectionName)
                 members = {}
-                this.lastActiveSectionAtLevels2[0] = { [sectionName]: {} }
+                // this.lastActiveSectionAtLevels2[0] = { [sectionName]: {} }
 
-                this.pushOnTree({ level: 1, name: sectionName, members: {} })
-                debugPrint('Mounted as append as memberless section')
+                // this.pushOnTree({ level: 1, name: sectionName, members: {} })
+                debugPrint(
+                    '(!) Skipping mounted since this is actually a memberless section',
+                )
+                debugPrint()
                 debugPrint('<- Leaving visitSection(..) EARLY')
                 if (isDebug()) {
                     console.log('returning (a memberless section):')
@@ -419,7 +423,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 }
 
                 return {
-                    level: level,
+                    level: 1,
                     name: sectionName,
                     members: members,
                 } as ISectionResult
