@@ -125,6 +125,7 @@ Expected JS output:
 }
 
 */
+        /*
         YINI.parse(`
 ^ Section1
     bValue1 = YES
@@ -137,25 +138,28 @@ Expected JS output:
     ^^ Section12
         sValue = 12
 ^ Section2
-	sValue = 2
+    sValue = 2
     ^^ Section21
-	    sValue = 21
+        sValue = 21
         bValue = OFF
         ^^^ Section211
-	        sValue = 211
+            sValue = 211
             ^^^^ Section2111
                 sValue = 2111
             ^^^^ Section2112
                 sValue = 2112
                 strValue = 'test2112'
     ^^ Section22
-	    // sValue = 22
+        // sValue = 22
         bValue3 = on
         ^^^ Section221
             sValue = 221
     ^^ Section23
-	    // sValue = 23
+        // sValue = 23
         bValue3 = on
-`)
+`)*/
+        YINI.parse(`^Title
+            --another=64
+            `)
     }
 }

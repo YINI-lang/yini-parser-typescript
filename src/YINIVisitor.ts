@@ -577,8 +577,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             const result: IResult = ctx.value()
                 ? this.visitValue(ctx.value())
                 : null
-            resultType = (<any>result).type
-            resultValue = (<any>result).value
+            resultType = (<any>result)?.type
+            resultValue = (<any>result)?.value
             debugPrint(' type = ' + resultType + '          @visitValue(..)')
             debugPrint('value = ' + resultValue + '          @visitValue(..)')
         } else if (ctx.SECTION_HEAD()?.getText().trim()) {
