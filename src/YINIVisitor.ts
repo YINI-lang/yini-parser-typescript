@@ -394,8 +394,11 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             printObject(this.lastActiveSectionAtLevels2[this.level - 1])
 
             if (
-                (level === 0 && !sectionName) ||
-                (sectionName === 'undefined' && !!members)
+                // (level === 0 && !sectionName) ||
+                // (sectionName === 'undefined' && !!members)
+                level === 0 &&
+                sectionName === 'undefined' &&
+                !!members
             ) {
                 debugPrint('HIT2!!!!')
                 debugPrint(
@@ -433,6 +436,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                     [sectionName]: { ...members },
                 }
                 this.pushOnTree({ level: level, name: sectionName, members })
+                // this.lastActiveSectionNameAtLevels2.push(sectionName)
                 debugPrint('Mounted as append')
             }
 
@@ -712,6 +716,15 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 value: resultValue,
             })
             console.log()
+        }
+
+        if (!resultType || !resultKey) {
+            const badInput = resultKey
+            this.instanceInvalidData!.pushOrBail(
+                ctx,
+                'Syntax-Error',
+                'Unknown input',
+            )
         }
 
         return {

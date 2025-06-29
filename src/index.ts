@@ -125,7 +125,7 @@ Expected JS output:
 }
 
 */
-        /*
+
         YINI.parse(`
 ^ Section1
     bValue1 = YES
@@ -157,7 +157,7 @@ Expected JS output:
     ^^ Section23
         // sValue = 23
         bValue3 = on
-`)*/
-        YINI.parse(`^Title`)
+`)
+        // YINI.parse(`someGarbage`)
     }
 }
