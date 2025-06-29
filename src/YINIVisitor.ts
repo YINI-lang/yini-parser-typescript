@@ -718,8 +718,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             console.log()
         }
 
-        if (!resultType || !resultKey) {
-            const badInput = resultKey
+        if (!resultType && !resultKey) {
             this.instanceInvalidData!.pushOrBail(
                 ctx,
                 'Syntax-Error',
