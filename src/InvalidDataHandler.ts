@@ -4,7 +4,7 @@ import YINI from './YINI'
 
 interface IIssuePayload {
     type: TIssueType
-    msgWhatOrWhy: string
+    msgWhat: string
     // msgHintOrFix: string = '', // Hint or wow to fix.
     start: {
         line: number
@@ -22,6 +22,7 @@ export type TBailThreshold =
     | '2-Abort-Even-on-Warnings'
 
 export type TIssueType =
+    | 'Fatal-Error'
     | 'Internal-Error'
     | 'Syntax-Error'
     | 'Syntax-Warning'
@@ -32,7 +33,8 @@ export type TIssueType =
 // titles, and to easier check that all titles match with relation to
 // the other titles.
 const issueTitle: string[] = [
-    'FATAL ERROR!', // 'Internal-Error'.
+    'FATAL ERROR!',
+    'Internal error!', // 'Internal-Error'.
     'Syntax error.', // 'Syntax-Error'.
     'Syntax warning.',
     'Notice:',
@@ -68,7 +70,7 @@ export class InvalidDataHandler {
 
     makeIssuePayload = (
         type: TIssueType,
-        msgWhatOrWhy: string,
+        msgWhat: string,
         lineNum: number,
         startCol: number,
         endCol: number,
@@ -76,7 +78,7 @@ export class InvalidDataHandler {
     ): IIssuePayload => {
         const issue: IIssuePayload = {
             type,
-            msgWhatOrWhy,
+            msgWhat,
             // msgHintOrFix: string = '', // Hint or wow to fix.
             start: {
                 line: lineNum,
@@ -96,31 +98,33 @@ export class InvalidDataHandler {
     pushOrBail = (
         ctx: any,
         type: TIssueType,
-        msgWhatOrWhy: string,
-        // msgHintOrFix: string = '', // Hint or wow to fix.
+        msgWhat: string,
+        msgWhy: string = '',
+        // msgWhy: string,
+        msgHint: string = '', // Hint or wow to fix.
     ) => {
         debugPrint('-> pushOrBail(..)')
-        debugPrint('ctx.exception?.name       =' + ctx.exception?.name)
-        debugPrint('ctx.exception?.message    = ' + ctx.exception?.message)
+        debugPrint('ctx.exception?.name       =' + ctx?.exception?.name)
+        debugPrint('ctx.exception?.message    = ' + ctx?.exception?.message)
         debugPrint(
-            'exception?.offendingToken = ' + ctx.exception?.offendingToken,
+            'exception?.offendingToken = ' + ctx?.exception?.offendingToken,
         )
         debugPrint()
-        debugPrint('ctx.ruleIndex    = ' + ctx.start.channel)
-        debugPrint('ctx.ruleIndex    = ' + ctx.ruleIndex)
-        debugPrint('ctx.ruleContext  = ' + ctx.ruleContext)
-        debugPrint('ctx.stop?.line   = ' + ctx.stop?.line)
-        debugPrint('ctx.stop?.column = ' + ctx.stop?.column)
+        debugPrint('ctx.ruleIndex    = ' + ctx?.start.channel)
+        debugPrint('ctx.ruleIndex    = ' + ctx?.ruleIndex)
+        debugPrint('ctx.ruleContext  = ' + ctx?.ruleContext)
+        debugPrint('ctx.stop?.line   = ' + ctx?.stop?.line)
+        debugPrint('ctx.stop?.column = ' + ctx?.stop?.column)
 
-        const lineNum: number = ctx.start.line // Column (1-based).
-        const startCol = ++ctx.start.column // Column (0-based).
-        const endCol = (ctx.stop?.column || 0) + 1 // Column (0-based).
+        const lineNum: number = ctx?.start.line || 0 // Column (1-based).
+        const startCol = !ctx ? 0 : ++ctx.start.column // Column (0-based).
+        const endCol = (ctx?.stop?.column || 0) + 1 // Column (0-based).
 
         // Patch message with the offending line number.
-        msgWhatOrWhy += ':' + ctx.start.line
+        msgWhat += ', at line: ' + lineNum
 
         if (process.env.NODE_ENV === 'test') {
-            msgWhatOrWhy += `\nAt line: ${lineNum}, column(s): ${startCol}-${endCol}`
+            msgWhat += `\nAt line: ${lineNum}, column(s): ${startCol}-${endCol}`
         }
 
         debugPrint('bailThreshold = ' + this.bailThreshold)
@@ -129,49 +133,66 @@ export class InvalidDataHandler {
 
         const issue: IIssuePayload = this.makeIssuePayload(
             type,
-            msgWhatOrWhy,
+            msgWhat,
             lineNum,
             startCol,
             endCol,
         )
 
         switch (type) {
-            case 'Syntax-Error':
-                this.emitSyntaxError(msgWhatOrWhy)
+            case 'Internal-Error':
+                this.emitInternalError(msgWhat, msgWhy, msgHint)
                 if (
                     this.bailThreshold === '1-Abort-on-Errors' ||
                     this.bailThreshold === '2-Abort-Even-on-Warnings'
                 ) {
                     if (process.env.NODE_ENV === 'test') {
                         // In test, throw an error instead of exiting.
-                        throw new Error(`Syntax-Error: ${'' + msgWhatOrWhy}`)
+                        throw new Error(`Internal-Error: ${msgWhat}`)
                     } else {
+                        // Use this instead of process.exit(1), this will
+                        // lead to exit the current thread(s) as well.
                         process.exit(2)
                     }
                 }
                 break
-            case 'Syntax-Warning':
-                this.emitSyntaxWarning(msgWhatOrWhy)
-                if (this.bailThreshold === '2-Abort-Even-on-Warnings') {
+            case 'Syntax-Error':
+                this.emitSyntaxError(msgWhat, msgWhy, msgHint)
+                if (
+                    this.bailThreshold === '1-Abort-on-Errors' ||
+                    this.bailThreshold === '2-Abort-Even-on-Warnings'
+                ) {
                     if (process.env.NODE_ENV === 'test') {
                         // In test, throw an error instead of exiting.
-                        throw new Error(`Syntax-Warning: ${msgWhatOrWhy}`)
+                        throw new Error(`Syntax-Error: ${'' + msgWhat}`)
                     } else {
                         process.exit(3)
                     }
                 }
                 break
+            case 'Syntax-Warning':
+                this.emitSyntaxWarning(msgWhat, msgWhy, msgHint)
+                if (this.bailThreshold === '2-Abort-Even-on-Warnings') {
+                    if (process.env.NODE_ENV === 'test') {
+                        // In test, throw an error instead of exiting.
+                        throw new Error(`Syntax-Warning: ${msgWhat}`)
+                    } else {
+                        process.exit(4)
+                    }
+                }
+                break
             case 'Notice':
-                this.emitNotice(msgWhatOrWhy)
+                this.emitNotice(msgWhat, msgWhy, msgHint)
                 break
             case 'Info':
-                this.emitInfo(msgWhatOrWhy)
+                this.emitInfo(msgWhat, msgWhy, msgHint)
                 break
             default: // Including 'Internal-Error'.
-                this.emitInternalError(msgWhatOrWhy)
+                this.emitFatalError(msgWhat, msgWhy, msgHint)
+                // CANNOT recover fatal errors, will lead to an exit!
                 if (process.env.NODE_ENV === 'test') {
                     // In test, throw an error instead of exiting.
-                    throw new Error(`Internal-Error: ${msgWhatOrWhy}`)
+                    throw new Error(`Internal-Error: ${msgWhat}`)
                 } else {
                     // Use this instead of process.exit(1), this will
                     // lead to exit the current thread(s) as well.
@@ -180,28 +201,57 @@ export class InvalidDataHandler {
         }
     }
 
-    private emitInternalError = (msg: string = 'Something went wrong!') => {
+    private emitFatalError = (
+        msgWhat = 'Something went wrong!',
+        msgWhy = '',
+        msgHint = '',
+    ) => {
         console.error(issueTitle[0]) // Print the issue title.
-        console.error(msg)
+        msgWhat && console.error(msgWhat)
+        msgWhy && console.error(msgWhy)
+        msgHint && console.log(msgHint)
     }
 
-    private emitSyntaxError = (msg: string) => {
+    private emitInternalError = (
+        msgWhat = 'Something went wrong!',
+        msgWhy = '',
+        msgHint = '',
+    ) => {
         console.error(issueTitle[1]) // Print the issue title.
-        console.error(msg)
+        msgWhat && console.error(msgWhat)
+        msgWhy && console.error(msgWhy)
+        msgHint && console.log(msgHint)
     }
 
-    private emitSyntaxWarning = (msg: string) => {
-        console.warn(issueTitle[2]) // Print the issue title.
-        console.warn(msg)
+    private emitSyntaxError = (msgWhat: string, msgWhy = '', msgHint = '') => {
+        console.error(issueTitle[2]) // Print the issue title.
+        msgWhat && console.error(msgWhat)
+        msgWhy && console.error(msgWhy)
+        msgHint && console.log(msgHint)
     }
 
-    private emitNotice = (msg: string) => {
+    private emitSyntaxWarning = (
+        msgWhat: string,
+        msgWhy = '',
+        msgHint = '',
+    ) => {
         console.warn(issueTitle[3]) // Print the issue title.
-        console.warn(msg)
+        msgWhat && console.warn(msgWhat)
+        msgWhy && console.warn(msgWhy)
+        msgHint && console.log(msgHint)
     }
 
-    private emitInfo = (msg: string) => {
-        console.info(issueTitle[4]) // Print the issue title.
-        console.info(msg)
+    private emitNotice = (msgWhat: string, msgWhy = '', msgHint = '') => {
+        console.warn(issueTitle[4]) // Print the issue title.
+        msgWhat && console.warn(msgWhat)
+        msgWhy && console.warn(msgWhy)
+        msgHint && console.log(msgHint)
+    }
+
+    private emitInfo = (msgWhat: string, msgWhy = '', msgHint = '') => {
+        console.info(issueTitle[5]) // Print the issue title.
+        msgWhat && console.info(msgWhat)
+        msgWhy && console.info(msgWhy)
+        msgHint && console.log(msgHint)
     }
 }

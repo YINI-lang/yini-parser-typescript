@@ -95,13 +95,69 @@ listItems = ["a", "b", "c"]
     // }
     // YINI.parse(invalidInput1)
 
-    YINI.parse(`
-	^ Main
-varStr = 'YINI Smoke Test'
-	\`var Num\` = -987
+    if (APP_ENV === 'local' && NODE_ENV !== 'test') {
+        /*
+		YINI.parse(`
+--^ Section0
+	--value = 0
+^ Section1
+	value = 1
 
-	^^ \`S u b S e c t   ion\`
-	varBool=OFF
+^^ Section11
+	value = 11
+
+ 	^^^ Section111
+	 value = 111
+//^^^^ Section2104
+	value = 24
+
+^ Section2
+	value = 2
 `)
-    // YINI.parse(`number = 42`)
+    }
+*/
+        // YINI.parse(`number = 42`)
+        /*
+Expected JS output:
+{ 
+  Section1: { value: 1, Section2: { value: 11 }},
+  Section2: { value: 2 }
+}
+
+*/
+
+        YINI.parse(`
+        ^ Section1
+            bValue1 = YES
+            intValue = 1
+            ^^ Section11
+                sValue = 11
+                ^^^ Section111
+                    sValue = 111
+                    intValue = 111
+            ^^ Section12
+                sValue = 12
+        ^ Section2
+            sValue = 2
+            ^^ Section21
+                sValue = 21
+                bValue = OFF
+                ^^^ Section211
+                    sValue = 211
+                    ^^^^ Section2111
+                        sValue = 2111
+                    ^^^^ Section2112
+                        sValue = 2112
+                        strValue = 'test2112'
+            ^^ Section22
+                // sValue = 22
+                bValue3 = on
+                ^^^ Section221
+                    sValue = 221
+            ^^ Section23
+                // sValue = 23
+                bValue3 = on
+        `)
+        // YINI.parse(`someGarbage`)
+    }
 }

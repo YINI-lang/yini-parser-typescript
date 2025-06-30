@@ -4,6 +4,6 @@
 name = 'Kim'
 active = true
 
-	^^ Preferences
-	theme = "light"
+	^^ preferences
+	theme = "modern"
 	avatarMode = false

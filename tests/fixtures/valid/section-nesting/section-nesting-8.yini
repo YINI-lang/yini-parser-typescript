@@ -1,0 +1,12 @@
+^ Section1
+    ^^ Section11
+        ^^^ Section111
+        //value = 111	// Give warning orphan section
+^ Section2
+value = 2
+    ^^ Section21
+        ^^^ Section211
+        //value = 211	// Give warning orphan section
+    ^^ Section22
+    //value = 221	// Give warning orphan section
+value = 20

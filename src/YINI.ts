@@ -2,11 +2,15 @@ import fs from 'fs'
 import { isDebug, isDev } from './config/env'
 import { parseYINI } from './parseEntry'
 import { getFileNameExtension } from './utils/path-and-file-name'
-import { debugPrint, devPrint } from './utils/system'
+import { debugPrint, devPrint, printObject } from './utils/system'
 
 export default class YINI {
     public static fullPath: string = '' // Used in error reporting.
 
+    /**
+     * @param yiniContent Full path to the YINI file.
+     * @note The order of properties (members) in each JavaScript object (section) may differ from the order in the input YINI content.
+     */
     public static parse = (yiniContent: string): any => {
         debugPrint('-> Entered static parse(..) in class YINI\n')
 
@@ -30,14 +34,17 @@ export default class YINI {
             console.log()
             devPrint('YINI.parse(..): result:')
             console.log(result)
+
+            devPrint('Complete result:')
+            printObject(result)
         }
 
         return result
     }
 
     /**
-     *
      * @param yiniFile Full path to the YINI file.
+     * @note The order of properties (members) in each JavaScript object (section) may differ from the order in the input YINI file.
      */
     public static parseFile = (fullPath: string): any => {
         debugPrint('Current directory = ' + process.cwd())
@@ -66,12 +73,6 @@ export default class YINI {
             console.warn(
                 `No newline at end of file, it\'s recommended to end a file with a newline. File:\n"${fullPath}"`,
             )
-        }
-
-        if (isDev()) {
-            console.log()
-            devPrint('YINI.parseFile(..): result:')
-            console.log(result)
         }
 
         return result

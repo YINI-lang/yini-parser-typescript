@@ -27,12 +27,6 @@ import parseBooleanLiteral from './main-literal-parsers/parseBoolean'
 import parseNullLiteral from './main-literal-parsers/parseNull'
 import parseNumberLiteral from './main-literal-parsers/parseNumber'
 import parseStringLiteral from './main-literal-parsers/parseString'
-import {
-    IChainContainer,
-    ISectionResult,
-    TSyntaxTree,
-    TSyntaxTreeContainer,
-} from './types'
 import { stripNLAndAfter, trimBackticks } from './utils/string'
 import { debugPrint, printObject } from './utils/system'
 
@@ -86,71 +80,76 @@ interface YIResult {
 export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     //export default class YINIVisitor extends YiniParserVisitor<any> {
 
-    private reversedTree: TSyntaxTree = []
-
     private instanceInvalidData: InvalidDataHandler | null = null
 
+    private lastActiveSectionTitlesAtLevels: string[] = [] // Last active section name at each level.
+    private lastActiveSectionAtLevels: any[] = []
+
+    private prevLevel2 = 0
     private lastActiveSectionAtLevels2: any[] = []
-    private lastActiveSectionNameAtLevels2: (string | undefined)[] = [] // Last active section name at each level.
+    private lastActiveSectionTitlesAtLevels2: string[] = [] // Last active section name at each level.
 
     private numOfLevelOnes = 0 // Num of Level-1 sections.
     private level = 0
     private prevLevel = 0
+    private lastBuiltSectionObject: any = null
+    private danglingTitle: string = ''
 
-    private meta_numOfChains = 0 // For stats.
     private meta_numOfSections = 0 // For stats.
     private meta_maxLevelSection = 0 // For stats.
 
-    pushOnTree = (sReslult: ISectionResult): void => {
+    private resultSections: Record<string, any> = {}
+
+    mountSection = (
+        level: number,
+        sectionName: string,
+        sectionMembers: any,
+    ) => {
+        if (!sectionName) {
+            this.instanceInvalidData!.pushOrBail(
+                null,
+                'Internal-Error',
+                'Invalid sectionName: ' + sectionName,
+            )
+        }
+
+        let mountAt = this.lastActiveSectionAtLevels[level - 1]
+        if (!mountAt) {
+            mountAt = this.resultSections
+        }
+
+        if (sectionMembers && Object.keys(sectionMembers).length === 0) {
+            debugPrint('HITTTT2')
+            mountAt[sectionName] = { dummy: undefined }
+        } else {
+            mountAt[sectionName] = sectionMembers
+        }
+
+        this.lastActiveSectionAtLevels[level - 1] = mountAt[sectionName]
+        this.lastActiveSectionTitlesAtLevels[level - 1] = '' + sectionName
         if (isDebug()) {
             console.log()
-            debugPrint('--- In pushOnTree(..) --------')
-            debugPrint('sReslult:')
-            printObject(sReslult)
+            debugPrint('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+            debugPrint(
+                `mountSection(..): level = ${level}, sectioName = ${sectionName}`,
+            )
+            debugPrint('lastActiveSectionAtLevels:')
+            printObject(this.lastActiveSectionAtLevels)
+            console.log()
+            debugPrint('lastActiveSectionTitlesAtLevels:')
+            printObject(this.lastActiveSectionTitlesAtLevels)
+            debugPrint('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+            console.log()
         }
-
-        // if (
-        //     sReslult.level === 0 &&
-        //     (!sReslult.name || sReslult.name === 'undefined')
-        // ) {
-        //     // NOTE: This is a nasty fix, should try to do another way!
-        //     debugPrint('HIT, Doing NASTY fix!!')
-        //     // A memberless section, e.g. `^ Section` and then input ends.
-        //     // Lift up the member in "members" to top.
-
-        //     // --- Get the key-name of the entry in "members" ----------
-        //     // "members": {
-        //     //     "Title": {}
-        //     //  }
-        //     const sectionName = Object.keys(sReslult.members)[0]
-        //     // ---------------------------------------------------------
-
-        //     debugPrint('sectionName = ' + sectionName)
-        //     const chain: IChainContainer = {
-        //         originLevel: 1,
-        //         chain: { [sectionName]: {} },
-        //     }
-        //     this.reversedTree.push(chain)
-        // } else {
-
-        const chain: IChainContainer = {
-            originLevel: sReslult.level,
-            chain: { [sReslult.name]: sReslult.members },
-        }
-        this.reversedTree.push(chain)
-        // }
-        this.meta_numOfChains++
-        debugPrint('this.reversedTree: [list]')
-        printObject(this.reversedTree)
-        debugPrint('--- /end of pushOnTree(..) --------')
     }
 
+    // getLevelsDepth = (): number => {
     getDepthOfLevels = (): number => {
-        return this.lastActiveSectionNameAtLevels2.length
+        return this.lastActiveSectionTitlesAtLevels.length
     }
     setLastActiveSection = (atLevel: number, sectionName: string) => {
         if (atLevel >= 1) {
-            this.lastActiveSectionNameAtLevels2[atLevel - 1] = sectionName
+            this.lastActiveSectionTitlesAtLevels[atLevel - 1] = sectionName
         } else {
             this.instanceInvalidData!.pushOrBail(
                 null,
@@ -180,17 +179,17 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('-> Entered visitYini(..) in YINIVisitor')
         debugPrint('QQQQ')
 
+        // const resultSections: Record<string, any> = {}
+
         ctx.section_list()?.forEach((section: any) => {
             // ctx?.section_list()?.forEach((section: any) => {
             debugPrint(
                 '\nStart of each element in forEeach(..) of section_list():',
             )
 
-            const topSectionResult: ISectionResult = this.visitSection(section)
-            this.pushOnTree(topSectionResult)
+            const topSectionResult: any = this.visitSection(section)
             const topSectionName: string | undefined = topSectionResult?.name
             const topSectionMembers: any = topSectionResult?.members
-            const topSectionLevel: any = topSectionResult?.level // This must have a value of 1.
 
             debugPrint('\ntopSectionResult (visitSection(..)):')
             if (isDebug()) {
@@ -211,21 +210,43 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             }
 
             if (topSectionName) {
+                // let nestDirection: 'lower' | 'same' | 'higher'
+                // if (this.level === this.prevLevel) {
+                //     nestDirection = 'same'
+                // } else if (this.level < this.prevLevel) {
+                //     nestDirection = 'lower'
+                // } else {
+                //     nestDirection = 'higher'
+                // }
+                // this.prevLevel = this.level
                 debugPrint()
                 debugPrint(
                     '-- Just extracted TOP/FIRST section info ---------------------------',
                 )
                 debugPrint('  TOP/FIRST topSectionName = ' + topSectionName)
-                debugPrint('           topSectionLevel = ' + topSectionLevel)
                 debugPrint('                this.level = ' + this.level)
 
+                this.mountSection(1, topSectionName, topSectionMembers)
                 debugPrint('Mounted/assigned section onto resultSections...')
+
+                // if (!this.lastActiveSectionAtLevels2[this.level - 1]) {
+                //     this.lastActiveSectionAtLevels2[this.level - 1] = {}
+                // }
+                // this.lastActiveSectionAtLevels2[this.level - 1] = {
+                //     ...topSectionMembers,
+                // }
+                // this.prevLevel2 = this.level
+                // debugPrint(
+                //     '*** Attached section with name "' + sectionName + '"',
+                // )
             }
 
             debugPrint(
                 '\n=== resultSections: =====================================',
             )
             if (isDebug()) {
+                console.log(this.resultSections)
+
                 console.log('2222222222222')
                 console.log(`lastActiveSectionAtLevels2[${this.level - 1}]`)
                 printObject(this.lastActiveSectionAtLevels2[this.level - 1])
@@ -235,36 +256,13 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             debugPrint()
         })
 
-        const syntaxTree: TSyntaxTree = this.reversedTree.reverse()
-
-        if (false && isDebug()) {
-            console.log()
-            console.log(
-                '=========================================================================',
-            )
-            console.log(
-                '=== syntaxTree: ==========================================================',
-            )
-            printObject(syntaxTree)
-            console.log(
-                '=========================================================================',
-            )
-            console.log(
-                '=========================================================================',
-            )
-            console.log()
+        if (isDebug()) {
+            console.log('At end of YINI(..), this.resultSections:')
+            printObject(this.resultSections)
         }
 
         const hasTerminal = !!ctx.terminal_line()
-
-        // Returns an Intermediate Tree (could even be an AST).
-        const syntaxTreeC: TSyntaxTreeContainer = {
-            // _base: this.resultSections,
-            _syntaxTree: syntaxTree, // The Intermediate Tree, or AST.
-            _hasTerminal: hasTerminal,
-            _meta_numOfChains: this.meta_numOfChains,
-        }
-        return syntaxTreeC
+        return { _base: this.resultSections, _hasTerminal: hasTerminal }
     }
 
     /**
@@ -280,18 +278,14 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         const res: Record<string, any> = {}
 
         debugPrint('start')
-        debugPrint('XXXX1:ctx.SECTION_HEAD()       = ' + ctx.SECTION_HEAD())
-        debugPrint(
-            'XXXX1:SECTION_HEAD().getText() = ' +
-                ctx.SECTION_HEAD()?.getText().trim(),
-        )
+        debugPrint('XXXX1:ctx.SECTION_HEAD() = ' + ctx.SECTION_HEAD())
         debugPrint('XXXX2:     ctx.section():')
 
         debugPrint('end\n')
 
         let line: string = ''
         try {
-            line = '' + ctx.SECTION_HEAD()?.getText().trim()
+            line = '' + ctx.SECTION_HEAD().getText().trim()
         } catch (error) {
             const msgWhat: string = `Unexpected syntax while parsing a member or section head`
             const msgWhy: string = `Found unexpected syntax while trying to read a key-value pair or a section header (such as a section marker or section name).`
@@ -319,7 +313,6 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             }
         }
         debugPrint('this.level = ' + this.level)
-        const level = this.level
         // ------------------------------------
 
         // --- Extract section name after markers and whitespace. ---------
@@ -338,6 +331,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         let sectionName: string = subLine.trim()
         sectionName = stripNLAndAfter(sectionName) // Cut of anything after (and including) any newline (and possible commented next lines).
         sectionName = trimBackticks(sectionName)
+
+        const thisLevel = this.level
 
         debugPrint('                        --------------')
         debugPrint(
@@ -359,7 +354,6 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         }
         debugPrint('-- In visitSection(..) ---------------------------')
         debugPrint('            sectionName = ' + sectionName)
-        debugPrint('                  level = ' + level)
         debugPrint('             this.level = ' + this.level)
         debugPrint('         this.prevLevel = ' + this.prevLevel)
         debugPrint('          nestDirection = ' + nestDirection)
@@ -368,11 +362,17 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint()
 
         debugPrint('About to visit members of section...')
+        // const members = ctx.section_members()
+        //     ? this.visit(ctx.section_members())
+        //     : // : {}
+        //       this.visit(ctx.section())
         let members: any
 
         if (!ctx.section_members()) {
             debugPrint('(!) Section has no members!')
+            this.danglingTitle = sectionName
         } else {
+            this.danglingTitle = ''
             members = this.visitSection_members(ctx.section_members())
         }
 
@@ -385,116 +385,110 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             this.numOfLevelOnes++
         }
 
-        //------------------------
-        if (nestDirection === 'higher') {
-            if (Math.abs(this.prevLevel - this.level) >= 2) {
-                this.instanceInvalidData!.pushOrBail(
-                    ctx,
-                    'Syntax-Error',
-                    'Invalid section level jump of section header "' +
-                        sectionName +
-                        '"',
-                    'Section header name "' +
-                        sectionName +
-                        '" with level ' +
-                        this.level +
-                        ' may not jump over previous section levels, from secton with level ' +
-                        this.prevLevel +
-                        '.',
-                )
-            }
+        //this.setLastActiveSection(0, 'sdf')
+
+        if (this.level - 1 <= this.getDepthOfLevels()) {
+            //this.lastActiveSectionTitlesAtLevels[this.level - 1] = sectionName
+            this.setLastActiveSection(this.level, sectionName)
+            // this.lastActiveSectionAtLevels =
+        } else {
+            debugPrint('(?) Maybe error?')
+            //throw new Error('qqqqq')
+            // this.instanceInvalidData!.pushOrBail(
+            //     ctx,
+            //     'Syntax-Error',
+            //     'Invalid section level of section header "' + sectionName + '"',
+            //     'Missing a section with level 1. Section header name "' +
+            //         sectionName +
+            //         '" with level ' +
+            //         this.level +
+            //         ' may not jump over previous section levels.',
+            // )
         }
+
+        /*
+        if (Math.abs(this.prevLevel - this.level) >= 2) {
+            this.instanceInvalidData!.pushOrBail(
+                ctx,
+                'Syntax-Error',
+                'Invalid section level jump of section header "' +
+                    sectionName +
+                    '"',
+                'Section header name "' +
+                    sectionName +
+                    '" with level ' +
+                    this.level +
+                    ' may not jump over previous section levels, from secton with level ' +
+                    this.prevLevel +
+                    '.',
+            )
+        }
+        */
+
+        // this.prevLevel = this.level
+        //------------------------
         if (nestDirection !== 'higher') {
+            // this.mountSection(this.level, sectionName, members)
+            // debugPrint(
+            //     'Mounted section onto level: ' +
+            //         this.level +
+            //         ', sectionName: ' +
+            //         sectionName,
+            // )
+            // let nestDirection: 'lower' | 'same' | 'higher'
+            // if (this.level === this.prevLevel2) {
+            //     nestDirection = 'same'
+            // } else if (this.level < this.prevLevel2) {
+            //     nestDirection = 'lower'
+            // } else {
+            //     nestDirection = 'higher'
+            // }
             debugPrint('About to reset result')
             console.log({ [sectionName]: members })
-
-            console.log(`Current lastActiveSectionAtLevels2[${this.level - 1}]`)
-            printObject(this.lastActiveSectionAtLevels2[this.level - 1])
-
-            if (
-                // (level === 0 && !sectionName) ||
-                // (sectionName === 'undefined' && !!members)
-                level === 0 &&
-                sectionName === 'undefined' &&
-                !!members
-            ) {
-                debugPrint('HIT2!!!!')
-                debugPrint(
-                    '(!) Detected a member (that does not have a sectionName), but a memberless object in "members"',
-                )
-                sectionName = Object.keys(members)[0]
-                debugPrint('sectionName = ' + sectionName)
-                members = {}
-                // this.lastActiveSectionAtLevels2[0] = { [sectionName]: {} }
-
-                // this.pushOnTree({ level: 1, name: sectionName, members: {} })
-                debugPrint(
-                    '(!) Skipping mounted since this is actually a memberless section',
-                )
-                debugPrint()
-                debugPrint('<- Leaving visitSection(..) EARLY')
-                if (isDebug()) {
-                    console.log('returning (a memberless section):')
-                    console.log({
-                        level: 1,
-                        name: sectionName,
-                        members: members,
-                    })
-                    console.log()
-                }
-
-                return {
-                    level: 1,
-                    name: sectionName,
-                    members: members,
-                } as ISectionResult
-            } else {
-                // Mount as append
-                this.lastActiveSectionAtLevels2[this.level - 1] = {
-                    [sectionName]: { ...members },
-                }
-                this.pushOnTree({ level: level, name: sectionName, members })
-                // this.lastActiveSectionNameAtLevels2.push(sectionName)
-                debugPrint('Mounted as append')
+            this.resultSections[sectionName] = members
+            console.log(`Current lastActiveSectionAtLevels2[${thisLevel - 1}]`)
+            printObject(this.lastActiveSectionAtLevels2[thisLevel - 1])
+            // Mount as append
+            this.lastActiveSectionAtLevels2[thisLevel - 1] = {
+                // dummysec1: {
+                //     ...this.lastActiveSectionAtLevels2[this.level - 1],
+                // },
+                [sectionName]: { ...members },
             }
+            this.lastActiveSectionTitlesAtLevels2[thisLevel - 1] = sectionName
+            debugPrint('Mounted as append')
 
-            console.log(`After: lastActiveSectionAtLevels2[${this.level - 1}]`)
-            printObject(this.lastActiveSectionAtLevels2[this.level - 1])
-
+            // if (this.prevLevel === 1) {
+            //     this.resultSections = {
+            //         ...this.resultSections,
+            //         dummy: {
+            //             ...this.lastActiveSectionAtLevels2[this.level - 1],
+            //         },
+            //     }
             if (isDebug()) {
                 console.log(
-                    `After append lastActiveSectionAtLevels2[${this.level - 1}]`,
+                    `After append lastActiveSectionAtLevels2[${thisLevel - 1}]`,
                 )
-                printObject(this.lastActiveSectionAtLevels2[this.level - 1])
+                printObject(this.lastActiveSectionAtLevels2[thisLevel - 1])
 
-                debugPrint('Before this.lastActiveSectionNameAtLevels2:')
-                printObject(this.lastActiveSectionNameAtLevels2)
-
-                // Reset.
-                let i = this.level
-                while (this.lastActiveSectionNameAtLevels2[i]) {
-                    this.lastActiveSectionNameAtLevels2[i++] = undefined
+                debugPrint('Before this.lastActiveSectionTitlesAtLevels2:')
+                printObject(this.lastActiveSectionTitlesAtLevels2)
+                let i = thisLevel
+                while (this.lastActiveSectionTitlesAtLevels2[i]) {
+                    this.lastActiveSectionTitlesAtLevels2[i++] = ''
                 }
-                debugPrint('After this.lastActiveSectionNameAtLevels2:')
-                printObject(this.lastActiveSectionNameAtLevels2)
+                debugPrint('After this.lastActiveSectionTitlesAtLevels2:')
+                printObject(this.lastActiveSectionTitlesAtLevels2)
             }
             debugPrint(
                 'HIT!!! - Just a lower or same level section, a continues full (nested) section,',
             )
             debugPrint(
-                `Has above in lastActiveSectionAtLevels2[${this.level - 1}]`,
+                `Has above in lastActiveSectionAtLevels2[${thisLevel - 1}]`,
             )
             debugPrint('    this.level: ' + this.level)
             debugPrint('this.prevLevel: ' + this.prevLevel)
-            debugPrint('     this.level: ' + this.level)
-
-            debugPrint()
-            debugPrint(
-                ' HERE.... Should mount section to correct section at this.level: ' +
-                    this.level,
-            )
-
-            //this.lastActiveSectionNameAtLevels2[this.level - 1] = sectionName
+            debugPrint('     thisLevel: ' + thisLevel)
 
             debugPrint()
             debugPrint('Resetted local result')
@@ -506,44 +500,42 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         if (isDebug()) {
             if (members) {
                 console.log({ [sectionName]: members })
-                this.lastActiveSectionAtLevels2[this.level - 1] = {
+                this.lastActiveSectionAtLevels2[thisLevel - 1] = {
                     ...members,
                 }
-                // this.lastActiveSectionNameAtLevels2[this.level - 1] = sectionName
+                this.lastActiveSectionTitlesAtLevels2[thisLevel - 1] =
+                    sectionName
                 debugPrint('Mounted as assigned')
 
-                console.log(`lastActiveSectionAtLevels2[${this.level - 1}]`)
-                printObject(this.lastActiveSectionAtLevels2[this.level - 1])
+                console.log(`lastActiveSectionAtLevels2[${thisLevel - 1}]`)
+                printObject(this.lastActiveSectionAtLevels2[thisLevel - 1])
             }
         }
 
         debugPrint('^^^^^^^^^^^^^^^^^')
 
         if (isDebug()) {
+            console.log('At end of visitSection(..), this.resultSections:')
+            printObject(this.resultSections)
+
             console.log(
-                'At end of visitSection(..), this.lastActiveSectionNameAtLevels2:',
+                'At end of visitSection(..), this.lastActiveSectionTitlesAtLevels2:',
             )
-            printObject(this.lastActiveSectionNameAtLevels2)
+            printObject(this.lastActiveSectionTitlesAtLevels2)
             debugPrint('    this.level: ' + this.level)
             debugPrint('this.prevLevel: ' + this.prevLevel)
-            debugPrint('     this.level: ' + this.level)
+            debugPrint('     thisLevel: ' + thisLevel)
             debugPrint('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-            debugPrint('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-            console.log()
         }
 
         debugPrint('<- Leaving visitSection(..)')
         if (isDebug()) {
             console.log('returning:')
-            console.log({ level: level, name: sectionName, members: members })
+            console.log({ name: sectionName, members })
             console.log()
         }
 
-        return {
-            level: level,
-            name: sectionName,
-            members: members,
-        } as ISectionResult
+        return { name: sectionName, members }
     }
 
     /**
@@ -584,39 +576,45 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             debugPrint('value[key] = >>>' + value?.[key] + '<<<')
             debugPrint('--')
 
-            if (key === '') {
-                debugPrint('Skipping this member, due to key = ""')
+            if (members[key] !== undefined) {
+                this.instanceInvalidData!.pushOrBail(
+                    ctx,
+                    'Syntax-Error',
+                    'Key already exists in this section scope (in this main section), key name: ' +
+                        key,
+                )
             } else {
-                if (members[key] !== undefined) {
-                    this.instanceInvalidData!.pushOrBail(
-                        ctx,
-                        'Syntax-Error',
-                        'Key already exists in this section scope (in this main section), key name: ' +
-                            key,
-                    )
-                } else {
-                    if ((value?.type as TDataType) === 'Null') {
-                        members[key] = null
-                    } else {
-                        isDebug() && console.log()
-                        // NOTE: (!) Only if nested section.
-                        debugPrint(
-                            'About to mount a single member or section onto members...',
-                        )
-                        isDebug() && console.log({ [key]: value })
+                // let nestDirection: 'lower' | 'same' | 'higher'
+                // if (this.level === this.prevLevel) {
+                //     nestDirection = 'same'
+                // } else if (this.level < this.prevLevel) {
+                //     nestDirection = 'lower'
+                // } else {
+                //     nestDirection = 'higher'
+                // }
+                // debugPrint('nestDirection = ' + nestDirection)
 
-                        //@todo Maybe should assign as [key]: { type: type, value: value }
-                        // or maybe even as [key]: { type: type, key: key, value: value }
-                        Object.assign(members, { [key]: value })
-                        // Object.assign(members, {
-                        //     [key]: { type: type, value: value },
-                        // })
-                        debugPrint(
-                            '+ Added member or section onto members: "' +
-                                key +
-                                '"',
-                        )
-                    }
+                // members[key] = value
+                if ((value?.type as TDataType) === 'Null') {
+                    members[key] = null
+                } else {
+                    isDebug() && console.log()
+                    // NOTE: (!) Only if nested section.
+                    debugPrint(
+                        'About to mount a single member or section onto members...',
+                    )
+                    isDebug() && console.log({ [key]: value })
+
+                    // Object.assign(members, { [key]: value[key] })
+                    Object.assign(members, { [key]: value })
+                    debugPrint(
+                        '+ Added member or section onto members: "' + key + '"',
+                    )
+
+                    // Otherwise, if append section, do the below:
+                    // Object.assign(this.resultSections, { [key]: value[key] })
+                    // debugPrint('+ Append new section: "' + key + '"')
+                    // isDebug() && console.log()
                 }
             }
         })
@@ -626,6 +624,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 '~~~ After mounting in visitSection_members(..) ~~~~~~~~~~',
             )
             debugPrint('this.resultSections:')
+            console.log(this.resultSections)
             debugPrint(
                 '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
             )
@@ -636,6 +635,13 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         //     const { key, value } = this.visit(mcl)
         //     members[key] = value
         // })
+
+        if (isDebug()) {
+            console.log(
+                `At end of visitSection_members(..), this.resultSections:`,
+            )
+            printObject(this.resultSections)
+        }
 
         debugPrint()
         debugPrint('<- Leaving visitSection_members(..)')
@@ -662,11 +668,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         isDebug() && console.log()
         debugPrint('-> Entered visitMember(..)')
         debugPrint('           key   = ' + ctx.KEY()?.getText().trim())
-        debugPrint(
-            'Or, section head = ' +
-                ctx.SECTION_HEAD()?.getText().trim() +
-                ' (head WITHOUT any members (ONLY detected here))',
-        )
+        debugPrint('Or, section head = ' + ctx.SECTION_HEAD()?.getText().trim())
         debugPrint('     ctx.value() = ' + ctx.value())
 
         // For logging and debugging purposes.
@@ -675,7 +677,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         let resultType: TDataType = undefined
         let resultKey: string = ''
         let resultValue: any = {}
-        let followingSection: ISectionResult | null = null
+        let followingSection: any = null
 
         // NOTE: (!) It can never be both a key and section head.
         if (ctx.KEY()?.getText().trim()) {
@@ -692,8 +694,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             const result: IResult = ctx.value()
                 ? this.visitValue(ctx.value())
                 : null
-            resultType = (<any>result)?.type
-            resultValue = (<any>result)?.value
+            resultType = (<any>result).type
+            resultValue = (<any>result).value
             debugPrint(' type = ' + resultType + '          @visitValue(..)')
             debugPrint('value = ' + resultValue + '          @visitValue(..)')
         } else if (ctx.SECTION_HEAD()?.getText().trim()) {
@@ -714,7 +716,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             //@todo Mount the nested object correctly!
             resultType = 'Object'
             // resultValue[nestedSection?.name] = nestedSection?.members
-            resultValue = followingSection?.members || {}
+            resultValue = followingSection?.members
             resultKey = followingSection!.name
             debugPrint('Mounted/assigned a section onto resultValue...')
             // Object.assign(value, { dummy: 6767 })
@@ -730,6 +732,17 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             console.log(resultValue)
         }
 
+        // debugPrint('\nConstructed a member (a key-value pair):')
+        // if (isDebug()) {
+        //     console.log(resultValue)
+        // }
+
+        // return { key, value } as IResult
+        // return { key, value, type: 'Integer' } as IResult
+
+        //@todo if a section, use the section key as key, its members
+        // as value, and return as section
+        // the function receiving this must know this is a section!!!
         debugPrint()
         debugPrint('<- Leaving visitMember(..)')
         if (isDebug()) {
@@ -740,14 +753,6 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 value: resultValue,
             })
             console.log()
-        }
-
-        if (!resultType && !resultKey) {
-            this.instanceInvalidData!.pushOrBail(
-                ctx,
-                'Syntax-Error',
-                'Unknown input',
-            )
         }
 
         return {
