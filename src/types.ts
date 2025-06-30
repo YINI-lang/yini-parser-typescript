@@ -33,6 +33,7 @@ sValue = 2
     
  */
 
+export type TJSObject = any
 export type TSyntaxTreeContainer = {
     _syntaxTree: TSyntaxTree
     _hasTerminal: boolean

@@ -1,5 +1,5 @@
 import { CharStreams, CommonTokenStream } from 'antlr4'
-import { checkAndBuild } from './checkAndBuild'
+import { constructFinalObject } from './checkAndBuild'
 import { isDebug } from './config/env'
 import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
@@ -57,18 +57,18 @@ export const parseYINI = (
     }
 
     // Semantic check and construct.
-    const finalResult = checkAndBuild(syntaxTreeC)
+    const finalJSResult = constructFinalObject(syntaxTreeC)
     debugPrint('==== End parsing ==========================\n')
 
-    debugPrint('visitor.visit(..): finalResult:')
-    isDebug() && console.debug(finalResult)
+    debugPrint('visitor.visit(..): finalJSResult:')
+    isDebug() && console.debug(finalJSResult)
     debugPrint()
 
     if (options.isStrict) {
         throw Error('ERROR: Strict-mode not yet implemented')
     } else {
-        debugPrint('visitor.visit(..): result:')
-        isDebug() && console.debug(finalResult)
-        return finalResult as any
+        debugPrint('visitor.visit(..): finalJSResult:')
+        isDebug() && console.debug(finalJSResult)
+        return finalJSResult as any
     }
 }

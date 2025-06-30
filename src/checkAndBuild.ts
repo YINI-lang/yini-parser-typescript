@@ -1,33 +1,34 @@
-/**
- * Semantic check and construct the final result.
- */
-
 import { isDebug } from './config/env'
 import { InvalidDataHandler } from './InvalidDataHandler'
-import { IChainContainer, TSyntaxTreeContainer } from './types'
+import { IChainContainer, TJSObject, TSyntaxTreeContainer } from './types'
 import { debugPrint, printObject } from './utils/system'
 
 let instanceInvalidData: InvalidDataHandler | null = null
 
-export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
-    debugPrint('-> checkAndBuild(..)')
-    const bulder = new CheckerAndBuilder(syntaxTreeC)
+/**
+ * Construct the final result of a JavaScript Object.
+ */
+export const constructFinalObject = (
+    syntaxTreeC: TSyntaxTreeContainer,
+): TJSObject => {
+    debugPrint('-> constructFinalObject(..)')
+    const bulder = new Builder(syntaxTreeC)
     const jsObject = bulder.doCheckAndBuild()
 
     return jsObject
 }
 
-class CheckerAndBuilder {
+class Builder {
     private syntaxTreeC: TSyntaxTreeContainer | undefined = undefined
 
     constructor(syntaxTreeC: TSyntaxTreeContainer) {
-        debugPrint('-> CheckerAndBuilder: constructor(..)')
+        debugPrint('-> Builder: constructor(..)')
 
         this.syntaxTreeC = syntaxTreeC
     }
 
-    public doCheckAndBuild = (): any => {
-        debugPrint('-> CheckerAndBuilder: doCheckAndBuild(..)')
+    public doCheckAndBuild = (): TJSObject => {
+        debugPrint('-> Builder: doCheckAndBuild(..)')
         if (!this.syntaxTreeC) {
             instanceInvalidData!.pushOrBail(
                 null,
@@ -37,18 +38,19 @@ class CheckerAndBuilder {
             )
         }
 
-        const fullSubTreeList: IChainContainer[] =
-            this.checkAndBuildFullSubTrees(this.syntaxTreeC!)
+        const fullSubTreeList: IChainContainer[] = this.buildFullSubTrees(
+            this.syntaxTreeC!,
+        )
 
-        const jsObject = this.constructFinalObject(fullSubTreeList)
+        const jsObject = this.buildObjectFromList(fullSubTreeList)
 
         return jsObject
     }
 
-    private checkAndBuildFullSubTrees = (
+    private buildFullSubTrees = (
         syntaxTreeC: TSyntaxTreeContainer,
     ): IChainContainer[] => {
-        debugPrint('-> CheckerAndBuilder: checkAndBuildFullSubTrees(..)')
+        debugPrint('-> Builder: buildFullSubTrees(..)')
         isDebug() && console.log()
 
         const fullSubTreeList: IChainContainer[] = [] // List of FULL sub-trees.
@@ -114,7 +116,7 @@ class CheckerAndBuilder {
         chainC: IChainContainer,
         workingSubTree: IChainContainer, // First section must start at level 1.
     ): IChainContainer => {
-        debugPrint('-> CheckerAndBuilder: mountChainOntoLevel(..)')
+        debugPrint('-> Builder: mountChainOntoLevel(..)')
         if (chainC.originLevel > 1) {
             // NOP
         } else {
@@ -156,47 +158,6 @@ class CheckerAndBuilder {
             chain,
             targetLevel,
         )
-        // const stack: { node: any }[] = []
-        // // Start with the top-level object in the sub-tree.
-        // stack.push({ node: workingSubTree.chain })
-        // let currentLevel = 0
-        // const pathToLevel: string[] = [] // The path to the target level on the working sub-tree.
-
-        // while (stack.length > 0) {
-        //     const { node } = stack.pop()! // Non-null because stack.length > 0.
-
-        //     for (const key in node) {
-        //         if (Object.prototype.hasOwnProperty.call(node, key)) {
-        //             const value = node[key]
-        //             // If it's a plain object (not array or null).
-        //             if (
-        //                 value &&
-        //                 typeof value === 'object' &&
-        //                 !Array.isArray(value)
-        //             ) {
-        //                 if (currentLevel === targetLevel) {
-        //                     debugPrint(
-        //                         'BOOM, correct level found, mount the chain here!',
-        //                     )
-        //                     debugPrint('currentLevel: ' + currentLevel)
-        //                     if (isDebug()) {
-        //                         debugPrint('value:')
-        //                         printObject(value)
-        //                         debugPrint('pathToLevel:')
-        //                         printObject(pathToLevel)
-        //                         debugPrint()
-        //                         Object.assign(workingSubTree.chain[], chain)
-        //                         break
-        //                     }
-        //                 }
-        //                 pathToLevel.push('' + key)
-        //                 // Push nested object onto stack to process its properties.
-        //                 stack.push({ node: value })
-        //                 currentLevel++
-        //             }
-        //         }
-        //     }
-        // }
 
         if (isDebug()) {
             debugPrint('After mounting onto workingSubTree.chain:')
@@ -204,15 +165,15 @@ class CheckerAndBuilder {
             debugPrint('----------')
         }
 
-        debugPrint('<- CheckerAndBuilder: mountChainOntoLevel(..)')
+        debugPrint('<- Builder: mountChainOntoLevel(..)')
         return workingSubTree
     }
 
     // Contruct the final JS object from the list of full sub-trees.
-    private constructFinalObject = (
+    private buildObjectFromList = (
         fullSubTreeList: IChainContainer[],
-    ): any => {
-        debugPrint('-> CheckerAndBuilder: constructFinalObject(..)')
+    ): TJSObject => {
+        debugPrint('-> Builder: buildObjectFromList(..)')
         const jsObject = {}
 
         for (const chainC of fullSubTreeList) {
@@ -222,7 +183,7 @@ class CheckerAndBuilder {
                 instanceInvalidData!.pushOrBail(
                     null,
                     'Fatal-Error',
-                    'Internal-Error: Detected incorrect full sub-tree in constructFinalObject(..), start section has level: ' +
+                    'Internal-Error: Detected incorrect full sub-tree in buildObjectFromList(..), start section has level: ' +
                         chainC.originLevel,
                     'A full sub-tree (chain) must start with a section at level 1',
                     '' + printObject(chainC),
@@ -235,7 +196,8 @@ class CheckerAndBuilder {
 }
 
 /**
- * Mounts objectDest onto the first object at the given depth (level, 1-based) in objectSrc.
+ * Mounts objectDest onto the first object at the given depth (level is
+ * 1-based) in objectSrc.
  * @return Returns a new object without mutating input objects.
  */
 function mountObjectAtLevel(
@@ -272,101 +234,3 @@ function mountObjectAtLevel(
 
     return result
 }
-
-//////////////////
-
-//     if (!sectionName) {
-//         this.instanceInvalidData!.pushOrBail(
-//             null,
-//             'Internal-Error',
-//             'Invalid sectionName: ' + sectionName,
-//         )
-//     }
-
-/*
-        if (atLevel >= 1) {
-            this.lastActiveSectionNameAtLevels2[atLevel - 1] = sectionName
-        } else {
-            this.instanceInvalidData!.pushOrBail(
-                null,
-                'Internal-Error',
-                'Invalid section level (<1), level: ' +
-                    atLevel +
-                    ', sectionName: "' +
-                    sectionName +
-                    '"',
-            )
-        }
-    */
-
-/*
-        if (this.level - 1 <= this.getDepthOfLevels()) {
-            //this.lastActiveSectionTitlesAtLevels[this.level - 1] = sectionName
-            // this.setLastActiveSection(this.level, sectionName)
-            // this.lastActiveSectionAtLevels =
-        } else {
-            debugPrint('(?) Maybe error?')
-            //throw new Error('qqqqq')
-            // this.instanceInvalidData!.pushOrBail(
-            //     ctx,
-            //     'Syntax-Error',
-            //     'Invalid section level of section header "' + sectionName + '"',
-            //     'Missing a section with level 1. Section header name "' +
-            //         sectionName +
-            //         '" with level ' +
-            //         this.level +
-            //         ' may not jump over previous section levels.',
-            // )
-        }
-
-        */
-/*
-        if (Math.abs(this.prevLevel - this.level) >= 2) {
-            this.instanceInvalidData!.pushOrBail(
-                ctx,
-                'Syntax-Error',
-                'Invalid section level jump of section header "' +
-                    sectionName +
-                    '"',
-                'Section header name "' +
-                    sectionName +
-                    '" with level ' +
-                    this.level +
-                    ' may not jump over previous section levels, from secton with level ' +
-                    this.prevLevel +
-                    '.',
-            )
-        }
-        */
-/*
-    // getLevelsDepth = (): number => {
-    getDepthOfLevels = (): number => {
-        return this.lastActiveSectionNameAtLevels2.length
-    }
-    */
-/*
-    setLastActiveSection = (atLevel: number, sectionName: string) => {
-        if (atLevel >= 1) {
-            this.lastActiveSectionNameAtLevels2[atLevel - 1] = sectionName
-        } else {
-            this.instanceInvalidData!.pushOrBail(
-                null,
-                'Internal-Error',
-                'Invalid section level (<1), level: ' +
-                    atLevel +
-                    ', sectionName: "' +
-                    sectionName +
-                    '"',
-            )
-        }
-    }
-    */
-// let nestDirection: 'lower' | 'same' | 'higher'
-// if (this.level === this.prevLevel) {
-//     nestDirection = 'same'
-// } else if (this.level < this.prevLevel) {
-//     nestDirection = 'lower'
-// } else {
-//     nestDirection = 'higher'
-// }
-// this.prevLevel = this.level
