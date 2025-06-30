@@ -54,43 +54,49 @@ class CheckerAndBuilder {
         const fullSubTreeList: IChainContainer[] = [] // List of FULL sub-trees.
 
         // Current Working Full Sub-Tree (starting at level 1).
-        let parentFullSubTree = syntaxTreeC._syntaxTree[0] // (!) Any tree MUST START at level 1.
+        let workingFullSubTree = syntaxTreeC._syntaxTree[0] // (!) Any tree MUST START at level 1.
         debugPrint(
-            `Setted new parentFullSubTree, from syntaxTreeC._syntaxTree[0]`,
+            `Setted new workingFullSubTree, from syntaxTreeC._syntaxTree[0]`,
         )
 
         const len = syntaxTreeC._syntaxTree.length
         for (let i = 1; i < len; i++) {
-            const cContainer = syntaxTreeC._syntaxTree[i]
-            const level = cContainer.originLevel
+            const currentChainC = syntaxTreeC._syntaxTree[i]
+            const level = currentChainC.originLevel
             const nestingIndex = level - 1 // For debugging purposes.
-            const currentChain: any = cContainer.chain
+            const chain: any = currentChainC.chain // For debugging purposes.
             debugPrint(
                 `Got new chain from syntaxTreeC._syntaxTree[${i}] to be mounted onto parent...`,
             )
 
-            debugPrint(
-                '* level: ' + level + ' (i=' + i + '), chain: ' + currentChain,
-            )
+            debugPrint('* level: ' + level + ' (i=' + i + '), chain: ' + chain)
 
             if (level === 1) {
                 debugPrint(
                     'HIT - Detected that currentChain starts with level 1',
                 )
-                fullSubTreeList.push(parentFullSubTree)
+                fullSubTreeList.push(workingFullSubTree)
                 debugPrint(
-                    'The parentFullSubTree is finished, pushed it to the list.',
+                    'The workingFullSubTree is finished, pushed it to the list.',
                 )
-                parentFullSubTree = syntaxTreeC._syntaxTree[i] // (!) The tree MUST START at level 1.
+                workingFullSubTree = syntaxTreeC._syntaxTree[i] // (!) The tree MUST START at level 1.
                 debugPrint(
-                    `Setted new parentFullSubTree, from syntaxTreeC._syntaxTree[${i}]`,
+                    `Setted new workingFullSubTree, from syntaxTreeC._syntaxTree[${i}]`,
+                )
+            } else {
+                debugPrint(
+                    'About to mount currentChain onto workingFullSubTree at correct level...',
+                )
+                workingFullSubTree = this.mountChainOntoLevel(
+                    currentChainC,
+                    workingFullSubTree,
                 )
             }
 
             debugPrint()
         }
 
-        fullSubTreeList.push(parentFullSubTree)
+        fullSubTreeList.push(workingFullSubTree)
 
         if (isDebug()) {
             console.log()
@@ -104,6 +110,57 @@ class CheckerAndBuilder {
         return fullSubTreeList
     }
 
+    private mountChainOntoLevel = (
+        chainC: IChainContainer,
+        workingFullSubTree: IChainContainer,
+    ): IChainContainer => {
+        debugPrint('-> CheckerAndBuilder: mountChainOntoLevel(..)')
+        if (chainC.originLevel > 1) {
+            // NOP
+        } else {
+            instanceInvalidData!.pushOrBail(
+                null,
+                'Fatal-Error',
+                'Internal-Error: Detected incorrect chain in mountChainOntoLevel(..), start section has level: ' +
+                    chainC.originLevel,
+                'The (chain) must start with a section level higher than 1',
+                '' + printObject(chainC),
+            )
+        }
+        if (workingFullSubTree.originLevel != 1) {
+            instanceInvalidData!.pushOrBail(
+                null,
+                'Fatal-Error',
+                'Internal-Error: Detected incorrect full sub-tree in mountChainOntoLevel(..), start section has level: ' +
+                    chainC.originLevel,
+                'A full sub-tree (chain) must start with a section at level 1',
+                '' + printObject(chainC),
+            )
+        }
+
+        const chain: any = chainC.chain
+        const targetLevel = chainC.originLevel
+
+        if (isDebug()) {
+            debugPrint('Target level = ' + targetLevel)
+            debugPrint(`The chain to mount: (onto level: ${targetLevel})`)
+            printObject(chain)
+            debugPrint('--- workingFullSubTree: -------')
+            debugPrint('Before mounting chain:')
+            printObject(workingFullSubTree)
+        }
+
+        debugPrint('Mount currentChain onto workingFullSubTree.')
+
+        if (isDebug()) {
+            debugPrint('After mounting chain:')
+            printObject(workingFullSubTree)
+            debugPrint('----------')
+        }
+
+        return workingFullSubTree
+    }
+
     // Contruct the final JS object from the list of full sub-trees.
     private constructFinalObject = (
         fullSubTreeList: IChainContainer[],
@@ -112,15 +169,15 @@ class CheckerAndBuilder {
         const jsObject = {}
 
         for (const chainC of fullSubTreeList) {
-            if (chainC.originLevel == 1) {
+            if (chainC.originLevel === 1) {
                 Object.assign(jsObject, chainC.chain)
             } else {
                 instanceInvalidData!.pushOrBail(
                     null,
-                    'Internal-Error',
-                    'Detected incorrect full sub-tree, start section has level: ' +
+                    'Fatal-Error',
+                    'Internal-Error: Detected incorrect full sub-tree in constructFinalObject(..), start section has level: ' +
                         chainC.originLevel,
-                    'Full sub-trees must start with a section with level 1',
+                    'A full sub-tree (chain) must start with a section at level 1',
                     '' + printObject(chainC),
                 )
             }
@@ -138,15 +195,15 @@ export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
 
     // let prevObjChain: any = undefined
     let prevObjectPaths: string[] = []
-    syntaxTreeC._syntaxTree.forEach((cContainer: IChainContainer, i) => {
+    syntaxTreeC._syntaxTree.forEach((currentChainC: IChainContainer, i) => {
         // let i = 0
-        // for (const cContainer of syntaxTreeC._syntaxTree) {
-        debugPrint('loopIndex: ' + i + ', ' + cContainer.originLevel)
-        const nestingIndex = cContainer.originLevel - 1
-        const objChain: any = cContainer.chain
+        // for (const currentChainC of syntaxTreeC._syntaxTree) {
+        debugPrint('loopIndex: ' + i + ', ' + currentChainC.originLevel)
+        const nestingIndex = currentChainC.originLevel - 1
+        const objChain: any = currentChainC.chain
 
         if (nestingIndex === 0) {
-            Object.assign(jsObject, cContainer.chain)
+            Object.assign(jsObject, currentChainC.chain)
         } else {
             debugPrint(
                 '  - nestingIndex: ' +
@@ -175,21 +232,21 @@ export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
     let prevObjectPaths: string[] = []
 
     // Current Working Full Sub-Tree (starting at level 1).
-    let parentFullSubTree = syntaxTreeC._syntaxTree[0] // (!) Any tree MUST START at level 1.
+    let workingFullSubTree = syntaxTreeC._syntaxTree[0] // (!) Any tree MUST START at level 1.
 
     const len = syntaxTreeC._syntaxTree.length
-    // syntaxTreeC._syntaxTree.forEach((cContainer: IChainContainer, i) => {
+    // syntaxTreeC._syntaxTree.forEach((currentChainC: IChainContainer, i) => {
     for (let i = 1; i < len; i++) {
-        const cContainer = syntaxTreeC._syntaxTree[i]
-        // debugPrint('loopIndex: ' + i + ', ' + cContainer.originLevel)
-        const level = cContainer.originLevel
-        const chain: any = cContainer.chain
+        const currentChainC = syntaxTreeC._syntaxTree[i]
+        // debugPrint('loopIndex: ' + i + ', ' + currentChainC.originLevel)
+        const level = currentChainC.originLevel
+        const chain: any = currentChainC.chain
         const nestingIndex = level - 1 // For debugging purposes.
 
         debugPrint('* level: ' + level + ' (i=' + i + '), chain: ' + chain)
 
         // if (nestingIndex === 0) {
-        //     Object.assign(jsObject, cContainer.chain)
+        //     Object.assign(jsObject, currentChainC.chain)
         // } else {
         //     debugPrint(
         //         '  - nestingIndex: ' +
@@ -203,12 +260,12 @@ export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
         // prevObjectPaths = getObjectPropertyPaths(jsObject)
         if (level === 1) {
             debugPrint('HIT - Detected level 1')
-            fullSubTreeList.push(parentFullSubTree)
-            parentFullSubTree = syntaxTreeC._syntaxTree[i] // (!) The tree MUST START at level 1.
+            fullSubTreeList.push(workingFullSubTree)
+            workingFullSubTree = syntaxTreeC._syntaxTree[i] // (!) The tree MUST START at level 1.
         }
     }
 
-    fullSubTreeList.push(parentFullSubTree)
+    fullSubTreeList.push(workingFullSubTree)
 
     if (isDebug()) {
         console.log()
