@@ -584,33 +584,39 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             debugPrint('value[key] = >>>' + value?.[key] + '<<<')
             debugPrint('--')
 
-            if (members[key] !== undefined) {
-                this.instanceInvalidData!.pushOrBail(
-                    ctx,
-                    'Syntax-Error',
-                    'Key already exists in this section scope (in this main section), key name: ' +
-                        key,
-                )
+            if (key === '') {
+                debugPrint('Skipping this member, due to key = ""')
             } else {
-                if ((value?.type as TDataType) === 'Null') {
-                    members[key] = null
+                if (members[key] !== undefined) {
+                    this.instanceInvalidData!.pushOrBail(
+                        ctx,
+                        'Syntax-Error',
+                        'Key already exists in this section scope (in this main section), key name: ' +
+                            key,
+                    )
                 } else {
-                    isDebug() && console.log()
-                    // NOTE: (!) Only if nested section.
-                    debugPrint(
-                        'About to mount a single member or section onto members...',
-                    )
-                    isDebug() && console.log({ [key]: value })
+                    if ((value?.type as TDataType) === 'Null') {
+                        members[key] = null
+                    } else {
+                        isDebug() && console.log()
+                        // NOTE: (!) Only if nested section.
+                        debugPrint(
+                            'About to mount a single member or section onto members...',
+                        )
+                        isDebug() && console.log({ [key]: value })
 
-                    //@todo Maybe should assign as [key]: { type: type, value: value }
-                    // or maybe even as [key]: { type: type, key: key, value: value }
-                    Object.assign(members, { [key]: value })
-                    // Object.assign(members, {
-                    //     [key]: { type: type, value: value },
-                    // })
-                    debugPrint(
-                        '+ Added member or section onto members: "' + key + '"',
-                    )
+                        //@todo Maybe should assign as [key]: { type: type, value: value }
+                        // or maybe even as [key]: { type: type, key: key, value: value }
+                        Object.assign(members, { [key]: value })
+                        // Object.assign(members, {
+                        //     [key]: { type: type, value: value },
+                        // })
+                        debugPrint(
+                            '+ Added member or section onto members: "' +
+                                key +
+                                '"',
+                        )
+                    }
                 }
             }
         })

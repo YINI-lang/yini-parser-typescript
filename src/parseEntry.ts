@@ -56,7 +56,7 @@ export const parseYINI = (
         console.log()
     }
 
-    // Semantic check and construct.
+    // Construct.
     const finalJSResult = constructFinalObject(syntaxTreeC)
     debugPrint('==== End parsing ==========================\n')
 
