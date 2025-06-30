@@ -386,6 +386,24 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         }
 
         //------------------------
+        if (nestDirection === 'higher') {
+            if (Math.abs(this.prevLevel - this.level) >= 2) {
+                this.instanceInvalidData!.pushOrBail(
+                    ctx,
+                    'Syntax-Error',
+                    'Invalid section level jump of section header "' +
+                        sectionName +
+                        '"',
+                    'Section header name "' +
+                        sectionName +
+                        '" with level ' +
+                        this.level +
+                        ' may not jump over previous section levels, from secton with level ' +
+                        this.prevLevel +
+                        '.',
+                )
+            }
+        }
         if (nestDirection !== 'higher') {
             debugPrint('About to reset result')
             console.log({ [sectionName]: members })
