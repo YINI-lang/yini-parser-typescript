@@ -112,7 +112,7 @@ class CheckerAndBuilder {
 
     private mountChainOntoLevel = (
         chainC: IChainContainer,
-        workingFullSubTree: IChainContainer,
+        workingSubTree: IChainContainer, // First section must start at level 1.
     ): IChainContainer => {
         debugPrint('-> CheckerAndBuilder: mountChainOntoLevel(..)')
         if (chainC.originLevel > 1) {
@@ -127,7 +127,7 @@ class CheckerAndBuilder {
                 '' + printObject(chainC),
             )
         }
-        if (workingFullSubTree.originLevel != 1) {
+        if (workingSubTree.originLevel != 1) {
             instanceInvalidData!.pushOrBail(
                 null,
                 'Fatal-Error',
@@ -146,19 +146,66 @@ class CheckerAndBuilder {
             debugPrint(`The chain to mount: (onto level: ${targetLevel})`)
             printObject(chain)
             debugPrint('--- workingFullSubTree: -------')
-            debugPrint('Before mounting chain:')
-            printObject(workingFullSubTree)
+            debugPrint('Before mounting onto workingSubTree.chain:')
+            printObject(workingSubTree.chain)
         }
 
         debugPrint('Mount currentChain onto workingFullSubTree.')
+        workingSubTree.chain = mountObjectAtLevel(
+            workingSubTree.chain,
+            chain,
+            targetLevel,
+        )
+        // const stack: { node: any }[] = []
+        // // Start with the top-level object in the sub-tree.
+        // stack.push({ node: workingSubTree.chain })
+        // let currentLevel = 0
+        // const pathToLevel: string[] = [] // The path to the target level on the working sub-tree.
+
+        // while (stack.length > 0) {
+        //     const { node } = stack.pop()! // Non-null because stack.length > 0.
+
+        //     for (const key in node) {
+        //         if (Object.prototype.hasOwnProperty.call(node, key)) {
+        //             const value = node[key]
+        //             // If it's a plain object (not array or null).
+        //             if (
+        //                 value &&
+        //                 typeof value === 'object' &&
+        //                 !Array.isArray(value)
+        //             ) {
+        //                 if (currentLevel === targetLevel) {
+        //                     debugPrint(
+        //                         'BOOM, correct level found, mount the chain here!',
+        //                     )
+        //                     debugPrint('currentLevel: ' + currentLevel)
+        //                     if (isDebug()) {
+        //                         debugPrint('value:')
+        //                         printObject(value)
+        //                         debugPrint('pathToLevel:')
+        //                         printObject(pathToLevel)
+        //                         debugPrint()
+        //                         Object.assign(workingSubTree.chain[], chain)
+        //                         break
+        //                     }
+        //                 }
+        //                 pathToLevel.push('' + key)
+        //                 // Push nested object onto stack to process its properties.
+        //                 stack.push({ node: value })
+        //                 currentLevel++
+        //             }
+        //         }
+        //     }
+        // }
 
         if (isDebug()) {
-            debugPrint('After mounting chain:')
-            printObject(workingFullSubTree)
+            debugPrint('After mounting onto workingSubTree.chain:')
+            printObject(workingSubTree.chain)
             debugPrint('----------')
         }
 
-        return workingFullSubTree
+        debugPrint('<- CheckerAndBuilder: mountChainOntoLevel(..)')
+        return workingSubTree
     }
 
     // Contruct the final JS object from the list of full sub-trees.
@@ -187,135 +234,41 @@ class CheckerAndBuilder {
     }
 }
 
-/*
-export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
-    debugPrint('-> checkAndBuild(..)')
-
-    const jsObject = {}
-
-    // let prevObjChain: any = undefined
-    let prevObjectPaths: string[] = []
-    syntaxTreeC._syntaxTree.forEach((currentChainC: IChainContainer, i) => {
-        // let i = 0
-        // for (const currentChainC of syntaxTreeC._syntaxTree) {
-        debugPrint('loopIndex: ' + i + ', ' + currentChainC.originLevel)
-        const nestingIndex = currentChainC.originLevel - 1
-        const objChain: any = currentChainC.chain
-
-        if (nestingIndex === 0) {
-            Object.assign(jsObject, currentChainC.chain)
-        } else {
-            debugPrint(
-                '  - nestingIndex: ' +
-                    nestingIndex +
-                    ', objectPaths: ' +
-                    prevObjectPaths,
-            )
-        }
-
-        prevObjectPaths = []
-        prevObjectPaths = getObjectPropertyPaths(jsObject)
-    })
-
-    return jsObject
-}
-    */
-
-/*
-export const checkAndBuild = (syntaxTreeC: TSyntaxTreeContainer) => {
-    debugPrint('-> checkAndBuild(..)')
-    isDebug() && console.log()
-
-    const fullSubTreeList = [] // List of FULL sub-trees.
-
-    // let prevObjChain: any = undefined
-    let prevObjectPaths: string[] = []
-
-    // Current Working Full Sub-Tree (starting at level 1).
-    let workingFullSubTree = syntaxTreeC._syntaxTree[0] // (!) Any tree MUST START at level 1.
-
-    const len = syntaxTreeC._syntaxTree.length
-    // syntaxTreeC._syntaxTree.forEach((currentChainC: IChainContainer, i) => {
-    for (let i = 1; i < len; i++) {
-        const currentChainC = syntaxTreeC._syntaxTree[i]
-        // debugPrint('loopIndex: ' + i + ', ' + currentChainC.originLevel)
-        const level = currentChainC.originLevel
-        const chain: any = currentChainC.chain
-        const nestingIndex = level - 1 // For debugging purposes.
-
-        debugPrint('* level: ' + level + ' (i=' + i + '), chain: ' + chain)
-
-        // if (nestingIndex === 0) {
-        //     Object.assign(jsObject, currentChainC.chain)
-        // } else {
-        //     debugPrint(
-        //         '  - nestingIndex: ' +
-        //             nestingIndex +
-        //             ', objectPaths: ' +
-        //             prevObjectPaths,
-        //     )
-        // }
-
-        // prevObjectPaths = []
-        // prevObjectPaths = getObjectPropertyPaths(jsObject)
-        if (level === 1) {
-            debugPrint('HIT - Detected level 1')
-            fullSubTreeList.push(workingFullSubTree)
-            workingFullSubTree = syntaxTreeC._syntaxTree[i] // (!) The tree MUST START at level 1.
-        }
-    }
-
-    fullSubTreeList.push(workingFullSubTree)
-
-    if (isDebug()) {
-        console.log()
-        console.log('--- fullSubTreeList: (list of FULL sub-trees.) -------')
-        printObject(fullSubTreeList)
-        console.log()
-    }
-
-    // Contruct the final JS object.
-    const jsObject = {}
-    for (const chainC of fullSubTreeList) {
-        if (chainC.originLevel == 1) {
-            Object.assign(jsObject, chainC.chain)
-        } else {
-            instanceInvalidData!.pushOrBail(
-                null,
-                'Internal-Error',
-                'Detected incorrect full sub-tree, start section has level: ' +
-                    chainC.originLevel,
-                'Full sub-trees must start with a section with level 1',
-                '' + printObject(chainC),
-            )
-        }
-    }
-
-    return jsObject
-}
-*/
-
 /**
- * Recursively collects all property paths that point to objects only (not primitives/arrays).
- * @param obj - The object to search
- * @param prefix - Used internally for recursion (do not set)
- * @returns Array of property paths as strings
+ * Mounts objectDest onto the first object at the given depth (level, 1-based) in objectSrc.
+ * @return Returns a new object without mutating input objects.
  */
-function getObjectPropertyPaths(obj: object, prefix: string = ''): string[] {
-    let result: string[] = []
+function mountObjectAtLevel(
+    objectSrc: Record<string, any>,
+    objectDest: Record<string, any>,
+    level: number,
+): Record<string, any> {
+    // Deep copy to avoid mutating the input.
+    const result = JSON.parse(JSON.stringify(objectSrc))
+    let current = result
+    let currentLevel = 1
 
-    for (const key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
-            const value = (obj as any)[key]
-            const path = prefix ? `${prefix}.${key}` : key
-
-            // Only add if it's a plain object (skip arrays & primitives).
-            if (value && typeof value === 'object' && !Array.isArray(value)) {
-                result.push(path) // Add this object's path.
-                result = result.concat(getObjectPropertyPaths(value, path)) // Recurse into nested object.
-            }
+    // Traverse down the first object path until the desired level.
+    while (currentLevel < level) {
+        // Get all keys in current object.
+        const keys = Object.keys(current)
+        // Find first key where value is a plain object (not array).
+        const nextKey = keys.find(
+            (key) =>
+                current[key] &&
+                typeof current[key] === 'object' &&
+                !Array.isArray(current[key]),
+        )
+        if (!nextKey) {
+            // Could not reach the specified depth.
+            return result
         }
+        current = current[nextKey]
+        currentLevel++
     }
+
+    // Mount objectDest onto the object at the required level.
+    Object.assign(current, objectDest)
 
     return result
 }
