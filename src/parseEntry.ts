@@ -21,19 +21,27 @@ export const parseYINI = (
     debugPrint('isStrict mode = ' + options.isStrict)
     debugPrint('bailSensitivy = ' + options.bailSensitivy)
 
-    debugPrint()
-    debugPrint('RTYU')
-
+    isDebug() && console.log()
+    debugPrint(
+        '=== Phase 1 ===================================================',
+    )
     const inputStream = CharStreams.fromString(yiniContent)
     const lexer = new YiniLexer(inputStream)
     const tokenStream = new CommonTokenStream(lexer)
     const parser = new YiniParser(tokenStream)
 
     debugPrint()
-    debugPrint('==== Start parsing ==========================')
-    //const tree = parser.yini;  // Start rule.
-    const parseTree: YiniContext = parser.yini() // Start rule.
+    debugPrint('--- Starting parsing... ---')
+    const parseTree: YiniContext = parser.yini() // The function yini() is the start rule.
+    debugPrint('--- Parsing done. ---')
+    debugPrint(
+        '=== Ended phase 1 =============================================',
+    )
+    isDebug() && console.log()
 
+    debugPrint(
+        '=== Phase 2 ===================================================',
+    )
     const visitor = new YINIVisitor()
     const syntaxTreeC: TSyntaxTreeContainer = visitor.visit(
         parseTree as any,
@@ -55,10 +63,19 @@ export const parseYINI = (
         )
         console.log()
     }
+    debugPrint(
+        '=== Ended phase 2 =============================================',
+    )
+    isDebug() && console.log()
 
+    debugPrint(
+        '=== Phase 3 ===================================================',
+    )
     // Construct.
     const finalJSResult = constructFinalObject(syntaxTreeC)
-    debugPrint('==== End parsing ==========================\n')
+    debugPrint(
+        '=== Ended phase 3 =============================================',
+    )
 
     debugPrint('visitor.visit(..): finalJSResult:')
     isDebug() && console.debug(finalJSResult)
