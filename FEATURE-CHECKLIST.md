@@ -16,7 +16,7 @@ https://github.com/YINI-lang/YINI-spec
   * 🚧 Partially or WIP (Work in Progress)
   * 🔲 Not started
   * ❌ Not currently
-- **Test:** (unit/integration test, NOTE: smoke tests not counted)
+- **Test:** (unit/integration test, **NOTE: Smoke tests not counted!**)
   * ✔️ Yes, done
   * 🚧 Partially or WIP (Work in Progress)
   * 🔲 Not started
