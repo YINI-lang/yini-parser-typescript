@@ -1,8 +1,9 @@
 import path from 'path'
-import YINI from '../../src'
-import { debugPrint } from '../../src/utils/system'
+import YINI from '../../../src'
+import { debugPrint } from '../../../src/utils/system'
 
-const DIR_OF_FIXTURES = '../fixtures/valid/single-section-member-w-mixed-casing'
+const DIR_OF_FIXTURES =
+    '../../fixtures/valid/single-section-member-w-mixed-casing'
 
 /**
  * Parse File/Inline Error Tests.

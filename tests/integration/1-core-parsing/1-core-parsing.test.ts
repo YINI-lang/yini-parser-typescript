@@ -1,13 +1,13 @@
 import path from 'path'
-import YINI from '../../src'
-import { debugPrint } from '../../src/utils/system'
+import YINI from '../../../src'
+import { debugPrint } from '../../../src/utils/system'
 
-const DIR_OF_FIXTURES = '../fixtures/valid/level-two-deep'
+const DIR_OF_FIXTURES = '../../fixtures/valid/level-two-deep'
 
 /**
- * Parse File/Inline Error Tests.
+ * Should throw error when parsing bad section head.
  */
-describe('Parse Inline with Nested Sections:', () => {
+describe('Should throw error when parsing bad section head:', () => {
     beforeAll(() => {})
 
     test('1. Should throw error if starting with section (with a member) ^^.', () => {
