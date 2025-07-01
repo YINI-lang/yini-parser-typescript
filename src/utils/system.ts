@@ -5,7 +5,7 @@ export const debugPrint = (str: any = '') => {
 }
 
 export const devPrint = (str: any = '') => {
-    isDev() && console.log('DEV: ' + str)
+    isDev() && !isTest() && console.log('DEV: ' + str)
 }
 
 export const printObject = (obj: any) => {

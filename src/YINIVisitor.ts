@@ -406,9 +406,9 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         }
         if (nestDirection !== 'higher') {
             debugPrint('About to reset result')
-            console.log({ [sectionName]: members })
+            printObject({ [sectionName]: members })
 
-            console.log(`Current lastActiveSectionAtLevels[${this.level - 1}]`)
+            debugPrint(`Current lastActiveSectionAtLevels[${this.level - 1}]`)
             printObject(this.lastActiveSectionAtLevels[this.level - 1])
 
             if (
@@ -458,7 +458,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 debugPrint('Mounted as append')
             }
 
-            console.log(`After: lastActiveSectionAtLevels[${this.level - 1}]`)
+            debugPrint(`After: lastActiveSectionAtLevels[${this.level - 1}]`)
             printObject(this.lastActiveSectionAtLevels[this.level - 1])
 
             if (isDebug()) {
@@ -505,14 +505,14 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint()
         if (isDebug()) {
             if (members) {
-                console.log({ [sectionName]: members })
+                printObject({ [sectionName]: members })
                 this.lastActiveSectionAtLevels[this.level - 1] = {
                     ...members,
                 }
                 // this.lastActiveSectionNameAtLevels[this.level - 1] = sectionName
                 debugPrint('Mounted as assigned')
 
-                console.log(`lastActiveSectionAtLevels[${this.level - 1}]`)
+                debugPrint(`lastActiveSectionAtLevels[${this.level - 1}]`)
                 printObject(this.lastActiveSectionAtLevels[this.level - 1])
             }
         }
