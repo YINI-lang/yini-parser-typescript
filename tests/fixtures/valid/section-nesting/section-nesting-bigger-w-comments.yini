@@ -1,16 +1,25 @@
+/*
+    This is a YINI example with comments and a disable line,
+    these should be omitted in the resulting JS Object.
+*/
 ^ Section1
     bValue1 = YES
     intValue = 1
+
+    ; A nested section start below.
     ^^ Section11
         sValue = 11
         ^^^ Section111
             sValue = 111
             intValue = 111
+    // Second nested section on level 2 starts below.
     ^^ Section12
         sValue = 12
+
+; Next man section start here.
 ^ Section2
     sValue = 2
-    ^^ Section21
+    ^^ Section21	# This is section 21.
         sValue = 21
         bValue = OFF
         ^^^ Section211
@@ -20,9 +29,11 @@
             ^^^^ Section2112
                 sValue = 2112
                 strValue = 'test2112'
-    ^^ Section22
+    ^^ Section22#This text here is not part of the section name.
+        // sValue = 22
         bValue3 = on
         ^^^ Section221
             sValue = 221
-    ^^ Section23
+    ^^ Section23	// This is section 23.
+        -- sValue = 23
         bValue3 = on

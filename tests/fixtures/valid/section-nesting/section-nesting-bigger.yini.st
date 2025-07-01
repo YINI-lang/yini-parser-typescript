@@ -1,5 +1,4 @@
-{
-    "_syntaxTree": [
+ [
         {
             "originLevel": 1,
             "chain": {
@@ -71,4 +70,3 @@
             }
         }
     ]
-}

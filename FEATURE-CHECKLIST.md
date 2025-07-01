@@ -46,7 +46,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>🔲</td>
     <td><code></code></td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>Non backticked</td>
   </tr>
@@ -71,9 +71,9 @@ https://github.com/YINI-lang/YINI-spec
   <tr>
     <td>Section nesting: Going deeper</td>
     <td>🔲</td>
-    <td>Sub-sections with increase nesting</td>
-    <td>🚧</td>
-    <td>🔲</td>
+    <td>Sub-sections with increase nesting, throw error if jumping over section levels</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>Must increment exactly one level at a time. E.g.: `^^` → `^^^` but not `^^` → `^^^^`.
 </td>
@@ -82,8 +82,8 @@ https://github.com/YINI-lang/YINI-spec
     <td>Section nesting: Going shallower</td>
     <td>🔲</td>
     <td>Sub-sections with decrease nesting</td>
-    <td>🚧</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>May drop directly to any previous level. E.g.: `^9` → `^^` or `^9` → `^`.
 </td>
@@ -271,6 +271,15 @@ https://github.com/YINI-lang/YINI-spec
     <td>🔲</td>
     <td>🔲</td>
     <td>For temporarily ignoring valid code</td>
+  </tr>
+  <tr>
+    <td>Skip extracting comments or disable line parsing entities such section names and keys</td>
+    <td>🔲</td>
+    <td>E.g. <code>^ App // Comment</code> should extract section name = "App" and not "App // Comment", etc</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td></td>
   </tr>
 </table>
 
