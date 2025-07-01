@@ -273,13 +273,13 @@ https://github.com/YINI-lang/YINI-spec
     <td>For temporarily ignoring valid code</td>
   </tr>
   <tr>
-    <td>Skip extracting comments or disable line parsing entities such section names and keys</td>
+    <td>Ignore comments or disable line when parsing/extracting entities such section names, keys and other identifiers or values</td>
     <td>🔲</td>
     <td>E.g. <code>^ App // Comment</code> should extract section name = "App" and not "App // Comment", etc</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>🔲</td>
-    <td></td>
+    <td>⚠️ Easy to forget trimming away these</td>
   </tr>
 </table>
 
