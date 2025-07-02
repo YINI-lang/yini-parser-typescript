@@ -196,7 +196,7 @@ https://github.com/YINI-lang/YINI-spec
   <tr>
     <td>Basic strings, single and double quoted</td>
     <td>🔲</td>
-    <td><code>'Hello'</code>, <code>"World"</code></td>
+    <td><code>'Hello'</code>, <code>"World"</code>, including handle slash, backslash, and inline quotes</td>
     <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>

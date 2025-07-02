@@ -1,0 +1,8 @@
+@yini
+
+^ PathsWithBackslash
+        path1 = "\"
+        path2 = "\Temp"
+        path3 = "Temp\"
+        path4 = "Windows\System32"
+        path5 = "\Users\Public\Documents\"
