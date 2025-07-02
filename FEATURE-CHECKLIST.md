@@ -47,8 +47,17 @@ https://github.com/YINI-lang/YINI-spec
     <td><code></code></td>
     <td>✅</td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>Non backticked</td>
+  </tr>
+  <tr>
+    <td>Throw error if using section repeating markers higher than supported</td>
+    <td>🔲</td>
+    <td>Per spec only nesting levels 1–6 supported with repeating markers, e.g. <code>^^^^^^^</code> is invalid</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>🔲</td>
+    <td>For higher levels, the shorthand marker must be used instead</td>
   </tr>
   <tr>
     <td>Type inference</td>
@@ -198,7 +207,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>🔲</td>
     <td><code>'Hello'</code>, <code>"World"</code>, including handle slash, backslash, and inline quotes</td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>Basic strings without prefix</td>
   </tr>

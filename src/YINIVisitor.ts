@@ -33,7 +33,11 @@ import {
     TSyntaxTree,
     TSyntaxTreeContainer,
 } from './types'
-import { stripNLAndAfter, trimBackticks } from './utils/string'
+import {
+    stripCommentsAndAfter,
+    stripNLAndAfter,
+    trimBackticks,
+} from './utils/string'
 import { debugPrint, printObject } from './utils/system'
 
 const SECTION_MARKER1 = '^'
@@ -274,6 +278,13 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      */
     // visitSection?: (ctx: SectionContext) => IResult;
     visitSection = (ctx: SectionContext): any => {
+        type THeadMarkerStyle =
+            | undefined
+            | 'Repeating-Character-Section-Marker'
+            | 'Numeric-Shorthand-Section-Marker'
+        let headMarkerStype: THeadMarkerStyle =
+            'Repeating-Character-Section-Marker'
+
         isDebug() && console.log()
         debugPrint('-> Entered visitSection(..)')
 
@@ -320,6 +331,21 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         }
         debugPrint('this.level = ' + this.level)
         const level = this.level
+
+        // ONLY if repeating marker
+        if (
+            headMarkerStype === 'Repeating-Character-Section-Marker' &&
+            level >= 7
+        ) {
+            this.instanceInvalidData!.pushOrBail(
+                ctx,
+                'Syntax-Error',
+                'Invalid number of repeating characters in marker: ' +
+                    level +
+                    ' repeating characters in a marker in succession in a section head marker is not allowed.',
+                'Using seven or more of the same marker in succession (e.g. ^^^^^^^) is invalid. However, to represent nesting levels deeper than 6, you may switch to the numeric shorthand section header syntax.',
+            )
+        }
         // ------------------------------------
 
         // --- Extract section name after markers and whitespace. ---------
@@ -334,10 +360,13 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             }
         } while (!isDone)
 
-        // NOTE: Any comments on next line after the section header, are included in subLine.
+        // NOTE: Any comments on next line after the section header, are
+        // included in subLine, these must be stripped.
         let sectionName: string = subLine.trim()
         sectionName = stripNLAndAfter(sectionName) // Cut of anything after (and including) any newline (and possible commented next lines).
+        sectionName = stripCommentsAndAfter(sectionName)
         sectionName = trimBackticks(sectionName)
+        sectionName = sectionName.trim()
 
         debugPrint('                        --------------')
         debugPrint(

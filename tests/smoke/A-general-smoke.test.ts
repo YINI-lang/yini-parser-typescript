@@ -1,11 +1,15 @@
 import path from 'path'
 import YINI from '../../src'
-import { debugPrint } from '../../src/utils/system'
+import { isDebug } from '../../src/config/env'
+import { debugPrint, printObject } from '../../src/utils/system'
 
 /**
  * General Smoke Tests.
  */
 describe('General Smoke Tests:', () => {
+    const DIR_OF_FIXTURES = '../fixtures/smoke-fixtures/strings-with-paths'
+    const baseDir = path.join(__dirname, DIR_OF_FIXTURES)
+
     beforeAll(() => {})
     beforeAll(() => {
         debugPrint('beforeAll')
@@ -118,9 +122,6 @@ describe('General Smoke Tests:', () => {
     })
 
     test('8. Correctly parse paths with backslash "\\".', () => {
-        const DIR_OF_FIXTURES = '../fixtures/smoke-fixtures/strings-with-paths'
-        const baseDir = path.join(__dirname, DIR_OF_FIXTURES)
-
         // Arrange.
         const fileName = 'PathsWithBackslash.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -139,5 +140,89 @@ describe('General Smoke Tests:', () => {
             '\\Users\\Public\\Documents\\',
         )
         expect(result.PathsWithBackslash.path1).not.toEqual('*')
+    })
+
+    test('9. Correctly parse paths with quotes and forward slash "/".', () => {
+        // Arrange.
+        const fileName = 'paths-w-quotes-and-slash.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        // Act.
+        const result = YINI.parseFile(fullPath)
+        debugPrint('fullPath = ' + fullPath)
+        debugPrint(result)
+
+        // Assert.
+        expect(result.PathsWithQuotesSlash.path1).toEqual(
+            "/'My Folder'/Documents/file.txt",
+        )
+        expect(result.PathsWithQuotesSlash.path2).toEqual('/"data"/set.csv')
+        expect(result.PathsWithQuotesSlash.path3).toEqual('/`Projects`/Code/') // NOTE: Has backticks!
+
+        expect(result.PathsWithQuotesSlash.path1).not.toEqual('*')
+    })
+
+    test('10. Correctly parse paths with quotes and backslash "\\".', () => {
+        const DIR_OF_FIXTURES = '../fixtures/smoke-fixtures/strings-with-paths'
+        const baseDir = path.join(__dirname, DIR_OF_FIXTURES)
+
+        // Arrange.
+        const fileName = 'paths-w-quotes-and-backslash.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        // Act.
+        const result = YINI.parseFile(fullPath)
+        debugPrint('fullPath = ' + fullPath)
+        debugPrint(result)
+
+        // Assert.
+        expect(result.PathsWithQuotesBackslash.path1).toEqual(
+            "\\'Program Files'\\App\\",
+        )
+        expect(result.PathsWithQuotesBackslash.path2).toEqual(
+            '\\"user name"\\Desktop\\',
+        )
+        expect(result.PathsWithQuotesBackslash.path3).toEqual(
+            '\\Projects\\\`2024\`\\"Quarter 2"\\',
+        ) // NOTE: Has backticks!
+
+        expect(result.PathsWithQuotesBackslash.path1).not.toEqual('*')
+    })
+
+    test('11. Throw error if using section repeating markers higher than supported.', () => {
+        // Arrange.
+        const fixture1 = `^ Section1
+            ^^ Section2
+            ^^^ Section3
+            ^^^^ Section4
+            ^^^^^ Section5
+            ^^^^^^ Section6 // Section 6.
+            strVar = "These section headers are valid!"
+        `
+        const fixture2 = `^ Section1
+            ^^ Section2
+            ^^^ Section3
+            ^^^^ Section4
+            ^^^^^ Section5
+            ^^^^^^ Section6 // Section 6.
+            ^^^^^^^ Section7 // INVALID HEADER MARKER!
+            strVar = "^^^^^^^ (7) is invalid"
+        `
+
+        // Act.
+        const result1 = YINI.parse(fixture1)
+        isDebug() && printObject(result1)
+
+        // Assert.
+        expect(!!result1).toEqual(true)
+        expect(
+            result1.Section1.Section2.Section3.Section4.Section5.Section6
+                .strVar,
+        ).toBe('These section headers are valid!')
+
+        // Act & Assert.
+        expect(() => {
+            YINI.parse(fixture2)
+        }).toThrow()
     })
 })
