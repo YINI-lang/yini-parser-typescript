@@ -1,4 +1,4 @@
-import { getFileNameExtension } from '../../src/utils/path-and-file-name'
+import { getFileNameExtension } from '../../src/utils/pathAndFileName'
 import { debugPrint } from '../../src/utils/system'
 
 /**

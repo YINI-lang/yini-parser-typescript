@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { isDebug, isDev } from './config/env'
 import { parseYINI } from './parseEntry'
-import { getFileNameExtension } from './utils/path-and-file-name'
+import { getFileNameExtension } from './utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from './utils/system'
 
 export default class YINI {

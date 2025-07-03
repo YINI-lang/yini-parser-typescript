@@ -1,5 +1,9 @@
 import { ParseTreeVisitor } from 'antlr4'
 import { isDebug } from './config/env'
+import parseBooleanLiteral from './data-extractors/parseBoolean'
+import parseNullLiteral from './data-extractors/parseNull'
+import parseNumberLiteral from './data-extractors/parseNumber'
+import parseStringLiteral from './data-extractors/parseString'
 import {
     Boolean_literalContext,
     ElementContext,
@@ -23,10 +27,6 @@ import {
 } from './grammar/YiniParser.js'
 import YiniParserVisitor from './grammar/YiniParserVisitor'
 import { InvalidDataHandler } from './InvalidDataHandler'
-import parseBooleanLiteral from './main-literal-parsers/parseBoolean'
-import parseNullLiteral from './main-literal-parsers/parseNull'
-import parseNumberLiteral from './main-literal-parsers/parseNumber'
-import parseStringLiteral from './main-literal-parsers/parseString'
 import {
     IChainContainer,
     ISectionResult,
