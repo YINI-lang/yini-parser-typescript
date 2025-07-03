@@ -3,6 +3,7 @@ import { isDebug } from './config/env'
 import parseBooleanLiteral from './data-extractors/parseBoolean'
 import parseNullLiteral from './data-extractors/parseNull'
 import parseNumberLiteral from './data-extractors/parseNumber'
+import parseSectionHead from './data-extractors/parseSectionHead'
 import parseStringLiteral from './data-extractors/parseString'
 import {
     Boolean_literalContext,
@@ -39,9 +40,6 @@ import {
     trimBackticks,
 } from './utils/string'
 import { debugPrint, printObject } from './utils/system'
-
-const SECTION_MARKER1 = '^'
-const SECTION_MARKER2 = '~'
 
 interface YiniDocument {
     // sections: Record<string, any>
@@ -278,12 +276,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      */
     // visitSection?: (ctx: SectionContext) => IResult;
     visitSection = (ctx: SectionContext): any => {
-        type THeadMarkerStyle =
-            | undefined
-            | 'Repeating-Character-Section-Marker'
-            | 'Numeric-Shorthand-Section-Marker'
-        let headMarkerStype: THeadMarkerStyle =
-            'Repeating-Character-Section-Marker'
+        // let headMarkerStyle: THeadMarkerStyle =
+        //     'Repeating-Character-Section-Marker'
 
         isDebug() && console.log()
         debugPrint('-> Entered visitSection(..)')
@@ -314,68 +308,70 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             )
         }
 
-        // --- Determine nesting level. ---------
-        const lineLen: number = line.length
         this.prevLevel = this.level
-        this.level = 0
-
-        for (let pos = 0; pos < lineLen; pos++) {
-            if (
-                line.charAt(pos) === SECTION_MARKER1 ||
-                line.charAt(pos) === SECTION_MARKER2
-            ) {
-                this.level++
-            } else {
-                break
-            }
-        }
-        debugPrint('this.level = ' + this.level)
-        const level = this.level
-
-        // ONLY if repeating marker
-        if (
-            headMarkerStype === 'Repeating-Character-Section-Marker' &&
-            level >= 7
-        ) {
-            this.instanceInvalidData!.pushOrBail(
-                ctx,
-                'Syntax-Error',
-                'Invalid number of repeating characters in marker: ' +
-                    level +
-                    ' repeating characters in a marker in succession in a section head marker is not allowed.',
-                'Using seven or more of the same marker in succession (e.g. ^^^^^^^) is invalid. However, to represent nesting levels deeper than 6, you may switch to the numeric shorthand section header syntax.',
-            )
-        }
-        // ------------------------------------
-
-        // --- Extract section name after markers and whitespace. ---------
-        let subLine: string = line.substring(this.level)
-        let isDone = false
-        do {
-            if (subLine.startsWith(' ') || subLine.startsWith('\t')) {
-                subLine = subLine.substring(1) // Consume left most character.
-                debugPrint('* consumed left most char!!')
-            } else {
-                isDone = true
-            }
-        } while (!isDone)
-
-        // NOTE: Any comments on next line after the section header, are
-        // included in subLine, these must be stripped.
-        let sectionName: string = subLine.trim()
-        sectionName = stripNLAndAfter(sectionName) // Cut of anything after (and including) any newline (and possible commented next lines).
-        sectionName = stripCommentsAndAfter(sectionName)
-        sectionName = trimBackticks(sectionName)
-        sectionName = sectionName.trim()
-
-        debugPrint('                        --------------')
-        debugPrint(
-            `           Parsed subLine = >>>${subLine.trim()}<<<, with this.level = ${this.level}`,
+        let { sectionName, level } = parseSectionHead(
+            line,
+            this.instanceInvalidData!,
+            ctx,
         )
-        debugPrint(
-            `Strip/trimmed sectionName = >>>${sectionName}<<<, with this.level = ${this.level}`,
-        )
-        debugPrint('                        --------------')
+        this.level = level
+
+        // ---------------From here!!!!!!!!!!!!!!!!!!
+        // // --- Determine nesting level. ---------
+        // const lineLen: number = line.length
+        // this.prevLevel = this.level
+        // this.level = 0
+
+        // for (let pos = 0; pos < lineLen; pos++) {
+        //     if (
+        //         line.charAt(pos) === SECTION_MARKER1 ||
+        //         line.charAt(pos) === SECTION_MARKER2
+        //     ) {
+        //         this.level++
+        //     } else {
+        //         break
+        //     }
+        // }
+        // debugPrint('this.level = ' + this.level)
+        // const level = this.level
+
+        // // ONLY if repeating marker
+        // if (
+        //     headMarkerStyle === 'Repeating-Character-Section-Marker' &&
+        //     level >= 7
+        // ) {
+        //     this.instanceInvalidData!.pushOrBail(
+        //         ctx,
+        //         'Syntax-Error',
+        //         'Invalid number of repeating characters in marker: ' +
+        //             level +
+        //             ' repeating characters in a marker in succession in a section head marker is not allowed.',
+        //         'Using seven or more of the same marker in succession (e.g. ^^^^^^^) is invalid. However, to represent nesting levels deeper than 6, you may switch to the numeric shorthand section header syntax.',
+        //     )
+        // }
+        // // ------------------------------------
+
+        // // --- Extract section name after markers and whitespace. ---------
+        // let subLine: string = line.substring(this.level)
+        // let isDone = false
+        // do {
+        //     if (subLine.startsWith(' ') || subLine.startsWith('\t')) {
+        //         subLine = subLine.substring(1) // Consume left most character.
+        //         debugPrint('* consumed left most char!!')
+        //     } else {
+        //         isDone = true
+        //     }
+        // } while (!isDone)
+
+        // // NOTE: Any comments on next line after the section header, are
+        // // included in subLine, these must be stripped.
+        // let sectionName: string = subLine.trim()
+        // sectionName = stripNLAndAfter(sectionName) // Cut of anything after (and including) any newline (and possible commented next lines).
+        // sectionName = stripCommentsAndAfter(sectionName)
+        // sectionName = trimBackticks(sectionName)
+        // sectionName = sectionName.trim()
+        //------------------------- to here!!!!!!!!!!!!!!!!!!!!
+
         // ---------------------------------------------------------------
 
         let nestDirection: 'lower' | 'same' | 'higher'

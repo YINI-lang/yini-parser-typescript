@@ -41,6 +41,10 @@ export type TSyntaxTreeContainer = {
 }
 
 export type TSyntaxTree = IChainContainer[]
+export type THeadMarkerStyle =
+    | undefined
+    | 'Repeating-Character-Section-Marker'
+    | 'Numeric-Shorthand-Section-Marker'
 
 export interface IChainContainer {
     originLevel: number
