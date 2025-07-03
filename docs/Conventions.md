@@ -45,3 +45,21 @@ For this (Node.js + TypeScript) project, these conventions apply as strictly as 
 (*) Some exceptions may occur where directories in the root directory have predefined names. E.g. `node_modules`.
 
 (**) Some exceptions may occur where this improves clarity, and certain configuration files have predefined names. Files in the root directory and within `docs` may also follow different conventions as needed.
+
+# Function/Method Declaration Style
+
+The default style for function declarations is arrow functions style, e.g.
+
+```ts
+const parseBooleanLiteral = (txt: string): boolean => { ... }
+
+const doCheckAndBuild = (): TJSObject => { ... }
+```
+
+However, (non-callback) methods within classes use traditional method style, e.g.:
+
+```ts
+constructor(syntaxTreeC: TSyntaxTreeContainer) { ... }
+
+public doCheckAndBuild(): TJSObject { ... }
+```

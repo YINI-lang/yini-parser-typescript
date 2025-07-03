@@ -148,6 +148,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         if (atLevel >= 1) {
             this.lastActiveSectionNameAtLevels[atLevel - 1] = sectionName
         } else {
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.instErrorHandler!.pushOrBail(
                 null,
                 'Internal-Error',
@@ -294,6 +295,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         } catch (error) {
             const msgWhat: string = `Unexpected syntax while parsing a member or section head`
             const msgWhy: string = `Found unexpected syntax while trying to read a key-value pair or a section header (such as a section marker or section name).`
+
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.instErrorHandler!.pushOrBail(
                 ctx,
                 'Syntax-Error',
@@ -347,6 +350,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         //------------------------
         if (nestDirection === 'higher') {
             if (Math.abs(this.prevLevel - this.level) >= 2) {
+                // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                 this.instErrorHandler!.pushOrBail(
                     ctx,
                     'Syntax-Error',
@@ -547,6 +551,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 debugPrint('Skipping this member, due to key = ""')
             } else {
                 if (members[key] !== undefined) {
+                    // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                     this.instErrorHandler!.pushOrBail(
                         ctx,
                         'Syntax-Error',
@@ -645,6 +650,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             } catch (error) {
                 debugPrint('in catch..')
                 const msg: string = `Unexpected syntax while parsing a member (key-value pair)`
+
+                // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                 this.instErrorHandler!.pushOrBail(ctx, 'Syntax-Error', msg)
             }
 
@@ -702,6 +709,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         }
 
         if (!resultType && !resultKey) {
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.instErrorHandler!.pushOrBail(
                 ctx,
                 'Syntax-Error',

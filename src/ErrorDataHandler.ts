@@ -1,6 +1,5 @@
 import { isDebug } from './config/env'
 import { debugPrint } from './utils/system'
-import YINI from './YINI'
 
 interface IIssuePayload {
     type: TIssueType
@@ -41,6 +40,12 @@ const issueTitle: string[] = [
     'Info:',
 ]
 
+/**
+ * Uses static singleton pattern with getInstance(), this makes sure that only
+ * one error handler for the whole process is used.
+ *
+ * This class handles all error/notice reporting and process exit/throwing.
+ */
 export class ErrorDataHandler {
     private static singleton: ErrorDataHandler | null = null
     private bailThreshold: TBailThreshold
@@ -95,6 +100,18 @@ export class ErrorDataHandler {
         return issue
     }
 
+    /**
+     * After pushing processing may continue or exit, depending on the error
+     * and/or the bail threshold (that can be optionally set my the user).
+     *
+     * @note This function might result in a return, throw, or exit.
+     *
+     * @param ctx
+     * @param type
+     * @param msgWhat
+     * @param msgWhy
+     * @param msgHint
+     */
     pushOrBail = (
         ctx: any,
         type: TIssueType,
@@ -150,8 +167,6 @@ export class ErrorDataHandler {
                         // In test, throw an error instead of exiting.
                         throw new Error(`Internal-Error: ${msgWhat}`)
                     } else {
-                        // Use this instead of process.exit(1), this will
-                        // lead to exit the current thread(s) as well.
                         process.exit(2)
                     }
                 }

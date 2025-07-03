@@ -19,7 +19,7 @@ export const constructFinalObject = (
 }
 
 class Builder {
-    private syntaxTreeC: TSyntaxTreeContainer | undefined = undefined
+    private syntaxTreeC: TSyntaxTreeContainer
 
     constructor(syntaxTreeC: TSyntaxTreeContainer) {
         debugPrint('-> Builder: constructor(..)')
@@ -27,9 +27,10 @@ class Builder {
         this.syntaxTreeC = syntaxTreeC
     }
 
-    public doCheckAndBuild = (): TJSObject => {
+    public doCheckAndBuild(): TJSObject {
         debugPrint('-> Builder: doCheckAndBuild(..)')
         if (!this.syntaxTreeC) {
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             instanceInvalidData!.pushOrBail(
                 null,
                 'Fatal-Error',
@@ -47,9 +48,9 @@ class Builder {
         return jsObject
     }
 
-    private buildFullSubTrees = (
+    private buildFullSubTrees(
         syntaxTreeC: TSyntaxTreeContainer,
-    ): IChainContainer[] => {
+    ): IChainContainer[] {
         debugPrint('-> Builder: buildFullSubTrees(..)')
         isDebug() && console.log()
 
@@ -66,7 +67,7 @@ class Builder {
             const currentChainC = syntaxTreeC._syntaxTree[i]
             const level = currentChainC.originLevel
             const nestingIndex = level - 1 // For debugging purposes.
-            const chain: any = currentChainC.chain // For debugging purposes.
+            const chain: TJSObject = currentChainC.chain // For debugging purposes.
             debugPrint(
                 `Got new chain from syntaxTreeC._syntaxTree[${i}] to be mounted onto parent...`,
             )
@@ -112,14 +113,15 @@ class Builder {
         return fullSubTreeList
     }
 
-    private mountChainOntoLevel = (
+    private mountChainOntoLevel(
         chainC: IChainContainer,
         workingSubTree: IChainContainer, // First section must start at level 1.
-    ): IChainContainer => {
+    ): IChainContainer {
         debugPrint('-> Builder: mountChainOntoLevel(..)')
         if (chainC.originLevel > 1) {
             // NOP
         } else {
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             instanceInvalidData!.pushOrBail(
                 null,
                 'Fatal-Error',
@@ -130,6 +132,7 @@ class Builder {
             )
         }
         if (workingSubTree.originLevel != 1) {
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             instanceInvalidData!.pushOrBail(
                 null,
                 'Fatal-Error',
@@ -140,7 +143,7 @@ class Builder {
             )
         }
 
-        const chain: any = chainC.chain
+        const chain: TJSObject = chainC.chain
         const targetLevel = chainC.originLevel
 
         if (isDebug()) {
@@ -170,9 +173,7 @@ class Builder {
     }
 
     // Contruct the final JS object from the list of full sub-trees.
-    private buildObjectFromList = (
-        fullSubTreeList: IChainContainer[],
-    ): TJSObject => {
+    private buildObjectFromList(fullSubTreeList: IChainContainer[]): TJSObject {
         debugPrint('-> Builder: buildObjectFromList(..)')
         const jsObject = {}
 
@@ -180,6 +181,7 @@ class Builder {
             if (chainC.originLevel === 1) {
                 Object.assign(jsObject, chainC.chain)
             } else {
+                // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                 instanceInvalidData!.pushOrBail(
                     null,
                     'Fatal-Error',
@@ -200,11 +202,11 @@ class Builder {
  * 1-based) in objectSrc.
  * @return Returns a new object without mutating input objects.
  */
-function mountObjectAtLevel(
+const mountObjectAtLevel = (
     objectSrc: Record<string, any>,
     objectDest: Record<string, any>,
     level: number,
-): Record<string, any> {
+): Record<string, any> => {
     // Deep copy to avoid mutating the input.
     const result = JSON.parse(JSON.stringify(objectSrc))
     let current = result
