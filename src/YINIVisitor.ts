@@ -1,4 +1,3 @@
-import { ParseTreeVisitor } from 'antlr4'
 import { isDebug } from './config/env'
 import parseBooleanLiteral from './data-extractors/parseBoolean'
 import parseNullLiteral from './data-extractors/parseNull'
@@ -34,11 +33,6 @@ import {
     TSyntaxTree,
     TSyntaxTreeContainer,
 } from './types'
-import {
-    stripCommentsAndAfter,
-    stripNLAndAfter,
-    trimBackticks,
-} from './utils/string'
 import { debugPrint, printObject } from './utils/system'
 
 interface YiniDocument {
