@@ -193,7 +193,7 @@ empty = { }`
     })
 
     //@todo Fix issue reding section header to parse correctly and not "'^ CommentsDemo'"!
-    xtest('8. Comments, Block Comments, and Disabled Lines.', () => {
+    test('8. Comments, Block Comments, and Disabled Lines.', () => {
         // Arrange.
         const validYini = `
     @yini    
@@ -219,6 +219,7 @@ empty = { }`
         // Assert.
         expect(result.CommentsDemo.val1).toEqual(123)
         expect(result.CommentsDemo.val2).toEqual(456)
+        expect(result.CommentsDemo.val3).toEqual(undefined)
         expect(result.CommentsDemo.val4).toEqual('Some text.')
     })
 

@@ -267,7 +267,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Block comment</td>
     <td>🔲</td>
     <td><code>/* ... */</code></td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td></td>
@@ -276,7 +276,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Disable line with `--`</td>
     <td>🔲</td>
     <td><code>--This line is ignored</code></td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>For temporarily ignoring valid code</td>

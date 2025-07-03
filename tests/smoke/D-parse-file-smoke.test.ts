@@ -90,7 +90,7 @@ describe('Parse-File Smoke Tests:', () => {
         //@todo Add tests for the other literal as well.
     })
 
-    xtest('Parse file "6-feature-flags-example.*".', () => {
+    test('Parse file "6-feature-flags-example.*".', () => {
         // Arrange.
         const fileName = '6-feature-flags-example.smoke.yini'
         const fullPath = path.join(baseDir, fileName)
