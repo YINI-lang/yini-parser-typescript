@@ -1,9 +1,9 @@
 import { isDebug } from './config/env'
-import { InvalidDataHandler } from './InvalidDataHandler'
+import { ErrorDataHandler } from './ErrorDataHandler'
 import { IChainContainer, TJSObject, TSyntaxTreeContainer } from './types'
 import { debugPrint, printObject } from './utils/system'
 
-let instanceInvalidData: InvalidDataHandler | null = null
+let instanceInvalidData: ErrorDataHandler | null = null
 
 /**
  * Construct the final result of a JavaScript Object.

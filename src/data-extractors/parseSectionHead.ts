@@ -1,6 +1,6 @@
 import { isDebug } from '../config/env'
+import { ErrorDataHandler } from '../ErrorDataHandler'
 import { SectionContext } from '../grammar/YiniParser'
-import { InvalidDataHandler } from '../InvalidDataHandler'
 import { THeadMarkerStyle } from '../types'
 import {
     stripCommentsAndAfter,
@@ -17,7 +17,6 @@ const SECTION_MARKER2 = '~'
  */
 const parseSectionHead = (
     rawLine: string,
-    instanceInvalidData: InvalidDataHandler,
     ctx: SectionContext, // For error reporting.
 ): {
     sectionName: string
@@ -25,6 +24,8 @@ const parseSectionHead = (
     headMarkerStyle: THeadMarkerStyle
 } => {
     debugPrint('-> Entered parseSectionHead(..)')
+    const instErrorHandler = ErrorDataHandler.getInstance()
+
     // --- Determine nesting level. ---------
     const lineLen: number = rawLine.length
     // this.prevLevel = this.level
@@ -51,7 +52,7 @@ const parseSectionHead = (
         headMarkerStyle === 'Repeating-Character-Section-Marker' &&
         level >= 7
     ) {
-        instanceInvalidData!.pushOrBail(
+        instErrorHandler!.pushOrBail(
             ctx,
             'Syntax-Error',
             'Invalid number of repeating characters in marker: ' +

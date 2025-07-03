@@ -41,8 +41,8 @@ const issueTitle: string[] = [
     'Info:',
 ]
 
-export class InvalidDataHandler {
-    private static singleton: InvalidDataHandler | null = null
+export class ErrorDataHandler {
+    private static singleton: ErrorDataHandler | null = null
     private bailThreshold: TBailThreshold
 
     private constructor(threshold: TBailThreshold = '1-Abort-on-Errors') {
@@ -62,7 +62,7 @@ export class InvalidDataHandler {
         threshold: TBailThreshold = '1-Abort-on-Errors',
     ) => {
         if (!this.singleton) {
-            this.singleton = new InvalidDataHandler(threshold)
+            this.singleton = new ErrorDataHandler(threshold)
         }
 
         return this.singleton

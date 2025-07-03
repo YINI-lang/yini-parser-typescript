@@ -5,6 +5,7 @@ import parseNullLiteral from './data-extractors/parseNull'
 import parseNumberLiteral from './data-extractors/parseNumber'
 import parseSectionHead from './data-extractors/parseSectionHead'
 import parseStringLiteral from './data-extractors/parseString'
+import { ErrorDataHandler } from './ErrorDataHandler'
 import {
     Boolean_literalContext,
     ElementContext,
@@ -27,7 +28,6 @@ import {
     YiniContext,
 } from './grammar/YiniParser.js'
 import YiniParserVisitor from './grammar/YiniParserVisitor'
-import { InvalidDataHandler } from './InvalidDataHandler'
 import {
     IChainContainer,
     ISectionResult,
@@ -90,7 +90,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
     private reversedTree: TSyntaxTree = []
 
-    private instanceInvalidData: InvalidDataHandler | null = null
+    private instErrorHandler: ErrorDataHandler | null = null
 
     private lastActiveSectionAtLevels: any[] = []
     private lastActiveSectionNameAtLevels: (string | undefined)[] = [] // Last active section name at each level.
@@ -154,7 +154,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         if (atLevel >= 1) {
             this.lastActiveSectionNameAtLevels[atLevel - 1] = sectionName
         } else {
-            this.instanceInvalidData!.pushOrBail(
+            this.instErrorHandler!.pushOrBail(
                 null,
                 'Internal-Error',
                 'Invalid section level (<1), level: ' +
@@ -174,8 +174,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     // visitYini?: (ctx: YiniContext) => IResult;
     // visitYini = (ctx: YiniContext): IResult => {
     visitYini = (ctx: YiniContext): any => {
-        this.instanceInvalidData =
-            InvalidDataHandler.getInstance('1-Abort-on-Errors')
+        this.instErrorHandler =
+            ErrorDataHandler.getInstance('1-Abort-on-Errors')
         debugPrint()
         debugPrint('abcde99')
         isDebug() && console.log()
@@ -300,7 +300,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         } catch (error) {
             const msgWhat: string = `Unexpected syntax while parsing a member or section head`
             const msgWhy: string = `Found unexpected syntax while trying to read a key-value pair or a section header (such as a section marker or section name).`
-            this.instanceInvalidData!.pushOrBail(
+            this.instErrorHandler!.pushOrBail(
                 ctx,
                 'Syntax-Error',
                 msgWhat,
@@ -309,11 +309,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         }
 
         this.prevLevel = this.level
-        let { sectionName, level } = parseSectionHead(
-            line,
-            this.instanceInvalidData!,
-            ctx,
-        )
+        let { sectionName, level } = parseSectionHead(line, ctx)
         this.level = level
 
         // ---------------From here!!!!!!!!!!!!!!!!!!
@@ -340,7 +336,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         //     headMarkerStyle === 'Repeating-Character-Section-Marker' &&
         //     level >= 7
         // ) {
-        //     this.instanceInvalidData!.pushOrBail(
+        //     this.instErrorHandler!.pushOrBail(
         //         ctx,
         //         'Syntax-Error',
         //         'Invalid number of repeating characters in marker: ' +
@@ -413,7 +409,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         //------------------------
         if (nestDirection === 'higher') {
             if (Math.abs(this.prevLevel - this.level) >= 2) {
-                this.instanceInvalidData!.pushOrBail(
+                this.instErrorHandler!.pushOrBail(
                     ctx,
                     'Syntax-Error',
                     'Invalid section level jump of section header "' +
@@ -613,7 +609,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 debugPrint('Skipping this member, due to key = ""')
             } else {
                 if (members[key] !== undefined) {
-                    this.instanceInvalidData!.pushOrBail(
+                    this.instErrorHandler!.pushOrBail(
                         ctx,
                         'Syntax-Error',
                         'Key already exists in this section scope (in this main section), key name: ' +
@@ -711,7 +707,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             } catch (error) {
                 debugPrint('in catch..')
                 const msg: string = `Unexpected syntax while parsing a member (key-value pair)`
-                this.instanceInvalidData!.pushOrBail(ctx, 'Syntax-Error', msg)
+                this.instErrorHandler!.pushOrBail(ctx, 'Syntax-Error', msg)
             }
 
             const result: IResult = ctx.value()
@@ -768,7 +764,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         }
 
         if (!resultType && !resultKey) {
-            this.instanceInvalidData!.pushOrBail(
+            this.instErrorHandler!.pushOrBail(
                 ctx,
                 'Syntax-Error',
                 'Unknown input',
