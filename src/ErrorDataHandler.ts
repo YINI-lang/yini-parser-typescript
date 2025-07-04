@@ -41,10 +41,7 @@ const issueTitle: string[] = [
 ]
 
 /**
- * Uses static singleton pattern with getInstance(), this makes sure that only
- * one error handler for the whole process is used.
- *
- * This class handles all error/notice reporting and process exit/throwing.
+ * This class handles all error/notice reporting and processes exit/throwing.
  */
 export class ErrorDataHandler {
     private bailThreshold: TBailThreshold
@@ -93,21 +90,21 @@ export class ErrorDataHandler {
      * After pushing processing may continue or exit, depending on the error
      * and/or the bail threshold (that can be optionally set my the user).
      *
-     * @note This function might result in a return, throw, or exit.
+     * @note This function MIGHT result in a return, throw, or exit depending
+     * on the bail policy (set my the user).
      *
      * @param ctx
      * @param type
-     * @param msgWhat
-     * @param msgWhy
-     * @param msgHint
+     * @param msgWhat Name of the specific error or what failed. E.g. "Key already exists in this section scope".
+     * @param msgWhy More details and more specific info about the issue/error.
+     * @param msgHint Hint or HUMBLE description on how to fix the issue.
      */
     pushOrBail = (
         ctx: any,
         type: TIssueType,
         msgWhat: string,
         msgWhy: string = '',
-        // msgWhy: string,
-        msgHint: string = '', // Hint or wow to fix.
+        msgHint: string = '',
     ) => {
         debugPrint('-> pushOrBail(..)')
         debugPrint('ctx.exception?.name       =' + ctx?.exception?.name)
@@ -198,9 +195,11 @@ export class ErrorDataHandler {
                     // In test, throw an error instead of exiting.
                     throw new Error(`Internal-Error: ${msgWhat}`)
                 } else {
+                    process.exit(1)
+                    // (!) Not sure about the below yet, if it's preferable in this case...
                     // Use this instead of process.exit(1), this will
-                    // lead to exit the current thread(s) as well.
-                    process.exitCode = 1
+                    // lead to that the current thread(s) will exit as well.
+                    // process.exitCode = 1
                 }
         }
     }
