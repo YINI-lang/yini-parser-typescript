@@ -225,4 +225,31 @@ describe('General Smoke Tests:', () => {
             YINI.parse(fixture2)
         }).toThrow()
     })
+
+    test('12. Should throw error if parsing an incorrect hash comment.', () => {
+        // Arrange.
+        const invalidYini = `^ App
+            id = 32403  #This hash comment is invalid due to a missing space.
+            title = "My Program"
+        `
+
+        // Act & Assert.
+        expect(() => {
+            YINI.parse(invalidYini)
+        }).toThrow()
+    })
+
+    test('13. Correctly parse a YINI with a hash comment.', () => {
+        // Arrange.
+        const validYini = `^ App
+            id = 32403  # The correct app id.
+            title = "My Program"
+        `
+        // Act.
+        const result = YINI.parse(validYini)
+        debugPrint(result)
+        // Assert.
+        expect(result.App.id).toEqual(32403)
+        expect(result.App.title).toEqual('My Program')
+    })
 })

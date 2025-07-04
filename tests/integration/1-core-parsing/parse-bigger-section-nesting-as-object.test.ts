@@ -2,6 +2,8 @@ import path from 'path'
 import YINI from '../../../src'
 import { debugPrint } from '../../../src/utils/system'
 
+const DIR_OF_FIXTURES = '../../fixtures/valid/section-nesting-w-classic-markers'
+
 const answerSectionNestingBigger = {
     Section1: {
         bValue1: true,
@@ -49,7 +51,6 @@ const answerSectionNestingBigger = {
  * Parse bigger section nesting as an object.
  */
 describe('Parse bigger section nesting as an object test:', () => {
-    const DIR_OF_FIXTURES = '../../fixtures/valid/section-nesting'
     const baseDir = path.join(__dirname, DIR_OF_FIXTURES)
 
     test('1. Parse bigger section nesting as object, file "section-nesting-bigger.yini".', () => {
@@ -70,8 +71,7 @@ describe('Parse bigger section nesting as an object test:', () => {
         )
     })
 
-    //@todo Fix so comments and disable line does not become part of section names, keys or other identifiers.
-    xtest('2. Parse bigger section nesting as object, file "section-nesting-bigger-w-comments.yini".', () => {
+    test('2. Parse bigger section nesting as object, file "section-nesting-bigger-w-comments.yini".', () => {
         // Arrange.
         const fileName = 'section-nesting-bigger-w-comments.yini'
         const fullPath = path.join(baseDir, fileName)

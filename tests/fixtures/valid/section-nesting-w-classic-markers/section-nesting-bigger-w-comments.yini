@@ -29,7 +29,7 @@
             ^^^^ Section2112
                 sValue = 2112
                 strValue = 'test2112'
-    ^^ Section22#This text here is not part of the section name.
+    ^^ Section22# This text here is not part of the section name.
         // sValue = 22
         bValue3 = on
         ^^^ Section221

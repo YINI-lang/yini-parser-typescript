@@ -24,16 +24,24 @@ export const stripNLAndAfter = (str: string): string => {
 
 /**
  * @returns Returns the beginning up to (but not including) any comments
- * starting with // or #.
+ * starting with //, #, ;, --.
  */
 export const stripCommentsAndAfter = (str: string): string => {
     let idx1 = str.indexOf('//')
-    let idx2 = str.indexOf('#')
+    let idx2 = str.indexOf('# ') // NOTE: (!) Hash comments requires a WS after the hash!
+    let idx3 = str.indexOf('#\t') // NOTE: (!) Hash comments requires a WS after the hash!
+    // let idx4 = str.indexOf(';')
+    // let idx5 = str.indexOf('--')
 
     if (idx1 < 0) idx1 = Number.MAX_SAFE_INTEGER
     if (idx2 < 0) idx2 = Number.MAX_SAFE_INTEGER
+    if (idx3 < 0) idx3 = Number.MAX_SAFE_INTEGER
+    // if (idx4 < 0) idx4 = Number.MAX_SAFE_INTEGER
+    // if (idx5 < 0) idx4 = Number.MAX_SAFE_INTEGER
     // debugPrint('stripCommentsAndAfter(..): idx1 = ' + idx1)
     // debugPrint('stripCommentsAndAfter(..): idx2 = ' + idx2)
+    // debugPrint('stripCommentsAndAfter(..): idx3 = ' + idx3)
+    // debugPrint('stripCommentsAndAfter(..): idx4 = ' + idx4)
 
     const idx = Math.min(idx1, idx2)
     return idx === -1 ? str : str.substring(0, idx)
