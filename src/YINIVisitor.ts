@@ -93,6 +93,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     private numOfLevelOnes = 0 // Num of Level-1 sections.
     private level = 0
     private prevLevel = 0
+    private prevSectionName = '' // For error reporting purposes.
 
     private meta_numOfChains = 0 // For stats.
     private meta_numOfSections = 0 // For stats.
@@ -343,6 +344,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('                  level = ' + level)
         debugPrint('             this.level = ' + this.level)
         debugPrint('         this.prevLevel = ' + this.prevLevel)
+        debugPrint('   this.prevSectionName = ' + this.prevSectionName)
         debugPrint('          nestDirection = ' + nestDirection)
         debugPrint('    this.numOfLevelOnes = ' + this.numOfLevelOnes)
         debugPrint('this.getDepthOfLevels() = ' + this.getDepthOfLevels())
@@ -368,7 +370,12 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
         //------------------------
         if (nestDirection === 'higher') {
-            if (Math.abs(this.prevLevel - this.level) >= 2) {
+            debugPrint(
+                `Is level skipping: ${this.level - this.prevLevel} >= 2?`,
+            )
+
+            // if (Math.abs(this.prevLevel - this.level) >= 2) {
+            if (this.level - this.prevLevel >= 2) {
                 // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                 this.errorHandlerInstance!.pushOrBail(
                     ctx,
@@ -379,13 +386,17 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                     'Section header name "' +
                         sectionName +
                         '" with level ' +
-                        this.level +
-                        ' may not jump over previous section levels, from secton with level ' +
                         this.prevLevel +
-                        '.',
+                        ' may not jump over previous section levels, from a section with level ' +
+                        this.level +
+                        ' (section name: "' +
+                        this.prevSectionName +
+                        '").',
                 )
             }
         }
+        this.prevSectionName = sectionName
+
         if (nestDirection !== 'higher') {
             debugPrint('About to reset result')
             printObject({ [sectionName]: members })

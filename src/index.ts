@@ -127,9 +127,12 @@ Expected JS output:
 */
 
         YINI.parse(`
-        ^ App
-            id = 32403  #This hash comment is invalid due to a missing space.
-            title = "My Program"
+^ Section1
+    ^^ Section11
+        ^^^^ Section1111
+        value = 1111
+^ Section2
+value = 2
         `)
 
         //         YINI.parse(`

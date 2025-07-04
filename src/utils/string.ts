@@ -24,7 +24,7 @@ export const stripNLAndAfter = (str: string): string => {
 
 /**
  * @returns Returns the beginning up to (but not including) any comments
- * starting with //, #, ;, --.
+ * starting with // and #.
  */
 export const stripCommentsAndAfter = (str: string): string => {
     let idx1 = str.indexOf('//')
