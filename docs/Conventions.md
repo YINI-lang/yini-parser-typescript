@@ -48,7 +48,7 @@ For this (Node.js + TypeScript) project, these conventions apply as strictly as 
 
 # Function/Method Declaration Style
 
-The default style for function declarations is arrow functions style, e.g.
+The default style for function declarations is arrow functions style, e.g:
 
 ```ts
 const parseBooleanLiteral = (txt: string): boolean => { ... }
@@ -56,7 +56,7 @@ const parseBooleanLiteral = (txt: string): boolean => { ... }
 const doCheckAndBuild = (): TJSObject => { ... }
 ```
 
-However, (non-callback) methods within classes use traditional method style, e.g.:
+However, (non-callback) methods (functions) within classes MAY (but is not required to) use traditional method style, e.g.:
 
 ```ts
 constructor(syntaxTreeC: TSyntaxTreeContainer) { ... }

@@ -17,15 +17,13 @@ const SECTION_MARKER2 = '~'
  */
 const parseSectionHead = (
     rawLine: string,
+    errorHandlerInstance: ErrorDataHandler,
     ctx: SectionContext, // For error reporting.
 ): {
     sectionName: string
     level: number
     headMarkerStyle: THeadMarkerStyle
 } => {
-    debugPrint('-> Entered parseSectionHead(..)')
-    const instErrorHandler = ErrorDataHandler.getInstance()
-
     // --- Determine nesting level. ---------
     const lineLen: number = rawLine.length
     // this.prevLevel = this.level
@@ -52,7 +50,7 @@ const parseSectionHead = (
         headMarkerStyle === 'Repeating-Character-Section-Marker' &&
         level >= 7
     ) {
-        instErrorHandler!.pushOrBail(
+        errorHandlerInstance.pushOrBail(
             ctx,
             'Syntax-Error',
             'Invalid number of repeating characters in marker: ' +

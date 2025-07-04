@@ -1,5 +1,6 @@
 import { CharStreams, CommonTokenStream } from 'antlr4'
 import { isDebug } from './config/env'
+import { ErrorDataHandler } from './ErrorDataHandler'
 import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
 import { constructFinalObject } from './objectBuilder'
@@ -42,7 +43,9 @@ export const parseYINI = (
     debugPrint(
         '=== Phase 2 ===================================================',
     )
-    const visitor = new YINIVisitor()
+    const errorHandlerInstance = new ErrorDataHandler('1-Abort-on-Errors')
+
+    const visitor = new YINIVisitor(errorHandlerInstance)
     const syntaxTreeC: TSyntaxTreeContainer = visitor.visit(
         parseTree as any,
     ) as TSyntaxTreeContainer
@@ -72,7 +75,10 @@ export const parseYINI = (
         '=== Phase 3 ===================================================',
     )
     // Construct.
-    const finalJSResult = constructFinalObject(syntaxTreeC)
+    const finalJSResult = constructFinalObject(
+        syntaxTreeC,
+        errorHandlerInstance,
+    )
     debugPrint(
         '=== Ended phase 3 =============================================',
     )
