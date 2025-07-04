@@ -350,6 +350,33 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('this.getDepthOfLevels() = ' + this.getDepthOfLevels())
         debugPrint()
 
+        if (nestDirection === 'higher') {
+            debugPrint(
+                `Is level skipping: ${this.level - this.prevLevel} >= 2?`,
+            )
+            // if (Math.abs(this.prevLevel - this.level) >= 2) {
+            if (this.level - this.prevLevel >= 2) {
+                // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+                this.errorHandlerInstance!.pushOrBail(
+                    ctx,
+                    'Syntax-Error',
+                    'Invalid section level jump of section header "' +
+                        sectionName +
+                        '"',
+                    'Section header name "' +
+                        sectionName +
+                        '" with level ' +
+                        this.level +
+                        ' may not jump over intermediate section levels, from section header name "' +
+                        this.prevSectionName +
+                        '" with level ' +
+                        this.prevLevel +
+                        '.',
+                )
+            }
+        }
+        this.prevSectionName = sectionName
+
         debugPrint('About to visit members of section...')
         let members: any
 
@@ -369,33 +396,33 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         }
 
         //------------------------
-        if (nestDirection === 'higher') {
-            debugPrint(
-                `Is level skipping: ${this.level - this.prevLevel} >= 2?`,
-            )
+        // if (nestDirection === 'higher') {
+        //     debugPrint(
+        //         `Is level skipping: ${this.level - this.prevLevel} >= 2?`,
+        //     )
 
-            // if (Math.abs(this.prevLevel - this.level) >= 2) {
-            if (this.level - this.prevLevel >= 2) {
-                // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-                this.errorHandlerInstance!.pushOrBail(
-                    ctx,
-                    'Syntax-Error',
-                    'Invalid section level jump of section header "' +
-                        sectionName +
-                        '"',
-                    'Section header name "' +
-                        sectionName +
-                        '" with level ' +
-                        this.prevLevel +
-                        ' may not jump over previous section levels, from a section with level ' +
-                        this.level +
-                        ' (section name: "' +
-                        this.prevSectionName +
-                        '").',
-                )
-            }
-        }
-        this.prevSectionName = sectionName
+        //     // if (Math.abs(this.prevLevel - this.level) >= 2) {
+        //     if (this.level - this.prevLevel >= 2) {
+        //         // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+        //         this.errorHandlerInstance!.pushOrBail(
+        //             ctx,
+        //             'Syntax-Error',
+        //             'Invalid section level jump of section header "' +
+        //                 sectionName +
+        //                 '"',
+        //             'Section header name "' +
+        //                 sectionName +
+        //                 '" with level ' +
+        //                 this.prevLevel +
+        //                 ' may not jump over previous section levels, from a section with level ' +
+        //                 this.level +
+        //                 ' (section name: "' +
+        //                 this.prevSectionName +
+        //                 '").',
+        //         )
+        //     }
+        // }
+        // this.prevSectionName = sectionName
 
         if (nestDirection !== 'higher') {
             debugPrint('About to reset result')

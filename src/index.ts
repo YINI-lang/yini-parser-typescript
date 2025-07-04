@@ -129,8 +129,8 @@ Expected JS output:
         YINI.parse(`
 ^ Section1
     ^^ Section11
-        ^^^^ Section1111
-        value = 1111
+        ^^^^ Section111 // INVALID section level jump here, level 3 is jumped over!!
+        value = 111
 ^ Section2
 value = 2
         `)
