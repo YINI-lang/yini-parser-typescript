@@ -47,14 +47,9 @@ const issueTitle: string[] = [
  * This class handles all error/notice reporting and process exit/throwing.
  */
 export class ErrorDataHandler {
-    private static singleton: ErrorDataHandler | null = null
     private bailThreshold: TBailThreshold
 
-    private constructor(threshold: TBailThreshold = '1-Abort-on-Errors') {
-        this.bailThreshold = threshold
-    }
-
-    /* '1-Abort-on-Errors' is the default.
+    /** '1-Abort-on-Errors' is the default.
 
         Below is from the YINI spec:
             **Abort Sensitivity Levels** while parsing a YINI document:
@@ -63,14 +58,8 @@ export class ErrorDataHandler {
             - Level 1 = abort on errors only
             - Level 2 = abort even on warnings
      */
-    public static getInstance = (
-        threshold: TBailThreshold = '1-Abort-on-Errors',
-    ) => {
-        if (!this.singleton) {
-            this.singleton = new ErrorDataHandler(threshold)
-        }
-
-        return this.singleton
+    constructor(threshold: TBailThreshold = '1-Abort-on-Errors') {
+        this.bailThreshold = threshold
     }
 
     makeIssuePayload = (

@@ -1,3 +1,4 @@
+import assert from 'assert'
 import { isDebug } from './config/env'
 import parseBooleanLiteral from './data-extractors/parseBoolean'
 import parseNullLiteral from './data-extractors/parseNull'
@@ -84,7 +85,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
     private reversedTree: TSyntaxTree = []
 
-    private instErrorHandler: ErrorDataHandler | null = null
+    private errorHandlerInstance: ErrorDataHandler | null = null
 
     private lastActiveSectionAtLevels: any[] = []
     private lastActiveSectionNameAtLevels: (string | undefined)[] = [] // Last active section name at each level.
@@ -97,7 +98,12 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     private meta_numOfSections = 0 // For stats.
     private meta_maxLevelSection = 0 // For stats.
 
-    pushOnTree = (sReslult: ISectionResult): void => {
+    constructor(errorHandlerInstance: ErrorDataHandler) {
+        super()
+        this.errorHandlerInstance = errorHandlerInstance
+    }
+
+    private pushOnTree = (sReslult: ISectionResult): void => {
         if (isDebug()) {
             console.log()
             debugPrint('--- In pushOnTree(..) --------')
@@ -141,15 +147,16 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('--- /end of pushOnTree(..) --------')
     }
 
-    getDepthOfLevels = (): number => {
+    private getDepthOfLevels = (): number => {
         return this.lastActiveSectionNameAtLevels.length
     }
-    setLastActiveSection = (atLevel: number, sectionName: string) => {
+
+    private setLastActiveSection = (atLevel: number, sectionName: string) => {
         if (atLevel >= 1) {
             this.lastActiveSectionNameAtLevels[atLevel - 1] = sectionName
         } else {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-            this.instErrorHandler!.pushOrBail(
+            this.errorHandlerInstance!.pushOrBail(
                 null,
                 'Internal-Error',
                 'Invalid section level (<1), level: ' +
@@ -169,8 +176,16 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     // visitYini?: (ctx: YiniContext) => IResult;
     // visitYini = (ctx: YiniContext): IResult => {
     visitYini = (ctx: YiniContext): any => {
-        this.instErrorHandler =
-            ErrorDataHandler.getInstance('1-Abort-on-Errors')
+        if (!this.errorHandlerInstance) {
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+            new ErrorDataHandler().pushOrBail(
+                null,
+                'Fatal-Error',
+                'Has no ErrorDataHandler instance when calling visitYini(..)',
+                'Something in the code is done incorrectly in order for this to happen... :S',
+            )
+        }
+
         debugPrint()
         debugPrint('abcde99')
         isDebug() && console.log()
@@ -297,7 +312,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             const msgWhy: string = `Found unexpected syntax while trying to read a key-value pair or a section header (such as a section marker or section name).`
 
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-            this.instErrorHandler!.pushOrBail(
+            this.errorHandlerInstance!.pushOrBail(
                 ctx,
                 'Syntax-Error',
                 msgWhat,
@@ -306,7 +321,11 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         }
 
         this.prevLevel = this.level
-        let { sectionName, level } = parseSectionHead(line, ctx)
+        let { sectionName, level } = parseSectionHead(
+            line,
+            this.errorHandlerInstance!,
+            ctx,
+        )
         this.level = level
 
         // ---------------------------------------------------------------
@@ -351,7 +370,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         if (nestDirection === 'higher') {
             if (Math.abs(this.prevLevel - this.level) >= 2) {
                 // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-                this.instErrorHandler!.pushOrBail(
+                this.errorHandlerInstance!.pushOrBail(
                     ctx,
                     'Syntax-Error',
                     'Invalid section level jump of section header "' +
@@ -552,7 +571,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             } else {
                 if (members[key] !== undefined) {
                     // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-                    this.instErrorHandler!.pushOrBail(
+                    this.errorHandlerInstance!.pushOrBail(
                         ctx,
                         'Syntax-Error',
                         'Key already exists in this section scope (in this main section), key name: ' +
@@ -652,7 +671,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 const msg: string = `Unexpected syntax while parsing a member (key-value pair)`
 
                 // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-                this.instErrorHandler!.pushOrBail(ctx, 'Syntax-Error', msg)
+                this.errorHandlerInstance!.pushOrBail(ctx, 'Syntax-Error', msg)
             }
 
             const result: IResult = ctx.value()
@@ -710,7 +729,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
         if (!resultType && !resultKey) {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-            this.instErrorHandler!.pushOrBail(
+            this.errorHandlerInstance!.pushOrBail(
                 ctx,
                 'Syntax-Error',
                 'Unknown input',
