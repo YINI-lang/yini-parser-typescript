@@ -287,8 +287,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      */
     // visitSection?: (ctx: SectionContext) => IResult;
     visitSection = (ctx: SectionContext): any => {
-        // let headMarkerStyle: THeadMarkerStyle =
-        //     'Repeating-Character-Section-Marker'
+        // let headMarkerType: THeadMarkerType =
+        //     'Classic-Head-Marker'
 
         isDebug() && console.log()
         debugPrint('-> Entered visitSection(..)')

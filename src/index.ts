@@ -127,12 +127,17 @@ Expected JS output:
 */
 
         YINI.parse(`
-^ Section1
-    ^^ Section11
-        ^^^^ Section111 // INVALID section level jump here, level 3 is jumped over!!
-        value = 111
-^ Section2
-value = 2
+// Using numeric shorthand section markers.
+
+@yini
+
+^1 Main
+    ^2 Sub1
+        ^3 SubSub1
+        valueSS1 = "Something."
+    ^2 Sub2
+        ^3 SubSub2
+        valueSS2 = OFF
         `)
 
         //         YINI.parse(`

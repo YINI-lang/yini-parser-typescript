@@ -1,0 +1,15 @@
+// Using numeric shorthand section markers.
+
+@yini
+
+^1 Root
+^2 Level2
+^3 Level3
+^4 Level4
+^5 Level5
+^6 Level6
+^7 Level7
+^8 Level8
+    valueAt = 'Level 8 in Root.'
+^1 SectionReset
+    valueAt = 'In SectionReset.'
