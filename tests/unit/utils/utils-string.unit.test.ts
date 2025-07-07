@@ -1,5 +1,5 @@
-import { stripNLAndAfter, trimBackticks } from '../../src/utils/string'
-import { debugPrint } from '../../src/utils/system'
+import { stripNLAndAfter, trimBackticks } from '../../../src/utils/string'
+import { debugPrint } from '../../../src/utils/system'
 
 /**
  * trimBackticks(..) Tests.

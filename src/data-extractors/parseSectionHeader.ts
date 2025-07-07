@@ -31,7 +31,7 @@ const parseSectionHeader = (
     line = stripCommentsAndAfter(line)
 
     const headerMarkerType: TSectionHeaderType | null =
-        identifySectionHeaderType(line)
+        identifySectionMarkerType(line)
     debugPrint('Identified headerMarkerType: ' + headerMarkerType)
     debugPrint('                     line: ' + line)
     debugPrint('                  rawLine: ' + rawLine)
@@ -183,13 +183,16 @@ const parseSectionHeader = (
 }
 
 /**
- * @param rawHeaderLine Raw line with the section header.
+ * @param rawHeaderLine Raw line with the section header where the header
+ * marker will be identified. E.g. does the header start with '^^^' or '^3'
+ * and then some identifier.
+ * @note Only the header marker type itself will be identified, NOT the level NOR the header name.
  * @returns 'Classic-Header-Marker', 'Numeric-Header-Marker' or null/undefined if failed.
  */
-const identifySectionHeaderType = (
+export const identifySectionMarkerType = (
     rawHeaderLine: string,
 ): TSectionHeaderType | null => {
-    debugPrint('-> Entered identifySectionHeaderType(..)')
+    debugPrint('-> Entered identifySectionMarkerType(..)')
 
     let str = rawHeaderLine.trim()
 

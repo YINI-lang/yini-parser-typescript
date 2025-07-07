@@ -131,12 +131,12 @@ Expected JS output:
 
 @yini
 
-^1 Main
-    ^2 Sub1
-        ^3 SubSub1
+^ Main
+    ^^ Sub1
+        ^^^ SubSub1
         valueSS1 = "Something."
-    ^2 Sub2
-        ^3 SubSub2
+    ^^ Sub2
+        ^^^ SubSub2
         valueSS2 = OFF
         `)
 
