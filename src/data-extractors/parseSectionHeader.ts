@@ -75,6 +75,7 @@ const parseSectionHeader = (
     }
 
     if (headerMarkerType === 'Numeric-Header-Marker') {
+        debugPrint('IDENTIFIED as "Numeric-Header-Marker"')
         const firstChar = line[0]
         const rest = line.slice(1)
 
@@ -249,10 +250,12 @@ export const identifySectionMarkerType = (
     type TState =
         | 'Start'
         | 'At-Marker-Character'
+        | 'At-Number-Part'
         | 'At-Optional-Delimeter'
         | 'At-Section-Name-Ident'
         | 'At-Section-Name-Backt'
         | 'Done-Looks-Like-Classic'
+        | 'Done-Looks-Like-Numeric'
 
     let state = 'Start'
     let ch = ''
@@ -266,6 +269,7 @@ export const identifySectionMarkerType = (
 
         let isRoundOk: boolean = false
         let isIdentDone: boolean = false
+        let isSeemsLikeClassic = false
 
         debugPrint('--')
         debugPrint('state: ' + state)
@@ -282,6 +286,10 @@ export const identifySectionMarkerType = (
                 if (isMarkerCharacter(ch)) {
                     numOfFoundMarkerCharacters++
                     isRoundOk = true
+                } else if (isDigit(ch)) {
+                    state = 'At-Number-Part'
+                    isSeemsLikeClassic = false
+                    isRoundOk = true
                 } else if (isAlpha(ch) || ch === '_') {
                     state = 'At-Section-Name-Ident'
                     isRoundOk = true
@@ -293,6 +301,11 @@ export const identifySectionMarkerType = (
                     isRoundOk = true
                 }
                 break
+            case 'At-Number-Part':
+                if (isDigit(ch)) {
+                    state = 'At-Number-Part'
+                    isRoundOk = true
+                }
             case 'At-Optional-Delimeter':
                 if (ch === ' ' || ch === '\t') {
                     state = 'At-Optional-Delimeter'
@@ -307,8 +320,13 @@ export const identifySectionMarkerType = (
                 break
             case 'At-Section-Name-Ident':
                 if (isDigit(ch) || isAlpha(ch) || ch === '_') {
-                    state = 'Done-Looks-Like-Classic'
-                    isRoundOk = true
+                    if (isSeemsLikeClassic) {
+                        state = 'Done-Looks-Like-Classic'
+                        isRoundOk = true
+                    } else {
+                        state = 'Done-Looks-Like-Numeric'
+                        isRoundOk = true
+                    }
                 }
                 break
             case 'At-Section-Name-Backt':
@@ -320,8 +338,13 @@ export const identifySectionMarkerType = (
                     ch === '_' ||
                     ch === '-'
                 ) {
-                    state = 'Done-Looks-Like-Classic'
-                    isRoundOk = true
+                    if (isSeemsLikeClassic) {
+                        state = 'Done-Looks-Like-Classic'
+                        isRoundOk = true
+                    } else {
+                        state = 'Done-Looks-Like-Numeric'
+                        isRoundOk = true
+                    }
                 }
                 break
             case 'Done-Looks-Like-Classic':
@@ -330,11 +353,21 @@ export const identifySectionMarkerType = (
                     numOfFoundMarkerCharacters > 0
                 ) {
                     isIdentDone = true
-                    // Ok, if we land here, it looks like a classic header.
+                    // Ok, if we land here, it looks like a classic marker header.
                     return 'Classic-Header-Marker'
                 } else {
-                    return 'ERROR-Too-Many-Marker-Chars'
+                    return 'ERROR-Too-Many-Marker-Chars-In-Classic'
                 }
+                break
+            case 'Done-Looks-Like-Numeric':
+                if (numOfFoundMarkerCharacters === 1) {
+                    isIdentDone = true
+                    // Ok, if we land here, it looks like a numeric shorthand marker header.
+                    return 'Numeric-Header-Marker'
+                } else {
+                    return 'ERROR-Too-Many-Marker-Chars-In-Numeric'
+                }
+                break
         }
 
         if (isIdentDone) {

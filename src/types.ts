@@ -49,7 +49,8 @@ export type TErrorIdentifyMarkerType =
     | 'ERROR-Blank-Section-Header'
     | 'ERROR-Unknown-Section-Header-Type'
     // | 'ERROR-Illegal-Section-Header-Name'
-    | 'ERROR-Too-Many-Marker-Chars'
+    | 'ERROR-Too-Many-Marker-Chars-In-Classic'
+    | 'ERROR-Too-Many-Marker-Chars-In-Numeric'
 
 export interface IChainContainer {
     originLevel: number
