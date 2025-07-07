@@ -132,9 +132,9 @@ Expected JS output:
 @yini
 
 // This whole line is a comment.
-            ^SectionName# This part is a comment.
+            ^2SectionName# This part is a comment.
             // This whole line is a comment.
-   
+   x = 1
                 `)
 
         //         YINI.parse(`
