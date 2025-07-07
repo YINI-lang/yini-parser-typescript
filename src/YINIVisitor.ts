@@ -3,7 +3,7 @@ import { isDebug } from './config/env'
 import parseBooleanLiteral from './data-extractors/parseBoolean'
 import parseNullLiteral from './data-extractors/parseNull'
 import parseNumberLiteral from './data-extractors/parseNumber'
-import parseSectionHead from './data-extractors/parseSectionHead'
+import parseSectionHeader from './data-extractors/parseSectionHeader'
 import parseStringLiteral from './data-extractors/parseString'
 import { ErrorDataHandler } from './ErrorDataHandler'
 import {
@@ -287,8 +287,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      */
     // visitSection?: (ctx: SectionContext) => IResult;
     visitSection = (ctx: SectionContext): any => {
-        // let headMarkerType: THeadMarkerType =
-        //     'Classic-Head-Marker'
+        // let headMarkerType: TSectionHeaderType =
+        //     'Classic-Header-Marker'
 
         isDebug() && console.log()
         debugPrint('-> Entered visitSection(..)')
@@ -322,7 +322,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         }
 
         this.prevLevel = this.level
-        let { sectionName, level } = parseSectionHead(
+        let { sectionName, level } = parseSectionHeader(
             line,
             this.errorHandlerInstance!,
             ctx,

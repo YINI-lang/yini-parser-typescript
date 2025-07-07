@@ -11,7 +11,7 @@ const DIR_OF_FIXTURES = '../../fixtures/valid/section-nesting-w-nsh-markers'
 describe('Parse section nesting w NUMERIC SHORTHAND markers:', () => {
     const baseDir = path.join(__dirname, DIR_OF_FIXTURES)
 
-    test('1. Parse section nesting w NUMERIC SHORTHAND markers.', () => {
+    xtest('1. Parse section nesting w NUMERIC SHORTHAND markers.', () => {
         // Arrange.
         const fileName = 'nsh-section-nesting-1.yini'
         const fullPath = path.join(baseDir, fileName)

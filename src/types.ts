@@ -41,10 +41,10 @@ export type TSyntaxTreeContainer = {
 }
 
 export type TSyntaxTree = IChainContainer[]
-export type THeadMarkerType =
+export type TSectionHeaderType =
     | undefined
-    | 'Classic-Head-Marker' // Classic/repeating marker section headers (e.g. ^^ SectionName).
-    | 'Numeric-Head-Marker' // Numeric shorthand section headers (e.g. ^7 SectionName.
+    | 'Classic-Header-Marker' // Classic/repeating marker section headers (e.g. ^^ SectionName).
+    | 'Numeric-Header-Marker' // Numeric shorthand section headers (e.g. ^7 SectionName.
 
 export interface IChainContainer {
     originLevel: number

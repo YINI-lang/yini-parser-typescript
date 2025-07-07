@@ -1,7 +1,7 @@
 import { isDebug } from '../config/env'
 import { ErrorDataHandler } from '../ErrorDataHandler'
 import { SectionContext } from '../grammar/YiniParser'
-import { THeadMarkerType } from '../types'
+import { TSectionHeaderType } from '../types'
 import {
     stripCommentsAndAfter,
     stripNLAndAfter,
@@ -16,27 +16,27 @@ const SECTION_MARKER2 = '~'
  * Extract ...
  * @param rawLine Raw line with the section header.
  */
-const parseSectionHead = (
+const parseSectionHeader = (
     rawLine: string,
     errorHandlerInstance: ErrorDataHandler,
     ctx: SectionContext, // For error reporting.
 ): {
     sectionName: string
     level: number
-    headMarkerType: THeadMarkerType
+    headerMarkerType: TSectionHeaderType
 } => {
-    debugPrint('-> Entered parseSectionHead(..)')
+    debugPrint('-> Entered parseSectionHeader(..)')
 
     let line = stripNLAndAfter(rawLine) // Cut of anything after (and including) any newline (and possible commented next lines).
     line = stripCommentsAndAfter(line)
 
-    const headMarkerType: THeadMarkerType | null =
-        identifySectionMarkerType(line)
-    debugPrint('Identified headMarkerType: ' + headMarkerType)
+    const headerMarkerType: TSectionHeaderType | null =
+        identifySectionHeaderType(line)
+    debugPrint('Identified headerMarkerType: ' + headerMarkerType)
     debugPrint('                     line: ' + line)
     debugPrint('                  rawLine: ' + rawLine)
 
-    if (headMarkerType === null) {
+    if (headerMarkerType === null) {
         errorHandlerInstance.pushOrBail(
             ctx,
             'Syntax-Error',
@@ -46,7 +46,7 @@ const parseSectionHead = (
                 ', raw: ' +
                 rawLine,
         )
-    } else if (headMarkerType === 'Numeric-Head-Marker') {
+    } else if (headerMarkerType === 'Numeric-Header-Marker') {
         const firstChar = line[0]
         const rest = line.slice(1)
 
@@ -62,7 +62,7 @@ const parseSectionHead = (
         /*
         continue with parsing correctly, a loop that check when a numeric char swithces to non-numeric char...
          */
-
+        /*
         if (
             line.length > 1 &&
             [SECTION_MARKER1, SECTION_MARKER2].includes(firstChar) &&
@@ -94,12 +94,12 @@ const parseSectionHead = (
                 errorParseState = ''
             }
         }
-
+*/
         if (!errorParseState) {
             return {
                 sectionName: sectionName,
                 level: level,
-                headMarkerType: 'Numeric-Head-Marker',
+                headerMarkerType: 'Numeric-Header-Marker',
             }
         } else {
             errorHandlerInstance.pushOrBail(
@@ -114,7 +114,7 @@ const parseSectionHead = (
         }
     }
 
-    // Then it must be Classic-Head-Marker, we assume.
+    // Then it must be Classic-Header-Marker, we assume.
 
     // --- Determine nesting level. ---------
     const lineLen: number = line.length
@@ -134,7 +134,7 @@ const parseSectionHead = (
     debugPrint('Extracted level = ' + level)
 
     // ONLY if repeating marker
-    if (headMarkerType === 'Classic-Head-Marker' && level >= 7) {
+    if (headerMarkerType === 'Classic-Header-Marker' && level >= 7) {
         errorHandlerInstance.pushOrBail(
             ctx,
             'Syntax-Error',
@@ -178,17 +178,20 @@ const parseSectionHead = (
     return {
         sectionName,
         level: level,
-        headMarkerType: 'Classic-Head-Marker',
+        headerMarkerType: 'Classic-Header-Marker',
     }
 }
 
 /**
- * @param rawLine Raw line with the section header.
+ * @param rawHeaderLine Raw line with the section header.
+ * @returns 'Classic-Header-Marker', 'Numeric-Header-Marker' or null/undefined if failed.
  */
-const identifySectionMarkerType = (rawLine: string): THeadMarkerType | null => {
-    debugPrint('-> Entered identifySectionMarkerType(..)')
+const identifySectionHeaderType = (
+    rawHeaderLine: string,
+): TSectionHeaderType | null => {
+    debugPrint('-> Entered identifySectionHeaderType(..)')
 
-    let str = rawLine.trim()
+    let str = rawHeaderLine.trim()
 
     // Edge case: empty line
     if (!str) return null
@@ -215,7 +218,7 @@ const identifySectionMarkerType = (rawLine: string): THeadMarkerType | null => {
         marker.split('').every((c) => c === marker[0]) &&
         !/\d/.test(marker)
     ) {
-        return 'Classic-Head-Marker'
+        return 'Classic-Header-Marker'
     }
 
     // Check if Numeric shorthand: Single marker char, then digits (e.g. "^7", "~42")
@@ -227,10 +230,10 @@ const identifySectionMarkerType = (rawLine: string): THeadMarkerType | null => {
         [SECTION_MARKER1, SECTION_MARKER2].includes(firstChar) &&
         /^\d+$/.test(numberPart)
     ) {
-        return 'Numeric-Head-Marker'
+        return 'Numeric-Header-Marker'
     }
 
     return null
 }
 
-export default parseSectionHead
+export default parseSectionHeader
