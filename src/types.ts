@@ -45,6 +45,10 @@ export type TSectionHeaderType =
     | undefined
     | 'Classic-Header-Marker' // Classic/repeating marker section headers (e.g. ^^ SectionName).
     | 'Numeric-Header-Marker' // Numeric shorthand section headers (e.g. ^7 SectionName.
+export type TErrorIdentifyMarkerType =
+    | 'ERROR-Blank-Section-Header'
+    | 'ERROR-Unknown-Section-Header-Type'
+    | 'ERROR-Too-Many-Marker-Chars'
 
 export interface IChainContainer {
     originLevel: number

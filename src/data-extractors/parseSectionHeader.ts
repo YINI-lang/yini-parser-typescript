@@ -1,8 +1,10 @@
 import { isDebug } from '../config/env'
 import { ErrorDataHandler } from '../ErrorDataHandler'
 import { SectionContext } from '../grammar/YiniParser'
-import { TSectionHeaderType } from '../types'
+import { TErrorIdentifyMarkerType, TSectionHeaderType } from '../types'
 import {
+    isAlpha,
+    isDigit,
     stripCommentsAndAfter,
     stripNLAndAfter,
     trimBackticks,
@@ -11,6 +13,26 @@ import { debugPrint } from '../utils/system'
 
 const SECTION_MARKER1 = '^'
 const SECTION_MARKER2 = '~'
+
+/**
+ * Check if the character is a section marker character.
+ * @note The string must be of length 1.
+ * @param character A character in a string.
+ */
+export const isMarkerCharacter = (character: string): boolean => {
+    if (character.length !== 1) {
+        throw Error(
+            'Argument into function isMarkerCharacter(..) is not of length 1',
+        )
+    }
+
+    const ch = character
+    if (ch === SECTION_MARKER1 || ch === SECTION_MARKER2) {
+        return true
+    }
+
+    return false
+}
 
 /**
  * Extract ...
@@ -30,13 +52,17 @@ const parseSectionHeader = (
     let line = stripNLAndAfter(rawLine) // Cut of anything after (and including) any newline (and possible commented next lines).
     line = stripCommentsAndAfter(line)
 
-    const headerMarkerType: TSectionHeaderType | null =
+    const headerMarkerType: TSectionHeaderType | TErrorIdentifyMarkerType =
         identifySectionMarkerType(line)
     debugPrint('Identified headerMarkerType: ' + headerMarkerType)
     debugPrint('                     line: ' + line)
     debugPrint('                  rawLine: ' + rawLine)
 
-    if (headerMarkerType === null) {
+    if (
+        // headerMarkerType !== 'Classic-Header-Marker' ||
+        // headerMarkerType !== 'Numeric-Header-Marker'
+        headerMarkerType?.includes('ERROR')
+    ) {
         errorHandlerInstance.pushOrBail(
             ctx,
             'Syntax-Error',
@@ -46,7 +72,9 @@ const parseSectionHeader = (
                 ', raw: ' +
                 rawLine,
         )
-    } else if (headerMarkerType === 'Numeric-Header-Marker') {
+    }
+
+    if (headerMarkerType === 'Numeric-Header-Marker') {
         const firstChar = line[0]
         const rest = line.slice(1)
 
@@ -186,57 +214,158 @@ const parseSectionHeader = (
  * @param rawHeaderLine Raw line with the section header where the header
  * marker will be identified. E.g. does the header start with '^^^' or '^3'
  * and then some identifier.
+ *
+ * Below, copied from YINI Specification v1.0.0 Beta 7.
+ * Form 1: Identifier of Simple Form:
+ * - Keys must be non-empty.
+ * - Keys are case-sensitive (`Title` and `title` are different).
+ * - Can only contain letters (a-z or A-Z), digits (0-9) and underscores `_`.
+ * - Must begin with a letter or an underscore `_`.
+ * - Note: Cannot contain hyphens (`-`) or periods (`.`).
+ *
+ * Form 2: Backticked Identifier:
+ * - A phrase is a name wrapped in backticks  ``` ` ```.
+ * - Backticked identifiers must be on a single line and must not contain tabs or new lines unless using escaping codes, except for ordinary spaces.
+ * - Special control characters (U+0000–U+001F) must be escaped.
+ *
  * @note Only the header marker type itself will be identified, NOT the level NOR the header name.
  * @returns 'Classic-Header-Marker', 'Numeric-Header-Marker' or null/undefined if failed.
  */
 export const identifySectionMarkerType = (
     rawHeaderLine: string,
-): TSectionHeaderType | null => {
+): TSectionHeaderType | TErrorIdentifyMarkerType => {
     debugPrint('-> Entered identifySectionMarkerType(..)')
 
     let str = rawHeaderLine.trim()
+    // str = stripNLAndAfter(str) // Cut of anything after (and including) any newline (and possible commented next lines).
+    // str = stripCommentsAndAfter(str)
+
+    debugPrint('                     str: ' + str)
+    debugPrint('           rawHeaderLine: ' + rawHeaderLine)
 
     // Edge case: empty line
-    if (!str) return null
+    if (!str) return 'ERROR-Blank-Section-Header'
 
-    // --start------------
-    let xSpace = str.indexOf(' ')
-    let xTab = str.indexOf('\t')
+    type TState =
+        | 'Start'
+        | 'At-Marker-Character'
+        | 'At-Optional-Delimeter'
+        | 'At-Section-Name'
+        | 'Done-Looks-Like-Classic'
 
-    if (xSpace < 0) xSpace = Number.MAX_SAFE_INTEGER
-    if (xTab < 0) xTab = Number.MAX_SAFE_INTEGER
+    let state = 'Start'
+    let numOfFoundMarkerCharacters = 0
 
-    const firstSpaceOrTab = Math.min(xSpace, xTab)
-    if (firstSpaceOrTab === Number.MAX_SAFE_INTEGER) return null
-    // ---end-----------
+    const len = str.length
+    for (let pos = 0; pos < len; pos++) {
+        const ch = str.charAt(pos)
 
-    const marker = str.slice(0, firstSpaceOrTab)
-    const rest = str.slice(firstSpaceOrTab + 1).trim()
-    if (!rest) return null // No section name.
+        let isRoundOk: boolean = false
+        let isIdentDone: boolean = false
 
-    // Check if Classic: All the same marker character, and length <= 6, and no digits (e.g. "^^" or "~~~~~").
-    if (
-        marker.length >= 1 &&
-        marker.length <= 6 &&
-        marker.split('').every((c) => c === marker[0]) &&
-        !/\d/.test(marker)
-    ) {
-        return 'Classic-Header-Marker'
+        debugPrint('--')
+        debugPrint('state: ' + state)
+        debugPrint('ch = >>>' + ch + '<<<')
+        switch (state) {
+            case 'Start':
+                if (isMarkerCharacter(ch)) {
+                    state = 'At-Marker-Character'
+                    numOfFoundMarkerCharacters = 1
+                    isRoundOk = true
+                }
+                break
+            case 'At-Marker-Character':
+                if (isMarkerCharacter(ch)) {
+                    numOfFoundMarkerCharacters++
+                    isRoundOk = true
+                } else if (ch === '`' || isAlpha(ch) || ch === '_') {
+                    state = 'At-Section-Name'
+                    isRoundOk = true
+                } else if (ch === ' ' || ch === '\t') {
+                    state = 'At-Optional-Delimeter'
+                    isRoundOk = true
+                }
+                break
+            case 'At-Optional-Delimeter':
+            case 'At-Section-Name':
+                if (
+                    ch === '`' ||
+                    isDigit(ch) ||
+                    isAlpha(ch) ||
+                    ch === '_' ||
+                    ch === ' '
+                ) {
+                    state = 'Done-Looks-Like-Classic'
+
+                    if (
+                        numOfFoundMarkerCharacters <= 6 &&
+                        numOfFoundMarkerCharacters > 0
+                    ) {
+                        isIdentDone = true
+                        // Ok, if we land here, it looks like a classic header.
+                        return 'Classic-Header-Marker'
+                    } else {
+                        return 'ERROR-Too-Many-Marker-Chars'
+                    }
+                }
+                break
+        }
+
+        if (isIdentDone) {
+            break
+        }
+
+        if (!isRoundOk) {
+            return 'ERROR-Unknown-Section-Header-Type'
+        }
     }
 
-    // Check if Numeric shorthand: Single marker char, then digits (e.g. "^7", "~42")
-    const firstChar = marker[0]
-    const numberPart = marker.slice(1)
+    debugPrint()
+    debugPrint('<- About to leave identifySectionMarkerType(..)')
 
-    if (
-        marker.length > 1 &&
-        [SECTION_MARKER1, SECTION_MARKER2].includes(firstChar) &&
-        /^\d+$/.test(numberPart)
-    ) {
-        return 'Numeric-Header-Marker'
-    }
+    debugPrint('               Final state: ' + state)
+    debugPrint('numOfFoundMarkerCharacters: ' + numOfFoundMarkerCharacters)
 
-    return null
+    debugPrint()
+
+    if (state === 'Done-Looks-Like-Classic')
+        // let xSpace = str.charAt().indexOf(' ')
+        // let xTab = str.indexOf('\t')
+
+        // if (xSpace < 0) xSpace = Number.MAX_SAFE_INTEGER
+        // if (xTab < 0) xTab = Number.MAX_SAFE_INTEGER
+
+        // const firstSpaceOrTab = Math.min(xSpace, xTab)
+        // if (firstSpaceOrTab === Number.MAX_SAFE_INTEGER) return null
+        // // ---end-----------
+
+        // const marker = str.slice(0, firstSpaceOrTab)
+        // const rest = str.slice(firstSpaceOrTab + 1).trim()
+        // if (!rest) return null // No section name.
+
+        // // Check if Classic: All the same marker character, and length <= 6, and no digits (e.g. "^^" or "~~~~~").
+        // if (
+        //     marker.length >= 1 &&
+        //     marker.length <= 6 &&
+        //     marker.split('').every((c) => c === marker[0]) &&
+        //     !/\d/.test(marker)
+        // ) {
+        //     return 'Classic-Header-Marker'
+        // }
+
+        // // Check if Numeric shorthand: Single marker char, then digits (e.g. "^7", "~42")
+        // const firstChar = marker[0]
+        // const numberPart = marker.slice(1)
+
+        // if (
+        //     marker.length > 1 &&
+        //     [SECTION_MARKER1, SECTION_MARKER2].includes(firstChar) &&
+        //     /^\d+$/.test(numberPart)
+        // ) {
+        //     return 'Numeric-Header-Marker'
+        // }
+
+        return 'ERROR-Blank-Section-Header'
 }
 
 export default parseSectionHeader
