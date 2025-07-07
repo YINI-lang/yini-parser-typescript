@@ -1,7 +1,7 @@
 import { isDebug } from '../config/env'
 import { ErrorDataHandler } from '../ErrorDataHandler'
 import { SectionContext } from '../grammar/YiniParser'
-import { TErrorIdentifyMarkerType, TSectionHeaderType } from '../types'
+import { TErrorDetectMarkerType, TSectionHeaderType } from '../types'
 import {
     isAlpha,
     isDigit,
@@ -52,8 +52,8 @@ const parseSectionHeader = (
     let line = stripNLAndAfter(rawLine) // Cut of anything after (and including) any newline (and possible commented next lines).
     line = stripCommentsAndAfter(line)
 
-    const headerMarkerType: TSectionHeaderType | TErrorIdentifyMarkerType =
-        identifySectionMarkerType(line)
+    const headerMarkerType: TSectionHeaderType | TErrorDetectMarkerType =
+        detectSectionMarkerType(line)
     debugPrint('Identified headerMarkerType: ' + headerMarkerType)
     debugPrint('                     line: ' + line)
     debugPrint('                  rawLine: ' + rawLine)
@@ -212,6 +212,7 @@ const parseSectionHeader = (
 }
 
 /**
+ * Check and identify the section marker type.
  * @param rawHeaderLine Raw line with the section header where the header
  * marker will be identified. E.g. does the header start with '^^^' or '^3'
  * and then some identifier.
@@ -230,12 +231,12 @@ const parseSectionHeader = (
  * - Special control characters (U+0000–U+001F) must be escaped.
  *
  * @note Only the header marker type itself will be identified, NOT the level NOR the header name.
- * @returns 'Classic-Header-Marker', 'Numeric-Header-Marker' or null/undefined if failed.
+ * @returns 'Classic-Header-Marker', 'Numeric-Header-Marker' or an error of type TErrorDetectMarkerType.
  */
-export const identifySectionMarkerType = (
+export const detectSectionMarkerType = (
     rawHeaderLine: string,
-): TSectionHeaderType | TErrorIdentifyMarkerType => {
-    debugPrint('-> Entered identifySectionMarkerType(..)')
+): TSectionHeaderType | TErrorDetectMarkerType => {
+    debugPrint('-> Entered detectSectionMarkerType(..)')
 
     let str = rawHeaderLine.trim()
     // str = stripNLAndAfter(str) // Cut of anything after (and including) any newline (and possible commented next lines).
@@ -261,6 +262,7 @@ export const identifySectionMarkerType = (
     let ch = ''
     let prevCh = ''
     let numOfFoundMarkerCharacters = 0
+    let isSeemsLikeClassic = true
 
     const len = str.length
     for (let pos = 0; pos < len; pos++) {
@@ -269,7 +271,6 @@ export const identifySectionMarkerType = (
 
         let isRoundOk: boolean = false
         let isIdentDone: boolean = false
-        let isSeemsLikeClassic = false
 
         debugPrint('--')
         debugPrint('state: ' + state)
@@ -352,18 +353,20 @@ export const identifySectionMarkerType = (
                     numOfFoundMarkerCharacters <= 6 &&
                     numOfFoundMarkerCharacters > 0
                 ) {
-                    isIdentDone = true
+                    isRoundOk = true
                     // Ok, if we land here, it looks like a classic marker header.
-                    return 'Classic-Header-Marker'
+                    //return 'Classic-Header-Marker'
+                    isIdentDone = true
                 } else {
                     return 'ERROR-Too-Many-Marker-Chars-In-Classic'
                 }
                 break
             case 'Done-Looks-Like-Numeric':
                 if (numOfFoundMarkerCharacters === 1) {
-                    isIdentDone = true
+                    isRoundOk = true
                     // Ok, if we land here, it looks like a numeric shorthand marker header.
-                    return 'Numeric-Header-Marker'
+                    //return 'Numeric-Header-Marker'
+                    isIdentDone = true
                 } else {
                     return 'ERROR-Too-Many-Marker-Chars-In-Numeric'
                 }
@@ -380,51 +383,25 @@ export const identifySectionMarkerType = (
     }
 
     debugPrint()
-    debugPrint('<- About to leave identifySectionMarkerType(..)')
+    debugPrint('<- About to leave detectSectionMarkerType(..)')
 
     debugPrint('               Final state: ' + state)
     debugPrint('numOfFoundMarkerCharacters: ' + numOfFoundMarkerCharacters)
 
     debugPrint()
+    if (state === 'Done-Looks-Like-Classic') {
+        return 'Classic-Header-Marker'
+    } else if (state === 'Done-Looks-Like-Numeric') {
+        return 'Numeric-Header-Marker'
+    }
 
-    if (state === 'Done-Looks-Like-Classic')
-        // let xSpace = str.charAt().indexOf(' ')
-        // let xTab = str.indexOf('\t')
-
-        // if (xSpace < 0) xSpace = Number.MAX_SAFE_INTEGER
-        // if (xTab < 0) xTab = Number.MAX_SAFE_INTEGER
-
-        // const firstSpaceOrTab = Math.min(xSpace, xTab)
-        // if (firstSpaceOrTab === Number.MAX_SAFE_INTEGER) return null
-        // // ---end-----------
-
-        // const marker = str.slice(0, firstSpaceOrTab)
-        // const rest = str.slice(firstSpaceOrTab + 1).trim()
-        // if (!rest) return null // No section name.
-
-        // // Check if Classic: All the same marker character, and length <= 6, and no digits (e.g. "^^" or "~~~~~").
-        // if (
-        //     marker.length >= 1 &&
-        //     marker.length <= 6 &&
-        //     marker.split('').every((c) => c === marker[0]) &&
-        //     !/\d/.test(marker)
-        // ) {
-        //     return 'Classic-Header-Marker'
-        // }
-
-        // // Check if Numeric shorthand: Single marker char, then digits (e.g. "^7", "~42")
-        // const firstChar = marker[0]
-        // const numberPart = marker.slice(1)
-
-        // if (
-        //     marker.length > 1 &&
-        //     [SECTION_MARKER1, SECTION_MARKER2].includes(firstChar) &&
-        //     /^\d+$/.test(numberPart)
-        // ) {
-        //     return 'Numeric-Header-Marker'
-        // }
-
-        return 'ERROR-Blank-Section-Header'
+    return 'ERROR-Unknown-Section-Header-Type'
 }
+
+// export const detectSectionMarkerType = (
+//     rawHeaderLine: string,
+// ):any =>{
+
+// }
 
 export default parseSectionHeader

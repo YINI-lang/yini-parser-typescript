@@ -45,7 +45,7 @@ export type TSectionHeaderType =
     | undefined
     | 'Classic-Header-Marker' // Classic/repeating marker section headers (e.g. ^^ SectionName).
     | 'Numeric-Header-Marker' // Numeric shorthand section headers (e.g. ^7 SectionName.
-export type TErrorIdentifyMarkerType =
+export type TErrorDetectMarkerType =
     | 'ERROR-Blank-Section-Header'
     | 'ERROR-Unknown-Section-Header-Type'
     // | 'ERROR-Illegal-Section-Header-Name'

@@ -252,4 +252,34 @@ describe('General Smoke Tests:', () => {
         expect(result.App.id).toEqual(32403)
         expect(result.App.title).toEqual('My Program')
     })
+
+    test('14. Correctly parse a YINI enclosed in comments.', () => {
+        // Arrange.
+        const validYini = `@yini
+// This whole line is a comment.
+            ^SectionName# This part is a comment.
+            // This whole line is a comment.
+        `
+        // Act.
+        const result = YINI.parse(validYini)
+        debugPrint(result)
+        // Assert.
+        expect(result.SectionName).toEqual({})
+    })
+
+    test('15. Should throw error due to illegal section name.', () => {
+        // Arrange.
+        const invalidYini = `// Should detect illegal section name 2SubSub1!!
+        ^ App
+            ^^ \` lsdfkj lj\`
+                ^^^ 2SubSub1
+                valueSS1 = "Something."
+                valueSS2 = OFF
+        `
+
+        // Act & Assert.
+        expect(() => {
+            YINI.parse(invalidYini)
+        }).toThrow()
+    })
 })

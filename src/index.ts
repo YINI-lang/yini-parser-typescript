@@ -131,12 +131,11 @@ Expected JS output:
 
 @yini
 
-^1
-    ^2 \` lsdfkj lj\`
-        ^^^ SubSub1
-        valueSS1 = "Something."
-        valueSS2 = OFF
-        `)
+// This whole line is a comment.
+            ^SectionName# This part is a comment.
+            // This whole line is a comment.
+   
+                `)
 
         //         YINI.parse(`
         // ^ Section1
