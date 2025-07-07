@@ -48,6 +48,7 @@ export type TSectionHeaderType =
 export type TErrorIdentifyMarkerType =
     | 'ERROR-Blank-Section-Header'
     | 'ERROR-Unknown-Section-Header-Type'
+    // | 'ERROR-Illegal-Section-Header-Name'
     | 'ERROR-Too-Many-Marker-Chars'
 
 export interface IChainContainer {

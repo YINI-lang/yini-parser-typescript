@@ -131,15 +131,10 @@ Expected JS output:
 
 @yini
 
-^ Main
-    ^^ \` lsdfkj lj\`
+^1
+    ^2 \` lsdfkj lj\`
         ^^^ SubSub1
         valueSS1 = "Something."
-    ^^ 2S2ub2
-    ^^^ Sub2
-    ^^^^ Sub2
-    ^^^^^ Sub2
-    ^^^^^^ Sub2
         valueSS2 = OFF
         `)
 

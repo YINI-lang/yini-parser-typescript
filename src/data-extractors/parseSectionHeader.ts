@@ -250,15 +250,19 @@ export const identifySectionMarkerType = (
         | 'Start'
         | 'At-Marker-Character'
         | 'At-Optional-Delimeter'
-        | 'At-Section-Name'
+        | 'At-Section-Name-Ident'
+        | 'At-Section-Name-Backt'
         | 'Done-Looks-Like-Classic'
 
     let state = 'Start'
+    let ch = ''
+    let prevCh = ''
     let numOfFoundMarkerCharacters = 0
 
     const len = str.length
     for (let pos = 0; pos < len; pos++) {
-        const ch = str.charAt(pos)
+        prevCh = ch
+        ch = str.charAt(pos)
 
         let isRoundOk: boolean = false
         let isIdentDone: boolean = false
@@ -278,8 +282,11 @@ export const identifySectionMarkerType = (
                 if (isMarkerCharacter(ch)) {
                     numOfFoundMarkerCharacters++
                     isRoundOk = true
-                } else if (ch === '`' || isAlpha(ch) || ch === '_') {
-                    state = 'At-Section-Name'
+                } else if (isAlpha(ch) || ch === '_') {
+                    state = 'At-Section-Name-Ident'
+                    isRoundOk = true
+                } else if (ch === '`') {
+                    state = 'At-Section-Name-Backt'
                     isRoundOk = true
                 } else if (ch === ' ' || ch === '\t') {
                     state = 'At-Optional-Delimeter'
@@ -287,28 +294,47 @@ export const identifySectionMarkerType = (
                 }
                 break
             case 'At-Optional-Delimeter':
-            case 'At-Section-Name':
+                if (ch === ' ' || ch === '\t') {
+                    state = 'At-Optional-Delimeter'
+                    isRoundOk = true
+                } else if (isAlpha(ch) || ch === '_') {
+                    state = 'At-Section-Name-Ident'
+                    isRoundOk = true
+                } else if (ch === '`') {
+                    state = 'At-Section-Name-Backt'
+                    isRoundOk = true
+                }
+                break
+            case 'At-Section-Name-Ident':
+                if (isDigit(ch) || isAlpha(ch) || ch === '_') {
+                    state = 'Done-Looks-Like-Classic'
+                    isRoundOk = true
+                }
+                break
+            case 'At-Section-Name-Backt':
                 if (
                     ch === '`' ||
+                    ch === ' ' ||
                     isDigit(ch) ||
                     isAlpha(ch) ||
                     ch === '_' ||
-                    ch === ' '
+                    ch === '-'
                 ) {
                     state = 'Done-Looks-Like-Classic'
-
-                    if (
-                        numOfFoundMarkerCharacters <= 6 &&
-                        numOfFoundMarkerCharacters > 0
-                    ) {
-                        isIdentDone = true
-                        // Ok, if we land here, it looks like a classic header.
-                        return 'Classic-Header-Marker'
-                    } else {
-                        return 'ERROR-Too-Many-Marker-Chars'
-                    }
+                    isRoundOk = true
                 }
                 break
+            case 'Done-Looks-Like-Classic':
+                if (
+                    numOfFoundMarkerCharacters <= 6 &&
+                    numOfFoundMarkerCharacters > 0
+                ) {
+                    isIdentDone = true
+                    // Ok, if we land here, it looks like a classic header.
+                    return 'Classic-Header-Marker'
+                } else {
+                    return 'ERROR-Too-Many-Marker-Chars'
+                }
         }
 
         if (isIdentDone) {
