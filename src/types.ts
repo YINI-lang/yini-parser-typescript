@@ -33,6 +33,11 @@ sValue = 2
     
  */
 
+export interface IOptions {
+    isStrict: boolean
+    bailSensitivyLevel: 0 | 1 | 2
+}
+
 export type TJSObject = any
 export type TSyntaxTreeContainer = {
     _syntaxTree: TSyntaxTree
@@ -45,12 +50,11 @@ export type TSectionHeaderType =
     | undefined
     | 'Classic-Header-Marker' // Classic/repeating marker section headers (e.g. ^^ SectionName).
     | 'Numeric-Header-Marker' // Numeric shorthand section headers (e.g. ^7 SectionName.
-export type TErrorDetectMarkerType =
-    | 'ERROR-Blank-Section-Header'
-    | 'ERROR-Unknown-Section-Header-Type'
-    // | 'ERROR-Illegal-Section-Header-Name'
-    | 'ERROR-Too-Many-Marker-Chars-In-Classic'
-    | 'ERROR-Too-Many-Marker-Chars-In-Numeric'
+// export type TErrorDetectMarkerType = 'ERROR-Blank-Section-Header'
+// | 'ERROR-Unknown-Section-Header-Type'
+// | 'ERROR-Illegal-Section-Header-Name'
+// | 'ERROR-Too-Many-Marker-Chars-In-Classic'
+// | 'ERROR-Too-Many-Marker-Chars-In-Numeric'
 
 export interface IChainContainer {
     originLevel: number

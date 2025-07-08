@@ -296,18 +296,19 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         const res: Record<string, any> = {}
 
         debugPrint('start')
+        debugPrint('XXXX0:ctx.getText()            = ' + ctx.getText())
         debugPrint('XXXX1:ctx.SECTION_HEAD()       = ' + ctx.SECTION_HEAD())
         debugPrint(
             'XXXX1:SECTION_HEAD().getText() = ' +
                 ctx.SECTION_HEAD()?.getText().trim(),
         )
-        debugPrint('XXXX2:     ctx.section():')
-
         debugPrint('end\n')
 
         let line: string = ''
         try {
             line = '' + ctx.SECTION_HEAD()?.getText().trim()
+            //@todo loop each row in below (with cut ending of comments) that input at line that remains use that as line
+            // if (!line) line = '' + ctx.getText().trim()
         } catch (error) {
             const msgWhat: string = `Unexpected syntax while parsing a member or section head`
             const msgWhy: string = `Found unexpected syntax while trying to read a key-value pair or a section header (such as a section marker or section name).`
@@ -356,23 +357,38 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             )
             // if (Math.abs(this.prevLevel - this.level) >= 2) {
             if (this.level - this.prevLevel >= 2) {
-                // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-                this.errorHandlerInstance!.pushOrBail(
-                    ctx,
-                    'Syntax-Error',
-                    'Invalid section level jump of section header "' +
-                        sectionName +
-                        '"',
-                    'Section header name "' +
-                        sectionName +
-                        '" with level ' +
-                        this.level +
-                        ' may not jump over intermediate section levels, from section header name "' +
-                        this.prevSectionName +
-                        '" with level ' +
-                        this.prevLevel +
-                        '.',
-                )
+                if (this.level === 2) {
+                    // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+                    this.errorHandlerInstance!.pushOrBail(
+                        ctx,
+                        'Syntax-Error',
+                        'Invalid section header level ' +
+                            this.level +
+                            ', with section name "' +
+                            sectionName,
+                        'A section header may not start directly at level ' +
+                            this.level +
+                            ', skipping previous section levels. Please start with one level further down.',
+                    )
+                } else {
+                    // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+                    this.errorHandlerInstance!.pushOrBail(
+                        ctx,
+                        'Syntax-Error',
+                        'Invalid section level jump of section header "' +
+                            sectionName +
+                            '"',
+                        'Section header name "' +
+                            sectionName +
+                            '" with level ' +
+                            this.level +
+                            ' may not jump over (skip) intermediate section levels, from section header name "' +
+                            this.prevSectionName +
+                            '" with level ' +
+                            this.prevLevel +
+                            '. Section levels should increase one at a time. Please adjust your section headers accordingly.',
+                    )
+                }
             }
         }
         this.prevSectionName = sectionName

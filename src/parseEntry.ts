@@ -1,26 +1,72 @@
-import { CharStreams, CommonTokenStream } from 'antlr4'
+import {
+    CharStreams,
+    CommonTokenStream,
+    ErrorListener,
+    RecognitionException,
+    Recognizer,
+} from 'antlr4'
 import { isDebug } from './config/env'
-import { ErrorDataHandler } from './ErrorDataHandler'
+import { ErrorDataHandler, TBailThreshold } from './ErrorDataHandler'
 import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
 import { constructFinalObject } from './objectBuilder'
-import { TSyntaxTreeContainer } from './types'
+import { IOptions, TSyntaxTreeContainer } from './types'
 import { debugPrint, printObject } from './utils/system'
 import YINIVisitor from './YINIVisitor'
 
-interface IOptions {
-    isStrict: boolean
-    bailSensitivy: 0 | 1 | 2
+class MyErrorListener implements ErrorListener<any> {
+    public errors: string[] = []
+    private bailThreshold: TBailThreshold
+
+    constructor(bailThreshold: TBailThreshold) {
+        this.bailThreshold = bailThreshold
+    }
+
+    syntaxError(
+        recognizer: any,
+        offendingSymbol: any,
+        line: number,
+        charPositionInLine: number,
+        msg: string,
+        e: RecognitionException | undefined,
+    ): void {
+        this.errors.push(`Line ${line}:${charPositionInLine} ${msg}`)
+
+        // Print immediately for debugging
+        console.error(`Syntax error, at line: ${line}`)
+        console.error(`At about column ${1 + charPositionInLine} ${msg}`)
+
+        if (this.bailThreshold !== '0-Ignore-Errors') {
+            process.exit(1)
+        }
+    }
+
+    // The following are required for the interface, but can be left empty.
+    reportAmbiguity(...args: any[]): void {}
+    reportAttemptingFullContext(...args: any[]): void {}
+    reportContextSensitivity(...args: any[]): void {}
 }
 
 export const parseYINI = (
     yiniContent: string,
-    options: IOptions = { isStrict: false, bailSensitivy: 0 },
+    options: IOptions = { isStrict: false, bailSensitivyLevel: 0 },
 ) => {
     debugPrint()
     debugPrint('-> Entered parseYINI(..) in parseEntry')
-    debugPrint('isStrict mode = ' + options.isStrict)
-    debugPrint('bailSensitivy = ' + options.bailSensitivy)
+    debugPrint('     isStrict mode = ' + options.isStrict)
+    debugPrint('bailSensitivyLevel = ' + options.bailSensitivyLevel)
+
+    let bailThreshold: TBailThreshold
+    switch (options.bailSensitivyLevel) {
+        case 0:
+            bailThreshold = '0-Ignore-Errors'
+            break
+        case 1:
+            bailThreshold = '1-Abort-on-Errors'
+            break
+        default:
+            bailThreshold = '2-Abort-Even-on-Warnings'
+    }
 
     isDebug() && console.log()
     debugPrint(
@@ -31,9 +77,25 @@ export const parseYINI = (
     const tokenStream = new CommonTokenStream(lexer)
     const parser = new YiniParser(tokenStream)
 
+    const errorListener = new MyErrorListener(bailThreshold)
+
+    parser.removeErrorListeners() // Removes the default console error output.
+    parser.addErrorListener(errorListener)
+
     debugPrint()
     debugPrint('--- Starting parsing... ---')
+
     const parseTree: YiniContext = parser.yini() // The function yini() is the start rule.
+    if (errorListener.errors.length > 0) {
+        debugPrint('*** ERROR detected ***')
+
+        if (isDebug()) {
+            // Handle or display syntax errors
+            console.error('Syntax errors detected:', errorListener.errors)
+            //process.exit(1)
+        }
+    }
+
     debugPrint('--- Parsing done. ---')
     debugPrint(
         '=== Ended phase 1 =============================================',

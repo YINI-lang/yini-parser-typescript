@@ -126,16 +126,20 @@ Expected JS output:
 
 */
 
-        YINI.parse(`
+        YINI.parse(
+            `
 // Using numeric shorthand section markers.
 
 @yini
 
 // This whole line is a comment.
-            ^2SectionName# This part is a comment.
+            ^SectionName# This part is a comment.
             // This whole line is a comment.
-   x = 1
-                `)
+            --x=1
+                `,
+            false,
+            2,
+        )
 
         //         YINI.parse(`
         // ^ Section1
