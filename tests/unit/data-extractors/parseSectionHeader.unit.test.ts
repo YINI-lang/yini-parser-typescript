@@ -1,4 +1,4 @@
-import { extractHeaderParts } from '../../../src/data-extractors/parseSectionHeader'
+import parseSectionHeader from '../../../src/data-extractors/parseSectionHeader'
 import { TSectionHeaderType } from '../../../src/types'
 import { debugPrint } from '../../../src/utils/system'
 
@@ -10,7 +10,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^ SectionName'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -20,7 +20,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^\tSectionName'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -30,7 +30,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^   SectionName'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -40,7 +40,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^\t  \t  SectionName'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -50,7 +50,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^\t  \t  SectionName // This part is a comment.'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -60,7 +60,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^ `Section Name`'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -70,7 +70,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^\t`Section Name`'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -80,7 +80,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^   `Section Name`'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -90,7 +90,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^\t  \t  `Section Name`'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -100,7 +100,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^\t  \t  `Section Name` # This part is a comment.'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -110,7 +110,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^SectionName'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -120,7 +120,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^SectionName // This is a section header.'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -130,7 +130,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^SectionName # This part is a comment.'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -140,7 +140,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^SectionName// This is a section header.'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -150,7 +150,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^SectionName# This part is a comment.'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -163,7 +163,7 @@ xdescribe('Parse section header Unit Tests:', () => {
             // This whole line is a comment.
         `
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -173,7 +173,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^`Section Name`'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -183,7 +183,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^`Section Name` // Comment.'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -193,7 +193,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^`Section Name` # Comment.'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -203,7 +203,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^`Section Name`// This part is a comment.'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -213,7 +213,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^^ SectionName'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -223,7 +223,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^^ SectionName // This part is a comment.'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -233,7 +233,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^^^ SectionName'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -243,7 +243,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^^^SectionName'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -253,7 +253,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^^^^ SectionName'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -262,7 +262,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^^^^ `Section Name`'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -272,7 +272,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^^^^^ SectionName'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -282,7 +282,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^^^^^    \tSectionName'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -292,7 +292,7 @@ xdescribe('Parse section header Unit Tests:', () => {
         // Arrange.
         const fixture = '^^^^^^ SectionName'
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')
@@ -307,7 +307,7 @@ xdescribe('Parse section header Unit Tests:', () => {
             ;This line is comment.
         `
         // Act.
-        const resultType = extractHeaderParts(fixture)
+        const resultType = parseSectionHeader(fixture)
         // Assert.
         expect(resultType).not.toEqual('Numeric-Header-Marker')
         expect(resultType).toEqual('Classic-Header-Marker')

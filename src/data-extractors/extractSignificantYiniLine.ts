@@ -6,7 +6,12 @@ import {
 } from '../utils/string'
 import { debugPrint, printObject } from '../utils/system'
 
-export const extractSignificantYiniLine = (rawYiniContent: string) => {
+/**
+ * Extract significant YINI line from YINI content (that may be surrounded by comments.).
+ * @param rawYiniContent
+ * @returns Will return one significant YINI line without any comments.
+ */
+export const extractYiniLine = (rawYiniContent: string) => {
     debugPrint('-> Entered extractSignificantYiniCode(..)')
 
     const significantLines: string[] = []
