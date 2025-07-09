@@ -546,6 +546,11 @@ describe('Extract header parts unit tests Unit Tests:', () => {
             strNumberPart,
             isBacktickedName,
         } = extractHeaderParts(fixture)
+        debugPrint('strMarkerChars: ' + strMarkerChars)
+        debugPrint('strSectionName: ' + strSectionName)
+        debugPrint('strNumberPart: ' + strNumberPart)
+        debugPrint('isBacktickedName: ' + isBacktickedName)
+
         // Assert.
         expect(strSectionName).not.toEqual('nonCorrectName')
         expect(strMarkerChars).toEqual('^^^^^^')

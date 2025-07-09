@@ -56,9 +56,17 @@ export const isDigit = (character: string): boolean => {
  *     //value = 11`
  *     => 'SectionName1'
  */
-export const stripNLAndAfter = (str: string): string => {
-    let idx1 = str.indexOf('\n')
-    let idx2 = str.indexOf('\r')
+export const stripNLAndAfter = (line: string): string => {
+    if (splitLines(line).length > 1) {
+        throw new Error(
+            'Internal error: Detected several row lines in line: >>>' +
+                line +
+                '<<<',
+        )
+    }
+
+    let idx1 = line.indexOf('\n')
+    let idx2 = line.indexOf('\r')
 
     if (idx1 < 0) idx1 = Number.MAX_SAFE_INTEGER
     if (idx2 < 0) idx2 = Number.MAX_SAFE_INTEGER
@@ -66,17 +74,25 @@ export const stripNLAndAfter = (str: string): string => {
     // debugPrint('stripNLAndAfter(..): idx2 = ' + idx2)
 
     const idx = Math.min(idx1, idx2)
-    return idx === -1 ? str : str.substring(0, idx)
+    return idx === -1 ? line : line.substring(0, idx)
 }
 
 /**
  * @returns Returns the beginning up to (but not including) any comments
  * starting with // and #.
  */
-export const stripCommentsAndAfter = (str: string): string => {
-    let idx1 = str.indexOf('//')
-    let idx2 = str.indexOf('# ') // NOTE: (!) Hash comments requires a WS after the hash!
-    let idx3 = str.indexOf('#\t') // NOTE: (!) Hash comments requires a WS after the hash!
+export const stripCommentsAndAfter = (line: string): string => {
+    if (splitLines(line).length > 1) {
+        throw new Error(
+            'Internal error: Detected several row lines in line: >>>' +
+                line +
+                '<<<',
+        )
+    }
+
+    let idx1 = line.indexOf('//')
+    let idx2 = line.indexOf('# ') // NOTE: (!) Hash comments requires a WS after the hash!
+    let idx3 = line.indexOf('#\t') // NOTE: (!) Hash comments requires a WS after the hash!
     // let idx4 = str.indexOf(';')
     // let idx5 = str.indexOf('--')
 
@@ -91,7 +107,7 @@ export const stripCommentsAndAfter = (str: string): string => {
     // debugPrint('stripCommentsAndAfter(..): idx4 = ' + idx4)
 
     const idx = Math.min(idx1, idx2)
-    return idx === -1 ? str : str.substring(0, idx)
+    return idx === -1 ? line : line.substring(0, idx)
 }
 
 /**

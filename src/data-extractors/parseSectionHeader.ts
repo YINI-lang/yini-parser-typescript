@@ -5,6 +5,7 @@ import { TSectionHeaderType } from '../types'
 import {
     isAlpha,
     isDigit,
+    splitLines,
     stripCommentsAndAfter,
     stripNLAndAfter,
     trimBackticks,
@@ -53,10 +54,21 @@ const parseSectionHeader = (
 
     rawLine = rawLine.trim()
 
-    let line = stripNLAndAfter(rawLine) // Cut of anything after (and including) any newline (and possible commented next lines).
-    line = stripCommentsAndAfter(line)
-    debugPrint('rawLine: ' + rawLine)
-    debugPrint('   line: ' + line)
+    let line = ''
+    if (splitLines(rawLine).length > 1) {
+        debugPrint(
+            'Detected rawLine (in parseSectionHeader(..)) having multiple row lines, leaving rawLine as is without stripping possible end content.',
+        )
+        line = rawLine
+    } else {
+        debugPrint(
+            'Detected rawLine (in parseSectionHeader(..)) having max 1 row line, stripping possible end content.',
+        )
+        line = stripNLAndAfter(rawLine) // Cut of anything after (and including) any newline (and possible commented next lines).
+        line = stripCommentsAndAfter(line)
+    }
+    debugPrint('rawLine: >>>' + rawLine + '<<<')
+    debugPrint('   line: >>>' + line + '<<<')
 
     const { strMarkerChars, strSectionName, strNumberPart, isBacktickedName } =
         extractHeaderParts(rawLine, errorHandlerInstance, ctx)
@@ -212,12 +224,23 @@ export const extractHeaderParts = (
 } => {
     debugPrint('-> Entered extractHeaderParts(..)')
 
-    let str = rawLine.trim()
-    str = stripNLAndAfter(str) // Cut of anything after (and including) any newline (and possible commented next lines).
-    str = stripCommentsAndAfter(str)
+    rawLine = rawLine.trim()
 
-    debugPrint('           rawLine: ' + rawLine)
-    debugPrint('               str: ' + str)
+    let str = ''
+    if (splitLines(rawLine).length > 1) {
+        debugPrint(
+            'Detected rawLine (in parseSectionHeader(..)) having multiple row lines, leaving rawLine as is without stripping possible end content.',
+        )
+        str = rawLine
+    } else {
+        debugPrint(
+            'Detected rawLine (in parseSectionHeader(..)) having max 1 row line, stripping possible end content.',
+        )
+        str = stripNLAndAfter(rawLine) // Cut of anything after (and including) any newline (and possible commented next lines).
+        str = stripCommentsAndAfter(str)
+    }
+    debugPrint('rawLine: >>>' + rawLine + '<<<')
+    debugPrint('    str: >>>' + str + '<<<')
 
     // Edge case: empty line.
     if (!str) {
@@ -290,11 +313,12 @@ export const extractHeaderParts = (
     }
 
     debugPrint()
+    debugPrint('------')
     debugPrint('<- About to leave extractHeaderParts(..)')
     debugPrint()
-    debugPrint('    markerCharsPart: ' + markerCharsPart)
-    debugPrint('    sectionNamePart: ' + sectionNamePart)
-    debugPrint('         numberPart: ' + numberPart)
+    debugPrint('    markerCharsPart: >>>' + markerCharsPart + '<<<')
+    debugPrint('    sectionNamePart: >>>' + sectionNamePart + '<<<')
+    debugPrint('         numberPart: >>>' + numberPart + '<<<')
     debugPrint('   isBacktickedName: ' + isBacktickedName)
     debugPrint()
 

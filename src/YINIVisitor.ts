@@ -333,10 +333,10 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         if (!line) {
             debugPrint()
             debugPrint(
-                '--- Start: parse line from section content-----------------',
+                'Nothing in SECTION_HEAD() is found, trying to read the section content directly...',
             )
             debugPrint(
-                'Nothing in SECTION_HEAD() is found, trying to read the section content directly...',
+                '--- Start: parse line from section content-----------------',
             )
             //@todo loop each row in below (with cut ending of comments) that input at line that remains use that as line
             const sectionContent = '' + ctx.getText().trim()
@@ -366,6 +366,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
                     // Use this as input in line.
                     line = row
+                    debugPrint('Will use row as line input')
                     break
                 }
             }

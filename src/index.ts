@@ -12,6 +12,7 @@
 */
 
 import { APP_ENV, isDebug, isDev, isProd, NODE_ENV } from './config/env'
+import { extractHeaderParts } from './data-extractors/parseSectionHeader'
 import { debugPrint } from './utils/system'
 import YINI from './YINI'
 
@@ -126,6 +127,7 @@ Expected JS output:
 
 */
 
+        /*
         YINI.parse(
             `
 // Using numeric shorthand section markers.
@@ -140,6 +142,35 @@ Expected JS output:
             false,
             2,
         )
+*/
+
+        /*
+        YINI.parse(
+            `
+            ^^^^^^\`Section Name\`//Comment here.
+            ;This line is comment.
+                `,
+            false,
+            2,
+        )
+        */
+
+        debugPrint('Input:')
+        const input = `// This whole line is a comment.
+            ^SectionName# This part is a comment.
+            // This whole line is a comment.
+        `
+        // Act.
+        const {
+            strMarkerChars,
+            strSectionName,
+            strNumberPart,
+            isBacktickedName,
+        } = extractHeaderParts(input)
+        debugPrint('strMarkerChars: >>>' + strMarkerChars + '<<<')
+        debugPrint('strSectionName: >>>' + strSectionName + '<<<')
+        debugPrint('strNumberPart: >>>' + strNumberPart + '<<<')
+        debugPrint('isBacktickedName: ' + isBacktickedName)
 
         //         YINI.parse(`
         // ^ Section1
