@@ -39,11 +39,11 @@ export const isMarkerCharacter = (character: string): boolean => {
 const parseSectionHeader = (
     rawLine: string,
     errorHandlerInstance: ErrorDataHandler,
-    ctx: SectionContext, // For error reporting.
+    ctx: null | SectionContext, // For error reporting.
 ): {
-    headerMarkerType: TSectionHeaderType
+    markerType: TSectionHeaderType // Header marker type.
     sectionName: string
-    level: number
+    sectionLevel: number
 } => {
     debugPrint('-> Entered parseSectionHeader(..)')
 
@@ -183,9 +183,9 @@ const parseSectionHeader = (
     debugPrint('                        --------------')
 
     return {
-        headerMarkerType,
+        markerType: headerMarkerType,
         sectionName: strSectionName,
-        level,
+        sectionLevel: level,
     }
 }
 

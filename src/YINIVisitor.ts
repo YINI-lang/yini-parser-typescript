@@ -379,12 +379,12 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         }
 
         this.prevLevel = this.level
-        let { sectionName, level } = parseSectionHeader(
+        let { sectionName, sectionLevel } = parseSectionHeader(
             line,
             this.errorHandlerInstance!,
             ctx,
         )
-        this.level = level
+        this.level = sectionLevel
 
         // ---------------------------------------------------------------
 
@@ -398,7 +398,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         }
         debugPrint('-- In visitSection(..) ---------------------------')
         debugPrint('            sectionName = ' + sectionName)
-        debugPrint('                  level = ' + level)
+        debugPrint('           sectionLevel = ' + sectionLevel)
         debugPrint('             this.level = ' + this.level)
         debugPrint('         this.prevLevel = ' + this.prevLevel)
         debugPrint('   this.prevSectionName = ' + this.prevSectionName)
@@ -506,7 +506,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             if (
                 // (level === 0 && !sectionName) ||
                 // (sectionName === 'undefined' && !!members)
-                level === 0 &&
+                sectionLevel === 0 &&
                 sectionName === 'undefined' &&
                 !!members
             ) {
@@ -545,7 +545,11 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 this.lastActiveSectionAtLevels[this.level - 1] = {
                     [sectionName]: { ...members },
                 }
-                this.pushOnTree({ level: level, name: sectionName, members })
+                this.pushOnTree({
+                    level: sectionLevel,
+                    name: sectionName,
+                    members,
+                })
                 // this.lastActiveSectionNameAtLevels.push(sectionName)
                 debugPrint('Mounted as append')
             }
@@ -627,12 +631,16 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('<- Leaving visitSection(..)')
         if (isDebug()) {
             console.log('returning:')
-            console.log({ level: level, name: sectionName, members: members })
+            console.log({
+                sectionLevel: sectionLevel,
+                name: sectionName,
+                members: members,
+            })
             console.log()
         }
 
         return {
-            level: level,
+            level: sectionLevel,
             name: sectionName,
             members: members,
         } as ISectionResult
