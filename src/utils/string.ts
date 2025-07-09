@@ -93,3 +93,13 @@ export const stripCommentsAndAfter = (str: string): string => {
     const idx = Math.min(idx1, idx2)
     return idx === -1 ? str : str.substring(0, idx)
 }
+
+/**
+ * Splits a string into an array of lines, handling both LF and CRLF newlines.
+ * @param content The input string.
+ * @returns Array of lines (strings).
+ */
+export function splitLines(content: string): string[] {
+    // Chould handle \n (LF), \r\n (CRLF), and even just \r (old Mac style).
+    return content.split(/\r\n|\r|\n/)
+}

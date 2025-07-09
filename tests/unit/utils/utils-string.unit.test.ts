@@ -1,4 +1,8 @@
-import { stripNLAndAfter, trimBackticks } from '../../../src/utils/string'
+import {
+    splitLines,
+    stripNLAndAfter,
+    trimBackticks,
+} from '../../../src/utils/string'
 import { debugPrint } from '../../../src/utils/system'
 
 /**
@@ -138,5 +142,50 @@ describe('Utils-String: stripNLAndAfter(..) Unit Tests:', () => {
         const result = stripNLAndAfter(fixture).trim()
         // Assert.
         expect(result).toEqual('\`Section Name 4\`')
+    })
+})
+
+/**
+ * splitLines(..) Tests.
+ */
+describe('Utils-String: splitLines(..) Unit Tests:', () => {
+    test('1. splitLines(..) test.', () => {
+        // Arrange.
+        const fixture = 'line one'
+        // Act.
+        const result = splitLines(fixture)
+        // Assert.
+        expect(result[0]).toEqual('line one')
+    })
+
+    test('2. splitLines(..) test.', () => {
+        // Arrange.
+        const fixture = 'line one\n'
+        // Act.
+        const result = splitLines(fixture)
+        // Assert.
+        expect(result[0]).toEqual('line one')
+    })
+
+    test('3. splitLines(..) test.', () => {
+        // Arrange.
+        const fixture = 'line one\r line two\n'
+        // Act.
+        const result = splitLines(fixture)
+        // Assert.
+        expect(result[0]).toEqual('line one')
+        expect(result[1]).toEqual(' line two')
+    })
+
+    test('4. splitLines(..) test.', () => {
+        // Arrange.
+        const fixture = 'line one\nline two\r\nline three\rline four'
+        // Act.
+        const result = splitLines(fixture)
+        // Assert.
+        expect(result[0]).toEqual('line one')
+        expect(result[1]).toEqual('line two')
+        expect(result[2]).toEqual('line three')
+        expect(result[3]).toEqual(' line four')
     })
 })

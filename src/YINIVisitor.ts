@@ -34,6 +34,11 @@ import {
     TSyntaxTree,
     TSyntaxTreeContainer,
 } from './types'
+import {
+    splitLines,
+    stripCommentsAndAfter,
+    stripNLAndAfter,
+} from './utils/string'
 import { debugPrint, printObject } from './utils/system'
 
 interface YiniDocument {
@@ -306,9 +311,9 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
         let line: string = ''
         try {
-            line = '' + ctx.SECTION_HEAD()?.getText().trim()
-            //@todo loop each row in below (with cut ending of comments) that input at line that remains use that as line
-            // if (!line) line = '' + ctx.getText().trim()
+            debugPrint('S1')
+            line = ctx.SECTION_HEAD()?.getText().trim() || ''
+            debugPrint('S2, line: >>>' + line + '<<<')
         } catch (error) {
             const msgWhat: string = `Unexpected syntax while parsing a member or section head`
             const msgWhy: string = `Found unexpected syntax while trying to read a key-value pair or a section header (such as a section marker or section name).`
@@ -320,6 +325,59 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 msgWhat,
                 msgWhy,
             )
+        }
+
+        // If no section head can be found in the above SECTION_HEAD(),
+        // try alternative method of reading the section content.
+        debugPrint('S3, line: >>>' + line + '<<<')
+        if (!line) {
+            debugPrint()
+            debugPrint(
+                '--- Start: parse line from section content-----------------',
+            )
+            debugPrint(
+                'Nothing in SECTION_HEAD() is found, trying to read the section content directly...',
+            )
+            //@todo loop each row in below (with cut ending of comments) that input at line that remains use that as line
+            const sectionContent = '' + ctx.getText().trim()
+            debugPrint('Section content: ' + ctx.getText())
+
+            const contentLines = splitLines(sectionContent)
+            if (isDebug()) {
+                console.log('contentLines:')
+                printObject(contentLines)
+            }
+
+            // contentLines.forEach((row: string) => {
+            for (let row of contentLines) {
+                debugPrint('---')
+                debugPrint('row (a): >>>' + row + '<<<')
+                row = stripNLAndAfter(row)
+                debugPrint('row (b): >>>' + row + '<<<')
+                row = stripCommentsAndAfter(row)
+                debugPrint('row (c): >>>' + row + '<<<')
+                row = row.trim()
+                debugPrint('row (d): >>>' + row + '<<<')
+                if (row) {
+                    debugPrint(
+                        'Found some content in split row (non-comments).',
+                    )
+                    debugPrint('Split row: >>>' + row + '<<<')
+
+                    // Use this as input in line.
+                    line = row
+                    break
+                }
+            }
+            debugPrint(
+                '--- End: parse line from section content-----------------',
+            )
+            debugPrint()
+        }
+        debugPrint('S4, line: >>>' + line + '<<<')
+
+        if (!line) {
+            debugPrint('*** ERROR: Nothing to parse in section line')
         }
 
         this.prevLevel = this.level
