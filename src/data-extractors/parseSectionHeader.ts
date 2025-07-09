@@ -54,6 +54,8 @@ const parseSectionHeader = (
 
     rawLine = rawLine.trim()
 
+    //@todo, change to use extractSignificantYiniLine(..)
+
     let line = ''
     if (splitLines(rawLine).length > 1) {
         debugPrint(
@@ -225,6 +227,8 @@ export const extractHeaderParts = (
     debugPrint('-> Entered extractHeaderParts(..)')
 
     rawLine = rawLine.trim()
+
+    //@todo, change to use extractSignificantYiniLine(..)
 
     let str = ''
     if (splitLines(rawLine).length > 1) {

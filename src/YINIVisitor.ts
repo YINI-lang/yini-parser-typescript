@@ -338,9 +338,10 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             debugPrint(
                 '--- Start: parse line from section content-----------------',
             )
-            //@todo loop each row in below (with cut ending of comments) that input at line that remains use that as line
             const sectionContent = '' + ctx.getText().trim()
             debugPrint('Section content: ' + ctx.getText())
+
+            //@todo, change to use extractSignificantYiniLine(..)
 
             const contentLines = splitLines(sectionContent)
             if (isDebug()) {
