@@ -2,16 +2,10 @@ import { isDebug } from '../config/env'
 import { ErrorDataHandler } from '../ErrorDataHandler'
 import { SectionContext } from '../grammar/YiniParser'
 import { TSectionHeaderType } from '../types'
-import {
-    isAlpha,
-    isDigit,
-    splitLines,
-    stripCommentsAndAfter,
-    stripNLAndAfter,
-    trimBackticks,
-} from '../utils/string'
+import { isAlpha } from '../utils/string'
 import { debugPrint } from '../utils/system'
 import extractHeaderParts from './extractHeaderParts'
+import { extractYiniLine } from './extractSignificantYiniLine'
 
 const SECTION_MARKER1 = '^'
 const SECTION_MARKER2 = '~'
@@ -57,25 +51,26 @@ const parseSectionHeader = (
 
     //@todo, change to use extractSignificantYiniLine(..)
 
-    let line = ''
-    if (splitLines(rawLine).length > 1) {
-        debugPrint(
-            'Detected rawLine (in parseSectionHeader(..)) having multiple row lines, leaving rawLine as is without stripping possible end content.',
-        )
-        line = rawLine
-    } else {
-        debugPrint(
-            'Detected rawLine (in parseSectionHeader(..)) having max 1 row line, stripping possible end content.',
-        )
-        line = stripNLAndAfter(rawLine) // Cut of anything after (and including) any newline (and possible commented next lines).
-        line = stripCommentsAndAfter(line)
-    }
-    debugPrint('rawLine: >>>' + rawLine + '<<<')
-    debugPrint('   line: >>>' + line + '<<<')
+    const line = extractYiniLine(rawLine)
+    // const line = rawLine
+    // if (splitLines(rawLine).length > 1) {
+    //     debugPrint(
+    //         'Detected rawLine (in parseSectionHeader(..)) having multiple row lines, leaving rawLine as is without stripping possible end content.',
+    //     )
+    //     line = rawLine
+    // } else {
+    //     debugPrint(
+    //         'Detected rawLine (in parseSectionHeader(..)) having max 1 row line, stripping possible end content.',
+    //     )
+    //     line = stripNLAndAfter(rawLine) // Cut of anything after (and including) any newline (and possible commented next lines).
+    //     line = stripCommentsAndAfter(line)
+    // }
+    debugPrint('                  rawLine: >>>' + rawLine + '<<<')
+    debugPrint('extractYiniLine(..), line: >>>' + line + '<<<')
 
     const { strMarkerChars, strSectionName, strNumberPart, isBacktickedName } =
         extractHeaderParts(rawLine, errorHandlerInstance, ctx)
-    // extractHeaderParts(rawLine)
+    debugPrint('In parseSectionHeader(..), after extractHeaderParts(..):')
     debugPrint('  strMarkerChars: ' + strMarkerChars)
     debugPrint('  strSectionName: ' + strSectionName)
     debugPrint('   strNumberPart: ' + strNumberPart)
@@ -179,8 +174,10 @@ const parseSectionHeader = (
     // ---------------------------------------------------------------
 
     debugPrint('                        --------------')
-    debugPrint(`           rawLine = >>>${rawLine}<<<`)
-    debugPrint('           level: ' + level)
+    debugPrint('<- About to leave parseSectionHeader(..)')
+    debugPrint(`    rawLine = >>>${rawLine}<<<`)
+    debugPrint(`       line = >>>${line}<<<`)
+    debugPrint('identified level: ' + level)
     debugPrint('     sectionName: ' + sectionName)
     debugPrint('headerMarkerType: ' + headerMarkerType)
     debugPrint('                        --------------')

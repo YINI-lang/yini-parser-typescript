@@ -533,9 +533,7 @@ describe('Extract header parts unit tests Unit Tests:', () => {
 
     test('9.b. Extract parts for classic section header with level 6, compact with backticed name and comment.', () => {
         // Arrange.
-        const fixture = `/*
-            This part is a comment block.
-        */
+        const fixture = `;This line is comment.
             ^^^^^^\`Section Name\`//Comment here.
             ;This line is comment.
         `

@@ -2,15 +2,9 @@ import { isDebug } from '../config/env'
 import { ErrorDataHandler } from '../ErrorDataHandler'
 import { SectionContext } from '../grammar/YiniParser'
 import { TSectionHeaderType } from '../types'
-import {
-    isAlpha,
-    isDigit,
-    splitLines,
-    stripCommentsAndAfter,
-    stripNLAndAfter,
-    trimBackticks,
-} from '../utils/string'
+import { trimBackticks } from '../utils/string'
 import { debugPrint } from '../utils/system'
+import { extractYiniLine } from './extractSignificantYiniLine'
 
 const SECTION_MARKER1 = '^'
 const SECTION_MARKER2 = '~'
@@ -74,21 +68,20 @@ const extractHeaderParts = (
 
     rawLine = rawLine.trim()
 
-    //@todo, change to use extractSignificantYiniLine(..)
-
-    let str = ''
-    if (splitLines(rawLine).length > 1) {
-        debugPrint(
-            'Detected rawLine (in parseSectionHeader(..)) having multiple row lines, leaving rawLine as is without stripping possible end content.',
-        )
-        str = rawLine
-    } else {
-        debugPrint(
-            'Detected rawLine (in parseSectionHeader(..)) having max 1 row line, stripping possible end content.',
-        )
-        str = stripNLAndAfter(rawLine) // Cut of anything after (and including) any newline (and possible commented next lines).
-        str = stripCommentsAndAfter(str)
-    }
+    const str = extractYiniLine(rawLine)
+    //let str = ''
+    // if (splitLines(rawLine).length > 1) {
+    //     debugPrint(
+    //         'Detected rawLine (in parseSectionHeader(..)) having multiple row lines, leaving rawLine as is without stripping possible end content.',
+    //     )
+    //     str = rawLine
+    // } else {
+    //     debugPrint(
+    //         'Detected rawLine (in parseSectionHeader(..)) having max 1 row line, stripping possible end content.',
+    //     )
+    //     str = stripNLAndAfter(rawLine) // Cut of anything after (and including) any newline (and possible commented next lines).
+    //     str = stripCommentsAndAfter(str)
+    // }
     debugPrint('rawLine: >>>' + rawLine + '<<<')
     debugPrint('    str: >>>' + str + '<<<')
 
@@ -179,101 +172,5 @@ const extractHeaderParts = (
         isBacktickedName,
     }
 }
-
-// export const extractClassicSectionHeader = (
-//     rawHeaderLine: string,
-//     errorHandlerInstance: ErrorDataHandler,
-//     ctx: SectionContext, // For error reporting.
-// ): any => {
-//     let line = rawHeaderLine.trim()
-//     line = stripNLAndAfter(line) // Cut of anything after (and including) any newline (and possible commented next lines).
-//     line = stripCommentsAndAfter(line)
-
-//     // --- Determine nesting level. ---------
-//     const lineLen: number = line.length
-//     // this.prevLevel = this.level
-//     let level = 0 // One-based, level 1 is the first level.
-
-//     for (let pos = 0; pos < lineLen; pos++) {
-//         if (
-//             line.charAt(pos) === SECTION_MARKER1 ||
-//             line.charAt(pos) === SECTION_MARKER2
-//         ) {
-//             level++
-//         } else {
-//             break
-//         }
-//     }
-//     debugPrint('Extracted level = ' + level)
-
-//     // ONLY if repeating marker
-//     // if (headerMarkerType === 'Classic-Header-Marker' && level >= 7) {
-//     //     errorHandlerInstance.pushOrBail(
-//     //         ctx,
-//     //         'Syntax-Error',
-//     //         'Invalid number of repeating characters in marker: ' +
-//     //             level +
-//     //             ' repeating characters in a marker in succession in a section head marker is not allowed.',
-//     //         'Using seven or more of the same marker in succession (e.g. ^^^^^^^) is invalid. However, to represent nesting levels deeper than 6, you may switch to the numeric shorthand section header syntax.',
-//     //     )
-//     // }
-//     // ------------------------------------
-
-//     // --- Extract section name after markers and whitespace. ---------
-//     let subLine: string = line.substring(level)
-//     let isDone = false
-//     do {
-//         if (subLine.startsWith(' ') || subLine.startsWith('\t')) {
-//             subLine = subLine.substring(1) // Consume left most character.
-//             debugPrint('* consumed left most char!!')
-//         } else {
-//             isDone = true
-//         }
-//     } while (!isDone)
-
-//     // NOTE: Any comments on next line after the section header, are
-//     // included in subLine, these must be stripped.
-//     let sectionName: string = subLine.trim()
-
-//     if (isDigit(sectionName.charAt(0))) {
-//         errorHandlerInstance.pushOrBail(
-//             ctx,
-//             'Syntax-Error',
-//             'Unknown section header marker type!',
-//             'Section header marker type could not be identified, header text: ' +
-//                 line +
-//                 ', raw: ' +
-//                 rawHeaderLine,
-//         )
-//     }
-
-//     // sectionName = stripNLAndAfter(sectionName) // Cut of anything after (and including) any newline (and possible commented next lines).
-//     // sectionName = stripCommentsAndAfter(sectionName)
-//     sectionName = trimBackticks(sectionName)
-//     sectionName = sectionName.trim()
-
-//     debugPrint('                        --------------')
-//     debugPrint(
-//         `           Parsed subLine = >>>${subLine.trim()}<<<, with level = ${level}`,
-//     )
-//     debugPrint(
-//         `Strip/trimmed sectionName = >>>${sectionName}<<<, with level = ${level}`,
-//     )
-//     debugPrint('                        --------------')
-
-//     return {
-//         sectionName,
-//         level: level,
-//         headerMarkerType: 'Classic-Header-Marker',
-//     }
-// }
-
-// export const extractNumericSectionHeader = (
-//     rawHeaderLine: string,
-//     errorHandlerInstance: ErrorDataHandler,
-//     ctx: SectionContext, // For error reporting.
-// ): any => {
-//     return 'ERROR'
-// }
 
 export default extractHeaderParts

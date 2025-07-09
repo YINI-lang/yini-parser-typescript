@@ -1,5 +1,6 @@
 import {
     splitLines,
+    stripCommentsAndAfter,
     stripNLAndAfter,
     trimBackticks,
 } from '../../../src/utils/string'
@@ -9,7 +10,7 @@ import { debugPrint } from '../../../src/utils/system'
  * trimBackticks(..) Tests.
  */
 describe('Utils-String: trimBackticks(..) Unit Tests:', () => {
-    test('Trim backticks test 1.', () => {
+    test('1. Trim backticks test.', () => {
         // Arrange.
         const fixture = '`hello`'
         // Act.
@@ -18,7 +19,7 @@ describe('Utils-String: trimBackticks(..) Unit Tests:', () => {
         expect(result).toEqual('hello')
     })
 
-    test('Trim backticks test 2.', () => {
+    test('2. Trim backticks test.', () => {
         // Arrange.
         const fixture = 'hello'
         // Act.
@@ -27,7 +28,7 @@ describe('Utils-String: trimBackticks(..) Unit Tests:', () => {
         expect(result).toEqual('hello')
     })
 
-    test('Trim backticks test 3.', () => {
+    test('3. Trim backticks test.', () => {
         // Arrange.
         const fixture = '`hello'
         // Act.
@@ -36,7 +37,7 @@ describe('Utils-String: trimBackticks(..) Unit Tests:', () => {
         expect(result).toEqual('`hello')
     })
 
-    test('Trim backticks test 4.', () => {
+    test('4. Trim backticks test.', () => {
         // Arrange.
         const fixture = 'hello`'
         // Act.
@@ -45,7 +46,7 @@ describe('Utils-String: trimBackticks(..) Unit Tests:', () => {
         expect(result).toEqual('hello`')
     })
 
-    test('Trim backticks test 5.', () => {
+    test('5. Trim backticks test.', () => {
         // Arrange.
         const fixture = ''
         // Act.
@@ -54,7 +55,7 @@ describe('Utils-String: trimBackticks(..) Unit Tests:', () => {
         expect(result).toEqual('')
     })
 
-    test('Trim backticks test 6.', () => {
+    test('6. Trim backticks test.', () => {
         // Arrange.
         const fixture = '``'
         // Act.
@@ -63,7 +64,7 @@ describe('Utils-String: trimBackticks(..) Unit Tests:', () => {
         expect(result).toEqual('')
     })
 
-    test('Trim backticks test 7.', () => {
+    test('7. Trim backticks test.', () => {
         // Arrange.
         const fixture = '`H`'
         // Act.
@@ -72,7 +73,7 @@ describe('Utils-String: trimBackticks(..) Unit Tests:', () => {
         expect(result).toEqual('H')
     })
 
-    test('Trim backticks test 8.', () => {
+    test('8. Trim backticks test.', () => {
         // Arrange.
         const fixture = '` `'
         // Act.
@@ -81,7 +82,7 @@ describe('Utils-String: trimBackticks(..) Unit Tests:', () => {
         expect(result).toEqual(' ')
     })
 
-    test('Trim backticks test 9.', () => {
+    test('9. Trim backticks test.', () => {
         // Arrange.
         const fixture = '`Hello World`'
         // Act.
@@ -90,7 +91,7 @@ describe('Utils-String: trimBackticks(..) Unit Tests:', () => {
         expect(result).toEqual('Hello World')
     })
 
-    test('Trim backticks test 10.', () => {
+    test('10. Trim backticks test.', () => {
         // Arrange.
         const fixture = 'Hello World'
         // Act.
@@ -104,27 +105,44 @@ describe('Utils-String: trimBackticks(..) Unit Tests:', () => {
  * stripNLAndAfter(..) Tests.
  */
 describe('Utils-String: stripNLAndAfter(..) Unit Tests:', () => {
-    test('Strip NL-and-After test 1.', () => {
+    test('1. Strip NL-and-After test.', () => {
         // Arrange.
-        const fixture = `SectionName1
-//value = 11`
+        const fixture = 'SectionName1'
         // Act.
         const result = stripNLAndAfter(fixture).trim()
         // Assert.
         expect(result).toEqual('SectionName1')
     })
 
-    test('Strip NL-and-After test 2.', () => {
+    test('2. Strip NL-and-After test.', () => {
+        // Arrange.
+        const fixture = ''
+        // Act.
+        const result = stripNLAndAfter(fixture).trim()
+        // Assert.
+        expect(result).toEqual('')
+    })
+
+    test('3. Strip NL-and-After test.', () => {
+        // Arrange.
+        const fixture = `SectionName1 //value = 11`
+        // Act.
+        const result = stripNLAndAfter(fixture).trim()
+        // Assert.
+        expect(result).toEqual('SectionName1 //value = 11')
+    })
+
+    test('4. Strip NL-and-After test.', () => {
         // Arrange.
         const fixture = `\`Section Name 2\`
-//value = 11`
+             //value = 11`
         // Act.
         const result = stripNLAndAfter(fixture).trim()
         // Assert.
         expect(result).toEqual('\`Section Name 2\`')
     })
 
-    test('Strip NL-and-After test 3.', () => {
+    test('5. Strip NL-and-After test.', () => {
         // Arrange.
         const fixture = `	  SectionName3
         //value = 11`
@@ -134,14 +152,109 @@ describe('Utils-String: stripNLAndAfter(..) Unit Tests:', () => {
         expect(result).toEqual('SectionName3')
     })
 
-    test('Strip NL-and-After test 4.', () => {
+    test('6. Strip NL-and-After test.', () => {
         // Arrange.
         const fixture = `	   \`Section Name 4\`
-        //value = 11`
+               //value = 11`
         // Act.
         const result = stripNLAndAfter(fixture).trim()
         // Assert.
         expect(result).toEqual('\`Section Name 4\`')
+    })
+})
+
+/**
+ * stripCommentsAndAfter(..) Tests.
+ */
+describe('Utils-String: stripCommentsAndAfter(..) Unit Tests:', () => {
+    test('1. tripCommentsAndAfter(..) test.', () => {
+        // Arrange.
+        const fixture = 'SectionName1 // This is a comment.'
+        // Act.
+        const result = stripCommentsAndAfter(fixture).trim()
+        // Assert.
+        expect(result).toEqual('SectionName1')
+    })
+
+    test('2. tripCommentsAndAfter(..) test.', () => {
+        // Arrange.
+        const fixture = ''
+        // Act.
+        const result = stripCommentsAndAfter(fixture).trim()
+        // Assert.
+        expect(result).toEqual('')
+    })
+
+    test('3. tripCommentsAndAfter(..) test.', () => {
+        // Arrange.
+        const fixture = 'SectionName1'
+        // Act.
+        const result = stripCommentsAndAfter(fixture).trim()
+        // Assert.
+        expect(result).toEqual('SectionName1')
+    })
+
+    test('4. tripCommentsAndAfter(..) test.', () => {
+        // Arrange.
+        const fixture = 'SectionName1 # This is a comment.'
+        // Act.
+        const result = stripCommentsAndAfter(fixture).trim()
+        // Assert.
+        expect(result).toEqual('SectionName1')
+    })
+
+    test('5. tripCommentsAndAfter(..) test.', () => {
+        // Arrange.
+        const fixture = 'SectionName1 // This is a comment.'
+        // Act.
+        const result = stripCommentsAndAfter(fixture).trim()
+        // Assert.
+        expect(result).toEqual('SectionName1')
+    })
+
+    test('6. tripCommentsAndAfter(..) test.', () => {
+        // Arrange.
+        const fixture = 'SectionName1# This is a comment.'
+        // Act.
+        const result = stripCommentsAndAfter(fixture).trim()
+        // Assert.
+        expect(result).toEqual('SectionName1')
+    })
+
+    test('7. tripCommentsAndAfter(..) test.', () => {
+        // Arrange.
+        const fixture = 'SectionName1//This is a comment.'
+        // Act.
+        const result = stripCommentsAndAfter(fixture).trim()
+        // Assert.
+        expect(result).toEqual('SectionName1')
+    })
+
+    test('8. tripCommentsAndAfter(..) test.', () => {
+        // Arrange.
+        const fixture = '--SectionName1//This is a comment.'
+        // Act.
+        const result = stripCommentsAndAfter(fixture).trim()
+        // Assert.
+        expect(result).toEqual('')
+    })
+
+    test('9. tripCommentsAndAfter(..) test.', () => {
+        // Arrange.
+        const fixture = '; This is a comment line.'
+        // Act.
+        const result = stripCommentsAndAfter(fixture).trim()
+        // Assert.
+        expect(result).toEqual('')
+    })
+
+    test('10. tripCommentsAndAfter(..) test.', () => {
+        // Arrange.
+        const fixture = ';This is a comment line.'
+        // Act.
+        const result = stripCommentsAndAfter(fixture).trim()
+        // Assert.
+        expect(result).toEqual('')
     })
 })
 
@@ -186,6 +299,6 @@ describe('Utils-String: splitLines(..) Unit Tests:', () => {
         expect(result[0]).toEqual('line one')
         expect(result[1]).toEqual('line two')
         expect(result[2]).toEqual('line three')
-        expect(result[3]).toEqual(' line four')
+        expect(result[3]).toEqual('line four')
     })
 })

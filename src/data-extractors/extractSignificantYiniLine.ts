@@ -1,15 +1,14 @@
 import { isDebug } from '../config/env'
-import {
-    splitLines,
-    stripCommentsAndAfter,
-    stripNLAndAfter,
-} from '../utils/string'
+import { splitLines, stripCommentsAndAfter } from '../utils/string'
 import { debugPrint, printObject } from '../utils/system'
 
 /**
  * Extract significant YINI line from YINI content (that may be surrounded by comments.).
- * @param rawYiniContent
- * @returns Will return one significant YINI line without any comments.
+ * @param rawYiniContent For example:
+ *     // This whole line is a comment.
+ *     ^SectionName# This part is a comment.
+ *     // This whole line is a comment.
+ * @returns Will filter out any comments (before or after) and return only one single significant YINI line.
  */
 export const extractYiniLine = (rawYiniContent: string) => {
     debugPrint('-> Entered extractSignificantYiniCode(..)')
@@ -21,15 +20,16 @@ export const extractYiniLine = (rawYiniContent: string) => {
 
     const contentLines = splitLines(rawYiniContent)
     if (isDebug()) {
-        console.log('contentLines:')
+        console.log(`contentLines: (len: ${contentLines.length})`)
         printObject(contentLines)
     }
 
     // contentLines.forEach((row: string) => {
-    for (let row of contentLines) {
+    for (const line of contentLines) {
+        let row = line
         debugPrint('---')
-        debugPrint('row (a): >>>' + row + '<<<')
-        row = stripNLAndAfter(row)
+        // debugPrint('row (a): >>>' + row + '<<<')
+        // row = stripNLAndAfter(row)
         debugPrint('row (b): >>>' + row + '<<<')
         row = stripCommentsAndAfter(row)
         debugPrint('row (c): >>>' + row + '<<<')
@@ -56,6 +56,7 @@ export const extractYiniLine = (rawYiniContent: string) => {
             debugPrint(
                 'Did only find one significant lines in rawYiniContent, OK',
             )
+            resultLine = significantLines[0]
             break
         default:
             debugPrint('Did find several significant lines in rawYiniContent!')

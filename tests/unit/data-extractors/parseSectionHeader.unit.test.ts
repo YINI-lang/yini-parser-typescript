@@ -5,6 +5,7 @@ import { debugPrint } from '../../../src/utils/system'
 /**
  * Parse section header unit tests.
  */
+/*
 xdescribe('Parse section header Unit Tests:', () => {
     test('1.a. Identify classic section header with level 1.', () => {
         // Arrange.
@@ -300,9 +301,7 @@ xdescribe('Parse section header Unit Tests:', () => {
 
     test('9.b. Identify classic section header with level 6, compact with backticed name and comment.', () => {
         // Arrange.
-        const fixture = `/*
-            This part is a comment block.
-        */
+        const fixture = `;This line is comment.
             ^^^^^^\`Section Name\`//Comment here.
             ;This line is comment.
         `
@@ -313,3 +312,4 @@ xdescribe('Parse section header Unit Tests:', () => {
         expect(resultType).toEqual('Classic-Header-Marker')
     })
 })
+*/

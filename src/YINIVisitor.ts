@@ -1,5 +1,6 @@
 import assert from 'assert'
 import { isDebug } from './config/env'
+import { extractYiniLine } from './data-extractors/extractSignificantYiniLine'
 import parseBooleanLiteral from './data-extractors/parseBoolean'
 import parseNullLiteral from './data-extractors/parseNull'
 import parseNumberLiteral from './data-extractors/parseNumber'
@@ -34,11 +35,6 @@ import {
     TSyntaxTree,
     TSyntaxTreeContainer,
 } from './types'
-import {
-    splitLines,
-    stripCommentsAndAfter,
-    stripNLAndAfter,
-} from './utils/string'
 import { debugPrint, printObject } from './utils/system'
 
 interface YiniDocument {
@@ -338,43 +334,43 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             debugPrint(
                 '--- Start: parse line from section content-----------------',
             )
-            const sectionContent = '' + ctx.getText().trim()
+            // const sectionContent = '' + ctx.getText().trim()
+            const sectionContent = ctx.getText().trim()
             debugPrint('Section content: ' + ctx.getText())
 
-            //@todo, change to use extractSignificantYiniLine(..)
+            line = extractYiniLine(sectionContent)
+            //     const contentLines = splitLines(sectionContent)
+            //     if (isDebug()) {
+            //         console.log('contentLines:')
+            //         printObject(contentLines)
+            //     }
 
-            const contentLines = splitLines(sectionContent)
-            if (isDebug()) {
-                console.log('contentLines:')
-                printObject(contentLines)
-            }
+            //     // contentLines.forEach((row: string) => {
+            //     for (let row of contentLines) {
+            //         debugPrint('---')
+            //         debugPrint('row (a): >>>' + row + '<<<')
+            //         row = stripNLAndAfter(row)
+            //         debugPrint('row (b): >>>' + row + '<<<')
+            //         row = stripCommentsAndAfter(row)
+            //         debugPrint('row (c): >>>' + row + '<<<')
+            //         row = row.trim()
+            //         debugPrint('row (d): >>>' + row + '<<<')
+            //         if (row) {
+            //             debugPrint(
+            //                 'Found some content in split row (non-comments).',
+            //             )
+            //             debugPrint('Split row: >>>' + row + '<<<')
 
-            // contentLines.forEach((row: string) => {
-            for (let row of contentLines) {
-                debugPrint('---')
-                debugPrint('row (a): >>>' + row + '<<<')
-                row = stripNLAndAfter(row)
-                debugPrint('row (b): >>>' + row + '<<<')
-                row = stripCommentsAndAfter(row)
-                debugPrint('row (c): >>>' + row + '<<<')
-                row = row.trim()
-                debugPrint('row (d): >>>' + row + '<<<')
-                if (row) {
-                    debugPrint(
-                        'Found some content in split row (non-comments).',
-                    )
-                    debugPrint('Split row: >>>' + row + '<<<')
-
-                    // Use this as input in line.
-                    line = row
-                    debugPrint('Will use row as line input')
-                    break
-                }
-            }
-            debugPrint(
-                '--- End: parse line from section content-----------------',
-            )
-            debugPrint()
+            //             // Use this as input in line.
+            //             line = row
+            //             debugPrint('Will use row as line input')
+            //             break
+            //         }
+            //     }
+            //     debugPrint(
+            //         '--- End: parse line from section content-----------------',
+            //     )
+            //     debugPrint()
         }
         debugPrint('S4, line: >>>' + line + '<<<')
 
@@ -798,7 +794,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         } else if (ctx.SECTION_HEAD()?.getText().trim()) {
             entityType = 'Section-Head'
 
-            const line = '' + ctx.SECTION_HEAD().getText().trim()
+            // const line = '' + ctx.SECTION_HEAD().getText().trim()
+            const line = ctx.SECTION_HEAD().getText().trim()
             debugPrint('(!) Detected a section head instead: ' + line)
 
             followingSection = this.visitSection(ctx)

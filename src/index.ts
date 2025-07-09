@@ -13,6 +13,7 @@
 
 import { APP_ENV, isDebug, isDev, isProd, NODE_ENV } from './config/env'
 import extractHeaderParts from './data-extractors/extractHeaderParts'
+import { stripNLAndAfter } from './utils/string'
 import { debugPrint } from './utils/system'
 import YINI from './YINI'
 
@@ -144,33 +145,11 @@ Expected JS output:
         )
 */
 
-        /*
-        YINI.parse(
-            `
-            ^^^^^^\`Section Name\`//Comment here.
-            ;This line is comment.
-                `,
-            false,
-            2,
-        )
-        */
+        // YINI.parse(`^Title`, false, 2)
 
-        debugPrint('Input:')
-        const input = `// This whole line is a comment.
-            ^SectionName# This part is a comment.
-            // This whole line is a comment.
-        `
+        const input = `SectionName1   //value = 11`
         // Act.
-        const {
-            strMarkerChars,
-            strSectionName,
-            strNumberPart,
-            isBacktickedName,
-        } = extractHeaderParts(input)
-        debugPrint('strMarkerChars: >>>' + strMarkerChars + '<<<')
-        debugPrint('strSectionName: >>>' + strSectionName + '<<<')
-        debugPrint('strNumberPart: >>>' + strNumberPart + '<<<')
-        debugPrint('isBacktickedName: ' + isBacktickedName)
+        const result = stripNLAndAfter(input).trim()
 
         //         YINI.parse(`
         // ^ Section1
