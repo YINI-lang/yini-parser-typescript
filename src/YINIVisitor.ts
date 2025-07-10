@@ -706,12 +706,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                         )
                         isDebug() && console.log({ [key]: value })
 
-                        //@todo Maybe should assign as [key]: { type: type, value: value }
-                        // or maybe even as [key]: { type: type, key: key, value: value }
                         Object.assign(members, { [key]: value })
-                        // Object.assign(members, {
-                        //     [key]: { type: type, value: value },
-                        // })
                         debugPrint(
                             '+ Added member or section onto members: "' +
                                 key +
@@ -815,7 +810,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 console.log(followingSection)
             }
 
-            //@todo Mount the nested object correctly!
+            //@todo  (Is this fixed now? 2025-07-10) Mount the nested object correctly!
             resultType = 'Object'
             // resultValue[nestedSection?.name] = nestedSection?.members
             resultValue = followingSection?.members || {}
@@ -909,7 +904,6 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     visitString_literal = (ctx: String_literalContext): IResult => {
         debugPrint('-> Entered visitString_literal(..)')
 
-        // @todo TODO: Move the parsing of raw into a file into literal-parsers/
         const raw = ctx.getText()
         debugPrint('raw = >>>' + raw + '<<<')
 

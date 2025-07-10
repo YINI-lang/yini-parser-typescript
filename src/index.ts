@@ -149,21 +149,37 @@ Expected JS output:
 
         // YINI.parse(`^1 SectionName`, false, 2)
 
-        const input = '^1 SectionName'
+        const validYini = `
+~ user
+username = 'tester two'
+isSysOp = YES
+
+    ~~ prefs
+    theme = "light"
+    notifications = OFF
+
+^1 user2
+^2 prefs
+^3 deepSection
+^4 deeperSection
+key = "Level 4 section"
+^5 yetDeeperSection
+key = "Level 5 section"
+item = 77
+
+~1 user3
+username = 'tester three'
+isSysOp = NO
+
+    ~~2 prefs
+    theme = "special-dark"
+    notifications = ON
+
+`
+
         // Act.
-        const { markerType, sectionName, sectionLevel } = parseSectionHeader(
-            input,
-            new ErrorDataHandler('1-Abort-on-Errors'),
-            null,
-        )
-        debugPrint('  markerType: ' + markerType)
-        debugPrint(' sectionName: ' + sectionName)
-        debugPrint('sectionLevel: ' + sectionLevel)
-        debugPrint(
-            'test   markerType: ' + (markerType === 'Numeric-Header-Marker'),
-        )
-        debugPrint('test  sectionName: ' + (sectionName === 'SectionName'))
-        debugPrint('test sectionLevel: ' + (sectionLevel === 1))
+        const result = YINI.parse(validYini)
+        debugPrint(result)
 
         //         YINI.parse(`
         // ^ Section1

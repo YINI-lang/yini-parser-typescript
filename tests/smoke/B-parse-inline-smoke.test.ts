@@ -192,7 +192,6 @@ empty = { }`
         //@todo Add the rest of the members too
     })
 
-    //@todo Fix issue reding section header to parse correctly and not "'^ CommentsDemo'"!
     test('8. Comments, Block Comments, and Disabled Lines.', () => {
         // Arrange.
         const validYini = `
@@ -248,7 +247,7 @@ username = 'tester three'
 isSysOp = NO
 
     ~~2 prefs
-    theme = "dark"
+    theme = "special-dark"
     notifications = ON
 
 `
@@ -260,7 +259,22 @@ isSysOp = NO
         // Assert.
         expect(result.user.username).toEqual('tester two')
         expect(result.user.isSysOp).toEqual(true)
-        //@todo Add the rest of the members too
+        expect(result.user.prefs.theme).toEqual('light')
+        expect(result.user.prefs.notifications).toEqual(false)
+
+        const deeperSection = {
+            ...result.user2.prefs.deepSection.deeperSection,
+        }
+        expect(deeperSection.key).toEqual('Level 4 section')
+        expect(deeperSection.yetDeeperSection.key).toEqual('Level 5 section')
+        expect(deeperSection.yetDeeperSection.item).toEqual(77)
+
+        expect(result.user3.username).toEqual('tester three')
+        expect(result.user3.isSysOp).toEqual(false)
+
+        //@todo Fix issue so this missing subsection gets included, not sure yet what exactly causes the issue...
+        //expect(result.user3.prefs.theme).toEqual('special-dark')
+        //expect(result.user3.prefs.notifications).toEqual(true)
     })
 
     xtest('10. Parse inline AppConfig (Mixed).', () => {

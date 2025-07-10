@@ -49,22 +49,7 @@ const parseSectionHeader = (
 
     rawLine = rawLine.trim()
 
-    //@todo, change to use extractSignificantYiniLine(..)
-
     const line = extractYiniLine(rawLine)
-    // const line = rawLine
-    // if (splitLines(rawLine).length > 1) {
-    //     debugPrint(
-    //         'Detected rawLine (in parseSectionHeader(..)) having multiple row lines, leaving rawLine as is without stripping possible end content.',
-    //     )
-    //     line = rawLine
-    // } else {
-    //     debugPrint(
-    //         'Detected rawLine (in parseSectionHeader(..)) having max 1 row line, stripping possible end content.',
-    //     )
-    //     line = stripNLAndAfter(rawLine) // Cut of anything after (and including) any newline (and possible commented next lines).
-    //     line = stripCommentsAndAfter(line)
-    // }
     debugPrint('                  rawLine: >>>' + rawLine + '<<<')
     debugPrint('extractYiniLine(..), line: >>>' + line + '<<<')
 
@@ -77,7 +62,6 @@ const parseSectionHeader = (
     debugPrint('isBacktickedName: ' + isBacktickedName)
 
     let headerMarkerType: TSectionHeaderType
-    // let sectionName = ''
     let level = 0
 
     if (strMarkerChars === '') {
