@@ -25,6 +25,12 @@ npm install yini-parser
 
 ## Usage
 
+> Only import the main class:
+>
+> ```ts
+> import YINI from 'yini-parser';
+> ```
+
 ```ts
 import YINI from 'yini-parser';
 
@@ -38,12 +44,6 @@ port = 5432
 // Parse from file
 const configFromFile = YINI.parseFile('./config.yini');
 ```
-
-> Only import the main class:
->
-> ```ts
-> import YINI from 'yini-parser';
-> ```
 
 ## API
 
