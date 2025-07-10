@@ -183,7 +183,7 @@ Expected JS output:
 
         const invalidYini = `// Should detect illegal section name 2SubSub1!!
         ^ App
-            ^^ \` lsdfkj lj\`
+            ^^ SubSect
                 ^^^ 2SubSub1
                 valueSS1 = "Something."
                 valueSS2 = OFF

@@ -613,7 +613,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             }
         }
 
-        debugPrint('^^^^^^^^^^^^^^^^^')
+        debugPrint('-----------------------')
 
         if (isDebug()) {
             console.log(
@@ -797,6 +797,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         } else if (ctx.SECTION_HEAD()?.getText().trim()) {
             entityType = 'Section-Head'
 
+            //NOTE: There might be an issue here that some subsection gets missing!!
+
             // const line = '' + ctx.SECTION_HEAD().getText().trim()
             const line = ctx.SECTION_HEAD().getText().trim()
             debugPrint('(!) Detected a section head instead: ' + line)
@@ -815,8 +817,18 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             // resultValue[nestedSection?.name] = nestedSection?.members
             resultValue = followingSection?.members || {}
             resultKey = followingSection!.name
+            debugPrint("resultKey   = '" + resultKey + "'")
+            debugPrint('resultValue:')
+            if (isDebug()) {
+                printObject(resultValue)
+            }
+
             debugPrint('Mounted/assigned a section onto resultValue...')
             // Object.assign(value, { dummy: 6767 })
+            // Object.assign(resultValue, {
+            //     dummy: 'That was detected a section head instead!',
+            // })
+            debugPrint()
         }
 
         debugPrint()
