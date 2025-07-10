@@ -149,37 +149,46 @@ Expected JS output:
 
         // YINI.parse(`^1 SectionName`, false, 2)
 
-        const validYini = `
-~ user
-username = 'tester two'
-isSysOp = YES
+        //         const validYini = `
+        // ~ user
+        // username = 'tester two'
+        // isSysOp = YES
 
-    ~~ prefs
-    theme = "light"
-    notifications = OFF
+        //     ~~ prefs
+        //     theme = "light"
+        //     notifications = OFF
 
-^1 user2
-^2 prefs
-^3 deepSection
-^4 deeperSection
-key = "Level 4 section"
-^5 yetDeeperSection
-key = "Level 5 section"
-item = 77
+        // ^1 user2
+        // ^2 prefs
+        // ^3 deepSection
+        // ^4 deeperSection
+        // key = "Level 4 section"
+        // ^5 yetDeeperSection
+        // key = "Level 5 section"
+        // item = 77
 
-~1 user3
-username = 'tester three'
-isSysOp = NO
+        // ~1 user3
+        // username = 'tester three'
+        // isSysOp = NO
 
-    ~~2 prefs
-    theme = "special-dark"
-    notifications = ON
+        //     ~~2 prefs
+        //     theme = "special-dark"
+        //     notifications = ON
 
-`
+        // `
 
-        // Act.
-        const result = YINI.parse(validYini)
-        debugPrint(result)
+        //         // Act.
+        //         const result = YINI.parse(validYini)
+        //         debugPrint(result)
+
+        const invalidYini = `// Should detect illegal section name 2SubSub1!!
+        ^ App
+            ^^ \` lsdfkj lj\`
+                ^^^ 2SubSub1
+                valueSS1 = "Something."
+                valueSS2 = OFF
+        `
+        YINI.parse(invalidYini)
 
         //         YINI.parse(`
         // ^ Section1
