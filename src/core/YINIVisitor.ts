@@ -1,12 +1,5 @@
 import assert from 'assert'
-import { isDebug } from './config/env'
-import { extractYiniLine } from './data-extractors/extractSignificantYiniLine'
-import parseBooleanLiteral from './data-extractors/parseBoolean'
-import parseNullLiteral from './data-extractors/parseNull'
-import parseNumberLiteral from './data-extractors/parseNumber'
-import parseSectionHeader from './data-extractors/parseSectionHeader'
-import parseStringLiteral from './data-extractors/parseString'
-import { ErrorDataHandler } from './ErrorDataHandler'
+import { isDebug } from '../config/env'
 import {
     Boolean_literalContext,
     ElementContext,
@@ -27,15 +20,22 @@ import {
     Terminal_lineContext,
     ValueContext,
     YiniContext,
-} from './grammar/YiniParser.js'
-import YiniParserVisitor from './grammar/YiniParserVisitor'
+} from '../grammar/YiniParser.js'
+import YiniParserVisitor from '../grammar/YiniParserVisitor'
+import { extractYiniLine } from '../parsers/extractSignificantYiniLine'
+import parseBooleanLiteral from '../parsers/parseBoolean'
+import parseNullLiteral from '../parsers/parseNull'
+import parseNumberLiteral from '../parsers/parseNumber'
+import parseSectionHeader from '../parsers/parseSectionHeader'
+import parseStringLiteral from '../parsers/parseString'
+import { debugPrint, printObject } from '../utils/system'
+import { ErrorDataHandler } from './ErrorDataHandler'
 import {
     IChainContainer,
     ISectionResult,
     TSyntaxTree,
     TSyntaxTreeContainer,
 } from './types'
-import { debugPrint, printObject } from './utils/system'
 
 interface YiniDocument {
     // sections: Record<string, any>

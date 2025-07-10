@@ -1,7 +1,7 @@
 {
-    "name": "yini-parser-ts",
-    "version": "0.1.0",
-    "description": "A TypeScript parser for YINI, an INI-inspired configuration format.",
+    "name": "yini-parser",
+    "version": "1.0.0",
+    "description": "YINI parser for JavaScript/TypeScript, an INI-inspired configuration format, meant to be readable, and easy to use.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
@@ -12,6 +12,27 @@
         "README.md",
         "LICENSE",
         "CHANGELOG.md"
+    ],
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "require": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/YOUR_USERNAME/yini-parser.git"
+    },
+    "keywords": [
+        "YINI",
+        "parser",
+        "config",
+        "configuration",
+        "ini",
+        "yaml",
+        "typescript",
+        "javascript"
     ],
     "author": "Marko K. Seppänen",
     "license": "Apache-2.0",
@@ -62,5 +83,8 @@
         "src/**/*.{js,jsx,json,ts,tsx,css,scss}": [
             "prettier --config ./.prettierrc --write"
         ]
+    },
+    "engines": {
+        "node": ">=16"
     }
 }

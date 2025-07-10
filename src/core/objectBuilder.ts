@@ -1,7 +1,7 @@
-import { isDebug } from './config/env'
+import { isDebug } from '../config/env'
+import { IChainContainer, TJSObject, TSyntaxTreeContainer } from '../core/types'
+import { debugPrint, printObject } from '../utils/system'
 import { ErrorDataHandler } from './ErrorDataHandler'
-import { IChainContainer, TJSObject, TSyntaxTreeContainer } from './types'
-import { debugPrint, printObject } from './utils/system'
 
 /**
  * Construct the final result of a JavaScript Object.

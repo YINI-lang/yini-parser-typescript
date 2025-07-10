@@ -1,3 +1,8 @@
+/**
+ * This file contains general system helper functions (utils).
+ * @note More specific YINI helper functions should go into yiniHelpers.ts-file.
+ */
+
 import { isDebug, isDev, isProd, isTest } from '../config/env'
 
 export const debugPrint = (str: any = '') => {

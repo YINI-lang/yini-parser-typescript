@@ -1,35 +1,11 @@
 import { isDebug } from '../config/env'
-import { ErrorDataHandler } from '../ErrorDataHandler'
+import { ErrorDataHandler } from '../core/ErrorDataHandler'
+import { TSectionHeaderType } from '../core/types'
 import { SectionContext } from '../grammar/YiniParser'
-import { TSectionHeaderType } from '../types'
 import { trimBackticks } from '../utils/string'
 import { debugPrint } from '../utils/system'
+import { isMarkerCharacter } from '../yiniHelpers'
 import { extractYiniLine } from './extractSignificantYiniLine'
-
-const SECTION_MARKER1 = '^'
-const SECTION_MARKER2 = '~'
-const SECTION_MARKER3 = '\u00A7' // Section sign §.
-const SECTION_MARKER4 = '\u20AC' // Euro sign €.
-
-/**
- * Check if the character is a section marker character.
- * @note The string must be of length 1.
- * @param character A character in a string.
- */
-export const isMarkerCharacter = (character: string): boolean => {
-    if (character.length !== 1) {
-        throw Error(
-            'Argument into function isMarkerCharacter(..) is not of length 1',
-        )
-    }
-
-    const ch = character
-    if (ch === SECTION_MARKER1 || ch === SECTION_MARKER2) {
-        return true
-    }
-
-    return false
-}
 
 /**
  * Check and identify the section header parts via tokenizing the parts and return them as strings.
@@ -69,19 +45,6 @@ const extractHeaderParts = (
     rawLine = rawLine.trim()
 
     const str = extractYiniLine(rawLine)
-    //let str = ''
-    // if (splitLines(rawLine).length > 1) {
-    //     debugPrint(
-    //         'Detected rawLine (in parseSectionHeader(..)) having multiple row lines, leaving rawLine as is without stripping possible end content.',
-    //     )
-    //     str = rawLine
-    // } else {
-    //     debugPrint(
-    //         'Detected rawLine (in parseSectionHeader(..)) having max 1 row line, stripping possible end content.',
-    //     )
-    //     str = stripNLAndAfter(rawLine) // Cut of anything after (and including) any newline (and possible commented next lines).
-    //     str = stripCommentsAndAfter(str)
-    // }
     debugPrint('rawLine: >>>' + rawLine + '<<<')
     debugPrint('    str: >>>' + str + '<<<')
 
@@ -106,13 +69,7 @@ const extractHeaderParts = (
     while (pos < len && (str[pos] === ' ' || str[pos] === '\t')) pos++
 
     // 2. Collect marker(s): ^, ~, §, €.
-    while (
-        pos < len &&
-        (str[pos] === '^' ||
-            str[pos] === '~' ||
-            str[pos] === '\u00A7' ||
-            str[pos] === '\u20AC')
-    ) {
+    while (pos < len && isMarkerCharacter(str[pos])) {
         markerCharsPart += str[pos]
         pos++
     }

@@ -6,13 +6,13 @@ import {
     Recognizer,
 } from 'antlr4'
 import { isDebug } from './config/env'
-import { ErrorDataHandler, TBailThreshold } from './ErrorDataHandler'
+import { ErrorDataHandler, TBailThreshold } from './core/ErrorDataHandler'
+import { constructFinalObject } from './core/objectBuilder'
+import { IOptions, TSyntaxTreeContainer } from './core/types'
+import YINIVisitor from './core/YINIVisitor'
 import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
-import { constructFinalObject } from './objectBuilder'
-import { IOptions, TSyntaxTreeContainer } from './types'
 import { debugPrint, printObject } from './utils/system'
-import YINIVisitor from './YINIVisitor'
 
 class MyErrorListener implements ErrorListener<any> {
     public errors: string[] = []
@@ -47,17 +47,17 @@ class MyErrorListener implements ErrorListener<any> {
     reportContextSensitivity(...args: any[]): void {}
 }
 
-export const parseYINI = (
+export const parseYiniContent = (
     yiniContent: string,
-    options: IOptions = { isStrict: false, bailSensitivyLevel: 0 },
+    options: IOptions = { isStrict: false, bailSensitivityLevel: 0 },
 ) => {
     debugPrint()
-    debugPrint('-> Entered parseYINI(..) in parseEntry')
+    debugPrint('-> Entered parseYiniContent(..) in parseEntry')
     debugPrint('     isStrict mode = ' + options.isStrict)
-    debugPrint('bailSensitivyLevel = ' + options.bailSensitivyLevel)
+    debugPrint('bailSensitivityLevel = ' + options.bailSensitivityLevel)
 
     let bailThreshold: TBailThreshold
-    switch (options.bailSensitivyLevel) {
+    switch (options.bailSensitivityLevel) {
         case 0:
             bailThreshold = '0-Ignore-Errors'
             break
