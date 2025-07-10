@@ -1,9 +1,10 @@
 import assert from 'assert'
 import { isDebug } from './config/env'
+import { extractYiniLine } from './data-extractors/extractSignificantYiniLine'
 import parseBooleanLiteral from './data-extractors/parseBoolean'
 import parseNullLiteral from './data-extractors/parseNull'
 import parseNumberLiteral from './data-extractors/parseNumber'
-import parseSectionHead from './data-extractors/parseSectionHead'
+import parseSectionHeader from './data-extractors/parseSectionHeader'
 import parseStringLiteral from './data-extractors/parseString'
 import { ErrorDataHandler } from './ErrorDataHandler'
 import {
@@ -93,6 +94,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     private numOfLevelOnes = 0 // Num of Level-1 sections.
     private level = 0
     private prevLevel = 0
+    private prevSectionName = '' // For error reporting purposes.
 
     private meta_numOfChains = 0 // For stats.
     private meta_numOfSections = 0 // For stats.
@@ -286,8 +288,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      */
     // visitSection?: (ctx: SectionContext) => IResult;
     visitSection = (ctx: SectionContext): any => {
-        // let headMarkerStyle: THeadMarkerStyle =
-        //     'Repeating-Character-Section-Marker'
+        // let headMarkerType: TSectionHeaderType =
+        //     'Classic-Header-Marker'
 
         isDebug() && console.log()
         debugPrint('-> Entered visitSection(..)')
@@ -295,18 +297,19 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         const res: Record<string, any> = {}
 
         debugPrint('start')
+        debugPrint('XXXX0:ctx.getText()            = ' + ctx.getText())
         debugPrint('XXXX1:ctx.SECTION_HEAD()       = ' + ctx.SECTION_HEAD())
         debugPrint(
             'XXXX1:SECTION_HEAD().getText() = ' +
                 ctx.SECTION_HEAD()?.getText().trim(),
         )
-        debugPrint('XXXX2:     ctx.section():')
-
         debugPrint('end\n')
 
         let line: string = ''
         try {
-            line = '' + ctx.SECTION_HEAD()?.getText().trim()
+            debugPrint('S1')
+            line = ctx.SECTION_HEAD()?.getText().trim() || ''
+            debugPrint('S2, line: >>>' + line + '<<<')
         } catch (error) {
             const msgWhat: string = `Unexpected syntax while parsing a member or section head`
             const msgWhy: string = `Found unexpected syntax while trying to read a key-value pair or a section header (such as a section marker or section name).`
@@ -320,13 +323,68 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             )
         }
 
+        // If no section head can be found in the above SECTION_HEAD(),
+        // try alternative method of reading the section content.
+        debugPrint('S3, line: >>>' + line + '<<<')
+        if (!line) {
+            debugPrint()
+            debugPrint(
+                'Nothing in SECTION_HEAD() is found, trying to read the section content directly...',
+            )
+            debugPrint(
+                '--- Start: parse line from section content-----------------',
+            )
+            // const sectionContent = '' + ctx.getText().trim()
+            const sectionContent = ctx.getText().trim()
+            debugPrint('Section content: ' + ctx.getText())
+
+            line = extractYiniLine(sectionContent)
+            //     const contentLines = splitLines(sectionContent)
+            //     if (isDebug()) {
+            //         console.log('contentLines:')
+            //         printObject(contentLines)
+            //     }
+
+            //     // contentLines.forEach((row: string) => {
+            //     for (let row of contentLines) {
+            //         debugPrint('---')
+            //         debugPrint('row (a): >>>' + row + '<<<')
+            //         row = stripNLAndAfter(row)
+            //         debugPrint('row (b): >>>' + row + '<<<')
+            //         row = stripCommentsAndAfter(row)
+            //         debugPrint('row (c): >>>' + row + '<<<')
+            //         row = row.trim()
+            //         debugPrint('row (d): >>>' + row + '<<<')
+            //         if (row) {
+            //             debugPrint(
+            //                 'Found some content in split row (non-comments).',
+            //             )
+            //             debugPrint('Split row: >>>' + row + '<<<')
+
+            //             // Use this as input in line.
+            //             line = row
+            //             debugPrint('Will use row as line input')
+            //             break
+            //         }
+            //     }
+            //     debugPrint(
+            //         '--- End: parse line from section content-----------------',
+            //     )
+            //     debugPrint()
+        }
+        debugPrint('S4, line: >>>' + line + '<<<')
+
+        if (!line) {
+            debugPrint('*** ERROR: Nothing to parse in section line')
+        }
+
         this.prevLevel = this.level
-        let { sectionName, level } = parseSectionHead(
+        let { sectionName, sectionLevel } = parseSectionHeader(
             line,
             this.errorHandlerInstance!,
             ctx,
         )
-        this.level = level
+        this.level = sectionLevel
 
         // ---------------------------------------------------------------
 
@@ -340,13 +398,56 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         }
         debugPrint('-- In visitSection(..) ---------------------------')
         debugPrint('            sectionName = ' + sectionName)
-        debugPrint('                  level = ' + level)
+        debugPrint('           sectionLevel = ' + sectionLevel)
         debugPrint('             this.level = ' + this.level)
         debugPrint('         this.prevLevel = ' + this.prevLevel)
+        debugPrint('   this.prevSectionName = ' + this.prevSectionName)
         debugPrint('          nestDirection = ' + nestDirection)
         debugPrint('    this.numOfLevelOnes = ' + this.numOfLevelOnes)
         debugPrint('this.getDepthOfLevels() = ' + this.getDepthOfLevels())
         debugPrint()
+
+        if (nestDirection === 'higher') {
+            debugPrint(
+                `Is level skipping: ${this.level - this.prevLevel} >= 2?`,
+            )
+            // if (Math.abs(this.prevLevel - this.level) >= 2) {
+            if (this.level - this.prevLevel >= 2) {
+                if (this.level === 2) {
+                    // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+                    this.errorHandlerInstance!.pushOrBail(
+                        ctx,
+                        'Syntax-Error',
+                        'Invalid section header level ' +
+                            this.level +
+                            ', with section name "' +
+                            sectionName,
+                        'A section header may not start directly at level ' +
+                            this.level +
+                            ', skipping previous section levels. Please start with one level further down.',
+                    )
+                } else {
+                    // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+                    this.errorHandlerInstance!.pushOrBail(
+                        ctx,
+                        'Syntax-Error',
+                        'Invalid section level jump of section header "' +
+                            sectionName +
+                            '"',
+                        'Section header name "' +
+                            sectionName +
+                            '" with level ' +
+                            this.level +
+                            ' may not jump over (skip) intermediate section levels, from section header name "' +
+                            this.prevSectionName +
+                            '" with level ' +
+                            this.prevLevel +
+                            '. Section levels should increase one at a time. Please adjust your section headers accordingly.',
+                    )
+                }
+            }
+        }
+        this.prevSectionName = sectionName
 
         debugPrint('About to visit members of section...')
         let members: any
@@ -367,25 +468,34 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         }
 
         //------------------------
-        if (nestDirection === 'higher') {
-            if (Math.abs(this.prevLevel - this.level) >= 2) {
-                // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-                this.errorHandlerInstance!.pushOrBail(
-                    ctx,
-                    'Syntax-Error',
-                    'Invalid section level jump of section header "' +
-                        sectionName +
-                        '"',
-                    'Section header name "' +
-                        sectionName +
-                        '" with level ' +
-                        this.level +
-                        ' may not jump over previous section levels, from secton with level ' +
-                        this.prevLevel +
-                        '.',
-                )
-            }
-        }
+        // if (nestDirection === 'higher') {
+        //     debugPrint(
+        //         `Is level skipping: ${this.level - this.prevLevel} >= 2?`,
+        //     )
+
+        //     // if (Math.abs(this.prevLevel - this.level) >= 2) {
+        //     if (this.level - this.prevLevel >= 2) {
+        //         // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+        //         this.errorHandlerInstance!.pushOrBail(
+        //             ctx,
+        //             'Syntax-Error',
+        //             'Invalid section level jump of section header "' +
+        //                 sectionName +
+        //                 '"',
+        //             'Section header name "' +
+        //                 sectionName +
+        //                 '" with level ' +
+        //                 this.prevLevel +
+        //                 ' may not jump over previous section levels, from a section with level ' +
+        //                 this.level +
+        //                 ' (section name: "' +
+        //                 this.prevSectionName +
+        //                 '").',
+        //         )
+        //     }
+        // }
+        // this.prevSectionName = sectionName
+
         if (nestDirection !== 'higher') {
             debugPrint('About to reset result')
             printObject({ [sectionName]: members })
@@ -396,7 +506,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             if (
                 // (level === 0 && !sectionName) ||
                 // (sectionName === 'undefined' && !!members)
-                level === 0 &&
+                sectionLevel === 0 &&
                 sectionName === 'undefined' &&
                 !!members
             ) {
@@ -435,7 +545,11 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 this.lastActiveSectionAtLevels[this.level - 1] = {
                     [sectionName]: { ...members },
                 }
-                this.pushOnTree({ level: level, name: sectionName, members })
+                this.pushOnTree({
+                    level: sectionLevel,
+                    name: sectionName,
+                    members,
+                })
                 // this.lastActiveSectionNameAtLevels.push(sectionName)
                 debugPrint('Mounted as append')
             }
@@ -499,7 +613,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             }
         }
 
-        debugPrint('^^^^^^^^^^^^^^^^^')
+        debugPrint('-----------------------')
 
         if (isDebug()) {
             console.log(
@@ -517,12 +631,16 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         debugPrint('<- Leaving visitSection(..)')
         if (isDebug()) {
             console.log('returning:')
-            console.log({ level: level, name: sectionName, members: members })
+            console.log({
+                sectionLevel: sectionLevel,
+                name: sectionName,
+                members: members,
+            })
             console.log()
         }
 
         return {
-            level: level,
+            level: sectionLevel,
             name: sectionName,
             members: members,
         } as ISectionResult
@@ -588,12 +706,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                         )
                         isDebug() && console.log({ [key]: value })
 
-                        //@todo Maybe should assign as [key]: { type: type, value: value }
-                        // or maybe even as [key]: { type: type, key: key, value: value }
                         Object.assign(members, { [key]: value })
-                        // Object.assign(members, {
-                        //     [key]: { type: type, value: value },
-                        // })
                         debugPrint(
                             '+ Added member or section onto members: "' +
                                 key +
@@ -684,7 +797,10 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         } else if (ctx.SECTION_HEAD()?.getText().trim()) {
             entityType = 'Section-Head'
 
-            const line = '' + ctx.SECTION_HEAD().getText().trim()
+            //NOTE: There might be an issue here that some subsection gets missing!!
+
+            // const line = '' + ctx.SECTION_HEAD().getText().trim()
+            const line = ctx.SECTION_HEAD().getText().trim()
             debugPrint('(!) Detected a section head instead: ' + line)
 
             followingSection = this.visitSection(ctx)
@@ -696,13 +812,23 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 console.log(followingSection)
             }
 
-            //@todo Mount the nested object correctly!
+            //@todo  (Is this fixed now? 2025-07-10) Mount the nested object correctly!
             resultType = 'Object'
             // resultValue[nestedSection?.name] = nestedSection?.members
             resultValue = followingSection?.members || {}
             resultKey = followingSection!.name
+            debugPrint("resultKey   = '" + resultKey + "'")
+            debugPrint('resultValue:')
+            if (isDebug()) {
+                printObject(resultValue)
+            }
+
             debugPrint('Mounted/assigned a section onto resultValue...')
             // Object.assign(value, { dummy: 6767 })
+            // Object.assign(resultValue, {
+            //     dummy: 'That was detected a section head instead!',
+            // })
+            debugPrint()
         }
 
         debugPrint()
@@ -790,7 +916,6 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     visitString_literal = (ctx: String_literalContext): IResult => {
         debugPrint('-> Entered visitString_literal(..)')
 
-        // @todo TODO: Move the parsing of raw into a file into literal-parsers/
         const raw = ctx.getText()
         debugPrint('raw = >>>' + raw + '<<<')
 

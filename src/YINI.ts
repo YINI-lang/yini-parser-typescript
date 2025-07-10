@@ -1,6 +1,7 @@
 import fs from 'fs'
 import { isDebug, isDev } from './config/env'
 import { parseYINI } from './parseEntry'
+import { IOptions } from './types'
 import { getFileNameExtension } from './utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from './utils/system'
 
@@ -11,7 +12,11 @@ export default class YINI {
      * @param yiniContent Full path to the YINI file.
      * @note The order of properties (members) in each JavaScript object (section) may differ from the order in the input YINI content.
      */
-    public static parse = (yiniContent: string): any => {
+    public static parse = (
+        yiniContent: string,
+        isStrict = false,
+        bailSensitivy: 0 | 1 | 2 = 0,
+    ): any => {
         debugPrint('-> Entered static parse(..) in class YINI\n')
 
         // Important: First, before anything, trim beginning and trailing whitespaces!
@@ -24,10 +29,14 @@ export default class YINI {
             yiniContent += '\n'
         }
 
+        const options: IOptions = {
+            isStrict: isStrict,
+            bailSensitivyLevel: bailSensitivy,
+        }
+
         debugPrint()
         debugPrint('==== Call parse ==========================')
-        //const tree = parser.yini;  // Start rule.
-        const result = parseYINI(yiniContent)
+        const result = parseYINI(yiniContent, options)
         debugPrint('==== End call parse ==========================\n')
 
         if (isDev()) {
@@ -46,7 +55,11 @@ export default class YINI {
      * @param yiniFile Full path to the YINI file.
      * @note The order of properties (members) in each JavaScript object (section) may differ from the order in the input YINI file.
      */
-    public static parseFile = (fullPath: string): any => {
+    public static parseFile = (
+        fullPath: string,
+        isStrict = false,
+        bailSensitivy: 0 | 1 | 2 = 0,
+    ): any => {
         debugPrint('Current directory = ' + process.cwd())
 
         if (getFileNameExtension(fullPath).toLowerCase() !== '.yini') {
@@ -67,7 +80,15 @@ export default class YINI {
         }
 
         YINI.fullPath = fullPath
+        const options: IOptions = {
+            isStrict: isStrict,
+            bailSensitivyLevel: bailSensitivy,
+        }
+
+        debugPrint()
+        debugPrint('==== Call parse ==========================')
         const result: any = parseYINI(content)
+        debugPrint('==== End call parse ==========================\n')
 
         if (hasNoNewlineAtEOF) {
             console.warn(

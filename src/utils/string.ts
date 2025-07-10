@@ -1,43 +1,5 @@
+import { extractYiniLine } from '../data-extractors/extractSignificantYiniLine'
 import { debugPrint } from './system'
-
-/**
- * @returns Returns the beginning up to (but not including) any first
- * encountered newline.
- * @note If no newline is found, returns the whole string.
- * @example
- *     `SectionName1
- *     //value = 11`
- *     => 'SectionName1'
- */
-export const stripNLAndAfter = (str: string): string => {
-    let idx1 = str.indexOf('\n')
-    let idx2 = str.indexOf('\r')
-
-    if (idx1 < 0) idx1 = Number.MAX_SAFE_INTEGER
-    if (idx2 < 0) idx2 = Number.MAX_SAFE_INTEGER
-    // debugPrint('stripNLAndAfter(..): idx1 = ' + idx1)
-    // debugPrint('stripNLAndAfter(..): idx2 = ' + idx2)
-
-    const idx = Math.min(idx1, idx2)
-    return idx === -1 ? str : str.substring(0, idx)
-}
-
-/**
- * @returns Returns the beginning up to (but not including) any comments
- * starting with // or #.
- */
-export const stripCommentsAndAfter = (str: string): string => {
-    let idx1 = str.indexOf('//')
-    let idx2 = str.indexOf('#')
-
-    if (idx1 < 0) idx1 = Number.MAX_SAFE_INTEGER
-    if (idx2 < 0) idx2 = Number.MAX_SAFE_INTEGER
-    // debugPrint('stripCommentsAndAfter(..): idx1 = ' + idx1)
-    // debugPrint('stripCommentsAndAfter(..): idx2 = ' + idx2)
-
-    const idx = Math.min(idx1, idx2)
-    return idx === -1 ? str : str.substring(0, idx)
-}
 
 /**
  * If a string starts and ends with a backtick `, if so trims the
@@ -48,4 +10,119 @@ export const trimBackticks = (str: string): string => {
         return str.slice(1, -1)
     }
     return str
+}
+
+/**
+ * Check if the character is A-Z or a-z.
+ * @note The string must be of length 1.
+ * @param character A character in a string.
+ */
+export const isAlpha = (character: string): boolean => {
+    if (character.length !== 1) {
+        throw Error('Argument into function isAlpha(..) is not of length 1')
+    }
+
+    const ch = character
+    if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')) {
+        return true
+    }
+
+    return false
+}
+
+/**
+ * Check if the character is a digit (number): 0-9.
+ * @note The string must be of length 1.
+ * @param character A character in a string.
+ */
+export const isDigit = (character: string): boolean => {
+    if (character.length !== 1) {
+        throw Error('Argument into function isDigit(..) is not of length 1')
+    }
+
+    const ch = character
+    if (ch >= '0' && ch <= '9') {
+        return true
+    }
+
+    return false
+}
+
+/**
+ * @returns Returns the beginning up to (but not including) any first
+ * encountered newline.
+ * @note If no newline is found, returns the whole string.
+ * @example
+ *     `SectionName1
+ *     //value = 11`
+ *     => 'SectionName1'
+ * @deprecated This seems not useful anymore, use stripCommentsAndAfter(..) instead.
+ */
+export const stripNLAndAfter = (line: string): string => {
+    let idx1 = line.indexOf('\n')
+    let idx2 = line.indexOf('\r')
+
+    if (idx1 < 0) idx1 = Number.MAX_SAFE_INTEGER
+    if (idx2 < 0) idx2 = Number.MAX_SAFE_INTEGER
+    // debugPrint('stripNLAndAfter(..): idx1 = ' + idx1)
+    // debugPrint('stripNLAndAfter(..): idx2 = ' + idx2)
+
+    const idx = Math.min(idx1, idx2)
+    const resultLine =
+        idx === Number.MAX_SAFE_INTEGER ? line : line.substring(0, idx)
+
+    debugPrint('stripNLAndAfter(..),       line: >>>' + line + '<<<')
+    debugPrint('stripNLAndAfter(..), resultLine: >>>' + resultLine + '<<<')
+    return resultLine
+}
+
+/**
+ * @returns Returns the beginning up to (but not including) any comments
+ * starting with //, #, ; or --.
+ */
+export const stripCommentsAndAfter = (line: string): string => {
+    if (splitLines(line).length > 1) {
+        throw new Error(
+            'Internal error: Detected several row lines in line: >>>' +
+                line +
+                '<<<',
+        )
+    }
+
+    let idx1 = line.indexOf('//')
+    let idx2 = line.indexOf('# ') // NOTE: (!) Hash comments requires a WS after the hash!
+    let idx3 = line.indexOf('#\t') // NOTE: (!) Hash comments requires a WS after the hash!
+    let idx4 = line.indexOf(';')
+    let idx5 = line.indexOf('--')
+
+    if (idx1 < 0) idx1 = Number.MAX_SAFE_INTEGER
+    if (idx2 < 0) idx2 = Number.MAX_SAFE_INTEGER
+    if (idx3 < 0) idx3 = Number.MAX_SAFE_INTEGER
+    if (idx4 < 0) idx4 = Number.MAX_SAFE_INTEGER
+    if (idx5 < 0) idx5 = Number.MAX_SAFE_INTEGER
+    // debugPrint('stripCommentsAndAfter(..): idx1 = ' + idx1)
+    // debugPrint('stripCommentsAndAfter(..): idx2 = ' + idx2)
+    // debugPrint('stripCommentsAndAfter(..): idx3 = ' + idx3)
+    // debugPrint('stripCommentsAndAfter(..): idx4 = ' + idx4)
+    // debugPrint('stripCommentsAndAfter(..): idx5 = ' + idx5)
+
+    const idx = Math.min(idx1, idx2, idx3, idx4, idx5)
+    const resultLine =
+        idx === Number.MAX_SAFE_INTEGER ? line : line.substring(0, idx)
+
+    debugPrint('stripCommentsAndAfter(..),       line: >>>' + line + '<<<')
+    debugPrint(
+        'stripCommentsAndAfter(..), resultLine: >>>' + resultLine + '<<<',
+    )
+    return resultLine
+}
+
+/**
+ * Splits a string into an array of lines, handling both LF and CRLF newlines.
+ * @param content The input string.
+ * @returns Array of lines (strings).
+ */
+export function splitLines(content: string): string[] {
+    // Chould handle \n (LF), \r\n (CRLF), and even just \r (old Mac style).
+    return content.split(/\r\n|\r|\n/)
 }

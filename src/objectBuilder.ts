@@ -12,7 +12,19 @@ export const constructFinalObject = (
 ): TJSObject => {
     debugPrint('-> constructFinalObject(..)')
     const bulder = new Builder(syntaxTreeC, errorHandlerInstance)
+
+    if (isDebug()) {
+        console.log('Argument, syntaxTreeC:')
+        printObject(syntaxTreeC)
+    }
+
     const jsObject = bulder.doCheckAndBuild()
+
+    debugPrint('<- About to leave constructFinalObject(..)')
+    if (isDebug()) {
+        console.log('Returning, jsObject:')
+        printObject(syntaxTreeC)
+    }
 
     return jsObject
 }
@@ -183,7 +195,17 @@ class Builder {
 
         for (const chainC of fullSubTreeList) {
             if (chainC.originLevel === 1) {
+                if (isDebug()) {
+                    console.log('About to assign chainC.chain:')
+                    console.log(chainC.chain)
+                }
+
                 Object.assign(jsObject, chainC.chain)
+
+                if (isDebug()) {
+                    console.log('After, jsObject:')
+                    console.log(jsObject)
+                }
             } else {
                 // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                 this.errorHandlerInstance.pushOrBail(

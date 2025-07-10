@@ -225,4 +225,85 @@ describe('General Smoke Tests:', () => {
             YINI.parse(fixture2)
         }).toThrow()
     })
+
+    test('12. Should throw error if parsing an incorrect hash comment.', () => {
+        // Arrange.
+        const invalidYini = `^ App
+            id = 32403  #This hash comment is invalid due to a missing space.
+            title = "My Program"
+        `
+
+        // Act & Assert.
+        expect(() => {
+            YINI.parse(invalidYini)
+        }).toThrow()
+    })
+
+    test('13. Correctly parse a YINI with a hash comment.', () => {
+        // Arrange.
+        const validYini = `^ App
+            id = 32403  # The correct app id.
+            title = "My Program"
+        `
+        // Act.
+        const result = YINI.parse(validYini)
+        debugPrint(result)
+        // Assert.
+        expect(result.App.id).toEqual(32403)
+        expect(result.App.title).toEqual('My Program')
+    })
+
+    test('14. Correctly parse a YINI enclosed in comments.', () => {
+        // Arrange.
+        const validYini = `
+// This whole line is a comment.
+            ^SectionName# This part is a comment.
+            // This whole line is a comment.
+        `
+        // Act.
+        const result = YINI.parse(validYini)
+        isDebug() && printObject(result)
+
+        // Assert.
+        expect(result).toHaveProperty('SectionName')
+
+        //@todo Fix issue that the below value will correctly be {} and not undefined
+        //expect(result.SectionName).toEqual({})
+    })
+
+    //@todo Fix below issue, seems sometimes subsection is not parsed or something...
+    xtest('15. Should throw error due to illegal section name.', () => {
+        // Arrange.
+        const invalidYini = `// Should detect illegal section name 2SubSub1!!
+        ^ App
+            ^^ SubSect
+                ^^^ 2SubSub1
+                valueSS1 = "Something."
+                valueSS2 = OFF
+        `
+
+        // Act & Assert.
+        expect(() => {
+            YINI.parse(invalidYini)
+            debugPrint(invalidYini)
+        }).toThrow()
+    })
+
+    //@todo Fix below issue, seems sometimes subsection is not parsed or something...
+    xtest('16. Should throw error due to illegal section name.', () => {
+        // Arrange.
+        const invalidYini = `// Should detect illegal section name 2SubSub1!!
+        ^ App
+            ^^ \` lsdfkj lj\`
+                ^^^ 2SubSub1
+                valueSS1 = "Something."
+                valueSS2 = OFF
+        `
+
+        // Act & Assert.
+        expect(() => {
+            YINI.parse(invalidYini)
+            debugPrint(invalidYini)
+        }).toThrow()
+    })
 })

@@ -12,6 +12,10 @@
 */
 
 import { APP_ENV, isDebug, isDev, isProd, NODE_ENV } from './config/env'
+import extractHeaderParts from './data-extractors/extractHeaderParts'
+import parseSectionHeader from './data-extractors/parseSectionHeader'
+import { ErrorDataHandler } from './ErrorDataHandler'
+import { stripNLAndAfter } from './utils/string'
 import { debugPrint } from './utils/system'
 import YINI from './YINI'
 
@@ -126,37 +130,65 @@ Expected JS output:
 
 */
 
-        YINI.parse(`
-        ^ Section1
-            bValue1 = YES
-            intValue = 1
-            ^^ Section11
-                sValue = 11
-                ^^^ Section111
-                    sValue = 111
-                    intValue = 111
-            ^^ Section12
-                sValue = 12
-        ^ Section2
-            sValue = 2
-            ^^ Section21
-                sValue = 21
-                bValue = OFF
-                ^^^ Section211
-                    sValue = 211
-                    ^^^^ Section2111
-                        sValue = 2111
-                    ^^^^ Section2112
-                        sValue = 2112
-                        strValue = 'test2112'
-            ^^ Section22
-                bValue3 = on
-                ^^^ Section221
-                    sValue = 221
-            ^^ Section23
-                bValue3 = on
+        /*
+        YINI.parse(
+            `
+// Using numeric shorthand section markers.
 
-                `)
+@yini
+
+// This whole line is a comment.
+            ^SectionName# This part is a comment.
+            // This whole line is a comment.
+            --x=1
+                `,
+            false,
+            2,
+        )
+*/
+
+        // YINI.parse(`^1 SectionName`, false, 2)
+
+        //         const validYini = `
+        // ~ user
+        // username = 'tester two'
+        // isSysOp = YES
+
+        //     ~~ prefs
+        //     theme = "light"
+        //     notifications = OFF
+
+        // ^1 user2
+        // ^2 prefs
+        // ^3 deepSection
+        // ^4 deeperSection
+        // key = "Level 4 section"
+        // ^5 yetDeeperSection
+        // key = "Level 5 section"
+        // item = 77
+
+        // ~1 user3
+        // username = 'tester three'
+        // isSysOp = NO
+
+        //     ~~2 prefs
+        //     theme = "special-dark"
+        //     notifications = ON
+
+        // `
+
+        //         // Act.
+        //         const result = YINI.parse(validYini)
+        //         debugPrint(result)
+
+        const invalidYini = `// Should detect illegal section name 2SubSub1!!
+        ^ App
+            ^^ SubSect
+                ^^^ 2SubSub1
+                valueSS1 = "Something."
+                valueSS2 = OFF
+        `
+        YINI.parse(invalidYini)
 
         //         YINI.parse(`
         // ^ Section1
