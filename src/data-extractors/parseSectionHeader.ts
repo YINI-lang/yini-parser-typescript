@@ -77,7 +77,7 @@ const parseSectionHeader = (
     debugPrint('isBacktickedName: ' + isBacktickedName)
 
     let headerMarkerType: TSectionHeaderType
-    let sectionName = ''
+    // let sectionName = ''
     let level = 0
 
     if (strMarkerChars === '') {
@@ -177,8 +177,9 @@ const parseSectionHeader = (
     debugPrint('<- About to leave parseSectionHeader(..)')
     debugPrint(`    rawLine = >>>${rawLine}<<<`)
     debugPrint(`       line = >>>${line}<<<`)
+    debugPrint()
     debugPrint('identified level: ' + level)
-    debugPrint('     sectionName: ' + sectionName)
+    debugPrint('     sectionName: ' + strSectionName)
     debugPrint('headerMarkerType: ' + headerMarkerType)
     debugPrint('                        --------------')
 

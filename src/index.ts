@@ -13,6 +13,8 @@
 
 import { APP_ENV, isDebug, isDev, isProd, NODE_ENV } from './config/env'
 import extractHeaderParts from './data-extractors/extractHeaderParts'
+import parseSectionHeader from './data-extractors/parseSectionHeader'
+import { ErrorDataHandler } from './ErrorDataHandler'
 import { stripNLAndAfter } from './utils/string'
 import { debugPrint } from './utils/system'
 import YINI from './YINI'
@@ -145,11 +147,23 @@ Expected JS output:
         )
 */
 
-        // YINI.parse(`^Title`, false, 2)
+        // YINI.parse(`^1 SectionName`, false, 2)
 
-        const input = `SectionName1   //value = 11`
+        const input = '^1 SectionName'
         // Act.
-        const result = stripNLAndAfter(input).trim()
+        const { markerType, sectionName, sectionLevel } = parseSectionHeader(
+            input,
+            new ErrorDataHandler('1-Abort-on-Errors'),
+            null,
+        )
+        debugPrint('  markerType: ' + markerType)
+        debugPrint(' sectionName: ' + sectionName)
+        debugPrint('sectionLevel: ' + sectionLevel)
+        debugPrint(
+            'test   markerType: ' + (markerType === 'Numeric-Header-Marker'),
+        )
+        debugPrint('test  sectionName: ' + (sectionName === 'SectionName'))
+        debugPrint('test sectionLevel: ' + (sectionLevel === 1))
 
         //         YINI.parse(`
         // ^ Section1
