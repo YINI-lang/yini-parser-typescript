@@ -2,8 +2,9 @@
  * This file contains specific YINI helper functions (utils).
  * @note More general helper functions should go into the dir "src/utils/".
  */
-import { splitLines } from './string'
-import { debugPrint } from './system'
+
+import { splitLines } from './utils/string'
+import { debugPrint } from './utils/system'
 
 /**
  * @returns Returns the beginning up to (but not including) any comments

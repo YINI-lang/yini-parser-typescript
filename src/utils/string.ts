@@ -2,6 +2,7 @@
  * This file contains general string helper functions (utils).
  * @note More specific YINI helper functions should go into yiniHelpers.ts-file.
  */
+
 import { debugPrint } from './system'
 
 /**

@@ -12,9 +12,9 @@
 */
 
 import { APP_ENV, isDebug, isDev, isProd, NODE_ENV } from './config/env'
-import extractHeaderParts from './data-extractors/extractHeaderParts'
-import parseSectionHeader from './data-extractors/parseSectionHeader'
 import { ErrorDataHandler } from './ErrorDataHandler'
+import extractHeaderParts from './parsers/extractHeaderParts'
+import parseSectionHeader from './parsers/parseSectionHeader'
 import { stripNLAndAfter } from './utils/string'
 import { debugPrint } from './utils/system'
 import YINI from './YINI'

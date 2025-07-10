@@ -1,5 +1,5 @@
-import parseSectionHeader from '../../../src/data-extractors/parseSectionHeader'
 import { ErrorDataHandler } from '../../../src/ErrorDataHandler'
+import parseSectionHeader from '../../../src/parsers/parseSectionHeader'
 import { TSectionHeaderType } from '../../../src/types'
 import { debugPrint } from '../../../src/utils/system'
 

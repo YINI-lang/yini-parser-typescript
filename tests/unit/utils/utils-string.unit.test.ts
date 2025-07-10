@@ -4,7 +4,7 @@ import {
     trimBackticks,
 } from '../../../src/utils/string'
 import { debugPrint } from '../../../src/utils/system'
-import { stripCommentsAndAfter } from '../../../src/utils/yiniHelpers'
+import { stripCommentsAndAfter } from '../../../src/yiniHelpers'
 
 /**
  * trimBackticks(..) Tests.
