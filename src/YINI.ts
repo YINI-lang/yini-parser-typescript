@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { isDebug, isDev } from './config/env'
 import { IOptions, TJSObject } from './core/types'
-import { parseYINI } from './parseEntry'
+import { parseYiniContent } from './parseEntry'
 import { getFileNameExtension } from './utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from './utils/system'
 
@@ -42,7 +42,7 @@ export default class YINI {
 
         debugPrint()
         debugPrint('==== Call parse ==========================')
-        const result = parseYINI(yiniContent, options)
+        const result = parseYiniContent(yiniContent, options)
         debugPrint('==== End call parse ==========================\n')
 
         if (isDev()) {
@@ -94,7 +94,7 @@ export default class YINI {
 
         debugPrint()
         debugPrint('==== Call parse ==========================')
-        const result: any = parseYINI(content)
+        const result: any = parseYiniContent(content)
         debugPrint('==== End call parse ==========================\n')
 
         if (hasNoNewlineAtEOF) {

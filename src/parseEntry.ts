@@ -47,12 +47,12 @@ class MyErrorListener implements ErrorListener<any> {
     reportContextSensitivity(...args: any[]): void {}
 }
 
-export const parseYINI = (
+export const parseYiniContent = (
     yiniContent: string,
     options: IOptions = { isStrict: false, bailSensitivityLevel: 0 },
 ) => {
     debugPrint()
-    debugPrint('-> Entered parseYINI(..) in parseEntry')
+    debugPrint('-> Entered parseYiniContent(..) in parseEntry')
     debugPrint('     isStrict mode = ' + options.isStrict)
     debugPrint('bailSensitivityLevel = ' + options.bailSensitivityLevel)
 
