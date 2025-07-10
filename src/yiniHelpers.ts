@@ -24,7 +24,12 @@ export const isMarkerCharacter = (character: string): boolean => {
     }
 
     const ch = character
-    if (ch === SECTION_MARKER1 || ch === SECTION_MARKER2) {
+    if (
+        ch === SECTION_MARKER1 ||
+        ch === SECTION_MARKER2 ||
+        ch === SECTION_MARKER3 ||
+        ch === SECTION_MARKER4
+    ) {
         return true
     }
 
