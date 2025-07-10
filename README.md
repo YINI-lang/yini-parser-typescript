@@ -10,18 +10,36 @@ https://github.com/YINI-lang/YINI-spec
 ---
 
 ## ✨ Features
-See [FEATURE-CHECKLIST.md](./FEATURE-CHECKLIST.md) for the current checklist of implemented YINI features.
-
 - Simple, strict parsing.
 - Familiar config file style (inspired by INI, YAML, TOML).
 - Easy programmatic usage.
-- Only YINI class is exported; all internal details are private.
+- Only the `YINI` class is exported; all internal details are private.
+
+### Limitations
+Not all features of the full YINI specification are implemented yet.
+
+See [FEATURE-CHECKLIST.md](./FEATURE-CHECKLIST.md) for the current list of implemented YINI features.
+
+---
 
 ## 🚀 Installation
 
+With **npm**:
 ```sh
 npm install yini-parser
 ```
+
+With **yarn**:
+```sh
+yarn add yini-parser
+```
+
+With **pnpm**:
+```sh
+pnpm add yini-parser
+```
+
+---
 
 ## Usage
 
@@ -31,19 +49,22 @@ npm install yini-parser
 > import YINI from 'yini-parser';
 > ```
 
+### Example:
 ```ts
 import YINI from 'yini-parser';
 
-// Parse from string
+// Parse from string.
 const config = YINI.parse(`
 ^ Database
 host = localhost
 port = 5432
 `);
 
-// Parse from file
+// Parse from file.
 const configFromFile = YINI.parseFile('./config.yini');
 ```
+
+---
 
 ## API
 
@@ -66,14 +87,25 @@ Parses YINI code from a file.
 
 Returns a JavaScript object representing the parsed YINI configuration file.
 
+---
+
 ## Example Output
 --TODO--
+
+---
 
 ## 📚 Documentation
 - [Development Setup](./docs/Development%20Setup.md) — How to run, test, and build the project, etc.
 - [Conventions](./docs/Conventions.md) — Project conventions, naming patterns, etc.
 
+---
+
 ## License
 This project is licensed under the Apache-2.0 license - see the [LICENSE](<./LICENSE>) file for details.
 
 In this project on GitHub, the `libs` directory contains third party software and each is licensed under its own license which is described in its own license file under the respective directory under `libs`.
+
+---
+
+> ~ **YINI ≡**  
+> [https://yini-lang.org](https://yini-lang.org)
