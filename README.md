@@ -83,7 +83,7 @@ Returns a JavaScript object representing the parsed configuration (YINI content)
 
 Parses YINI code from a file.
 - `filePath`: Path to the `.yini` file.
-- Other parameters are the same as `parse()`.
+- Other parameters are the same as `parse(..)`.
 
 Returns a JavaScript object representing the parsed YINI configuration file.
 
