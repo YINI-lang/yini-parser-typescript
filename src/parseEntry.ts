@@ -49,15 +49,15 @@ class MyErrorListener implements ErrorListener<any> {
 
 export const parseYINI = (
     yiniContent: string,
-    options: IOptions = { isStrict: false, bailSensitivyLevel: 0 },
+    options: IOptions = { isStrict: false, bailSensitivityLevel: 0 },
 ) => {
     debugPrint()
     debugPrint('-> Entered parseYINI(..) in parseEntry')
     debugPrint('     isStrict mode = ' + options.isStrict)
-    debugPrint('bailSensitivyLevel = ' + options.bailSensitivyLevel)
+    debugPrint('bailSensitivityLevel = ' + options.bailSensitivityLevel)
 
     let bailThreshold: TBailThreshold
-    switch (options.bailSensitivyLevel) {
+    switch (options.bailSensitivityLevel) {
         case 0:
             bailThreshold = '0-Ignore-Errors'
             break

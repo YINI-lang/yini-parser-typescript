@@ -21,7 +21,7 @@ export default class YINI {
     public static parse = (
         yiniContent: string,
         isStrict = false,
-        bailSensitivy: 0 | 1 | 2 = 0,
+        bailSensitivity: 0 | 1 | 2 = 0,
     ): TJSObject => {
         debugPrint('-> Entered static parse(..) in class YINI\n')
 
@@ -37,7 +37,7 @@ export default class YINI {
 
         const options: IOptions = {
             isStrict: isStrict,
-            bailSensitivyLevel: bailSensitivy,
+            bailSensitivityLevel: bailSensitivity,
         }
 
         debugPrint()
@@ -65,7 +65,7 @@ export default class YINI {
     public static parseFile = (
         fullPath: string,
         isStrict = false,
-        bailSensitivy: 0 | 1 | 2 = 0,
+        bailSensitivity: 0 | 1 | 2 = 0,
     ): TJSObject => {
         debugPrint('Current directory = ' + process.cwd())
 
@@ -89,7 +89,7 @@ export default class YINI {
         YINI.fullPath = fullPath
         const options: IOptions = {
             isStrict: isStrict,
-            bailSensitivyLevel: bailSensitivy,
+            bailSensitivityLevel: bailSensitivity,
         }
 
         debugPrint()

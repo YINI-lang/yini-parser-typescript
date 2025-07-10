@@ -37,7 +37,7 @@ export type TJSObject = any
 
 export interface IOptions {
     isStrict: boolean
-    bailSensitivyLevel: 0 | 1 | 2
+    bailSensitivityLevel: 0 | 1 | 2
 }
 
 export type TSyntaxTreeContainer = {
