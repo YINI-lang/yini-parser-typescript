@@ -6,30 +6,30 @@ import { trimBackticks } from '../utils/string'
 import { debugPrint } from '../utils/system'
 import { extractYiniLine } from './extractSignificantYiniLine'
 
-const SECTION_MARKER1 = '^'
-const SECTION_MARKER2 = '~'
-const SECTION_MARKER3 = '\u00A7' // Section sign §.
-const SECTION_MARKER4 = '\u20AC' // Euro sign €.
+// const SECTION_MARKER1 = '^'
+// const SECTION_MARKER2 = '~'
+// const SECTION_MARKER3 = '\u00A7' // Section sign §.
+// const SECTION_MARKER4 = '\u20AC' // Euro sign €.
 
-/**
- * Check if the character is a section marker character.
- * @note The string must be of length 1.
- * @param character A character in a string.
- */
-export const isMarkerCharacter = (character: string): boolean => {
-    if (character.length !== 1) {
-        throw Error(
-            'Argument into function isMarkerCharacter(..) is not of length 1',
-        )
-    }
+// /**
+//  * Check if the character is a section marker character.
+//  * @note The string must be of length 1.
+//  * @param character A character in a string.
+//  */
+// export const isMarkerCharacter = (character: string): boolean => {
+//     if (character.length !== 1) {
+//         throw Error(
+//             'Argument into function isMarkerCharacter(..) is not of length 1',
+//         )
+//     }
 
-    const ch = character
-    if (ch === SECTION_MARKER1 || ch === SECTION_MARKER2) {
-        return true
-    }
+//     const ch = character
+//     if (ch === SECTION_MARKER1 || ch === SECTION_MARKER2) {
+//         return true
+//     }
 
-    return false
-}
+//     return false
+// }
 
 /**
  * Check and identify the section header parts via tokenizing the parts and return them as strings.

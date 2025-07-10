@@ -95,9 +95,11 @@ Here's an overview of the project's directory structure — to help users unders
 │   └── ...
 |
 ├── src/                          // Main source code
-│   ├── grammar/                  // Generated ANTLR4 parser/lexer/visitor (.ts)
-│   ├── literal-parsers/          // Literal parser implementations
-│   ├── utils/                    // Utility modules
+│   ├── config/                   // Environment/config-specific code
+│   ├── core/                     // All the main building blocks (visitor, builder, types, error handling, etc)
+│   ├── grammar/                  // ANTLR-generated artifacts: parser/lexer/visitor (.ts)
+│   ├── parser/                   // All code that parses or extracts specific things (header parts, numbers, booleans, etc)
+│   ├── utils/                    // All general helpers/utility functions
 │   └── index.ts                  // Main entry point of the parser
 |
 ├── tests/                        // Test code
