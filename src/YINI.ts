@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { isDebug, isDev } from './config/env'
+import { IOptions } from './core/types'
 import { parseYINI } from './parseEntry'
-import { IOptions } from './types'
 import { getFileNameExtension } from './utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from './utils/system'
 

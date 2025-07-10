@@ -6,13 +6,13 @@ import {
     Recognizer,
 } from 'antlr4'
 import { isDebug } from './config/env'
-import { ErrorDataHandler, TBailThreshold } from './ErrorDataHandler'
+import { ErrorDataHandler, TBailThreshold } from './core/ErrorDataHandler'
+import { constructFinalObject } from './core/objectBuilder'
+import { IOptions, TSyntaxTreeContainer } from './core/types'
+import YINIVisitor from './core/YINIVisitor'
 import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
-import { constructFinalObject } from './objectBuilder'
-import { IOptions, TSyntaxTreeContainer } from './types'
 import { debugPrint, printObject } from './utils/system'
-import YINIVisitor from './YINIVisitor'
 
 class MyErrorListener implements ErrorListener<any> {
     public errors: string[] = []

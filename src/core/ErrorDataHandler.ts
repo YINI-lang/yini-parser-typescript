@@ -1,5 +1,5 @@
-import { isDebug } from './config/env'
-import { debugPrint } from './utils/system'
+import { isDebug } from '../config/env'
+import { debugPrint } from '../utils/system'
 
 interface IIssuePayload {
     type: TIssueType

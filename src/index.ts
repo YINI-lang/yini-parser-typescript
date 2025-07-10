@@ -12,7 +12,7 @@
 */
 
 import { APP_ENV, isDebug, isDev, isProd, NODE_ENV } from './config/env'
-import { ErrorDataHandler } from './ErrorDataHandler'
+import { ErrorDataHandler } from './core/ErrorDataHandler'
 import extractHeaderParts from './parsers/extractHeaderParts'
 import parseSectionHeader from './parsers/parseSectionHeader'
 import { stripNLAndAfter } from './utils/string'

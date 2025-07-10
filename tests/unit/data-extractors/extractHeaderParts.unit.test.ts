@@ -1,5 +1,5 @@
+import { TSectionHeaderType } from '../../../src/core/types'
 import extractHeaderParts from '../../../src/parsers/extractHeaderParts'
-import { TSectionHeaderType } from '../../../src/types'
 import { debugPrint } from '../../../src/utils/system'
 
 /**
