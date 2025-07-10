@@ -1,10 +1,10 @@
 import {
     splitLines,
-    stripCommentsAndAfter,
     stripNLAndAfter,
     trimBackticks,
 } from '../../../src/utils/string'
 import { debugPrint } from '../../../src/utils/system'
+import { stripCommentsAndAfter } from '../../../src/utils/yiniHelpers'
 
 /**
  * trimBackticks(..) Tests.

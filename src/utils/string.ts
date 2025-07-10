@@ -1,5 +1,18 @@
-import { extractYiniLine } from '../data-extractors/extractSignificantYiniLine'
+/**
+ * This file contains general string helper functions (utils).
+ * @note More specific YINI helper functions should go into yiniHelpers.ts-file.
+ */
 import { debugPrint } from './system'
+
+/**
+ * Splits a string into an array of lines, handling both LF and CRLF newlines.
+ * @param content The input string.
+ * @returns Array of lines (strings).
+ */
+export function splitLines(content: string): string[] {
+    // Chould handle \n (LF), \r\n (CRLF), and even just \r (old Mac style).
+    return content.split(/\r\n|\r|\n/)
+}
 
 /**
  * If a string starts and ends with a backtick `, if so trims the
@@ -74,55 +87,4 @@ export const stripNLAndAfter = (line: string): string => {
     debugPrint('stripNLAndAfter(..),       line: >>>' + line + '<<<')
     debugPrint('stripNLAndAfter(..), resultLine: >>>' + resultLine + '<<<')
     return resultLine
-}
-
-/**
- * @returns Returns the beginning up to (but not including) any comments
- * starting with //, #, ; or --.
- */
-export const stripCommentsAndAfter = (line: string): string => {
-    if (splitLines(line).length > 1) {
-        throw new Error(
-            'Internal error: Detected several row lines in line: >>>' +
-                line +
-                '<<<',
-        )
-    }
-
-    let idx1 = line.indexOf('//')
-    let idx2 = line.indexOf('# ') // NOTE: (!) Hash comments requires a WS after the hash!
-    let idx3 = line.indexOf('#\t') // NOTE: (!) Hash comments requires a WS after the hash!
-    let idx4 = line.indexOf(';')
-    let idx5 = line.indexOf('--')
-
-    if (idx1 < 0) idx1 = Number.MAX_SAFE_INTEGER
-    if (idx2 < 0) idx2 = Number.MAX_SAFE_INTEGER
-    if (idx3 < 0) idx3 = Number.MAX_SAFE_INTEGER
-    if (idx4 < 0) idx4 = Number.MAX_SAFE_INTEGER
-    if (idx5 < 0) idx5 = Number.MAX_SAFE_INTEGER
-    // debugPrint('stripCommentsAndAfter(..): idx1 = ' + idx1)
-    // debugPrint('stripCommentsAndAfter(..): idx2 = ' + idx2)
-    // debugPrint('stripCommentsAndAfter(..): idx3 = ' + idx3)
-    // debugPrint('stripCommentsAndAfter(..): idx4 = ' + idx4)
-    // debugPrint('stripCommentsAndAfter(..): idx5 = ' + idx5)
-
-    const idx = Math.min(idx1, idx2, idx3, idx4, idx5)
-    const resultLine =
-        idx === Number.MAX_SAFE_INTEGER ? line : line.substring(0, idx)
-
-    debugPrint('stripCommentsAndAfter(..),       line: >>>' + line + '<<<')
-    debugPrint(
-        'stripCommentsAndAfter(..), resultLine: >>>' + resultLine + '<<<',
-    )
-    return resultLine
-}
-
-/**
- * Splits a string into an array of lines, handling both LF and CRLF newlines.
- * @param content The input string.
- * @returns Array of lines (strings).
- */
-export function splitLines(content: string): string[] {
-    // Chould handle \n (LF), \r\n (CRLF), and even just \r (old Mac style).
-    return content.split(/\r\n|\r|\n/)
 }
