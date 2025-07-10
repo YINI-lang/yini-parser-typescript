@@ -9,15 +9,37 @@ https://github.com/YINI-lang/YINI-spec
 
 ---
 
-## 🚀 Getting Started
---TODO/WIP--
-
----
-
 ## ✨ Features
 See [FEATURE-CHECKLIST.md](./FEATURE-CHECKLIST.md) for the current checklist of implemented YINI features.
 
---TODO--
+- Simple, strict parsing
+- Familiar config file style (inspired by INI, YAML, TOML)
+- Easy programmatic usage
+
+## 🚀 Installation
+
+```sh
+npm install yini-parser
+```
+
+## Usage
+
+```ts
+import YINI from 'yini-parser';
+
+// Parse from string
+const config = YINI.parse(`
+^ Database
+host = localhost
+port = 5432
+`);
+
+// Parse from file
+const configFromFile = YINI.parseFile('./config.yini');
+```
+
+## API
+--TODO/WIP--
 
 ---
 
