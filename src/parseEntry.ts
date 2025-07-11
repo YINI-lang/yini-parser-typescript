@@ -6,9 +6,14 @@ import {
     Recognizer,
 } from 'antlr4'
 import { isDebug } from './config/env'
-import { ErrorDataHandler, TBailThreshold } from './core/ErrorDataHandler'
+import { ErrorDataHandler } from './core/ErrorDataHandler'
 import { constructFinalObject } from './core/objectBuilder'
-import { IOptions, TSyntaxTreeContainer } from './core/types'
+import {
+    IParseMainOptions,
+    IParseMetaData,
+    TPersistThreshold,
+    TSyntaxTreeContainer,
+} from './core/types'
 import YINIVisitor from './core/YINIVisitor'
 import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
@@ -16,10 +21,10 @@ import { debugPrint, printObject } from './utils/system'
 
 class MyErrorListener implements ErrorListener<any> {
     public errors: string[] = []
-    private bailThreshold: TBailThreshold
+    private persistThreshold: TPersistThreshold
 
-    constructor(bailThreshold: TBailThreshold) {
-        this.bailThreshold = bailThreshold
+    constructor(persistThreshold: TPersistThreshold) {
+        this.persistThreshold = persistThreshold
     }
 
     syntaxError(
@@ -36,7 +41,7 @@ class MyErrorListener implements ErrorListener<any> {
         console.error(`Syntax error, at line: ${line}`)
         console.error(`At about column ${1 + charPositionInLine} ${msg}`)
 
-        if (this.bailThreshold !== '0-Ignore-Errors') {
+        if (this.persistThreshold !== '0-Ignore-Errors') {
             process.exit(1)
         }
     }
@@ -47,25 +52,31 @@ class MyErrorListener implements ErrorListener<any> {
     reportContextSensitivity(...args: any[]): void {}
 }
 
-export const parseYiniContent = (
+export const parseMain = (
     yiniContent: string,
-    options: IOptions = { isStrict: false, bailSensitivityLevel: 0 },
+    options: IParseMainOptions = {
+        isStrict: false,
+        bailSensitivityLevel: 0,
+        isIncludeMeta: false,
+        isWithDiagnostics: false,
+        isWithTiming: false,
+    },
 ) => {
     debugPrint()
-    debugPrint('-> Entered parseYiniContent(..) in parseEntry')
+    debugPrint('-> Entered parseMain(..) in parseEntry')
     debugPrint('     isStrict mode = ' + options.isStrict)
     debugPrint('bailSensitivityLevel = ' + options.bailSensitivityLevel)
 
-    let bailThreshold: TBailThreshold
+    let persistThreshold: TPersistThreshold
     switch (options.bailSensitivityLevel) {
         case 0:
-            bailThreshold = '0-Ignore-Errors'
+            persistThreshold = '0-Ignore-Errors'
             break
         case 1:
-            bailThreshold = '1-Abort-on-Errors'
+            persistThreshold = '1-Abort-on-Errors'
             break
         default:
-            bailThreshold = '2-Abort-Even-on-Warnings'
+            persistThreshold = '2-Abort-Even-on-Warnings'
     }
 
     isDebug() && console.log()
@@ -77,7 +88,7 @@ export const parseYiniContent = (
     const tokenStream = new CommonTokenStream(lexer)
     const parser = new YiniParser(tokenStream)
 
-    const errorListener = new MyErrorListener(bailThreshold)
+    const errorListener = new MyErrorListener(persistThreshold)
 
     parser.removeErrorListeners() // Removes the default console error output.
     parser.addErrorListener(errorListener)
@@ -105,9 +116,10 @@ export const parseYiniContent = (
     debugPrint(
         '=== Phase 2 ===================================================',
     )
-    const errorHandlerInstance = new ErrorDataHandler('1-Abort-on-Errors')
+    // const errorHandler = new ErrorDataHandler('1-Abort-on-Errors')
+    const errorHandler = new ErrorDataHandler(persistThreshold)
 
-    const visitor = new YINIVisitor(errorHandlerInstance)
+    const visitor = new YINIVisitor(errorHandler)
     const syntaxTreeC: TSyntaxTreeContainer = visitor.visit(
         parseTree as any,
     ) as TSyntaxTreeContainer
@@ -137,10 +149,7 @@ export const parseYiniContent = (
         '=== Phase 3 ===================================================',
     )
     // Construct.
-    const finalJSResult = constructFinalObject(
-        syntaxTreeC,
-        errorHandlerInstance,
-    )
+    const finalJSResult = constructFinalObject(syntaxTreeC, errorHandler)
     debugPrint(
         '=== Ended phase 3 =============================================',
     )
@@ -150,10 +159,57 @@ export const parseYiniContent = (
     debugPrint()
 
     if (options.isStrict) {
-        throw Error('ERROR: Strict-mode not yet implemented')
+        //throw Error('ERROR: Strict-mode not yet implemented')
+        errorHandler.pushOrBail(
+            null,
+            'Internal-Error',
+            'WARNING: Strict-mode not yet implemented',
+            undefined,
+            'Meanwhile, please use lenient mode (non-strict) instead',
+        )
     } else {
         debugPrint('visitor.visit(..): finalJSResult:')
         isDebug() && console.debug(finalJSResult)
-        return finalJSResult as any
     }
+
+    // Construct meta data.
+    const metaData: IParseMetaData = {
+        strictMode: options.isStrict,
+        hasTerminal: syntaxTreeC._hasTerminal,
+        sections: null,
+        keysParsed: null,
+        sectionChains: syntaxTreeC._meta_numOfChains,
+        // diagnostics: undefined, // Includes warnings/errors info.
+        timing: {
+            totalMs: null,
+            phase1Ms: null,
+            phase2Ms: null,
+            phase3Ms: null,
+        },
+    }
+    if (options.isWithDiagnostics) {
+        // Attach optional diagnostics.
+        metaData.diagnostics = {
+            bailSensitivityLevel: options.bailSensitivityLevel,
+            warnings: null,
+            errors: null,
+        }
+    }
+    if (options.isWithTiming) {
+        // Attach optional timing data.
+        metaData.timing = {
+            totalMs: null,
+            phase1Ms: null,
+            phase2Ms: null,
+            phase3Ms: null,
+        }
+    }
+
+    if (options.isIncludeMeta) {
+        return {
+            result: finalJSResult as any,
+            meta: metaData,
+        }
+    }
+    return finalJSResult as any
 }

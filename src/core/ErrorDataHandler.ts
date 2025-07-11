@@ -1,5 +1,6 @@
 import { isDebug } from '../config/env'
 import { debugPrint } from '../utils/system'
+import { TIssueType, TPersistThreshold } from './types'
 
 interface IIssuePayload {
     type: TIssueType
@@ -14,19 +15,6 @@ interface IIssuePayload {
         column?: number
     }
 }
-
-export type TBailThreshold =
-    | '0-Ignore-Errors'
-    | '1-Abort-on-Errors'
-    | '2-Abort-Even-on-Warnings'
-
-export type TIssueType =
-    | 'Fatal-Error'
-    | 'Internal-Error'
-    | 'Syntax-Error'
-    | 'Syntax-Warning'
-    | 'Notice'
-    | 'Info'
 
 // All the issue titles are defined here to get a quick overview of all
 // titles, and to easier check that all titles match with relation to
@@ -44,7 +32,7 @@ const issueTitle: string[] = [
  * This class handles all error/notice reporting and processes exit/throwing.
  */
 export class ErrorDataHandler {
-    private bailThreshold: TBailThreshold
+    private persistThreshold: TPersistThreshold
 
     /** '1-Abort-on-Errors' is the default.
 
@@ -55,8 +43,8 @@ export class ErrorDataHandler {
             - Level 1 = abort on errors only
             - Level 2 = abort even on warnings
      */
-    constructor(threshold: TBailThreshold = '1-Abort-on-Errors') {
-        this.bailThreshold = threshold
+    constructor(threshold: TPersistThreshold = '1-Abort-on-Errors') {
+        this.persistThreshold = threshold
     }
 
     makeIssuePayload = (
@@ -130,7 +118,7 @@ export class ErrorDataHandler {
             msgWhat += `\nAt line: ${lineNum}, column(s): ${startCol}-${endCol}`
         }
 
-        debugPrint('bailThreshold = ' + this.bailThreshold)
+        debugPrint('persistThreshold = ' + this.persistThreshold)
         debugPrint('lineNum = ' + lineNum)
         debugPrint()
 
@@ -146,8 +134,8 @@ export class ErrorDataHandler {
             case 'Internal-Error':
                 this.emitInternalError(msgWhat, msgWhy, msgHint)
                 if (
-                    this.bailThreshold === '1-Abort-on-Errors' ||
-                    this.bailThreshold === '2-Abort-Even-on-Warnings'
+                    this.persistThreshold === '1-Abort-on-Errors' ||
+                    this.persistThreshold === '2-Abort-Even-on-Warnings'
                 ) {
                     if (process.env.NODE_ENV === 'test') {
                         // In test, throw an error instead of exiting.
@@ -160,8 +148,8 @@ export class ErrorDataHandler {
             case 'Syntax-Error':
                 this.emitSyntaxError(msgWhat, msgWhy, msgHint)
                 if (
-                    this.bailThreshold === '1-Abort-on-Errors' ||
-                    this.bailThreshold === '2-Abort-Even-on-Warnings'
+                    this.persistThreshold === '1-Abort-on-Errors' ||
+                    this.persistThreshold === '2-Abort-Even-on-Warnings'
                 ) {
                     if (process.env.NODE_ENV === 'test') {
                         // In test, throw an error instead of exiting.
@@ -173,7 +161,7 @@ export class ErrorDataHandler {
                 break
             case 'Syntax-Warning':
                 this.emitSyntaxWarning(msgWhat, msgWhy, msgHint)
-                if (this.bailThreshold === '2-Abort-Even-on-Warnings') {
+                if (this.persistThreshold === '2-Abort-Even-on-Warnings') {
                     if (process.env.NODE_ENV === 'test') {
                         // In test, throw an error instead of exiting.
                         throw new Error(`Syntax-Warning: ${msgWhat}`)

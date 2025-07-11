@@ -1,9 +1,15 @@
 import fs from 'fs'
 import { isDebug, isDev } from './config/env'
-import { IOptions, TJSObject } from './core/types'
-import { parseYiniContent } from './parseEntry'
+import {
+    IParseMainOptions,
+    TBailSensitivityLevel,
+    TJSObject,
+} from './core/types'
+import { parseMain } from './parseEntry'
 import { getFileNameExtension } from './utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from './utils/system'
+
+type TBailSensitivity = 'auto' & TBailSensitivityLevel
 
 /**
  * This class is the public API, which exposes only parse(..) and
@@ -20,8 +26,9 @@ export default class YINI {
      */
     public static parse = (
         yiniContent: string,
-        isStrict = false,
-        bailSensitivity: 0 | 1 | 2 = 0,
+        strictMode = false,
+        bailSensitivity: 'auto' | 0 | 1 | 2 = 'auto',
+        includeMetaData = false,
     ): TJSObject => {
         debugPrint('-> Entered static parse(..) in class YINI\n')
 
@@ -35,14 +42,21 @@ export default class YINI {
             yiniContent += '\n'
         }
 
-        const options: IOptions = {
-            isStrict: isStrict,
-            bailSensitivityLevel: bailSensitivity,
+        let level: TBailSensitivityLevel = 0
+        if (bailSensitivity === 'auto' && !strictMode) level = 0
+        if (bailSensitivity === 'auto' && strictMode) level = 1
+
+        const options: IParseMainOptions = {
+            isStrict: strictMode,
+            bailSensitivityLevel: level,
+            isIncludeMeta: includeMetaData,
+            isWithDiagnostics: isDebug(),
+            isWithTiming: isDebug(),
         }
 
         debugPrint()
         debugPrint('==== Call parse ==========================')
-        const result = parseYiniContent(yiniContent, options)
+        const result = parseMain(yiniContent, options)
         debugPrint('==== End call parse ==========================\n')
 
         if (isDev()) {
@@ -64,8 +78,9 @@ export default class YINI {
      */
     public static parseFile = (
         fullPath: string,
-        isStrict = false,
-        bailSensitivity: 0 | 1 | 2 = 0,
+        strictMode = false,
+        bailSensitivity: 'auto' | 0 | 1 | 2 = 'auto',
+        includeMetaData = false,
     ): TJSObject => {
         debugPrint('Current directory = ' + process.cwd())
 
@@ -87,20 +102,30 @@ export default class YINI {
         }
 
         YINI.fullPath = fullPath
-        const options: IOptions = {
-            isStrict: isStrict,
-            bailSensitivityLevel: bailSensitivity,
+        let level: TBailSensitivityLevel = 0
+        if (bailSensitivity === 'auto' && !strictMode) level = 0
+        if (bailSensitivity === 'auto' && strictMode) level = 1
+
+        const options: IParseMainOptions = {
+            isStrict: strictMode,
+            bailSensitivityLevel: level,
+            isIncludeMeta: includeMetaData,
+            isWithDiagnostics: isDebug(),
+            isWithTiming: isDebug(),
         }
 
         debugPrint()
         debugPrint('==== Call parse ==========================')
-        const result: any = parseYiniContent(content)
+        const result: any = parseMain(content, options)
         debugPrint('==== End call parse ==========================\n')
 
-        if (hasNoNewlineAtEOF) {
-            console.warn(
-                `No newline at end of file, it\'s recommended to end a file with a newline. File:\n"${fullPath}"`,
-            )
+        if (isDev()) {
+            console.log()
+            devPrint('YINI.parse(..): result:')
+            console.log(result)
+
+            devPrint('Complete result:')
+            printObject(result)
         }
 
         return result

@@ -33,11 +33,51 @@ sValue = 2
     
  */
 
+export type TPersistThreshold =
+    | '0-Ignore-Errors' // Don't bail on error, persist and try to recover.
+    | '1-Abort-on-Errors'
+    | '2-Abort-Even-on-Warnings'
+
+export type TIssueType =
+    | 'Fatal-Error'
+    | 'Internal-Error'
+    | 'Syntax-Error'
+    | 'Syntax-Warning'
+    | 'Notice'
+    | 'Info'
+
 export type TJSObject = any
 
-export interface IOptions {
+export type TBailSensitivityLevel = 0 | 1 | 2
+
+// For use in internal functions.
+export interface IParseMainOptions {
     isStrict: boolean
-    bailSensitivityLevel: 0 | 1 | 2
+    bailSensitivityLevel: TBailSensitivityLevel
+    isIncludeMeta: boolean // Include meta data.
+    isWithDiagnostics: boolean // Include diagnostics.
+    isWithTiming: boolean // Include timing data..
+}
+
+export interface IParseMetaData {
+    // fullPath?: string
+    strictMode: boolean
+    hasTerminal: boolean
+    sections: null | number
+    keysParsed: null | number
+    sectionChains: null | number
+    diagnostics?: {
+        // Includes warnings/errors info.
+        bailSensitivityLevel: TBailSensitivityLevel
+        warnings: null | number
+        errors: null | number
+    }
+    timing?: {
+        totalMs: null | number
+        phase1Ms: null | number
+        phase2Ms: null | number
+        phase3Ms: null | number
+    }
 }
 
 export type TSyntaxTreeContainer = {

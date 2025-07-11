@@ -8,10 +8,10 @@ import { ErrorDataHandler } from './ErrorDataHandler'
  */
 export const constructFinalObject = (
     syntaxTreeC: TSyntaxTreeContainer,
-    errorHandlerInstance: ErrorDataHandler,
+    errorHandler: ErrorDataHandler,
 ): TJSObject => {
     debugPrint('-> constructFinalObject(..)')
-    const bulder = new Builder(syntaxTreeC, errorHandlerInstance)
+    const bulder = new Builder(syntaxTreeC, errorHandler)
 
     if (isDebug()) {
         console.log('Argument, syntaxTreeC:')
@@ -31,23 +31,23 @@ export const constructFinalObject = (
 
 class Builder {
     private syntaxTreeC: TSyntaxTreeContainer
-    private errorHandlerInstance: ErrorDataHandler
+    private errorHandler: ErrorDataHandler
 
     constructor(
         syntaxTreeC: TSyntaxTreeContainer,
-        errorHandlerInstance: ErrorDataHandler,
+        errorHandler: ErrorDataHandler,
     ) {
         debugPrint('-> Builder: constructor(..)')
 
         this.syntaxTreeC = syntaxTreeC
-        this.errorHandlerInstance = errorHandlerInstance
+        this.errorHandler = errorHandler
     }
 
     public doCheckAndBuild(): TJSObject {
         debugPrint('-> Builder: doCheckAndBuild(..)')
         if (!this.syntaxTreeC) {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-            this.errorHandlerInstance.pushOrBail(
+            this.errorHandler.pushOrBail(
                 null,
                 'Fatal-Error',
                 'SyntaxTreeC is undefined',
@@ -138,7 +138,7 @@ class Builder {
             // NOP
         } else {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-            this.errorHandlerInstance.pushOrBail(
+            this.errorHandler.pushOrBail(
                 null,
                 'Fatal-Error',
                 'Internal-Error: Detected incorrect chain in mountChainOntoLevel(..), start section has level: ' +
@@ -149,7 +149,7 @@ class Builder {
         }
         if (workingSubTree.originLevel != 1) {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-            this.errorHandlerInstance.pushOrBail(
+            this.errorHandler.pushOrBail(
                 null,
                 'Fatal-Error',
                 'Internal-Error: Detected incorrect full sub-tree in mountChainOntoLevel(..), start section has level: ' +
@@ -208,7 +208,7 @@ class Builder {
                 }
             } else {
                 // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-                this.errorHandlerInstance.pushOrBail(
+                this.errorHandler.pushOrBail(
                     null,
                     'Fatal-Error',
                     'Internal-Error: Detected incorrect full sub-tree in buildObjectFromList(..), start section has level: ' +

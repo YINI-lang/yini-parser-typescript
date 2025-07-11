@@ -13,7 +13,7 @@ import { debugPrint } from '../utils/system'
  */
 const parseSectionHeader = (
     rawLine: string,
-    errorHandlerInstance: ErrorDataHandler,
+    errorHandler: ErrorDataHandler,
     ctx: null | SectionContext, // For error reporting.
 ): {
     markerType: TSectionHeaderType // Header marker type.
@@ -29,7 +29,7 @@ const parseSectionHeader = (
     debugPrint('extractYiniLine(..), line: >>>' + line + '<<<')
 
     const { strMarkerChars, strSectionName, strNumberPart, isBacktickedName } =
-        extractHeaderParts(rawLine, errorHandlerInstance, ctx)
+        extractHeaderParts(rawLine, errorHandler, ctx)
     debugPrint('In parseSectionHeader(..), after extractHeaderParts(..):')
     debugPrint('  strMarkerChars: ' + strMarkerChars)
     debugPrint('  strSectionName: ' + strSectionName)
@@ -40,7 +40,7 @@ const parseSectionHeader = (
     let level = 0
 
     if (strMarkerChars === '') {
-        errorHandlerInstance.pushOrBail(
+        errorHandler.pushOrBail(
             ctx,
             'Syntax-Error',
             'Unknown section header marker type',
@@ -55,7 +55,7 @@ const parseSectionHeader = (
 
         level = strMarkerChars.length
         if (strNumberPart !== '') {
-            errorHandlerInstance.pushOrBail(
+            errorHandler.pushOrBail(
                 ctx,
                 'Syntax-Error',
                 'Invalid extra input in section header of a repeating marker characters: ' +
@@ -68,7 +68,7 @@ const parseSectionHeader = (
         try {
             level = Number.parseInt(strNumberPart)
         } catch (err) {
-            errorHandlerInstance.pushOrBail(
+            errorHandler.pushOrBail(
                 ctx,
                 'Syntax-Error',
                 'No number in this shorthand section header marker found',
@@ -84,7 +84,7 @@ const parseSectionHeader = (
     // --- Check level contraints based on headerMarkerType ----------
     if (headerMarkerType === 'Classic-Header-Marker') {
         if (level > 6) {
-            errorHandlerInstance.pushOrBail(
+            errorHandler.pushOrBail(
                 ctx,
                 'Syntax-Error',
                 'Invalid number of repeating marker characters: ' +
@@ -94,7 +94,7 @@ const parseSectionHeader = (
         }
     } else {
         if (level < 1) {
-            errorHandlerInstance.pushOrBail(
+            errorHandler.pushOrBail(
                 ctx,
                 'Syntax-Error',
                 'Invalid number in numeric shorthand section marker: ' +
@@ -109,7 +109,7 @@ const parseSectionHeader = (
     const lenOfName = strSectionName.length
     if (!isBacktickedName) {
         if (lenOfName <= 0) {
-            errorHandlerInstance.pushOrBail(
+            errorHandler.pushOrBail(
                 ctx,
                 'Syntax-Error',
                 'Invalid section name in repeating marker characters header, section name: "' +
@@ -118,7 +118,7 @@ const parseSectionHeader = (
             )
         }
         if (!(isAlpha(strSectionName.charAt(0)) || strSectionName === '_')) {
-            errorHandlerInstance.pushOrBail(
+            errorHandler.pushOrBail(
                 ctx,
                 'Syntax-Error',
                 'Invalid name in this section header, section name: "' +

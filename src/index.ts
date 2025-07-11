@@ -184,7 +184,7 @@ Expected JS output:
                 valueSS1 = "Something."
                 valueSS2 = OFF
         `
-        YINI.parse(invalidYini)
+        YINI.parse(invalidYini, false, 'auto', true)
 
         //         YINI.parse(`
         // ^ Section1

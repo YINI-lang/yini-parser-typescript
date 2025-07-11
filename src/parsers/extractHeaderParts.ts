@@ -31,7 +31,7 @@ import { extractYiniLine } from './extractSignificantYiniLine'
  */
 const extractHeaderParts = (
     rawLine: string,
-    errorHandlerInstance: ErrorDataHandler | null = null,
+    errorHandler: ErrorDataHandler | null = null,
     ctx: SectionContext | null = null, // For error reporting.
     // ): TSectionHeaderType | TErrorDetectMarkerType => {
 ): {
@@ -50,7 +50,7 @@ const extractHeaderParts = (
 
     // Edge case: empty line.
     if (!str) {
-        errorHandlerInstance!.pushOrBail(
+        errorHandler!.pushOrBail(
             ctx,
             'Internal-Error',
             'Received blank argument in extractHeaderParts(..)',

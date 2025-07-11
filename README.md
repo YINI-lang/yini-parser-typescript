@@ -70,7 +70,7 @@ const configFromFile = YINI.parseFile('./config.yini');
 
 Only the `YINI` class is exposed in the public API, with two static methods: `parse` and `parseFile`.
 
-### `YINI.parse(yiniContent: string, isStrict?: boolean, bailSensitivity?: 0 | 1 | 2): object`
+### `YINI.parse(yiniContent: string, isStrict?: boolean, bailSensitivity?: "auto" | 0 | 1 | 2): object`
 
 Parses YINI code from a string.  
 - `yiniContent`: The YINI configuration as a string.
@@ -79,7 +79,7 @@ Parses YINI code from a string.
 
 Returns a JavaScript object representing the parsed configuration (YINI content).
 
-### `YINI.parseFile(filePath: string, isStrict?: boolean, bailSensitivity?: 0 | 1 | 2): object`
+### `YINI.parseFile(filePath: string, isStrict?: boolean, bailSensitivity?: "auto" | 0 | 1 | 2): object`
 
 Parses YINI code from a file.
 - `filePath`: Path to the `.yini` file.
