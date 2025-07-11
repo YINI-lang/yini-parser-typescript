@@ -150,4 +150,35 @@ describe('Throw error when parsing bad section head tests:', () => {
             YINI.parse(fixture)
         }).toThrow()
     })
+
+    test('11. Should throw error if mixing section header types^.', () => {
+        // Arrange.
+        const invalidYini = `
+        ^^^3 Section1 // NOT OK, bad section marker, cannot mix marker types.
+        x = 200
+        `
+
+        // Act & Assert.
+        expect(() => {
+            YINI.parse(invalidYini)
+        }).toThrow()
+    })
+
+    test('12. Should throw error if mixing section header types^.', () => {
+        // Arrange.
+        const invalidYini = `
+        ~1 user3
+        username = 'tester three'
+        isSysOp = NO
+
+            ~~2 prefs // NOT OK, bad section marker, cannot mix marker types.
+            theme = "special-dark"
+            notifications = ON
+        `
+
+        // Act & Assert.
+        expect(() => {
+            YINI.parse(invalidYini)
+        }).toThrow()
+    })
 })

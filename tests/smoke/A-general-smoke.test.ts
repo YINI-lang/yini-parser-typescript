@@ -271,13 +271,12 @@ describe('General Smoke Tests:', () => {
         //expect(result.SectionName).toEqual({})
     })
 
-    //@todo Fix below issue, seems sometimes subsection is not parsed or something...
-    xtest('15. Should throw error due to illegal section name.', () => {
+    test('15. Should throw error due to illegal section name.', () => {
         // Arrange.
         const invalidYini = `// Should detect illegal section name 2SubSub1!!
         ^ App
             ^^ SubSect
-                ^^^ 2SubSub1
+                ^^^ 2SubSub1 // NOT OK, illegal name!
                 valueSS1 = "Something."
                 valueSS2 = OFF
         `
@@ -289,13 +288,12 @@ describe('General Smoke Tests:', () => {
         }).toThrow()
     })
 
-    //@todo Fix below issue, seems sometimes subsection is not parsed or something...
-    xtest('16. Should throw error due to illegal section name.', () => {
+    test('16. Should throw error due to illegal section name.', () => {
         // Arrange.
         const invalidYini = `// Should detect illegal section name 2SubSub1!!
         ^ App
             ^^ \` lsdfkj lj\`
-                ^^^ 2SubSub1
+                ^^^ 2SubSub1 // NOT OK, illegal name!
                 valueSS1 = "Something."
                 valueSS2 = OFF
         `

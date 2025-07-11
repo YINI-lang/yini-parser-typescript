@@ -76,3 +76,13 @@ export const stripCommentsAndAfter = (line: string): string => {
     )
     return resultLine
 }
+
+/**
+ * Checks if a string is a valid IDENT (section identifier or member key) by
+ * YINI specificaiton, following the ANTLR4 rule:
+ * IDENT: ('a'..'z' | 'A'..'Z' | '_') ('a'..'z' | 'A'..'Z' | '0'..'9' | '_')*
+ */
+export const isValidIdent = (str: string): boolean => {
+    // Regex: ^[a-zA-Z_][a-zA-Z0-9_]*$
+    return /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(str)
+}

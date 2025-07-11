@@ -6,6 +6,7 @@ import extractHeaderParts from '../parsers/extractHeaderParts'
 import { extractYiniLine } from '../parsers/extractSignificantYiniLine'
 import { isAlpha } from '../utils/string'
 import { debugPrint } from '../utils/system'
+import { isValidIdent } from '../yiniHelpers'
 
 /**
  * Extract ...
@@ -107,7 +108,12 @@ const parseSectionHeader = (
 
     // --- Check naming contraints based on isBacktickedName ----------
     const lenOfName = strSectionName.length
-    if (!isBacktickedName) {
+    if (isBacktickedName) {
+        debugPrint(
+            'Naming contraints: *Is BacktickedName*, skipping checking naming contraints',
+        )
+    } else {
+        debugPrint('Naming contraints: Is not a BacktickedName')
         if (lenOfName <= 0) {
             errorHandler.pushOrBail(
                 ctx,
@@ -117,7 +123,15 @@ const parseSectionHeader = (
                     '"',
             )
         }
-        if (!(isAlpha(strSectionName.charAt(0)) || strSectionName === '_')) {
+        // debugPrint('Is 1st char an Alpha: ' + isAlpha(strSectionName.charAt(0)))
+        // debugPrint('    Is 1st char an _: ' + (strSectionName === '_'))
+        // if (
+        //     !(
+        //         isAlpha(strSectionName.charAt(0)) ||
+        //         strSectionName.charAt(0) === '_'
+        //     )
+        // ) {
+        if (!isValidIdent(strSectionName)) {
             errorHandler.pushOrBail(
                 ctx,
                 'Syntax-Error',

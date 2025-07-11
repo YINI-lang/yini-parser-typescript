@@ -247,7 +247,7 @@ item = 77
 username = 'tester three'
 isSysOp = NO
 
-    ~~2 prefs
+    ~2 prefs
     theme = "special-dark"
     notifications = ON
 
@@ -273,9 +273,9 @@ isSysOp = NO
         expect(result.user3.username).toEqual('tester three')
         expect(result.user3.isSysOp).toEqual(false)
 
-        //@todo Fix issue so this missing subsection gets included, not sure yet what exactly causes the issue...
-        //expect(result.user3.prefs.theme).toEqual('special-dark')
-        //expect(result.user3.prefs.notifications).toEqual(true)
+        //@todo (EDIT: This is fixed now??) Fix issue so this missing subsection gets included, not sure yet what exactly causes the issue...
+        expect(result.user3.prefs.theme).toEqual('special-dark')
+        expect(result.user3.prefs.notifications).toEqual(true)
     })
 
     //@todo Enable when can parse lists...

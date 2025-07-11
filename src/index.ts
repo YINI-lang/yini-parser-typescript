@@ -177,10 +177,10 @@ Expected JS output:
         //         const result = YINI.parse(validYini)
         //         debugPrint(result)
 
-        const invalidYini = `// Should detect illegal section name 2SubSub1!!
+        const invalidYini = `
         ^ App
             ^^ SubSect
-                ^^^ 2SubSub1
+                ^^^ SubSub1 // NOT OK, illegal name!
                 valueSS1 = "Something."
                 valueSS2 = OFF
         `

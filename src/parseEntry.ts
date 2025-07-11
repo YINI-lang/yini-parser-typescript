@@ -35,12 +35,14 @@ class MyErrorListener implements ErrorListener<any> {
         msg: string,
         e: RecognitionException | undefined,
     ): void {
+        debugPrint('ANTLR grammar cached an error')
         this.errors.push(`Line ${line}:${charPositionInLine} ${msg}`)
 
         // Print immediately for debugging
         console.error(`Syntax error, at line: ${line}`)
         console.error(`At about column ${1 + charPositionInLine} ${msg}`)
 
+        // @todo Hmm, maybe forward this to the error handler instead
         if (this.persistThreshold !== '0-Ignore-Errors') {
             process.exit(1)
         }
@@ -191,8 +193,9 @@ export const parseMain = (
         // Attach optional diagnostics.
         metaData.diagnostics = {
             bailSensitivityLevel: options.bailSensitivityLevel,
-            warnings: null,
-            errors: null,
+            errors: errorHandler.getNumOfErrors(),
+            warnings: errorHandler.getNumOfWarnings(),
+            infoAndNotices: errorHandler.getNumOfInfoAndNotices(),
         }
     }
     if (options.isWithTiming) {
@@ -205,11 +208,21 @@ export const parseMain = (
         }
     }
 
+    debugPrint('getNumOfErrors(): ' + errorHandler.getNumOfErrors())
+    if (errorHandler.getNumOfErrors()) {
+        console.log()
+        console.log(
+            'Parsing is complete, but some problems were detected. Please see the errors above for details.',
+        )
+        console.log('Number of errors found: ' + errorHandler.getNumOfErrors())
+    }
+
     if (options.isIncludeMeta) {
         return {
             result: finalJSResult as any,
             meta: metaData,
         }
     }
+
     return finalJSResult as any
 }

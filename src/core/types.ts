@@ -69,8 +69,9 @@ export interface IParseMetaData {
     diagnostics?: {
         // Includes warnings/errors info.
         bailSensitivityLevel: TBailSensitivityLevel
-        warnings: null | number
         errors: null | number
+        warnings: null | number
+        infoAndNotices: null | number
     }
     timing?: {
         totalMs: null | number

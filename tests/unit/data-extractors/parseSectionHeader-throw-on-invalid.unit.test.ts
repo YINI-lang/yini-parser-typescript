@@ -162,4 +162,34 @@ describe('Throw error when parsing bad header marker (classic and numeric shorth
             parseSectionHeader(invalidYini, eh, null)
         }).toThrow()
     })
+
+    test('4. Should throw error if mixing section header types.', () => {
+        // Arrange.
+        const invalidYini = `
+        ^^^3 Section1 // NOT OK, bad section marker, cannot mix marker types.
+        `
+
+        // Act & Assert.
+        expect(() => {
+            parseSectionHeader(invalidYini, eh, null)
+        }).toThrow()
+    })
+
+    test('5. Should throw error if mixing section header types.', () => {
+        // Arrange.
+        const invalidYini = `
+        ~1 user3
+        username = 'tester three'
+        isSysOp = NO
+
+            ~~2 prefs // NOT OK, bad section marker, cannot mix marker types.
+            theme = "special-dark"
+            notifications = ON
+        `
+
+        // Act & Assert.
+        expect(() => {
+            parseSectionHeader(invalidYini, eh, null)
+        }).toThrow()
+    })
 })

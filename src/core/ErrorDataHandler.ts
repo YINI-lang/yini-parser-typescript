@@ -34,6 +34,13 @@ const issueTitle: string[] = [
 export class ErrorDataHandler {
     private persistThreshold: TPersistThreshold
 
+    private numFatalErrors = 0
+    private numInternalErrors = 0
+    private numSyntaxErrors = 0
+    private numSyntaxWarnings = 0
+    private numNotices = 0
+    private numInfos = 0
+
     /** '1-Abort-on-Errors' is the default.
 
         Below is from the YINI spec:
@@ -132,6 +139,7 @@ export class ErrorDataHandler {
 
         switch (type) {
             case 'Internal-Error':
+                this.numInternalErrors++
                 this.emitInternalError(msgWhat, msgWhy, msgHint)
                 if (
                     this.persistThreshold === '1-Abort-on-Errors' ||
@@ -146,6 +154,7 @@ export class ErrorDataHandler {
                 }
                 break
             case 'Syntax-Error':
+                this.numSyntaxErrors++
                 this.emitSyntaxError(msgWhat, msgWhy, msgHint)
                 if (
                     this.persistThreshold === '1-Abort-on-Errors' ||
@@ -160,6 +169,7 @@ export class ErrorDataHandler {
                 }
                 break
             case 'Syntax-Warning':
+                this.numSyntaxWarnings++
                 this.emitSyntaxWarning(msgWhat, msgWhy, msgHint)
                 if (this.persistThreshold === '2-Abort-Even-on-Warnings') {
                     if (process.env.NODE_ENV === 'test') {
@@ -171,12 +181,15 @@ export class ErrorDataHandler {
                 }
                 break
             case 'Notice':
+                this.numNotices++
                 this.emitNotice(msgWhat, msgWhy, msgHint)
                 break
             case 'Info':
+                this.numInfos++
                 this.emitInfo(msgWhat, msgWhy, msgHint)
                 break
             default: // Including 'Internal-Error'.
+                this.numFatalErrors++
                 this.emitFatalError(msgWhat, msgWhy, msgHint)
                 // CANNOT recover fatal errors, will lead to an exit!
                 if (process.env.NODE_ENV === 'test') {
@@ -244,5 +257,19 @@ export class ErrorDataHandler {
         msgWhat && console.info(msgWhat)
         msgWhy && console.info(msgWhy)
         msgHint && console.log(msgHint)
+    }
+
+    public getNumOfErrors() {
+        return (
+            this.numFatalErrors + this.numInternalErrors + this.numSyntaxErrors
+        )
+    }
+
+    public getNumOfWarnings() {
+        return this.numSyntaxWarnings
+    }
+
+    public getNumOfInfoAndNotices() {
+        return this.numNotices + this.numInfos
     }
 }
