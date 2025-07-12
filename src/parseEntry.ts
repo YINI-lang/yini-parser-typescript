@@ -21,10 +21,15 @@ import { debugPrint, printObject } from './utils/system'
 
 class MyErrorListener implements ErrorListener<any> {
     public errors: string[] = []
-    private persistThreshold: TPersistThreshold
+    // private persistThreshold: TPersistThreshold
 
-    constructor(persistThreshold: TPersistThreshold) {
-        this.persistThreshold = persistThreshold
+    // constructor(persistThreshold: TPersistThreshold) {
+    //     this.persistThreshold = persistThreshold
+    // }
+
+    private errorHandler: ErrorDataHandler
+    constructor(errorHandler: ErrorDataHandler) {
+        this.errorHandler = errorHandler
     }
 
     syntaxError(
@@ -39,13 +44,16 @@ class MyErrorListener implements ErrorListener<any> {
         this.errors.push(`Line ${line}:${charPositionInLine} ${msg}`)
 
         // Print immediately for debugging
-        console.error(`Syntax error, at line: ${line}`)
-        console.error(`At about column ${1 + charPositionInLine} ${msg}`)
+        // console.error(`Syntax error, at line: ${line}`)
+        // console.error(`At about column ${1 + charPositionInLine} ${msg}`)
 
-        // @todo Hmm, maybe forward this to the error handler instead
-        if (this.persistThreshold !== '0-Ignore-Errors') {
-            process.exit(1)
-        }
+        // if (this.persistThreshold !== '0-Ignore-Errors') {
+        //     process.exit(1)
+        // }
+        const msgWhat = `Syntax error, at line: ${line}`
+        const msgWhy = `At about column ${1 + charPositionInLine} ${msg}`
+
+        this.errorHandler.pushOrBail(null, 'Syntax-Error', msgWhat, msgWhy)
     }
 
     // The following are required for the interface, but can be left empty.
@@ -90,7 +98,8 @@ export const parseMain = (
     const tokenStream = new CommonTokenStream(lexer)
     const parser = new YiniParser(tokenStream)
 
-    const errorListener = new MyErrorListener(persistThreshold)
+    const errorHandler = new ErrorDataHandler(persistThreshold)
+    const errorListener = new MyErrorListener(errorHandler)
 
     parser.removeErrorListeners() // Removes the default console error output.
     parser.addErrorListener(errorListener)
@@ -118,8 +127,7 @@ export const parseMain = (
     debugPrint(
         '=== Phase 2 ===================================================',
     )
-    // const errorHandler = new ErrorDataHandler('1-Abort-on-Errors')
-    const errorHandler = new ErrorDataHandler(persistThreshold)
+    //    const errorHandler = new ErrorDataHandler(persistThreshold)
 
     const visitor = new YINIVisitor(errorHandler)
     const syntaxTreeC: TSyntaxTreeContainer = visitor.visit(

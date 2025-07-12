@@ -181,7 +181,7 @@ Expected JS output:
         ^ App
             ^^ SubSect
                 ^^^ SubSub1 // NOT OK, illegal name!
-                valueSS1 = "Something."
+                2valueSS1 = "Something."
                 valueSS2 = OFF
         `
         YINI.parse(invalidYini, false, 'auto', true)
