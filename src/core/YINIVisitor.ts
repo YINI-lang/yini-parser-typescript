@@ -29,6 +29,7 @@ import parseNumberLiteral from '../parsers/parseNumber'
 import parseSectionHeader from '../parsers/parseSectionHeader'
 import parseStringLiteral from '../parsers/parseString'
 import { debugPrint, printObject } from '../utils/system'
+import { isValidIdent } from '../yiniHelpers'
 import { ErrorDataHandler } from './ErrorDataHandler'
 import {
     IChainContainer,
@@ -837,7 +838,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         }
 
         debugPrint()
-        debugPrint('<- Leaving visitMember(..)')
+        debugPrint('<- About to leave visitMember(..)')
         if (isDebug()) {
             console.log('returning:')
             console.log({
@@ -851,6 +852,31 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         if (!resultType && !resultKey) {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(ctx, 'Syntax-Error', 'Unknown input')
+        }
+
+        if (!isValidIdent(resultKey)) {
+            this.errorHandler!.pushOrBail(
+                ctx,
+                'Syntax-Error',
+                'Invalid name of this key of a member, key name: "' +
+                    resultKey +
+                    '"',
+                'Key name must start with: A-Z, a-z, or _, unless enclosed in backticks e.g. `' +
+                    resultKey +
+                    '`, `My key name`.',
+            )
+        }
+
+        debugPrint()
+        debugPrint('<- Leaving visitMember(..)')
+        if (isDebug()) {
+            console.log('returning:')
+            console.log({
+                type: resultType,
+                key: resultKey,
+                value: resultValue,
+            })
+            console.log()
         }
 
         return {

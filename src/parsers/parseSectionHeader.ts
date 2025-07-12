@@ -123,14 +123,7 @@ const parseSectionHeader = (
                     '"',
             )
         }
-        // debugPrint('Is 1st char an Alpha: ' + isAlpha(strSectionName.charAt(0)))
-        // debugPrint('    Is 1st char an _: ' + (strSectionName === '_'))
-        // if (
-        //     !(
-        //         isAlpha(strSectionName.charAt(0)) ||
-        //         strSectionName.charAt(0) === '_'
-        //     )
-        // ) {
+
         if (!isValidIdent(strSectionName)) {
             errorHandler.pushOrBail(
                 ctx,

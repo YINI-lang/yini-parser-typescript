@@ -21,13 +21,8 @@ import { debugPrint, printObject } from './utils/system'
 
 class MyErrorListener implements ErrorListener<any> {
     public errors: string[] = []
-    // private persistThreshold: TPersistThreshold
-
-    // constructor(persistThreshold: TPersistThreshold) {
-    //     this.persistThreshold = persistThreshold
-    // }
-
     private errorHandler: ErrorDataHandler
+
     constructor(errorHandler: ErrorDataHandler) {
         this.errorHandler = errorHandler
     }
@@ -43,13 +38,6 @@ class MyErrorListener implements ErrorListener<any> {
         debugPrint('ANTLR grammar cached an error')
         this.errors.push(`Line ${line}:${charPositionInLine} ${msg}`)
 
-        // Print immediately for debugging
-        // console.error(`Syntax error, at line: ${line}`)
-        // console.error(`At about column ${1 + charPositionInLine} ${msg}`)
-
-        // if (this.persistThreshold !== '0-Ignore-Errors') {
-        //     process.exit(1)
-        // }
         const msgWhat = `Syntax error, at line: ${line}`
         const msgWhy = `At about column ${1 + charPositionInLine} ${msg}`
 
