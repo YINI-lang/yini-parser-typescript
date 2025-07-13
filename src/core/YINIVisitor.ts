@@ -29,7 +29,7 @@ import parseNumberLiteral from '../parsers/parseNumber'
 import parseSectionHeader from '../parsers/parseSectionHeader'
 import parseStringLiteral from '../parsers/parseString'
 import { debugPrint, printObject } from '../utils/system'
-import { isValidIdent } from '../yiniHelpers'
+import { isValidSimpleIdent } from '../yiniHelpers'
 import { ErrorDataHandler } from './ErrorDataHandler'
 import {
     IChainContainer,
@@ -854,7 +854,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             this.errorHandler!.pushOrBail(ctx, 'Syntax-Error', 'Unknown input')
         }
 
-        if (!isValidIdent(resultKey)) {
+        if (!isValidSimpleIdent(resultKey)) {
             this.errorHandler!.pushOrBail(
                 ctx,
                 'Syntax-Error',

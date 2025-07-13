@@ -6,7 +6,7 @@ import extractHeaderParts from '../parsers/extractHeaderParts'
 import { extractYiniLine } from '../parsers/extractSignificantYiniLine'
 import { isAlpha } from '../utils/string'
 import { debugPrint } from '../utils/system'
-import { isValidIdent } from '../yiniHelpers'
+import { isValidSimpleIdent } from '../yiniHelpers'
 
 /**
  * Extract ...
@@ -124,7 +124,7 @@ const parseSectionHeader = (
             )
         }
 
-        if (!isValidIdent(strSectionName)) {
+        if (!isValidSimpleIdent(strSectionName)) {
             errorHandler.pushOrBail(
                 ctx,
                 'Syntax-Error',
