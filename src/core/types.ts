@@ -64,6 +64,7 @@ export interface IParseMetaData {
     strictMode: boolean
     hasTerminal: boolean
     sections: null | number
+    members: null | number
     keysParsed: null | number
     sectionChains: null | number
     diagnostics?: {
@@ -84,6 +85,8 @@ export interface IParseMetaData {
 export type TSyntaxTreeContainer = {
     _syntaxTree: TSyntaxTree
     _hasTerminal: boolean
+    _meta_numOfSections: number
+    _meta_numOfMembers: number
     _meta_numOfChains: number
 }
 

@@ -98,8 +98,9 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     private prevLevel = 0
     private prevSectionName = '' // For error reporting purposes.
 
-    private meta_numOfChains = 0 // For stats.
     private meta_numOfSections = 0 // For stats.
+    private meta_numOfMembers = 0 // For stats.
+    private meta_numOfChains = 0 // For stats.
     private meta_maxLevelSection = 0 // For stats.
 
     constructor(errorHandler: ErrorDataHandler) {
@@ -278,6 +279,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             // _base: this.resultSections,
             _syntaxTree: syntaxTree, // The Intermediate Tree, or AST.
             _hasTerminal: hasTerminal,
+            _meta_numOfSections: this.meta_numOfSections,
+            _meta_numOfMembers: this.meta_numOfMembers,
             _meta_numOfChains: this.meta_numOfChains,
         }
         return syntaxTreeC
@@ -382,6 +385,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             ctx,
         )
         this.level = sectionLevel
+        this.meta_numOfSections++
 
         // ---------------------------------------------------------------
 
@@ -693,6 +697,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                             key,
                     )
                 } else {
+                    this.meta_numOfMembers++
                     if ((value?.type as TDataType) === 'Null') {
                         members[key] = null
                     } else {
@@ -867,6 +872,11 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             }
         }
 
+        if (resultValue === undefined) {
+            debugPrint('Detected value as undefined')
+            debugPrint('Overloading undefined value with null')
+            resultValue = null
+        }
         debugPrint('*** Constructed JS object ***')
         debugPrint('resultValue:')
         if (isDebug()) {

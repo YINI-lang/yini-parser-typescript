@@ -174,9 +174,10 @@ export const parseMain = (
     const metaData: IParseMetaData = {
         strictMode: options.isStrict,
         hasTerminal: syntaxTreeC._hasTerminal,
-        sections: null,
-        keysParsed: null,
+        sections: syntaxTreeC._meta_numOfSections,
+        members: syntaxTreeC._meta_numOfMembers,
         sectionChains: syntaxTreeC._meta_numOfChains,
+        keysParsed: null,
         timing: {
             totalMs: null,
             phase1Ms: null,
