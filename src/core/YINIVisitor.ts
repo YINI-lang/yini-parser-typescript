@@ -28,8 +28,9 @@ import parseNullLiteral from '../parsers/parseNull'
 import parseNumberLiteral from '../parsers/parseNumber'
 import parseSectionHeader from '../parsers/parseSectionHeader'
 import parseStringLiteral from '../parsers/parseString'
+import { isEnclosedInBackticks, trimBackticks } from '../utils/string'
 import { debugPrint, printObject } from '../utils/system'
-import { isValidSimpleIdent } from '../yiniHelpers'
+import { isValidBacktickedIdent, isValidSimpleIdent } from '../yiniHelpers'
 import { ErrorDataHandler } from './ErrorDataHandler'
 import {
     IChainContainer,
@@ -828,10 +829,45 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         }
 
         debugPrint()
-        debugPrint('*** Constructed JS object ***')
         debugPrint("entity      = '" + entityType + "'")
         debugPrint("resultType  = '" + resultType + "'")
         debugPrint("resultKey   = '" + resultKey + "'")
+        if (resultKey) {
+            debugPrint()
+            debugPrint(
+                'Has a key... Validate it either as a simple or a backticked ident...',
+            )
+            if (isEnclosedInBackticks(resultKey)) {
+                if (!isValidBacktickedIdent(resultKey)) {
+                    this.errorHandler!.pushOrBail(
+                        ctx,
+                        'Syntax-Error',
+                        'Invalid key name of this member, backticked key/identifier: "' +
+                            resultKey +
+                            '"',
+                        'Section name should be backticked like e.g. `My section name`.',
+                    )
+                }
+
+                resultKey = trimBackticks(resultKey)
+                debugPrint("resultKey   = '" + resultKey + "'  (trimBackticks)")
+            } else {
+                if (!isValidSimpleIdent(resultKey)) {
+                    this.errorHandler!.pushOrBail(
+                        ctx,
+                        'Syntax-Error',
+                        'Invalid key name of this member, key/identifier: "' +
+                            resultKey +
+                            '"',
+                        'Section name must start with: A-Z, a-z, or _, unless enclosed in backticks e.g. `' +
+                            resultKey +
+                            '`, `My key name`.',
+                    )
+                }
+            }
+        }
+
+        debugPrint('*** Constructed JS object ***')
         debugPrint('resultValue:')
         if (isDebug()) {
             console.log(resultValue)
@@ -855,18 +891,18 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         }
 
         // if (!isValidSimpleIdent(resultKey)) {
-        if (resultType !== 'Object' && !isValidSimpleIdent(resultKey)) {
-            this.errorHandler!.pushOrBail(
-                ctx,
-                'Syntax-Error',
-                'Invalid name of this key of a member, key name: "' +
-                    resultKey +
-                    '"',
-                'Key name must start with: A-Z, a-z, or _, unless enclosed in backticks e.g. `' +
-                    resultKey +
-                    '`, `My key name`.',
-            )
-        }
+        // if (resultType !== 'Object' && !isValidSimpleIdent(resultKey)) {
+        //     this.errorHandler!.pushOrBail(
+        //         ctx,
+        //         'Syntax-Error',
+        //         'Invalid name of this key of a member, key name: "' +
+        //             resultKey +
+        //             '"',
+        //         'Key name must start with: A-Z, a-z, or _, unless enclosed in backticks e.g. `' +
+        //             resultKey +
+        //             '`, `My key name`.',
+        //     )
+        // }
 
         debugPrint()
         debugPrint('<- Leaving visitMember(..)')

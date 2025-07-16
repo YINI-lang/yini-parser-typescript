@@ -27,6 +27,17 @@ export const trimBackticks = (str: string): string => {
 }
 
 /**
+ * Returns true if the provided string is enclosed in backticks, e.g. `name`.
+ */
+export const isEnclosedInBackticks = (str: string): boolean => {
+    if (str.length >= 2 && str.startsWith('`') && str.endsWith('`')) {
+        return true
+    }
+
+    return false
+}
+
+/**
  * Check if the character is A-Z or a-z.
  * @note The string must be of length 1.
  * @param character A character in a string.

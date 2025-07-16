@@ -6,7 +6,7 @@ import extractHeaderParts from '../parsers/extractHeaderParts'
 import { extractYiniLine } from '../parsers/extractSignificantYiniLine'
 import { isAlpha } from '../utils/string'
 import { debugPrint } from '../utils/system'
-import { isValidSimpleIdent } from '../yiniHelpers'
+import { isValidBacktickedIdent, isValidSimpleIdent } from '../yiniHelpers'
 
 /**
  * Extract ...
@@ -109,9 +109,16 @@ const parseSectionHeader = (
     // --- Check naming contraints based on isBacktickedName ----------
     const lenOfName = strSectionName.length
     if (isBacktickedName) {
-        debugPrint(
-            'Naming contraints: *Is BacktickedName*, skipping checking naming contraints',
-        )
+        if (!isValidBacktickedIdent(strSectionName)) {
+            errorHandler.pushOrBail(
+                ctx,
+                'Syntax-Error',
+                'Invalid name in this section header, section name: "' +
+                    strSectionName +
+                    '"',
+                'Section name should be backticked like e.g. `My section name`.',
+            )
+        }
     } else {
         debugPrint('Naming contraints: Is not a BacktickedName')
         if (lenOfName <= 0) {

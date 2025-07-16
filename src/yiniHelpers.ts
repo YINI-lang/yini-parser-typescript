@@ -3,7 +3,7 @@
  * @note More general helper functions should go into the dir "src/utils/".
  */
 
-import { splitLines } from './utils/string'
+import { isEnclosedInBackticks, splitLines } from './utils/string'
 import { debugPrint } from './utils/system'
 
 const SECTION_MARKER1 = '^'
@@ -116,10 +116,11 @@ export const isValidSimpleIdent = (str: string): boolean => {
  * @link https://github.com/YINI-lang/YINI-spec/blob/develop/YINI-Specification.md#34-identifiers
  */
 export const isValidBacktickedIdent = (str: string): boolean => {
-    if (str.length >= 2 && str.startsWith('`') && str.endsWith('`')) {
-        // OK, and will let possible raw newlines and tabs pass so they
-        // are checked further down.
-    } else {
+    // if (str.length >= 2 && str.startsWith('`') && str.endsWith('`')) {
+    //     // OK, and will let possible raw newlines and tabs pass so they
+    //     // are checked further down.
+    // } else {
+    if (!isEnclosedInBackticks(str)) {
         // NOTE: Only missing backtick(s) should throw error!
         throw Error(
             'Internal error: isValidBacktickedIdent(..) is missing backtick(s) "`".',

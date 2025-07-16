@@ -181,15 +181,18 @@ Expected JS output:
         //     id = 32403  # The correct app id.
         //     title = "My Program"
         // `
-        const validYini = `^ App
-            title = "My Program"
-            id = 23
-            val = true
-        `
-        // const validYini = `^ App
-        //     id = 32403  # The correct app id.
-        //     title = "My Program"
-        // `
+        const validYini = `
+    ^ TypesDemo
+    string1 = "Hello"
+    string2 = 'World'
+    number1 = 123
+    number2 = -5.7
+    hexval = 0xFFEE
+    binval = %1011
+    bool_true = yes
+    \`bool false\` = OFF
+    nullval = null
+    empty_val =          # ← Null (lenient mode)`
 
         YINI.parse(validYini, false, 'auto', true)
 
