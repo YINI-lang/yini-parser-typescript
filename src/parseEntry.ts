@@ -177,7 +177,6 @@ export const parseMain = (
         sections: null,
         keysParsed: null,
         sectionChains: syntaxTreeC._meta_numOfChains,
-        // diagnostics: undefined, // Includes warnings/errors info.
         timing: {
             totalMs: null,
             phase1Ms: null,

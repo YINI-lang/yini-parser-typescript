@@ -246,6 +246,7 @@ describe('General Smoke Tests:', () => {
             title = "My Program"
         `
         // Act.
+        isDebug() && printObject(validYini)
         const result = YINI.parse(validYini)
         debugPrint(result)
         // Assert.
@@ -261,6 +262,7 @@ describe('General Smoke Tests:', () => {
             // This whole line is a comment.
         `
         // Act.
+        isDebug() && printObject(validYini)
         const result = YINI.parse(validYini)
         isDebug() && printObject(result)
 

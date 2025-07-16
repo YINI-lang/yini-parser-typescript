@@ -177,12 +177,9 @@ Expected JS output:
         //         const result = YINI.parse(validYini)
         //         debugPrint(result)
 
-        const invalidYini = `
-        ^ App
-            ^^ SubSect
-                ^^^ SubSub1 // NOT OK, illegal name!
-                2valueSS1 = "Something."
-                valueSS2 = OFF
+        const invalidYini = `^ App
+            id = 32403  # The correct app id.
+            title = "My Program"
         `
         YINI.parse(invalidYini, false, 'auto', true)
 

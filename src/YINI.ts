@@ -57,7 +57,7 @@ export default class YINI {
             isStrict: strictMode,
             bailSensitivityLevel: level,
             isIncludeMeta: includeMetaData,
-            isWithDiagnostics: isDebug(),
+            isWithDiagnostics: isDev() || isDebug(),
             isWithTiming: isDebug(),
         }
 
@@ -124,7 +124,7 @@ export default class YINI {
             isStrict: strictMode,
             bailSensitivityLevel: level,
             isIncludeMeta: includeMetaData,
-            isWithDiagnostics: isDebug(),
+            isWithDiagnostics: isDev() || isDebug(),
             isWithTiming: isDebug(),
         }
 
