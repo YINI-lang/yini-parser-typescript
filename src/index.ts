@@ -181,15 +181,15 @@ Expected JS output:
         //     id = 32403  # The correct app id.
         //     title = "My Program"
         // `
-        const validYini = `^ \`Features\`
-beta = TRUE
-dark_mode = ON
-experimental_ui = NO
-welcome_tour = YES
-    ^^ \`User Groups\`
-    admin = ["alice", "bob"]
-    beta_testers = ["charlie", "dana"]
-    regular_users = []`
+        const validYini = `
+        ~1 user3
+        username = 'tester three'
+        isSysOp = NO
+
+            ~~2 prefs // NOT OK, bad section marker, cannot mix marker types.
+            theme = "special-dark"
+            notifications = ON
+        `
 
         YINI.parse(validYini, false, 'auto', true)
 
