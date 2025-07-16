@@ -133,9 +133,10 @@ username = "tester"
     string1 = "Hello"
     string2 = 'World'
     number1 = 123
-    number2 = -5.7
+    number2 = -5.7    
     hexval = 0xFFEE
-    binval = %1011
+
+    binval = %10001
     bool_true = yes
     \`bool false\` = OFF
     nullval = null
@@ -148,6 +149,15 @@ username = "tester"
         // Assert.
         expect(result.TypesDemo.string1).toEqual('Hello')
         expect(result.TypesDemo.string2).toEqual('World')
+        expect(result.TypesDemo.number1).toEqual(123)
+        expect(result.TypesDemo.number2).toEqual(-5.7)
+        expect(result.TypesDemo.hexval).toEqual(65518)
+
+        expect(result.TypesDemo.binval).toEqual(17)
+        expect(result.TypesDemo.bool_true).toEqual(true)
+        expect(result.TypesDemo['bool false']).toEqual(false)
+        expect(result.TypesDemo.nullval).toEqual(null)
+        expect(result.TypesDemo.empty_val).toEqual(null)
 
         //@todo Add the rest of the members too
     })
