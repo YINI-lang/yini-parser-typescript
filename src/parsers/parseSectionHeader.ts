@@ -145,7 +145,7 @@ const parseSectionHeader = (
     debugPrint(`       line = >>>${line}<<<`)
     debugPrint()
     debugPrint('identified level: ' + level)
-    debugPrint('     sectionName: ' + strSectionName)
+    debugPrint('     SectionName: ' + strSectionName)
     debugPrint('headerMarkerType: ' + headerMarkerType)
     debugPrint('                        --------------')
 

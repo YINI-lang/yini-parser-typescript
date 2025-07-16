@@ -46,10 +46,10 @@ export default class YiniParser extends Parser {
 	public static readonly EMPTY_OBJECT = 26;
 	public static readonly EMPTY_LIST = 27;
 	public static readonly SHEBANG = 28;
-	public static readonly KEY = 29;
-	public static readonly IDENT = 30;
-	public static readonly IDENT_BACKTICKED = 31;
-	public static readonly NUMBER = 32;
+	public static readonly NUMBER = 29;
+	public static readonly KEY = 30;
+	public static readonly IDENT = 31;
+	public static readonly IDENT_BACKTICKED = 32;
 	public static readonly STRING = 33;
 	public static readonly TRIPLE_QUOTED_STRING = 34;
 	public static readonly SINGLE_OR_DOUBLE = 35;
@@ -116,10 +116,9 @@ export default class YiniParser extends Parser {
                                                              "NULL", "EMPTY_OBJECT", 
                                                              "EMPTY_LIST", 
                                                              "SHEBANG", 
-                                                             "KEY", "IDENT", 
-                                                             "IDENT_BACKTICKED", 
-                                                             "NUMBER", "STRING", 
-                                                             "TRIPLE_QUOTED_STRING", 
+                                                             "NUMBER", "KEY", 
+                                                             "IDENT", "IDENT_BACKTICKED", 
+                                                             "STRING", "TRIPLE_QUOTED_STRING", 
                                                              "SINGLE_OR_DOUBLE", 
                                                              "R_AND_C_STRING", 
                                                              "HYPER_STRING", 
@@ -254,7 +253,7 @@ export default class YiniParser extends Parser {
 				this.state = 71;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-			} while (_la===2 || _la===29);
+			} while (_la===2 || _la===30);
 			this.state = 76;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
@@ -500,7 +499,7 @@ export default class YiniParser extends Parser {
 				this.state = 121;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				if (((((_la - 14)) & ~0x1F) === 0 && ((1 << (_la - 14)) & 802309) !== 0)) {
+				if (((((_la - 14)) & ~0x1F) === 0 && ((1 << (_la - 14)) & 572933) !== 0)) {
 					{
 					this.state = 120;
 					this.value();
@@ -660,7 +659,7 @@ export default class YiniParser extends Parser {
 				this.string_literal();
 				}
 				break;
-			case 32:
+			case 29:
 				this.enterOuterAlt(localctx, 3);
 				{
 				this.state = 150;
@@ -809,7 +808,7 @@ export default class YiniParser extends Parser {
 			this.state = 198;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 29:
+			case 30:
 				this.enterOuterAlt(localctx, 1);
 				{
 				this.state = 180;
@@ -1432,14 +1431,14 @@ export default class YiniParser extends Parser {
 	98,1,0,0,0,98,102,1,0,0,0,99,101,5,40,0,0,100,99,1,0,0,0,101,104,1,0,0,
 	0,102,100,1,0,0,0,102,103,1,0,0,0,103,106,1,0,0,0,104,102,1,0,0,0,105,92,
 	1,0,0,0,105,97,1,0,0,0,106,5,1,0,0,0,107,109,3,8,4,0,108,107,1,0,0,0,109,
-	110,1,0,0,0,110,108,1,0,0,0,110,111,1,0,0,0,111,7,1,0,0,0,112,114,5,29,
+	110,1,0,0,0,110,108,1,0,0,0,110,111,1,0,0,0,111,7,1,0,0,0,112,114,5,30,
 	0,0,113,115,5,42,0,0,114,113,1,0,0,0,114,115,1,0,0,0,115,116,1,0,0,0,116,
 	118,5,10,0,0,117,119,5,42,0,0,118,117,1,0,0,0,118,119,1,0,0,0,119,121,1,
 	0,0,0,120,122,3,12,6,0,121,120,1,0,0,0,121,122,1,0,0,0,122,124,1,0,0,0,
 	123,125,5,40,0,0,124,123,1,0,0,0,125,126,1,0,0,0,126,124,1,0,0,0,126,127,
 	1,0,0,0,127,134,1,0,0,0,128,134,3,10,5,0,129,131,5,2,0,0,130,132,3,6,3,
 	0,131,130,1,0,0,0,131,132,1,0,0,0,132,134,1,0,0,0,133,112,1,0,0,0,133,128,
-	1,0,0,0,133,129,1,0,0,0,134,9,1,0,0,0,135,136,5,29,0,0,136,138,5,13,0,0,
+	1,0,0,0,133,129,1,0,0,0,134,9,1,0,0,0,135,136,5,30,0,0,136,138,5,13,0,0,
 	137,139,5,42,0,0,138,137,1,0,0,0,138,139,1,0,0,0,139,141,1,0,0,0,140,142,
 	3,24,12,0,141,140,1,0,0,0,141,142,1,0,0,0,142,144,1,0,0,0,143,145,5,40,
 	0,0,144,143,1,0,0,0,145,146,1,0,0,0,146,144,1,0,0,0,146,147,1,0,0,0,147,
@@ -1458,7 +1457,7 @@ export default class YiniParser extends Parser {
 	190,193,1,0,0,0,191,189,1,0,0,0,191,192,1,0,0,0,192,195,1,0,0,0,193,191,
 	1,0,0,0,194,196,5,12,0,0,195,194,1,0,0,0,195,196,1,0,0,0,196,199,1,0,0,
 	0,197,199,5,26,0,0,198,180,1,0,0,0,198,197,1,0,0,0,199,17,1,0,0,0,200,202,
-	5,29,0,0,201,203,5,42,0,0,202,201,1,0,0,0,202,203,1,0,0,0,203,204,1,0,0,
+	5,30,0,0,201,203,5,42,0,0,202,201,1,0,0,0,202,203,1,0,0,0,203,204,1,0,0,
 	0,204,208,5,10,0,0,205,207,5,40,0,0,206,205,1,0,0,0,207,210,1,0,0,0,208,
 	206,1,0,0,0,208,209,1,0,0,0,209,211,1,0,0,0,210,208,1,0,0,0,211,212,3,12,
 	6,0,212,19,1,0,0,0,213,216,3,24,12,0,214,216,3,22,11,0,215,213,1,0,0,0,
@@ -1477,7 +1476,7 @@ export default class YiniParser extends Parser {
 	261,264,1,0,0,0,262,260,1,0,0,0,262,263,1,0,0,0,263,265,1,0,0,0,264,262,
 	1,0,0,0,265,269,3,22,11,0,266,268,5,40,0,0,267,266,1,0,0,0,268,271,1,0,
 	0,0,269,267,1,0,0,0,269,270,1,0,0,0,270,273,1,0,0,0,271,269,1,0,0,0,272,
-	249,1,0,0,0,272,262,1,0,0,0,273,27,1,0,0,0,274,275,5,32,0,0,275,29,1,0,
+	249,1,0,0,0,272,262,1,0,0,0,273,27,1,0,0,0,274,275,5,29,0,0,275,29,1,0,
 	0,0,276,277,5,25,0,0,277,31,1,0,0,0,278,282,5,33,0,0,279,281,3,34,17,0,
 	280,279,1,0,0,0,281,284,1,0,0,0,282,280,1,0,0,0,282,283,1,0,0,0,283,33,
 	1,0,0,0,284,282,1,0,0,0,285,287,5,40,0,0,286,285,1,0,0,0,287,290,1,0,0,

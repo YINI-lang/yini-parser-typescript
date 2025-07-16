@@ -60,12 +60,14 @@ export const extractYiniLine = (rawYiniContent: string) => {
             resultLine = significantLines[0]
             break
         default:
-            debugPrint('Did find several significant lines in rawYiniContent!')
-            throw new Error(
-                'Internal error: Detected several row lines in rawYiniContent: >>>' +
-                    rawYiniContent +
-                    '<<<',
+            debugPrint(
+                '(!) Did find several significant lines in rawYiniContent! - Maybe internal error...',
             )
+        // throw new Error(
+        //     'Internal error: Detected several row lines in rawYiniContent: >>>' +
+        //         rawYiniContent +
+        //         '<<<',
+        // )
     }
 
     debugPrint('<- About to leave extractSignificantYiniCode(..):')

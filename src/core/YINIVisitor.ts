@@ -854,7 +854,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             this.errorHandler!.pushOrBail(ctx, 'Syntax-Error', 'Unknown input')
         }
 
-        if (!isValidSimpleIdent(resultKey)) {
+        // if (!isValidSimpleIdent(resultKey)) {
+        if (resultType !== 'Object' && !isValidSimpleIdent(resultKey)) {
             this.errorHandler!.pushOrBail(
                 ctx,
                 'Syntax-Error',

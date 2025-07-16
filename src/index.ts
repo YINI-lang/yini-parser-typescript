@@ -177,11 +177,21 @@ Expected JS output:
         //         const result = YINI.parse(validYini)
         //         debugPrint(result)
 
-        const invalidYini = `^ App
-            id = 32403  # The correct app id.
+        // const validYini = `^ App
+        //     id = 32403  # The correct app id.
+        //     title = "My Program"
+        // `
+        const validYini = `^ App
             title = "My Program"
+            id = 23
+            val = true
         `
-        YINI.parse(invalidYini, false, 'auto', true)
+        // const validYini = `^ App
+        //     id = 32403  # The correct app id.
+        //     title = "My Program"
+        // `
+
+        YINI.parse(validYini, false, 'auto', true)
 
         //         YINI.parse(`
         // ^ Section1

@@ -6,6 +6,7 @@ const parseNumberLiteral = (
     txt: string,
 ): { type: TDataType; value: number } => {
     debugPrint('-> Entered parseNumberLiteral(..)')
+
     if (/^0[xX]|#/.test(txt))
         // Prefix: 0x, 0X, #
         return {
