@@ -1,4 +1,5 @@
 import assert from 'assert'
+import { TokenStream } from 'antlr4'
 import { isDebug } from '../config/env'
 import {
     Boolean_literalContext,
@@ -89,6 +90,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     private reversedTree: TSyntaxTree = []
 
     private errorHandler: ErrorDataHandler | null = null
+    private isStrict: boolean
 
     private lastActiveSectionAtLevels: any[] = []
     private lastActiveSectionNameAtLevels: (string | undefined)[] = [] // Last active section name at each level.
@@ -103,9 +105,10 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     private meta_numOfChains = 0 // For stats.
     private meta_maxLevelSection = 0 // For stats.
 
-    constructor(errorHandler: ErrorDataHandler) {
+    constructor(errorHandler: ErrorDataHandler, isStrict: boolean) {
         super()
         this.errorHandler = errorHandler
+        this.isStrict = isStrict
     }
 
     private pushOnTree = (sReslult: ISectionResult): void => {
@@ -180,7 +183,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      */
     // visitYini?: (ctx: YiniContext) => IResult;
     // visitYini = (ctx: YiniContext): IResult => {
-    visitYini = (ctx: YiniContext): any => {
+    visitYini = (ctx: YiniContext, isStrict: boolean = false): any => {
         if (!this.errorHandler) {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             new ErrorDataHandler().pushOrBail(
@@ -874,8 +877,18 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
         if (resultValue === undefined) {
             debugPrint('Detected value as undefined')
-            debugPrint('Overloading undefined value with null')
-            resultValue = null
+            if (!this.isStrict) {
+                debugPrint('Overloading undefined value with null')
+                resultValue = null
+            } else {
+                this.errorHandler!.pushOrBail(
+                    ctx,
+                    'Syntax-Error',
+                    'Encountered an empty/missing value in strict mode',
+                    'Expected a value but found nothing, strict mode does not allow implicit null.',
+                    'If you intend to have a null value, please specify "null" explicitly as the value.',
+                )
+            }
         }
         debugPrint('*** Constructed JS object ***')
         debugPrint('resultValue:')

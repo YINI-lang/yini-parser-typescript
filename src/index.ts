@@ -187,7 +187,8 @@ Expected JS output:
 
 `
 
-        YINI.parse(validYini, false, 'auto', true)
+        //        YINI.parse(validYini, true, 'auto', true)
+        YINI.parse(validYini, true)
 
         //         YINI.parse(`
         // ^ Section1

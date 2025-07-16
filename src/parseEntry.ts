@@ -117,7 +117,7 @@ export const parseMain = (
     )
     //    const errorHandler = new ErrorDataHandler(persistThreshold)
 
-    const visitor = new YINIVisitor(errorHandler)
+    const visitor = new YINIVisitor(errorHandler, options.isStrict)
     const syntaxTreeC: TSyntaxTreeContainer = visitor.visit(
         parseTree as any,
     ) as TSyntaxTreeContainer
@@ -160,10 +160,10 @@ export const parseMain = (
         //throw Error('ERROR: Strict-mode not yet implemented')
         errorHandler.pushOrBail(
             null,
-            'Internal-Error',
-            'WARNING: Strict-mode not yet implemented',
-            undefined,
-            'Meanwhile, please use lenient mode (non-strict) instead',
+            'Syntax-Warning',
+            'WARNING: Strict-mode not yet fully implemented',
+            '',
+            '',
         )
     } else {
         debugPrint('visitor.visit(..): finalJSResult:')
