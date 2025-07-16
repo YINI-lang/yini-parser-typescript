@@ -105,7 +105,7 @@ describe('Parse classic section header unit tests:', () => {
         // Assert.
         expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(1)
     })
 
@@ -121,7 +121,7 @@ describe('Parse classic section header unit tests:', () => {
         // Assert.
         expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(1)
     })
 
@@ -137,7 +137,7 @@ describe('Parse classic section header unit tests:', () => {
         // Assert.
         expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(1)
     })
 
@@ -153,7 +153,7 @@ describe('Parse classic section header unit tests:', () => {
         // Assert.
         expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(1)
     })
 
@@ -169,7 +169,7 @@ describe('Parse classic section header unit tests:', () => {
         // Assert.
         expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(1)
     })
 
@@ -284,7 +284,7 @@ describe('Parse classic section header unit tests:', () => {
         // Assert.
         expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(1)
     })
 
@@ -300,7 +300,7 @@ describe('Parse classic section header unit tests:', () => {
         // Assert.
         expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(1)
     })
 
@@ -316,7 +316,7 @@ describe('Parse classic section header unit tests:', () => {
         // Assert.
         expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(1)
     })
 
@@ -332,7 +332,7 @@ describe('Parse classic section header unit tests:', () => {
         // Assert.
         expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(1)
     })
 
@@ -427,7 +427,7 @@ describe('Parse classic section header unit tests:', () => {
         // Assert.
         expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(4)
     })
 
@@ -494,7 +494,7 @@ describe('Parse classic section header unit tests:', () => {
         // Assert.
         expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(6)
     })
 
