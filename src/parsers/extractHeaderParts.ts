@@ -109,7 +109,7 @@ const extractHeaderParts = (
 
     if (isBacktickedName) {
         debugPrint('Backticed sectionNamePart: ' + sectionNamePart)
-        sectionNamePart = trimBackticks(sectionNamePart)
+        // sectionNamePart = trimBackticks(sectionNamePart)
     }
 
     debugPrint()

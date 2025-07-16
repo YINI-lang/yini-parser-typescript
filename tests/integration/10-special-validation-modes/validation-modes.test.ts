@@ -29,7 +29,7 @@ describe('Validation modes tests:', () => {
         const isStrict = true
         const invalidInStrict = `^ Title
             nullVal = null
-            empty_val =          # ← Implicit null (lenient mode)
+            empty_val =          # ← ERROR: Requires explicit null (strict mode)
         `
 
         // Act & Assert.

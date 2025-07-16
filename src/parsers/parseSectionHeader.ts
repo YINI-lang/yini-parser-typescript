@@ -4,7 +4,7 @@ import { TSectionHeaderType } from '../core/types'
 import { SectionContext } from '../grammar/YiniParser'
 import extractHeaderParts from '../parsers/extractHeaderParts'
 import { extractYiniLine } from '../parsers/extractSignificantYiniLine'
-import { isAlpha } from '../utils/string'
+import { isAlpha, trimBackticks } from '../utils/string'
 import { debugPrint } from '../utils/system'
 import { isValidBacktickedIdent, isValidSimpleIdent } from '../yiniHelpers'
 
@@ -29,7 +29,7 @@ const parseSectionHeader = (
     debugPrint('                  rawLine: >>>' + rawLine + '<<<')
     debugPrint('extractYiniLine(..), line: >>>' + line + '<<<')
 
-    const { strMarkerChars, strSectionName, strNumberPart, isBacktickedName } =
+    let { strMarkerChars, strSectionName, strNumberPart, isBacktickedName } =
         extractHeaderParts(rawLine, errorHandler, ctx)
     debugPrint('In parseSectionHeader(..), after extractHeaderParts(..):')
     debugPrint('  strMarkerChars: ' + strMarkerChars)
@@ -143,8 +143,11 @@ const parseSectionHeader = (
                     '`, `My section name`.',
             )
         }
+
+        strSectionName = trimBackticks(strSectionName)
     }
     // ---------------------------------------------------------------
+    // strSectionName = trimBackticks(strSectionName)
 
     debugPrint('                        --------------')
     debugPrint('<- About to leave parseSectionHeader(..)')

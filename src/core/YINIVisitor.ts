@@ -145,7 +145,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
         const chain: IChainContainer = {
             originLevel: sReslult.level,
-            chain: { [sReslult.name]: sReslult.members },
+            chain: { [trimBackticks(sReslult.name)]: sReslult.members },
         }
         this.reversedTree.push(chain)
         // }

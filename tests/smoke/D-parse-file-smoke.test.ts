@@ -100,7 +100,8 @@ describe('Parse-File Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        expect(result.Features.experimental_ui).toEqual(false)
+        expect(result['Features'].experimental_ui).toEqual(false)
+        expect(result.Features['Feature Toggles'].feature_x).toEqual(true)
         //@todo Add tests for the other literal as well.
     })
 

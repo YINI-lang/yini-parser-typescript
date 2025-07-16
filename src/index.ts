@@ -181,14 +181,17 @@ Expected JS output:
         //     id = 32403  # The correct app id.
         //     title = "My Program"
         // `
-        const validYini = `^ App
-        nullval = null
-    empty_val =          # ← Null (lenient mode)
+        const validYini = `^ \`Features\`
+beta = TRUE
+dark_mode = ON
+experimental_ui = NO
+welcome_tour = YES
+    ^^ \`User Groups\`
+    admin = ["alice", "bob"]
+    beta_testers = ["charlie", "dana"]
+    regular_users = []`
 
-`
-
-        //        YINI.parse(validYini, true, 'auto', true)
-        YINI.parse(validYini, true)
+        YINI.parse(validYini, false, 'auto', true)
 
         //         YINI.parse(`
         // ^ Section1
