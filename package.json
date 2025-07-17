@@ -25,14 +25,14 @@
         "url": "git+https://github.com/YOUR_USERNAME/yini-parser.git"
     },
     "keywords": [
-        "YINI",
-        "parser",
+        "read",
+        "yini",
         "config",
-        "configuration",
         "ini",
-        "yaml",
-        "typescript",
-        "javascript"
+        "parser",
+        "file",
+        "parse",
+        "configuration"
     ],
     "author": "Marko K. Seppänen",
     "license": "Apache-2.0",
@@ -64,13 +64,14 @@
         "antlr4": "^4.13.2"
     },
     "devDependencies": {
+        "@eslint/js": "^9.31.0",
         "@ianvs/prettier-plugin-sort-imports": "^4.4.2",
         "@types/jest": "^29.5.14",
         "@types/node": "^22.15.3",
-        "@typescript-eslint/eslint-plugin": "^8.32.1",
-        "@typescript-eslint/parser": "^8.32.1",
+        "@typescript-eslint/eslint-plugin": "^8.37.0",
+        "@typescript-eslint/parser": "^8.37.0",
         "cross-env": "^7.0.3",
-        "eslint": "^9.27.0",
+        "eslint": "^9.31.0",
         "eslint-config-prettier": "^10.1.5",
         "eslint-plugin-prettier": "^5.4.0",
         "husky": "^9.1.7",
@@ -88,5 +89,6 @@
     },
     "engines": {
         "node": ">=16"
-    }
+    },
+    "type": "commonjs"
 }

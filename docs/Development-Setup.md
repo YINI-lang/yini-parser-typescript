@@ -22,6 +22,15 @@
 Notes:
 - The parser currently uses CommonJS (CJS module format) module format for maximum compatibility with Jest and Node.js.
 
+In `package.json`, this line must be present:
+```json
+...
+"type": "commonjs"
+...
+```
+
+This means any .js files (config files, etc) must use `require()` instead of `import`.
+
 ---
 
 ## Project Overview

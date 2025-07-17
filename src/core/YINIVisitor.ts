@@ -257,7 +257,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
         const syntaxTree: TSyntaxTree = this.reversedTree.reverse()
 
-        if (false && isDebug()) {
+        if (isDebug()) {
             console.log()
             console.log(
                 '=========================================================================',
