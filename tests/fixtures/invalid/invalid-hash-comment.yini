@@ -1,0 +1,10 @@
+^ Section2
+    sValue = 2
+    ^^ Section21	# This is section 21.
+        sValue = 21
+        bValue = OFF
+    ^^ Section22#This hash comment is INVALID, due to it's missing a WS after the hash!
+        // sValue = 22
+        bValue3 = on
+        ^^^ Section221
+            sValue = 221

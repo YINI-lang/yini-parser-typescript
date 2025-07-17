@@ -1,0 +1,6 @@
+@yini
+
+^ PathsWithQuotesBackslash
+        path1 = "\'Program Files'\App\"
+        path2 = '\"user name"\Desktop\'
+        path3 = '\Projects\`2024`\"Quarter 2"\' // NOTE: Has backticks!

@@ -1,0 +1,9 @@
+@yini
+
+^ general
+name = 'Kim'
+active = true
+
+	^^ preferences
+	theme = "modern"
+	avatarMode = false

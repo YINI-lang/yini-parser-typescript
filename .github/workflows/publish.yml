@@ -1,0 +1,30 @@
+name: Publish npm package
+
+on:
+    release:
+        types: [published]
+
+jobs:
+    publish:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20' # Use your desired Node version
+                  registry-url: 'https://registry.npmjs.org/'
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Build package
+              run: npm run build # Optional, if you have a build step
+
+            - name: Publish to npm
+              run: npm publish --access public # Use --access public for public packages
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

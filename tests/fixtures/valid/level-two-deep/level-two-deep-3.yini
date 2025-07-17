@@ -1,0 +1,9 @@
+@yini
+
+^ Title
+Name = 'Some name'
+IsDarkTheme = Yes
+Alpha = .98
+
+    ^^ AlternativeTitle
+    Name = 'Some other name'

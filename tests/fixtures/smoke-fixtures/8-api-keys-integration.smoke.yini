@@ -1,0 +1,23 @@
+@Yini
+
+/*
+
+Features:
+  - Several level-1 sections (implicit base)
+  - Objects
+  - Booleans, nulls, strings
+  - Lists (colon syntax)
+  - Inline # comments
+  - Disabled line
+
+*/
+
+^ Integrations
+google = { api_key = "AIzaSy...", enabled = true }	# Google
+stripe = { secret = "sk_test_...", enabled = false }	# Stripe
+github = { token = null, enabled = false }		# GitHub
+
+^ Webhooks
+enabled = true
+--urls: "https://oldwebhook.site/abc123", "https://hooks.example.com/events"  // OLD webhook!
+urls: "https://webhook.site/abc123", "https://hooks.example.com/events"
