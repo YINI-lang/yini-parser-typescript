@@ -151,7 +151,7 @@ describe('Throw error when parsing bad section head tests:', () => {
         }).toThrow()
     })
 
-    test('11. Should throw error if mixing section header types^.', () => {
+    test('11. Should throw error if mixing section header types.', () => {
         // Arrange.
         const invalidYini = `
         ^^^3 Section1 // NOT OK, bad section marker, cannot mix marker types.
@@ -164,13 +164,14 @@ describe('Throw error when parsing bad section head tests:', () => {
         }).toThrow()
     })
 
-    test('12. Should throw error if mixing section header types^.', () => {
+    test('12. Should throw error if mixing section header types.', () => {
         // Arrange.
         const invalidYini = `
         ~1 user3
         username = 'tester three'
         isSysOp = NO
 
+            # Below is invalid marker, mixup between basic and numeric section marker.
             ~~2 prefs // NOT OK, bad section marker, cannot mix marker types.
             theme = "special-dark"
             notifications = ON
