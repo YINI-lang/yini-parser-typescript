@@ -1,4 +1,5 @@
 import assert from 'assert'
+import { TokenStream } from 'antlr4'
 import { isDebug } from '../config/env'
 import {
     Boolean_literalContext,
@@ -28,7 +29,9 @@ import parseNullLiteral from '../parsers/parseNull'
 import parseNumberLiteral from '../parsers/parseNumber'
 import parseSectionHeader from '../parsers/parseSectionHeader'
 import parseStringLiteral from '../parsers/parseString'
+import { isEnclosedInBackticks, trimBackticks } from '../utils/string'
 import { debugPrint, printObject } from '../utils/system'
+import { isValidBacktickedIdent, isValidSimpleIdent } from '../yiniHelpers'
 import { ErrorDataHandler } from './ErrorDataHandler'
 import {
     IChainContainer,
@@ -87,6 +90,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     private reversedTree: TSyntaxTree = []
 
     private errorHandler: ErrorDataHandler | null = null
+    private isStrict: boolean
 
     private lastActiveSectionAtLevels: any[] = []
     private lastActiveSectionNameAtLevels: (string | undefined)[] = [] // Last active section name at each level.
@@ -96,13 +100,15 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     private prevLevel = 0
     private prevSectionName = '' // For error reporting purposes.
 
-    private meta_numOfChains = 0 // For stats.
     private meta_numOfSections = 0 // For stats.
+    private meta_numOfMembers = 0 // For stats.
+    private meta_numOfChains = 0 // For stats.
     private meta_maxLevelSection = 0 // For stats.
 
-    constructor(errorHandler: ErrorDataHandler) {
+    constructor(errorHandler: ErrorDataHandler, isStrict: boolean) {
         super()
         this.errorHandler = errorHandler
+        this.isStrict = isStrict
     }
 
     private pushOnTree = (sReslult: ISectionResult): void => {
@@ -139,7 +145,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
         const chain: IChainContainer = {
             originLevel: sReslult.level,
-            chain: { [sReslult.name]: sReslult.members },
+            chain: { [trimBackticks(sReslult.name)]: sReslult.members },
         }
         this.reversedTree.push(chain)
         // }
@@ -177,7 +183,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      */
     // visitYini?: (ctx: YiniContext) => IResult;
     // visitYini = (ctx: YiniContext): IResult => {
-    visitYini = (ctx: YiniContext): any => {
+    visitYini = (ctx: YiniContext, isStrict: boolean = false): any => {
         if (!this.errorHandler) {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             new ErrorDataHandler().pushOrBail(
@@ -276,6 +282,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             // _base: this.resultSections,
             _syntaxTree: syntaxTree, // The Intermediate Tree, or AST.
             _hasTerminal: hasTerminal,
+            _meta_numOfSections: this.meta_numOfSections,
+            _meta_numOfMembers: this.meta_numOfMembers,
             _meta_numOfChains: this.meta_numOfChains,
         }
         return syntaxTreeC
@@ -380,6 +388,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             ctx,
         )
         this.level = sectionLevel
+        this.meta_numOfSections++
 
         // ---------------------------------------------------------------
 
@@ -691,6 +700,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                             key,
                     )
                 } else {
+                    this.meta_numOfMembers++
                     if ((value?.type as TDataType) === 'Null') {
                         members[key] = null
                     } else {
@@ -827,17 +837,67 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         }
 
         debugPrint()
-        debugPrint('*** Constructed JS object ***')
         debugPrint("entity      = '" + entityType + "'")
         debugPrint("resultType  = '" + resultType + "'")
         debugPrint("resultKey   = '" + resultKey + "'")
+        if (resultKey) {
+            debugPrint()
+            debugPrint(
+                'Has a key... Validate it either as a simple or a backticked ident...',
+            )
+            if (isEnclosedInBackticks(resultKey)) {
+                if (!isValidBacktickedIdent(resultKey)) {
+                    this.errorHandler!.pushOrBail(
+                        ctx,
+                        'Syntax-Error',
+                        'Invalid key name of this member, backticked key/identifier: "' +
+                            resultKey +
+                            '"',
+                        'Section name should be backticked like e.g. `My section name`.',
+                    )
+                }
+
+                resultKey = trimBackticks(resultKey)
+                debugPrint("resultKey   = '" + resultKey + "'  (trimBackticks)")
+            } else {
+                if (!isValidSimpleIdent(resultKey)) {
+                    this.errorHandler!.pushOrBail(
+                        ctx,
+                        'Syntax-Error',
+                        'Invalid key name of this member, key/identifier: "' +
+                            resultKey +
+                            '"',
+                        'Section name must start with: A-Z, a-z, or _, unless enclosed in backticks e.g. `' +
+                            resultKey +
+                            '`, `My key name`.',
+                    )
+                }
+            }
+        }
+
+        if (resultValue === undefined) {
+            debugPrint('Detected value as undefined')
+            if (!this.isStrict) {
+                debugPrint('Overloading undefined value with null')
+                resultValue = null
+            } else {
+                this.errorHandler!.pushOrBail(
+                    ctx,
+                    'Syntax-Error',
+                    'Encountered an empty/missing value in strict mode',
+                    'Expected a value but found nothing, strict mode does not allow implicit null.',
+                    'If you intend to have a null value, please specify "null" explicitly as the value.',
+                )
+            }
+        }
+        debugPrint('*** Constructed JS object ***')
         debugPrint('resultValue:')
         if (isDebug()) {
             console.log(resultValue)
         }
 
         debugPrint()
-        debugPrint('<- Leaving visitMember(..)')
+        debugPrint('<- About to leave visitMember(..)')
         if (isDebug()) {
             console.log('returning:')
             console.log({
@@ -851,6 +911,32 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         if (!resultType && !resultKey) {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(ctx, 'Syntax-Error', 'Unknown input')
+        }
+
+        // if (!isValidSimpleIdent(resultKey)) {
+        // if (resultType !== 'Object' && !isValidSimpleIdent(resultKey)) {
+        //     this.errorHandler!.pushOrBail(
+        //         ctx,
+        //         'Syntax-Error',
+        //         'Invalid name of this key of a member, key name: "' +
+        //             resultKey +
+        //             '"',
+        //         'Key name must start with: A-Z, a-z, or _, unless enclosed in backticks e.g. `' +
+        //             resultKey +
+        //             '`, `My key name`.',
+        //     )
+        // }
+
+        debugPrint()
+        debugPrint('<- Leaving visitMember(..)')
+        if (isDebug()) {
+            console.log('returning:')
+            console.log({
+                type: resultType,
+                key: resultKey,
+                value: resultValue,
+            })
+            console.log()
         }
 
         return {

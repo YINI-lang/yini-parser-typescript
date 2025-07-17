@@ -133,9 +133,10 @@ username = "tester"
     string1 = "Hello"
     string2 = 'World'
     number1 = 123
-    number2 = -5.7
+    number2 = -5.7    
     hexval = 0xFFEE
-    binval = %1011
+
+    binval = %10001
     bool_true = yes
     \`bool false\` = OFF
     nullval = null
@@ -148,6 +149,15 @@ username = "tester"
         // Assert.
         expect(result.TypesDemo.string1).toEqual('Hello')
         expect(result.TypesDemo.string2).toEqual('World')
+        expect(result.TypesDemo.number1).toEqual(123)
+        expect(result.TypesDemo.number2).toEqual(-5.7)
+        expect(result.TypesDemo.hexval).toEqual(65518)
+
+        expect(result.TypesDemo.binval).toEqual(17)
+        expect(result.TypesDemo.bool_true).toEqual(true)
+        expect(result.TypesDemo['bool false']).toEqual(false)
+        expect(result.TypesDemo.nullval).toEqual(null)
+        expect(result.TypesDemo.empty_val).toEqual(null)
 
         //@todo Add the rest of the members too
     })
@@ -247,7 +257,7 @@ item = 77
 username = 'tester three'
 isSysOp = NO
 
-    ~~2 prefs
+    ~2 prefs
     theme = "special-dark"
     notifications = ON
 
@@ -273,9 +283,9 @@ isSysOp = NO
         expect(result.user3.username).toEqual('tester three')
         expect(result.user3.isSysOp).toEqual(false)
 
-        //@todo Fix issue so this missing subsection gets included, not sure yet what exactly causes the issue...
-        //expect(result.user3.prefs.theme).toEqual('special-dark')
-        //expect(result.user3.prefs.notifications).toEqual(true)
+        //@todo (EDIT: This is fixed now??) Fix issue so this missing subsection gets included, not sure yet what exactly causes the issue...
+        expect(result.user3.prefs.theme).toEqual('special-dark')
+        expect(result.user3.prefs.notifications).toEqual(true)
     })
 
     //@todo Enable when can parse lists...

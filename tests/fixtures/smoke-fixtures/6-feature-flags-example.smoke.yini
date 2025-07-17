@@ -20,7 +20,7 @@ welcome_tour = YES
     beta_testers = ["charlie", "dana"]
     regular_users = []
 
-        ^^ `Feature Toggles`
-        feature_x = TRUE
-        feature_y = FALSE
-        feature_z = NULL
+    ^^ `Feature Toggles`
+    feature_x = TRUE
+    feature_y = FALSE
+    feature_z = NULL

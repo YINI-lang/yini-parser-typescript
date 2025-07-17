@@ -4,8 +4,9 @@ import { TSectionHeaderType } from '../core/types'
 import { SectionContext } from '../grammar/YiniParser'
 import extractHeaderParts from '../parsers/extractHeaderParts'
 import { extractYiniLine } from '../parsers/extractSignificantYiniLine'
-import { isAlpha } from '../utils/string'
+import { isAlpha, trimBackticks } from '../utils/string'
 import { debugPrint } from '../utils/system'
+import { isValidBacktickedIdent, isValidSimpleIdent } from '../yiniHelpers'
 
 /**
  * Extract ...
@@ -28,7 +29,7 @@ const parseSectionHeader = (
     debugPrint('                  rawLine: >>>' + rawLine + '<<<')
     debugPrint('extractYiniLine(..), line: >>>' + line + '<<<')
 
-    const { strMarkerChars, strSectionName, strNumberPart, isBacktickedName } =
+    let { strMarkerChars, strSectionName, strNumberPart, isBacktickedName } =
         extractHeaderParts(rawLine, errorHandler, ctx)
     debugPrint('In parseSectionHeader(..), after extractHeaderParts(..):')
     debugPrint('  strMarkerChars: ' + strMarkerChars)
@@ -107,7 +108,19 @@ const parseSectionHeader = (
 
     // --- Check naming contraints based on isBacktickedName ----------
     const lenOfName = strSectionName.length
-    if (!isBacktickedName) {
+    if (isBacktickedName) {
+        if (!isValidBacktickedIdent(strSectionName)) {
+            errorHandler.pushOrBail(
+                ctx,
+                'Syntax-Error',
+                'Invalid name in this section header, section name: "' +
+                    strSectionName +
+                    '"',
+                'Section name should be backticked like e.g. `My section name`.',
+            )
+        }
+    } else {
+        debugPrint('Naming contraints: Is not a BacktickedName')
         if (lenOfName <= 0) {
             errorHandler.pushOrBail(
                 ctx,
@@ -117,7 +130,8 @@ const parseSectionHeader = (
                     '"',
             )
         }
-        if (!(isAlpha(strSectionName.charAt(0)) || strSectionName === '_')) {
+
+        if (!isValidSimpleIdent(strSectionName)) {
             errorHandler.pushOrBail(
                 ctx,
                 'Syntax-Error',
@@ -129,8 +143,11 @@ const parseSectionHeader = (
                     '`, `My section name`.',
             )
         }
+
+        strSectionName = trimBackticks(strSectionName)
     }
     // ---------------------------------------------------------------
+    // strSectionName = trimBackticks(strSectionName)
 
     debugPrint('                        --------------')
     debugPrint('<- About to leave parseSectionHeader(..)')
@@ -138,7 +155,7 @@ const parseSectionHeader = (
     debugPrint(`       line = >>>${line}<<<`)
     debugPrint()
     debugPrint('identified level: ' + level)
-    debugPrint('     sectionName: ' + strSectionName)
+    debugPrint('     SectionName: ' + strSectionName)
     debugPrint('headerMarkerType: ' + headerMarkerType)
     debugPrint('                        --------------')
 

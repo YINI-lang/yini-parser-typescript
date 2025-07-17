@@ -3,7 +3,7 @@
  * @note More general helper functions should go into the dir "src/utils/".
  */
 
-import { splitLines } from './utils/string'
+import { isEnclosedInBackticks, splitLines } from './utils/string'
 import { debugPrint } from './utils/system'
 
 const SECTION_MARKER1 = '^'
@@ -13,8 +13,9 @@ const SECTION_MARKER4 = '\u20AC' // Euro sign €.
 
 /**
  * Check if the character is a section marker character.
- * @note The string must be of length 1.
  * @param character A character in a string.
+ * @note The string must be of length 1.
+ * @throws Will throw if not exactly of length 1.
  */
 export const isMarkerCharacter = (character: string): boolean => {
     if (character.length !== 1) {
@@ -39,6 +40,7 @@ export const isMarkerCharacter = (character: string): boolean => {
 /**
  * @returns Returns the beginning up to (but not including) any comments
  * starting with //, #, ; or --.
+ * @throws Will throw if consisting more than 1 lines.
  */
 export const stripCommentsAndAfter = (line: string): string => {
     if (splitLines(line).length > 1) {
@@ -75,4 +77,82 @@ export const stripCommentsAndAfter = (line: string): string => {
         'stripCommentsAndAfter(..), resultLine: >>>' + resultLine + '<<<',
     )
     return resultLine
+}
+
+/**
+ * Checks if a string conforms to the identifier rules for section headers and
+ * member key names as defined by the YINI specification, following
+ * the ANTLR4 lexer rule:
+ * IDENT: ('a'..'z' | 'A'..'Z' | '_') ('a'..'z' | 'A'..'Z' | '0'..'9' | '_')*
+
+* @throws Will only throw if blank string.
+ *
+ * @satisfies Should satisfy YINI spec 7, chapter: 3.4. Identifiers, Form 1:
+ * Identifier of Simple Form.
+ * @link https://github.com/YINI-lang/YINI-spec/blob/develop/YINI-Specification.md#34-identifiers
+ */
+export const isValidSimpleIdent = (str: string): boolean => {
+    if (!str.trim()) {
+        throw Error(
+            'Internal error: isValidSimpleIdent(..) received an empty string.',
+        )
+    }
+
+    // Regex: ^[a-zA-Z_][a-zA-Z0-9_]*$
+    return /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(str)
+}
+
+/**
+ * Checks if a string is a valid backticked phrase/identifier:
+ * - Wrapped in backticks.
+ * - No raw tabs, newlines, or control characters (U+0000–U+001F), except as
+ *   escaped sequences (e.g., \n).
+ * - May contain ordinary spaces.
+ * @note Empty is allowed: ``, as in spec (due to conform with the JSON empty key "").
+ * @throws Will only throw if missing enclosed backtick(s).
+ *
+ * @satisfies Should satisfy YINI spec 7, chapter: 3.4. Identifiers, Form 2:
+ * Backticked Identifier.
+ * @link https://github.com/YINI-lang/YINI-spec/blob/develop/YINI-Specification.md#34-identifiers
+ */
+export const isValidBacktickedIdent = (str: string): boolean => {
+    // if (str.length >= 2 && str.startsWith('`') && str.endsWith('`')) {
+    //     // OK, and will let possible raw newlines and tabs pass so they
+    //     // are checked further down.
+    // } else {
+    if (!isEnclosedInBackticks(str)) {
+        // NOTE: Only missing backtick(s) should throw error!
+        throw Error(
+            'Internal error: isValidBacktickedIdent(..) is missing backtick(s) "`".',
+        )
+    }
+
+    // Get the contents inside backticks.
+    const content = str.slice(1, -1)
+
+    // Allowed escapes: \n, \r, \t, \\, \`
+    const allowedEscapes = ['n', 'r', 't', '\\', '`']
+
+    for (let i = 0; i < content.length; i++) {
+        const ch = content[i]
+        const code = content.charCodeAt(i)
+
+        if (ch === '\\') {
+            // If this is an escape, check next char.
+            i++
+            if (i >= content.length) return false // Trailing backslash is not valid.
+            const nextCh = content[i]
+            if (!allowedEscapes.includes(nextCh)) return false
+            continue
+        }
+
+        // Allow space (U+0020), but not other control chars (U+0000–U+001F).
+        if (code < 0x20 && code !== 0x20) return false
+
+        // Disallow raw newlines, tabs, carriage returns, and backtick.
+        if (ch === '\n' || ch === '\r' || ch === '\t' || ch === '`')
+            // Raw newlines and tabs will yield false.
+            return false
+    }
+    return true
 }

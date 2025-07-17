@@ -21,10 +21,10 @@ import { debugPrint, printObject } from './utils/system'
 
 class MyErrorListener implements ErrorListener<any> {
     public errors: string[] = []
-    private persistThreshold: TPersistThreshold
+    private errorHandler: ErrorDataHandler
 
-    constructor(persistThreshold: TPersistThreshold) {
-        this.persistThreshold = persistThreshold
+    constructor(errorHandler: ErrorDataHandler) {
+        this.errorHandler = errorHandler
     }
 
     syntaxError(
@@ -35,15 +35,13 @@ class MyErrorListener implements ErrorListener<any> {
         msg: string,
         e: RecognitionException | undefined,
     ): void {
+        debugPrint('ANTLR grammar cached an error')
         this.errors.push(`Line ${line}:${charPositionInLine} ${msg}`)
 
-        // Print immediately for debugging
-        console.error(`Syntax error, at line: ${line}`)
-        console.error(`At about column ${1 + charPositionInLine} ${msg}`)
+        const msgWhat = `Syntax error, at line: ${line}`
+        const msgWhy = `At about column ${1 + charPositionInLine} ${msg}`
 
-        if (this.persistThreshold !== '0-Ignore-Errors') {
-            process.exit(1)
-        }
+        this.errorHandler.pushOrBail(null, 'Syntax-Error', msgWhat, msgWhy)
     }
 
     // The following are required for the interface, but can be left empty.
@@ -88,7 +86,8 @@ export const parseMain = (
     const tokenStream = new CommonTokenStream(lexer)
     const parser = new YiniParser(tokenStream)
 
-    const errorListener = new MyErrorListener(persistThreshold)
+    const errorHandler = new ErrorDataHandler(persistThreshold)
+    const errorListener = new MyErrorListener(errorHandler)
 
     parser.removeErrorListeners() // Removes the default console error output.
     parser.addErrorListener(errorListener)
@@ -116,10 +115,9 @@ export const parseMain = (
     debugPrint(
         '=== Phase 2 ===================================================',
     )
-    // const errorHandler = new ErrorDataHandler('1-Abort-on-Errors')
-    const errorHandler = new ErrorDataHandler(persistThreshold)
+    //    const errorHandler = new ErrorDataHandler(persistThreshold)
 
-    const visitor = new YINIVisitor(errorHandler)
+    const visitor = new YINIVisitor(errorHandler, options.isStrict)
     const syntaxTreeC: TSyntaxTreeContainer = visitor.visit(
         parseTree as any,
     ) as TSyntaxTreeContainer
@@ -162,10 +160,10 @@ export const parseMain = (
         //throw Error('ERROR: Strict-mode not yet implemented')
         errorHandler.pushOrBail(
             null,
-            'Internal-Error',
-            'WARNING: Strict-mode not yet implemented',
-            undefined,
-            'Meanwhile, please use lenient mode (non-strict) instead',
+            'Syntax-Warning',
+            'WARNING: Strict-mode not yet fully implemented',
+            '',
+            '',
         )
     } else {
         debugPrint('visitor.visit(..): finalJSResult:')
@@ -176,10 +174,10 @@ export const parseMain = (
     const metaData: IParseMetaData = {
         strictMode: options.isStrict,
         hasTerminal: syntaxTreeC._hasTerminal,
-        sections: null,
-        keysParsed: null,
+        sections: syntaxTreeC._meta_numOfSections,
+        members: syntaxTreeC._meta_numOfMembers,
         sectionChains: syntaxTreeC._meta_numOfChains,
-        // diagnostics: undefined, // Includes warnings/errors info.
+        keysParsed: null,
         timing: {
             totalMs: null,
             phase1Ms: null,
@@ -191,8 +189,9 @@ export const parseMain = (
         // Attach optional diagnostics.
         metaData.diagnostics = {
             bailSensitivityLevel: options.bailSensitivityLevel,
-            warnings: null,
-            errors: null,
+            errors: errorHandler.getNumOfErrors(),
+            warnings: errorHandler.getNumOfWarnings(),
+            infoAndNotices: errorHandler.getNumOfInfoAndNotices(),
         }
     }
     if (options.isWithTiming) {
@@ -205,11 +204,21 @@ export const parseMain = (
         }
     }
 
+    debugPrint('getNumOfErrors(): ' + errorHandler.getNumOfErrors())
+    if (errorHandler.getNumOfErrors()) {
+        console.log()
+        console.log(
+            'Parsing is complete, but some problems were detected. Please see the errors above for details.',
+        )
+        console.log('Number of errors found: ' + errorHandler.getNumOfErrors())
+    }
+
     if (options.isIncludeMeta) {
         return {
             result: finalJSResult as any,
             meta: metaData,
         }
     }
+
     return finalJSResult as any
 }

@@ -109,7 +109,7 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         // Assert.
         expect(strSectionName).not.toEqual('nonCorrectName')
         expect(strMarkerChars).toEqual('^')
-        expect(strSectionName).toEqual('Section Name')
+        expect(strSectionName).toEqual('`Section Name`')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(true)
     })
@@ -127,7 +127,7 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         // Assert.
         expect(strSectionName).not.toEqual('nonCorrectName')
         expect(strMarkerChars).toEqual('^')
-        expect(strSectionName).toEqual('Section Name')
+        expect(strSectionName).toEqual('`Section Name`')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(true)
     })
@@ -145,7 +145,7 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         // Assert.
         expect(strSectionName).not.toEqual('nonCorrectName')
         expect(strMarkerChars).toEqual('^')
-        expect(strSectionName).toEqual('Section Name')
+        expect(strSectionName).toEqual('`Section Name`')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(true)
     })
@@ -163,7 +163,7 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         // Assert.
         expect(strSectionName).not.toEqual('nonCorrectName')
         expect(strMarkerChars).toEqual('^')
-        expect(strSectionName).toEqual('Section Name')
+        expect(strSectionName).toEqual('`Section Name`')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(true)
     })
@@ -181,7 +181,7 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         // Assert.
         expect(strSectionName).not.toEqual('nonCorrectName')
         expect(strMarkerChars).toEqual('^')
-        expect(strSectionName).toEqual('Section Name')
+        expect(strSectionName).toEqual('`Section Name`')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(true)
     })
@@ -310,7 +310,7 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         // Assert.
         expect(strSectionName).not.toEqual('nonCorrectName')
         expect(strMarkerChars).toEqual('^')
-        expect(strSectionName).toEqual('Section Name')
+        expect(strSectionName).toEqual('`Section Name`')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(true)
     })
@@ -328,7 +328,7 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         // Assert.
         expect(strSectionName).not.toEqual('nonCorrectName')
         expect(strMarkerChars).toEqual('^')
-        expect(strSectionName).toEqual('Section Name')
+        expect(strSectionName).toEqual('`Section Name`')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(true)
     })
@@ -346,7 +346,7 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         // Assert.
         expect(strSectionName).not.toEqual('nonCorrectName')
         expect(strMarkerChars).toEqual('^')
-        expect(strSectionName).toEqual('Section Name')
+        expect(strSectionName).toEqual('`Section Name`')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(true)
     })
@@ -364,7 +364,7 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         // Assert.
         expect(strSectionName).not.toEqual('nonCorrectName')
         expect(strMarkerChars).toEqual('^')
-        expect(strSectionName).toEqual('Section Name')
+        expect(strSectionName).toEqual('`Section Name`')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(true)
     })
@@ -472,7 +472,7 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         // Assert.
         expect(strSectionName).not.toEqual('nonCorrectName')
         expect(strMarkerChars).toEqual('^^^^')
-        expect(strSectionName).toEqual('Section Name')
+        expect(strSectionName).toEqual('`Section Name`')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(true)
     })
@@ -552,7 +552,7 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         // Assert.
         expect(strSectionName).not.toEqual('nonCorrectName')
         expect(strMarkerChars).toEqual('^^^^^^')
-        expect(strSectionName).toEqual('Section Name')
+        expect(strSectionName).toEqual('`Section Name`')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(true)
     })
@@ -588,7 +588,7 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         // Assert.
         expect(strSectionName).not.toEqual('nonCorrectName')
         expect(strMarkerChars).toEqual('~~')
-        expect(strSectionName).toEqual('Section Title')
+        expect(strSectionName).toEqual('`Section Title`')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(true)
     })
@@ -606,7 +606,7 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         // Assert.
         expect(strSectionName).not.toEqual('nonCorrectName')
         expect(strMarkerChars).toEqual('~~')
-        expect(strSectionName).toEqual('Section Title')
+        expect(strSectionName).toEqual('`Section Title`')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(true)
     })
@@ -642,7 +642,7 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         // Assert.
         expect(strSectionName).not.toEqual('nonCorrectName')
         expect(strMarkerChars).toEqual('§§')
-        expect(strSectionName).toEqual('Section Title')
+        expect(strSectionName).toEqual('`Section Title`')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(true)
     })
@@ -660,7 +660,7 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         // Assert.
         expect(strSectionName).not.toEqual('nonCorrectName')
         expect(strMarkerChars).toEqual('§§§')
-        expect(strSectionName).toEqual('Section Title')
+        expect(strSectionName).toEqual('`Section Title`')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(true)
     })
@@ -696,7 +696,7 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         // Assert.
         expect(strSectionName).not.toEqual('nonCorrectName')
         expect(strMarkerChars).toEqual('€€')
-        expect(strSectionName).toEqual('Section Title')
+        expect(strSectionName).toEqual('`Section Title`')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(true)
     })
@@ -714,7 +714,7 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         // Assert.
         expect(strSectionName).not.toEqual('nonCorrectName')
         expect(strMarkerChars).toEqual('€€€')
-        expect(strSectionName).toEqual('Section Title')
+        expect(strSectionName).toEqual('`Section Title`')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(true)
     })

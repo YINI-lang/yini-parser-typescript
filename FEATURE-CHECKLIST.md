@@ -285,7 +285,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Ignore comments or disable line when parsing/extracting entities such section names, keys and other identifiers or values</td>
     <td>🔲</td>
     <td>E.g. <code>^ App // Comment</code> should extract section name = "App" and not "App // Comment", etc</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>⚠️ Easy to forget trimming away these</td>
@@ -311,7 +311,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>🔲</td>
     <td><code>`this is a key`</code></td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>Key name in members</td>
   </tr>
@@ -320,25 +320,25 @@ https://github.com/YINI-lang/YINI-spec
     <td>🔲</td>
     <td><code>^`8.MySection`</code></td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>Section names with spaces etc.</td>
   </tr>
   <tr>
-    <td>Standard section marks (^, ~)</td>
+    <td>Standard/basic/classic section marks (^, ~)</td>
     <td>🔲</td>
     <td><code></code></td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>Repeat up to MAX 6 characters, indent optional</td>
   </tr>
   <tr>
-    <td>Shorthand section marker (^7, etc.)</td>
+    <td>Numeric shorthand section marker (^7, etc.)</td>
     <td>🔲</td>
     <td><code>^7Section</code></td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>Arbitrary nesting</td>
   </tr>
@@ -346,8 +346,8 @@ https://github.com/YINI-lang/YINI-spec
     <td>(Implicit) Null</td>
     <td>🔲</td>
     <td>Empty value</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>🔲</td>
     <td><b>⚠️ Only in non-strict-mode</b></td>
   </tr>
@@ -408,8 +408,8 @@ https://github.com/YINI-lang/YINI-spec
     <td>Binary numbers</td>
     <td>🔲</td>
     <td><code>0b1010</code>, <code>%1010</code></td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>⚠️ Including alternative notation with %</td>
   </tr>
@@ -417,8 +417,8 @@ https://github.com/YINI-lang/YINI-spec
     <td>Octal numbers</td>
     <td>🔲</td>
     <td><code>0o7477</code></td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>8-base</td>
   </tr>
@@ -435,8 +435,8 @@ https://github.com/YINI-lang/YINI-spec
     <td>Hexadecimal numbers</td>
     <td>🔲</td>
     <td><code>0xF390</code>, <code>#F390</code></td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>⚠️ 16-base, including alternative notation with #</td>
   </tr>
@@ -662,7 +662,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Lenient mode (default)</td>
     <td>🔲</td>
     <td>Allows trailing commas, blank/null values, etc</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td></td>
@@ -671,7 +671,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Strict mode option</td>
     <td>🔲</td>
     <td>Enforce all structure/terminator, etc</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>Terminator /END required, no trailing comma, etc</td>
@@ -682,7 +682,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Level 0 = Ignore errors and try parse anyway (may remap falty key/section names).<br/>
     Level 1 = Abort on errors only.<br/>
     Level 2 = Abort even on warnings.</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td></td>

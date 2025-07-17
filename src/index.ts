@@ -177,14 +177,21 @@ Expected JS output:
         //         const result = YINI.parse(validYini)
         //         debugPrint(result)
 
-        const invalidYini = `// Should detect illegal section name 2SubSub1!!
-        ^ App
-            ^^ SubSect
-                ^^^ 2SubSub1
-                valueSS1 = "Something."
-                valueSS2 = OFF
+        // const validYini = `^ App
+        //     id = 32403  # The correct app id.
+        //     title = "My Program"
+        // `
+        const validYini = `
+        ~1 user3
+        username = 'tester three'
+        isSysOp = NO
+
+            ~~2 prefs // NOT OK, bad section marker, cannot mix marker types.
+            theme = "special-dark"
+            notifications = ON
         `
-        YINI.parse(invalidYini, false, 'auto', true)
+
+        YINI.parse(validYini, false, 'auto', true)
 
         //         YINI.parse(`
         // ^ Section1

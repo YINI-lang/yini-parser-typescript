@@ -43,14 +43,21 @@ export default class YINI {
         }
 
         let level: TBailSensitivityLevel = 0
-        if (bailSensitivity === 'auto' && !strictMode) level = 0
-        if (bailSensitivity === 'auto' && strictMode) level = 1
+        // if (bailSensitivity === 'auto' && !strictMode) level = 0
+        // if (bailSensitivity === 'auto' && strictMode) level = 1
+        if (bailSensitivity === 'auto') {
+            if (!strictMode) level = 0
+            if (strictMode) level = 1
+            if (process.env.NODE_ENV === 'test') level = 1
+        } else {
+            level = bailSensitivity
+        }
 
         const options: IParseMainOptions = {
             isStrict: strictMode,
             bailSensitivityLevel: level,
             isIncludeMeta: includeMetaData,
-            isWithDiagnostics: isDebug(),
+            isWithDiagnostics: isDev() || isDebug(),
             isWithTiming: isDebug(),
         }
 
@@ -103,14 +110,21 @@ export default class YINI {
 
         YINI.fullPath = fullPath
         let level: TBailSensitivityLevel = 0
-        if (bailSensitivity === 'auto' && !strictMode) level = 0
-        if (bailSensitivity === 'auto' && strictMode) level = 1
+        // if (bailSensitivity === 'auto' && !strictMode) level = 0
+        // if (bailSensitivity === 'auto' && strictMode) level = 1
+        if (bailSensitivity === 'auto') {
+            if (!strictMode) level = 0
+            if (strictMode) level = 1
+            if (process.env.NODE_ENV === 'test') level = 1
+        } else {
+            level = bailSensitivity
+        }
 
         const options: IParseMainOptions = {
             isStrict: strictMode,
             bailSensitivityLevel: level,
             isIncludeMeta: includeMetaData,
-            isWithDiagnostics: isDebug(),
+            isWithDiagnostics: isDev() || isDebug(),
             isWithTiming: isDebug(),
         }
 

@@ -64,13 +64,15 @@ export interface IParseMetaData {
     strictMode: boolean
     hasTerminal: boolean
     sections: null | number
+    members: null | number
     keysParsed: null | number
     sectionChains: null | number
     diagnostics?: {
         // Includes warnings/errors info.
         bailSensitivityLevel: TBailSensitivityLevel
-        warnings: null | number
         errors: null | number
+        warnings: null | number
+        infoAndNotices: null | number
     }
     timing?: {
         totalMs: null | number
@@ -83,6 +85,8 @@ export interface IParseMetaData {
 export type TSyntaxTreeContainer = {
     _syntaxTree: TSyntaxTree
     _hasTerminal: boolean
+    _meta_numOfSections: number
+    _meta_numOfMembers: number
     _meta_numOfChains: number
 }
 

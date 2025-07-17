@@ -104,7 +104,7 @@ describe('Parse numeric shorthand section header unit tests:', () => {
         )
         // Assert.
         expect(markerType).toEqual('Numeric-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(1)
     })
 
@@ -119,7 +119,7 @@ describe('Parse numeric shorthand section header unit tests:', () => {
         )
         // Assert.
         expect(markerType).toEqual('Numeric-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(1)
     })
 
@@ -134,7 +134,7 @@ describe('Parse numeric shorthand section header unit tests:', () => {
         )
         // Assert.
         expect(markerType).toEqual('Numeric-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(1)
     })
 
@@ -149,7 +149,7 @@ describe('Parse numeric shorthand section header unit tests:', () => {
         )
         // Assert.
         expect(markerType).toEqual('Numeric-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(1)
     })
 
@@ -164,7 +164,7 @@ describe('Parse numeric shorthand section header unit tests:', () => {
         )
         // Assert.
         expect(markerType).toEqual('Numeric-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(1)
     })
 
@@ -272,7 +272,7 @@ describe('Parse numeric shorthand section header unit tests:', () => {
         )
         // Assert.
         expect(markerType).toEqual('Numeric-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(1)
     })
 
@@ -287,7 +287,7 @@ describe('Parse numeric shorthand section header unit tests:', () => {
         )
         // Assert.
         expect(markerType).toEqual('Numeric-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(1)
     })
 
@@ -302,7 +302,7 @@ describe('Parse numeric shorthand section header unit tests:', () => {
         )
         // Assert.
         expect(markerType).toEqual('Numeric-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(1)
     })
 
@@ -317,7 +317,7 @@ describe('Parse numeric shorthand section header unit tests:', () => {
         )
         // Assert.
         expect(markerType).toEqual('Numeric-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(1)
     })
 
@@ -406,7 +406,7 @@ describe('Parse numeric shorthand section header unit tests:', () => {
         )
         // Assert.
         expect(markerType).toEqual('Numeric-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(4)
     })
 
@@ -469,7 +469,7 @@ describe('Parse numeric shorthand section header unit tests:', () => {
         )
         // Assert.
         expect(markerType).toEqual('Numeric-Header-Marker')
-        expect(sectionName).toEqual('Section Name')
+        expect(sectionName).toEqual('`Section Name`')
         expect(sectionLevel).toEqual(6)
     })
 
@@ -628,7 +628,7 @@ describe('Parse numeric shorthand section header unit tests:', () => {
         )
         // Assert.
         expect(markerType).toEqual('Numeric-Header-Marker')
-        expect(sectionName).toEqual('Section Name 199')
+        expect(sectionName).toEqual('`Section Name 199`')
         expect(sectionLevel).toEqual(199)
     })
 })
