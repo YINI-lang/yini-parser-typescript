@@ -70,16 +70,25 @@ const configFromFile = YINI.parseFile('./config.yini');
 
 Only the `YINI` class is exposed in the public API, with two static methods: `parse` and `parseFile`.
 
-### `YINI.parse(yiniContent: string, isStrict?: boolean, bailSensitivity?: "auto" | 0 | 1 | 2): object`
+### `YINI.parse(yiniContent: string, strictMode?: boolean, bailSensitivity: 'auto' | 0 | 1 | 2 = "auto", includeMetaData = false): object`
 
 Parses YINI code from a string.  
+
+**Params:**
 - `yiniContent`: The YINI configuration as a string.
-- `isStrict`: (optional, default `false`) Parse in strict mode.
-- `bailSensitivity`: (optional, default `0`) Error tolerance level.
+- `strictMode`: (optional, default `false`) Parse in strict mode.
+- `bailSensitivity`: (optional, default `"auto"`) Error tolerance level.
+  * If `bailSensitivity` is `"auto"` then bail sensitivity level will be set to 0 if in non-strict mode, if in strict mode then level 1 will be used automatically.
+- `includeMetaData`: If true then additional meta data will be returned along the object.
+
+**Bail sensitivity levels:**
+- 0 = 'Ignore-Errors' // Don't bail on errors, persist and try to recover.
+- 1 = 'Abort-on-Errors'
+- 2 = 'Abort-Even-on-Warnings'
 
 Returns a JavaScript object representing the parsed configuration (YINI content).
 
-### `YINI.parseFile(filePath: string, isStrict?: boolean, bailSensitivity?: "auto" | 0 | 1 | 2): object`
+### `YINI.parseFile(yiniContent: string, strictMode?: boolean, bailSensitivity: 'auto' | 0 | 1 | 2 = "auto", includeMetaData = false): object`
 
 Parses YINI code from a file.
 - `filePath`: Path to the `.yini` file.
