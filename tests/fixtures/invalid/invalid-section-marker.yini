@@ -1,0 +1,5 @@
+^1 Title
+            # Below is invalid marker, mixup between basic and numeric section marker.
+            ^^2 SubTitle	# NOT OK, bad section marker, cannot mix marker types.
+	    value = 10
+            isDarkTheme = YES

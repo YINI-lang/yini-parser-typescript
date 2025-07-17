@@ -1,0 +1,24 @@
+@YINI
+
+/*
+
+Features:
+  - Several level-1 sections (implicit base)
+  - Booleans, numbers, strings,
+  - Lists (colon syntax)
+  - Nulls
+
+*/
+
+^ Logging
+level = "info"
+to_console = yes
+to_file = true
+log_path = "/var/log/app.log"
+max_file_size = 1048576
+rotate = true
+
+^ Alerts
+email_on_error = true
+emails: "ops@example.com", "alerts@example.com"
+slack_webhook = null

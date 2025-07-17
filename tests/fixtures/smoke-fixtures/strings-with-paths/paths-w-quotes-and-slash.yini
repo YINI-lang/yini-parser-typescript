@@ -1,0 +1,6 @@
+@yini
+
+^ PathsWithQuotesSlash
+        path1 = "/'My Folder'/Documents/file.txt"
+        path2 = '/"data"/set.csv'
+        path3 = "/`Projects`/Code/"

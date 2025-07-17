@@ -1,0 +1,6 @@
+^ Section1
+    ^^ Section11
+        ^^^^ Section111 // INVALID section level jump here, level 3 is jumped over!!
+        value = 111
+^ Section2
+value = 2

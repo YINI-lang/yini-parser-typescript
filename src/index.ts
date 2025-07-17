@@ -95,8 +95,113 @@ listItems = ["a", "b", "c"]
     // }
     // YINI.parse(invalidInput1)
 
-    YINI.parse(`^ Main
-app = 'YINI Smoke Test'
-version = 1`)
-    // YINI.parse(`number = 42`)
+    if (APP_ENV === 'local' && NODE_ENV !== 'test') {
+        /*
+		YINI.parse(`
+--^ Section0
+	--value = 0
+^ Section1
+	value = 1
+
+^^ Section11
+	value = 11
+
+ 	^^^ Section111
+	 value = 111
+//^^^^ Section2104
+	value = 24
+
+^ Section2
+	value = 2
+`)
+    }
+*/
+        // YINI.parse(`number = 42`)
+        /*
+Expected JS output:
+{ 
+  Section1: { value: 1, Section2: { value: 11 }},
+  Section2: { value: 2 }
+}
+
+*/
+
+        /*
+        YINI.parse(
+            `
+// Using numeric shorthand section markers.
+
+@yini
+
+// This whole line is a comment.
+            ^SectionName# This part is a comment.
+            // This whole line is a comment.
+            --x=1
+                `,
+            false,
+            2,
+        )
+*/
+
+        // YINI.parse(`^1 SectionName`, false, 2)
+
+        //         const validYini = `
+        // ~ user
+        // username = 'tester two'
+        // isSysOp = YES
+
+        //     ~~ prefs
+        //     theme = "light"
+        //     notifications = OFF
+
+        // ^1 user2
+        // ^2 prefs
+        // ^3 deepSection
+        // ^4 deeperSection
+        // key = "Level 4 section"
+        // ^5 yetDeeperSection
+        // key = "Level 5 section"
+        // item = 77
+
+        // ~1 user3
+        // username = 'tester three'
+        // isSysOp = NO
+
+        //     ~~2 prefs
+        //     theme = "special-dark"
+        //     notifications = ON
+
+        // `
+
+        //         // Act.
+        //         const result = YINI.parse(validYini)
+        //         debugPrint(result)
+
+        // const validYini = `^ App
+        //     id = 32403  # The correct app id.
+        //     title = "My Program"
+        // `
+        const validYini = `
+        ~1 user3
+        username = 'tester three'
+        isSysOp = NO
+
+            ~~2 prefs // NOT OK, bad section marker, cannot mix marker types.
+            theme = "special-dark"
+            notifications = ON
+        `
+
+        YINI.parse(validYini, false, 'auto', true)
+
+        //         YINI.parse(`
+        // ^ Section1
+        //             ^^ Section2
+        //             ^^^ Section3
+        //             ^^^^ Section4  // Level 4.
+        //             ^^^^^ Section5
+        //             ^^^^^^ Section6
+        //             ^^^^^^^ Section7
+        //             strVar = "These section header are valid!"
+        //     `)
+    }
 }
