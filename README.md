@@ -1,16 +1,20 @@
->~ YINI  ≡
----
-# YINI Parser - TypeScript
+# YINI Parser – TypeScript
 
-**YINI Parser for TypeScript** — a simple, human-friendly parser and reader for the YINI configuration file format. This library implements the official YINI specification using TypeScript + ANTLR4.
+[![npm version](https://img.shields.io/npm/v/yini-parser.svg)](https://www.npmjs.com/package/yini-parser)
 
-YINI is a configuration file format (see [spec] for details):
-https://github.com/YINI-lang/YINI-spec
+> ⚠️ This package is in **alpha**. The API and features may change. Not all parts of the YINI specification are implemented yet.
+
+**YINI Parser in TypeScript** — a runtime library for Node.js.  
+A parser / reader for the [YINI configuration file format](https://github.com/YINI-lang/YINI-spec).  
+
+This library implements the official YINI specification using TypeScript + ANTLR4.
+
+YINI is a simple, human-friendly configuration format inspired by INI and JSON.
 
 ---
 
 ## ✨ Features
-- Simple, strict parsing.
+- Simple syntax (supports both strict and lenient modes).
 - Familiar config file style (inspired by INI, YAML, TOML).
 - Easy programmatic usage.
 - Only the `YINI` class is exported; all internal details are private.
@@ -18,7 +22,7 @@ https://github.com/YINI-lang/YINI-spec
 ### Limitations
 Not all features of the full YINI specification are implemented yet.
 
-See [FEATURE-CHECKLIST.md](./FEATURE-CHECKLIST.md) for the current list of implemented YINI features.
+See [FEATURE-CHECKLIST.md](https://github.com/YINI-lang/yini-parser-typescript/blob/staging/FEATURE-CHECKLIST.md) for the current list of implemented YINI features.
 
 ---
 
@@ -88,7 +92,7 @@ Parses YINI code from a string.
 
 Returns a JavaScript object representing the parsed configuration (YINI content).
 
-### `YINI.parseFile(yiniContent: string, strictMode?: boolean, bailSensitivity: 'auto' | 0 | 1 | 2 = "auto", includeMetaData = false): object`
+### `YINI.parseFile(filePath: string, strictMode?: boolean, bailSensitivity: 'auto' | 0 | 1 | 2 = "auto", includeMetaData = false): object`
 
 Parses YINI code from a file.
 - `filePath`: Path to the `.yini` file.
@@ -99,7 +103,14 @@ Returns a JavaScript object representing the parsed YINI configuration file.
 ---
 
 ## Example Output
---TODO--
+```js
+{
+  Database: {
+    host: "localhost",
+    port: 5432
+  }
+}
+```
 
 ---
 
