@@ -17,7 +17,7 @@ type TBailSensitivity = 'auto' & TBailSensitivityLevel
  * @note Only parse and parseFile are public.
  */
 export default class YINI {
-    public static fullPath: string = '' // Used in error reporting.
+    public static filePath: string = '' // Used in error reporting.
 
     /**
      * @param yiniContent YINI code as a string, can be multiple lines.
@@ -79,28 +79,28 @@ export default class YINI {
     }
 
     /**
-     * @param yiniFile Full path to the YINI file.
+     * @param yiniFile Path to the YINI file.
      * @note The order of properties (members) in each JavaScript object (section) may differ from the order in the input YINI file.
      * @returns The parsed JavaScript object.
      */
     public static parseFile = (
-        fullPath: string,
+        filePath: string,
         strictMode = false,
         bailSensitivity: 'auto' | 0 | 1 | 2 = 'auto',
         includeMetaData = false,
     ): TJSObject => {
         debugPrint('Current directory = ' + process.cwd())
 
-        if (getFileNameExtension(fullPath).toLowerCase() !== '.yini') {
+        if (getFileNameExtension(filePath).toLowerCase() !== '.yini') {
             console.error('Invalid file extension for YINI file:')
-            console.error(`"${fullPath}"`)
+            console.error(`"${filePath}"`)
             console.log(
                 'File does not have a valid ".yini" extension (case-insensitive).',
             )
             throw new Error('Error: Unexpected file extension for YINI file')
         }
 
-        let content = fs.readFileSync(fullPath, 'utf8')
+        let content = fs.readFileSync(filePath, 'utf8')
         let hasNoNewlineAtEOF = false
 
         if (!content.endsWith('\n')) {
@@ -108,7 +108,7 @@ export default class YINI {
             hasNoNewlineAtEOF = true
         }
 
-        YINI.fullPath = fullPath
+        YINI.filePath = filePath
         let level: TBailSensitivityLevel = 0
         // if (bailSensitivity === 'auto' && !strictMode) level = 0
         // if (bailSensitivity === 'auto' && strictMode) level = 1
