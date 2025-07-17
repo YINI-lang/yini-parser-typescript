@@ -36,7 +36,7 @@
     ],
     "author": "Marko K. Seppänen",
     "license": "Apache-2.0",
-    "private": true,
+    "private": false,
     "scripts": {
         "start": "cross-env NODE_ENV=production APP_ENV=production node dist/index.js",
         "start:debug": "cross-env IS_DEBUG=1 npm run start",
