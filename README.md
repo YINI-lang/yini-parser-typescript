@@ -22,7 +22,7 @@ YINI is a simple, human-friendly configuration format inspired by INI and JSON.
 ### Limitations
 Not all features of the full YINI specification are implemented yet.
 
-See [FEATURE-CHECKLIST.md](https://github.com/YINI-lang/yini-parser-typescript/blob/staging/FEATURE-CHECKLIST.md) for the current list of implemented YINI features.
+See [FEATURE-CHECKLIST.md](https://github.com/YINI-lang/yini-parser-typescript/blob/main/FEATURE-CHECKLIST.md) for the current list of implemented YINI features.
 
 ---
 
