@@ -140,6 +140,13 @@ Here's an overview of the project's directory structure — to help users unders
 ---
 
 ## Environment Variables
+
+Since this is a library (as opposed to a Web/App), we don't (need) care about a special "development" and "staging" app environments / branches. So there's no "deploy" per environment.
+
+**Note:**
+- There is no `.env.development`, `.env.staging` etc. - the package scripts sets NODE_ENV as needed, and the code handles the rest.
+- However, there are test and CI environments, but these are for running tests and builds, not for staging deploys.
+
 ### NODE_ENV
 Defacto Node.js modes (environments).
 
@@ -156,7 +163,7 @@ More custom envs (more finer-grained control than what only NODE_ENV allows) for
 |--------------|---------|
 | `local`      | Local development and testing, shows more debug info, etc.|
 | `ci`         | Running in Continuous Integration pipelines.|
-| `staging`    | Running in a staging environment.|
+| <strike>`staging`</strike>    | <strike>Running in a staging environment.</strike>|
 | `production` | Deployed in live production environment.|
 
 ---

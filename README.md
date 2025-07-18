@@ -1,6 +1,6 @@
 # YINI Parser – TypeScript
 
-[![npm version](https://img.shields.io/npm/v/yini-parser.svg)](https://www.npmjs.com/package/yini-parser)
+[![npm version](https://img.shields.io/npm/v/yini-parser.svg)](https://www.npmjs.com/package/yini-parser) [![All Tests](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml)
 
 > ⚠️ This package is in **alpha**. The API and features may change. Not all parts of the YINI specification are implemented yet.
 
@@ -22,7 +22,7 @@ YINI is a simple, human-friendly configuration format inspired by INI and JSON.
 ### Limitations
 Not all features of the full YINI specification are implemented yet.
 
-See [FEATURE-CHECKLIST.md](https://github.com/YINI-lang/yini-parser-typescript/blob/staging/FEATURE-CHECKLIST.md) for the current list of implemented YINI features.
+See [FEATURE-CHECKLIST.md](https://github.com/YINI-lang/yini-parser-typescript/blob/main/FEATURE-CHECKLIST.md) for the current list of implemented YINI features.
 
 ---
 

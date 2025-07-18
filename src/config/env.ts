@@ -5,12 +5,13 @@
  * Some even only know 'production' and treat everything else as 'development'.
  * Also Jest sets NODE_ENV automatically to 'test'.
  */
-type TNodeEnv = 'development' | 'production' | 'test' //
+type TNodeEnv = 'development' | 'production' | 'test'
 
 /**
  * APP_ENV - More custom envs (more finer-grained control) for this project.
+ * @note Since this is a library (as opposed to a Web/App), we don't use "staging".
  */
-type TAppEnv = 'local' | 'ci' | 'staging' | 'production'
+type TAppEnv = 'local' | 'ci' | 'production' // Note: 'staging' is omitted by purpose.
 
 const NODE_ENV = (process.env.NODE_ENV || 'development') as TNodeEnv
 const APP_ENV = (process.env.APP_ENV || 'local') as TAppEnv

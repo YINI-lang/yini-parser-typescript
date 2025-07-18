@@ -1,29 +1,6 @@
 {
     "name": "yini-parser",
-    "version": "1.0.0-alpha.1",
     "description": "YINI parser for JavaScript/TypeScript, an INI-inspired configuration format, meant to be readable, and easy to use.",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
-    "files": [
-        "dist/",
-        "index.js",
-        "index.d.ts",
-        "package.json",
-        "README.md",
-        "LICENSE",
-        "CHANGELOG.md"
-    ],
-    "exports": {
-        ".": {
-            "import": "./dist/index.js",
-            "require": "./dist/index.js",
-            "types": "./dist/index.d.ts"
-        }
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/YOUR_USERNAME/yini-parser.git"
-    },
     "keywords": [
         "read",
         "yini",
@@ -34,8 +11,29 @@
         "parse",
         "configuration"
     ],
-    "author": "Marko K. Seppänen",
+    "version": "1.0.0-alpha.1",
+    "homepage": "https://m4se.com/yini-lang.org/",
     "license": "Apache-2.0",
+    "files": [
+        "dist/",
+        "package.json",
+        "README.md",
+        "LICENSE",
+        "CHANGELOG.md"
+    ],
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "require": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/YINI-lang/yini-parser-typescript.git"
+    },
     "private": false,
     "scripts": {
         "start": "cross-env NODE_ENV=production APP_ENV=production node dist/index.js",
@@ -60,6 +58,7 @@
         "build": "tsc -p ./tsconfig.json",
         "prepublishOnly": "npm run lint && npm test && npm run build"
     },
+    "author": "Marko K. Seppänen",
     "dependencies": {
         "antlr4": "^4.13.2"
     },
