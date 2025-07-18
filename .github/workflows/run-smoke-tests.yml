@@ -3,7 +3,7 @@ name: Run Smoke Tests
 on:
     push:
         # branches: ['develop', 'staging']
-        branches: ['main', 'develop']
+        branches: ['main']
     workflow_dispatch: # allows manual run from GitHub UI
 
 jobs:
