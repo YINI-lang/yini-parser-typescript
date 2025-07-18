@@ -111,7 +111,8 @@ Returns a JavaScript object representing the parsed YINI configuration file.
       items: 25,
       isDarkTheme: false
    }
-}```
+}
+```
 
 ---
 
@@ -128,5 +129,4 @@ In this project on GitHub, the `libs` directory contains third party software an
 
 ---
 
-> ~ **YINI ≡**  
-> [https://yini-lang.org](https://yini-lang.org)
+~ **YINI ≡** • [https://yini-lang.org](https://yini-lang.org)
