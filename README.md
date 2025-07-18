@@ -1,6 +1,6 @@
 # YINI Parser – TypeScript
 
-[![npm version](https://img.shields.io/npm/v/yini-parser.svg)](https://www.npmjs.com/package/yini-parser)
+[![npm version](https://img.shields.io/npm/v/yini-parser.svg)](https://www.npmjs.com/package/yini-parser) [![All Tests](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml)
 
 > ⚠️ This package is in **alpha**. The API and features may change. Not all parts of the YINI specification are implemented yet.
 

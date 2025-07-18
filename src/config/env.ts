@@ -5,7 +5,7 @@
  * Some even only know 'production' and treat everything else as 'development'.
  * Also Jest sets NODE_ENV automatically to 'test'.
  */
-type TNodeEnv = 'development' | 'production' | 'test' //
+type TNodeEnv = 'development' | 'production' | 'test'
 
 /**
  * APP_ENV - More custom envs (more finer-grained control) for this project.
