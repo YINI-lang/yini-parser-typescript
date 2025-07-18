@@ -1,5 +1,6 @@
 {
     "name": "yini-parser",
+    "version": "1.0.0-alpha.2",
     "description": "YINI parser for JavaScript/TypeScript, an INI-inspired configuration format, meant to be readable, and easy to use.",
     "keywords": [
         "read",
@@ -11,7 +12,6 @@
         "parse",
         "configuration"
     ],
-    "version": "1.0.0-alpha.1",
     "homepage": "https://m4se.com/yini-lang.org/",
     "license": "Apache-2.0",
     "files": [
