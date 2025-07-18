@@ -13,12 +13,73 @@ type TNodeEnv = 'development' | 'production' | 'test'
  */
 type TAppEnv = 'local' | 'ci' | 'production' // Note: 'staging' is omitted by purpose.
 
-const NODE_ENV = (process.env.NODE_ENV || 'development') as TNodeEnv
-const APP_ENV = (process.env.APP_ENV || 'local') as TAppEnv
+const localNodeEnv = (process.env.NODE_ENV || 'production') as TNodeEnv
+const localAppEnv = (process.env.APP_ENV || 'production') as TAppEnv
 
-export const isDebug = () => !!process.env.IS_DEBUG
-export const isDev = () => NODE_ENV === 'development'
-export const isProd = () => NODE_ENV === 'production'
-export const isTest = () => NODE_ENV === 'test'
+// export const initEnvs = () => {
+//     const localNodeEnv = (process.env.NODE_ENV || 'production') as TNodeEnv
+//     const localAppEnv = (process.env?.APP_ENV || 'production') as TAppEnv
 
-export { NODE_ENV, APP_ENV }
+//     return { localNodeEnv, localAppEnv }
+// }
+
+// const { localNodeEnv, localAppEnv } = initEnvs()
+
+/** Are we running in the environment "development"? Will be based on the (global) environment variable process.env.NODE_ENV. */
+export const isDevEnv = (): boolean => localNodeEnv === 'development'
+
+/** Are we running in the environment "production"? Will be based on the (global) environment variable process.env.NODE_ENV. */
+export const isProdEnv = (): boolean => localNodeEnv === 'production'
+
+/** Are we running in the environment "test"? Will be based on the (global) variable process.env.NODE_ENV. */
+export const isTestEnv = (): boolean => localNodeEnv === 'test'
+
+/** Will be based on the local argument when this process was launched.
+ * @returns True if the DEV flag is set.
+ * @example npm run start -- isDev=1
+ * @example node dist/index.js isDev=1
+ */
+export const isDev = (): boolean => {
+    const len = process.argv.length
+
+    // NOTE: We will start with index 2, since the first element will be
+    // execPath. The second element will be the path to the
+    // JavaScript file being executed.
+    for (let i = 2; i < len; i++) {
+        const val: string = process.argv[i] || ''
+        if (
+            val.toLowerCase() === 'isdev=1' ||
+            val.toLowerCase() === 'isdev=true'
+        ) {
+            return true
+        }
+    }
+
+    return false
+}
+
+/** Will be based on the local argument when this process was launched.
+ * @returns True if the DEBUG flag is set.
+ * @example npm run start -- isDebug=1
+ * @example node dist/index.js isDebug=1
+ */
+export const isDebug = (): boolean => {
+    const len = process.argv.length
+
+    // NOTE: We will start with index 2, since the first element will be
+    // execPath. The second element will be the path to the
+    // JavaScript file being executed.
+    for (let i = 2; i < len; i++) {
+        const val: string = process.argv[i] || ''
+        if (
+            val.toLowerCase() === 'isdebug=1' ||
+            val.toLowerCase() === 'isdebug=true'
+        ) {
+            return true
+        }
+    }
+
+    return false
+}
+
+export { localNodeEnv, localAppEnv }
