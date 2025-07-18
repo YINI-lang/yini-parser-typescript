@@ -59,9 +59,10 @@ import YINI from 'yini-parser';
 
 // Parse from string.
 const config = YINI.parse(`
-^ Database
-host = localhost
-port = 5432
+    ^ App
+    title = "My App Title"
+    items = 25
+    isDarkTheme = OFF
 `);
 
 // Parse from file.
@@ -105,12 +106,12 @@ Returns a JavaScript object representing the parsed YINI configuration file.
 ## Example Output
 ```js
 {
-  Database: {
-    host: "localhost",
-    port: 5432
-  }
-}
-```
+   App:{
+      title: "My App Title",
+      items: 25,
+      isDarkTheme: false
+   }
+}```
 
 ---
 
