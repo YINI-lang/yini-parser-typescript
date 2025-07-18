@@ -1,7 +1,27 @@
 import path from 'path'
 import YINI from '../../src'
-import { isDebug } from '../../src/config/env'
+import { isDebug, isDev, isDevEnv, isProdEnv } from '../../src/config/env'
 import { debugPrint, printObject } from '../../src/utils/system'
+
+/**
+ * Environment Smoke Tests.
+ */
+xdescribe('Environment Smoke Tests:', () => {
+    test('1. Check that envs and flags are defaulted to production.', () => {
+        // Arrange.
+        // process.env['APP_ENV'] = undefined
+        // Act.
+        // YINI.parse('^Section')
+        // const { localNodeEnv, localAppEnv } = initEnvs()
+        // initEnvs()
+        // Assert.
+        // expect(isProdEnv()).toEqual(true)
+        // expect(isDevEnv()).toEqual(false)
+        // expect(isDev()).toEqual(false)
+        // expect(isDebug()).toEqual(false)
+        // expect(localAppEnv).toEqual('production')
+    })
+})
 
 /**
  * General Smoke Tests.
@@ -9,25 +29,6 @@ import { debugPrint, printObject } from '../../src/utils/system'
 describe('General Smoke Tests:', () => {
     const DIR_OF_FIXTURES = '../fixtures/smoke-fixtures/strings-with-paths'
     const baseDir = path.join(__dirname, DIR_OF_FIXTURES)
-
-    beforeAll(() => {})
-    beforeAll(() => {
-        debugPrint('beforeAll')
-
-        // const isDebug = !!process.env.IS_DEBUG
-        // if (!isDebug) {
-        //     console.log('process.env.IS_DEBUG is false, OK')
-        // } else {
-        //     console.error('process.env.IS_DEBUG is true, FAIL')
-        //     console.error(
-        //         'Detected that IS_DEBUG is true, is should be false when testing',
-        //     )
-        //     console.error('process.env.IS_DEBUG:')
-        //     console.error(process.env.IS_DEBUG)
-
-        //     throw Error('ERROR: A variable in ENV has wrong state')
-        // }
-    })
 
     // Trivial test to see if everything is okey before moving on to "real" tests.
     test('1. Trivial test case.', () => {

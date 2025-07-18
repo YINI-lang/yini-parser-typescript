@@ -73,6 +73,16 @@ export interface IParseMetaData {
         errors: null | number
         warnings: null | number
         infoAndNotices: null | number
+        envs: {
+            NODE_ENV: undefined | string
+            APP_ENV: undefined | string
+            libNodeEnv: undefined | string
+            libAppEnv: undefined | string
+        }
+        libFlags: {
+            isDev: boolean
+            isDebug: boolean
+        }
     }
     timing?: {
         totalMs: null | number

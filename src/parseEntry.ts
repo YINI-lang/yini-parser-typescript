@@ -5,7 +5,7 @@ import {
     RecognitionException,
     Recognizer,
 } from 'antlr4'
-import { isDebug } from './config/env'
+import { isDebug, isDev, localAppEnv, localNodeEnv } from './config/env'
 import { ErrorDataHandler } from './core/ErrorDataHandler'
 import { constructFinalObject } from './core/objectBuilder'
 import {
@@ -192,6 +192,16 @@ export const parseMain = (
             errors: errorHandler.getNumOfErrors(),
             warnings: errorHandler.getNumOfWarnings(),
             infoAndNotices: errorHandler.getNumOfInfoAndNotices(),
+            envs: {
+                NODE_ENV: process.env.NODE_ENV,
+                APP_ENV: process.env.APP_ENV,
+                libNodeEnv: localNodeEnv,
+                libAppEnv: localAppEnv,
+            },
+            libFlags: {
+                isDev: isDev(),
+                isDebug: isDebug(),
+            },
         }
     }
     if (options.isWithTiming) {

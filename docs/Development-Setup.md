@@ -149,15 +149,17 @@ Since this is a library (as opposed to a Web/App), we don't (need) care about a 
 
 ### NODE_ENV
 Defacto Node.js modes (environments).
+Note: NODE_ENV is global.
 
 | Value        | Meaning |
 |--------------|---------|
-| `development`| Development mode — enables debugging and detailed logging.|
-| `production` | Production mode — enables optimizations, disables debug output.|
-| `test`       | Test mode — used when running automated tests.|
+| `development`| Global development mode — enables debugging and detailed logging.|
+| `production` | Global production mode — enables optimizations, disables debug output.|
+| `test`       | Global Test mode — used when running automated tests.|
 
 ### APP_ENV
 More custom envs (more finer-grained control than what only NODE_ENV allows) for this project.
+Note: APP_ENV is global.
 
 | Value        | Meaning |
 |--------------|---------|
@@ -165,6 +167,27 @@ More custom envs (more finer-grained control than what only NODE_ENV allows) for
 | `ci`         | Running in Continuous Integration pipelines.|
 | <strike>`staging`</strike>    | <strike>Running in a staging environment.</strike>|
 | `production` | Deployed in live production environment.|
+
+### DEV and DEBUG Flags
+During development some flags can be set, these are set and passed as arguments when starting processes.
+
+Note: These flags are local.
+
+| Cmd argument | Function | Meaning |
+|--------------|----------|---------|
+| `isDev=1`    | isDev()  | Local development and testing, shows more info, etc.|
+| `isDebug=1`  | isDebug()| Local debugging and testing, shows more detailed info, etc.|
+
+### Start with Different Environments and Flags
+
+Under development, different environments and flags can be used by starting different scripts in `package.json`.
+
+Note: This library should never set or modify values in `process.env`, **only read from it**. Changing it in the library will cause side effect in users application and other dependencies.
+
+- `npm run start:debug`
+- `npm run start:dev`
+- `npm run start:dev:debug`
+
 
 ---
 
