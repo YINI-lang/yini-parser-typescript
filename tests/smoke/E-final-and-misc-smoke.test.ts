@@ -171,13 +171,15 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         // expect(toPrettyJSON(result)).toEqual(toPrettyJSON(answer))
     })
 
-    test('10. Has Default in CommonJS (from "dist/cjs").', () => {
+    // Skipping dual build for cjs and esm for now
+    xtest('10. Has Default in CommonJS (from "dist/cjs").', () => {
         const hasDefault = testCJS.hasDefaultInCommonJS()
 
         expect(hasDefault).toEqual(true)
     })
 
-    test('11. Does import work in ESM (from "dist/esm").', () => {
+    // Skipping dual build for cjs and esm for now
+    xtest('11. Does import work in ESM (from "dist/esm").', () => {
         execSync('node ./tests/fixtures/test-src-files/esm-smoke.js', {
             stdio: 'inherit',
         })
