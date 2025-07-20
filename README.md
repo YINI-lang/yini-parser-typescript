@@ -55,6 +55,7 @@ pnpm add yini-parser
 ## Usage
 
 ### Node.js (CommonJS)
+**Note:** Only a default export (YINI) is provided. Named imports are not supported.
 ```js
 const YINI = require('yini-parser');
 // If you get undefined, try:
@@ -133,6 +134,79 @@ Returns a JavaScript object representing the parsed YINI configuration file.
 }
 ```
 
+---
+---
+
+### Bigger Example
+
+```js
+const YINI = require('yini-parser'); // Or: import YINI from 'yini-parser';
+
+const config = YINI.parse(`
+    /*
+        This is a multi-line block comment.
+    */
+
+    @yini
+
+    ^ App
+    name = "Nested Example"
+    version = "1.0.0"
+    debug = OFF  // This is a comment.
+
+        # Database settings.
+        ^^ Database
+        host = "db.example.com"
+        port = 3306
+        user = "appuser"
+        --password = "dbpassword"  # Disabled line due to --.
+        //password = "dbpassword"  # Not sure yet about this pw.
+        password = "dbpassword"  # Keep this secret.
+
+            // Commenting with slashes works too.
+            ^^^ Pool
+            min = 2
+            max = 10
+            idleTimeout = 300
+
+        /* Block comment on a single line. */
+        ^^ Logging
+        level = "info"
+        logToFile = ON # This is a comment.
+        filePath = "./logs/app.log"
+    
+    /END
+`);
+
+console.log(config);
+```
+
+#### Output:
+```js
+{
+    "App": {
+        "name": "Nested Example",
+        "version": "1.0.0",
+        "debug": false,
+        "Database": {
+            "host": "db.example.com",
+            "port": 3306,
+            "user": "appuser",
+            "password": "dbpassword",
+            "Pool": {
+                "min": 2,
+                "max": 10,
+                "idleTimeout": 300
+            }
+        },
+        "Logging": {
+            "level": "info",
+            "logToFile": true,
+            "filePath": "./logs/app.log"
+        }
+    }
+}
+```
 ---
 
 ## 📚 Documentation

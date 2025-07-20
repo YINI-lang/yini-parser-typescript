@@ -87,7 +87,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
             ^ App
             name = "Nested Example"
             version = "1.0.0"
-            debug = OFF  // False.
+            debug = OFF  // This is a comment.
 
                 # Database setttings.
                 ^^ Database
@@ -107,7 +107,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                 /* Block comment on a single line. */
                 ^^ Logging
                 level = "info"
-                logToFile = ON
+                logToFile = ON # This is a comment.
                 filePath = "./logs/app.log"
             
             /END
