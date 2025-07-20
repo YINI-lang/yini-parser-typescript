@@ -13,6 +13,13 @@ YINI is a simple, human-friendly configuration format inspired by INI and JSON.
 
 ---
 
+## 💡 Why YINI?
+- Easy to read and write — minimal syntax, maximum clarity.
+- Supports nested sections, strict/lenient modes, and all major data types.
+- A perfect alternative to messy JSON, legacy INI, or complex YAML.
+- Built for both JavaScript and TypeScript.
+- Human-friendly, machine-friendly, and ready for modern projects.
+  
 ## ✨ Features
 - Simple syntax (supports both strict and lenient modes).
 - Familiar config file style (inspired by INI, YAML, TOML).

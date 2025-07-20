@@ -1,7 +1,7 @@
 /**
- * Final & Miscellaneous Smoke Tests.
+ * Final & Miscellaneous/Complementary Smoke Tests.
  *
- * Last round of smoke tests, including any "miscellaneous" cases that does not
+ * Last round of smoke tests, including any "miscellaneous" / "complementary" cases that does not
  * fit in earlier groups.
  */
 
@@ -12,9 +12,9 @@ import { debugPrint, toPrettyJSON } from '../../src/utils/system'
 import * as testCJS from '../fixtures/test-src-files/test-cjs'
 
 /**
- * Final & Miscellaneous Smoke Tests.
+ * Final, Miscellaneous & Complementary Smoke Tests.
  */
-describe('Final & Miscellaneous Smoke Tests:', () => {
+describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
     beforeAll(() => {})
 
     test('1. Parsing inline, in default lenient mode, with correct object.', () => {

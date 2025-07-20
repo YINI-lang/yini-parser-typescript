@@ -1,16 +1,23 @@
 {
     "name": "yini-parser",
     "version": "1.0.0-alpha.4",
-    "description": "YINI parser for JavaScript/TypeScript, an INI-inspired configuration format, meant to be readable, and easy to use.",
+    "description": "Simple and flexible config parser for Node.js. YINI: an enhanced, readable alternative to JSON, INI, and YAML—built for modern JavaScript and TypeScript projects.",
     "keywords": [
-        "read",
         "yini",
+        "yini-parser",
         "config",
+        "config-file",
+        "configuration",
+        "settings",
         "ini",
+        "ini-parser",
+        "json-alternative",
+        "yaml-alternative",
         "parser",
-        "file",
         "parse",
-        "configuration"
+        "read",
+        "nodejs",
+        "javascript"
     ],
     "homepage": "https://m4se.com/yini-lang.org/",
     "license": "Apache-2.0",
