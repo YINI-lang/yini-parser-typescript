@@ -174,9 +174,8 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
 
     // Skipping dual build for cjs and esm for now
     xtest('10. Has Default in CommonJS (from "dist/cjs").', () => {
-        const hasDefault = testCJS.hasDefaultInCommonJS()
-
-        expect(hasDefault).toEqual(true)
+        // const hasDefault = testCJS.hasDefaultInCommonJS()
+        // expect(hasDefault).toEqual(true)
     })
 
     // Skipping dual build for cjs and esm for now
