@@ -14,11 +14,15 @@ src/**/*.d.ts
 **/*.js
 **/*.js.map
 
-# But DO NOT ignore jest.config.js.
+# DO NOT ignore jest.config.js.
 !jest.config.js
 
-# But DO NOT ignore eslint.config.js, needed by ESLint v9+.
+# DO NOT ignore eslint.config.js, needed by ESLint v9+.
 !eslint.config.js
+
+# DO NOT ignore test fixture src files.
+!test-cjs.js
+!esm-smoke.js
 
 # ANTLR4 output directory where all output is generated to.
 gen-output

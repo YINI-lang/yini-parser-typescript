@@ -49,6 +49,7 @@
         "test:smoke:debug": "cross-env npm run test:smoke -- --isDebug=1",
         "test:unit:debug": "cross-env npm run test:unit -- --isDebug=1",
         "test:integr:debug": "cross-env npm run test:integr -- --isDebug=1",
+        "test:esm": "node ./tests/fixtures/test-src-files/esm-smoke.js",
         "ci:test": "cross-env NODE_ENV=test APP_ENV=ci jest --verbose --runInBand",
         "ci:test:smoke": "cross-env NODE_ENV=test APP_ENV=ci jest tests/smoke --verbose --runInBand",
         "tsc": "npx tsc -p ./tsconfig.json",
