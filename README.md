@@ -54,13 +54,25 @@ pnpm add yini-parser
 
 ## Usage
 
-> Only import the main class:
->
-> ```ts
-> import YINI from 'yini-parser';
-> ```
+### Node.js (CommonJS)
+```js
+const YINI = require('yini-parser');
+// If you get undefined, try:
+const YINI = require('yini-parser').default;
 
-### Example:
+// Parse from string.
+const config = YINI.parse(`
+    ^ App
+    title = 'My App Title'
+    items = 25
+    isDarkTheme = true
+`);
+
+// Parse from file.
+const configFromFile = YINI.parseFile('./config.yini');
+```
+
+### TypeScript (with `"esModuleInterop": true`)
 ```ts
 import YINI from 'yini-parser';
 
