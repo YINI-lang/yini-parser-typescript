@@ -8,8 +8,9 @@
 import { execSync } from 'child_process'
 import YINI from '../../src'
 import { debugPrint, toPrettyJSON } from '../../src/utils/system'
+
 // @ts-ignore
-import * as testCJS from '../fixtures/test-src-files/test-cjs'
+// import * as testCJS from '../fixtures/test-src-files/test-cjs'
 
 /**
  * Final, Miscellaneous & Complementary Smoke Tests.
