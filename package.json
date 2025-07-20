@@ -21,6 +21,7 @@
     ],
     "homepage": "https://m4se.com/yini-lang.org/",
     "license": "Apache-2.0",
+    "type": "commonjs",
     "files": [
         "dist/",
         "package.json",
@@ -28,13 +29,14 @@
         "LICENSE",
         "CHANGELOG.md"
     ],
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "main": "dist/cjs/index.js",
+    "module": "dist/esm/index.js",
+    "types": "dist/cjs/types/index.d.ts",
     "exports": {
         ".": {
-            "import": "./dist/index.js",
-            "require": "./dist/index.js",
-            "types": "./dist/index.d.ts"
+            "require": "./dist/cjs/index.js",
+            "import": "./dist/esm/index.js",
+            "types": "./dist/cjs/types/index.d.ts"
         }
     },
     "repository": {
@@ -56,14 +58,17 @@
         "test:smoke:debug": "cross-env npm run test:smoke -- --isDebug=1",
         "test:unit:debug": "cross-env npm run test:unit -- --isDebug=1",
         "test:integr:debug": "cross-env npm run test:integr -- --isDebug=1",
-        "test:esm": "node ./tests/fixtures/test-src-files/esm-smoke.js",
+        "test:esm": "node ./tests/fixtures/test-src-files/test-esm.mjs",
         "ci:test": "cross-env NODE_ENV=test APP_ENV=ci jest --verbose --runInBand",
         "ci:test:smoke": "cross-env NODE_ENV=test APP_ENV=ci jest tests/smoke --verbose --runInBand",
         "tsc": "npx tsc -p ./tsconfig.json",
         "lint": "eslint src --ext .ts",
         "clean:ts-js": "bash scripts/clean-ts-js.sh",
         "antlr": "make generate",
-        "build": "tsc -p ./tsconfig.json",
+        "build:cjs": "tsc -p tsconfig.cjs.json",
+        "build:esm": "tsc -p tsconfig.esm.json",
+        "build": "npm run build:cjs && npm run build:esm",
+        "postbuild": "echo { \"type\": \"module\" } > dist/esm/package.json",
         "prepublishOnly": "npm run lint && npm test && npm run build"
     },
     "author": "Marko K. Seppänen",
@@ -96,6 +101,5 @@
     },
     "engines": {
         "node": ">=16"
-    },
-    "type": "commonjs"
+    }
 }

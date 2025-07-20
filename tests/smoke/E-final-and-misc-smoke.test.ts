@@ -6,6 +6,7 @@
  */
 
 import { execSync } from 'child_process'
+import path from 'path'
 import YINI from '../../src'
 import { debugPrint, toPrettyJSON } from '../../src/utils/system'
 // @ts-ignore
@@ -177,9 +178,16 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         expect(hasDefault).toEqual(true)
     })
 
-    test('11. Does import work in ESM (from "dist/esm").', () => {
-        execSync('node ./tests/fixtures/test-src-files/esm-smoke.js', {
-            stdio: 'inherit',
-        })
+    // test('11. Does import work in ESM (from "dist/esm").', () => {
+    //     execSync('node ./tests/fixtures/test-src-files/esm-smoke.mjs', {
+    //         stdio: 'inherit',
+    //     })
+    // })
+    test('11. Does import work in ESM (from "dist/esm")?', () => {
+        const scriptPath = path.join(
+            __dirname,
+            '../fixtures/test-src-files/test-esm.mjs',
+        )
+        execSync(`node "${scriptPath}"`, { stdio: 'inherit' }) // Will fail test if exit code != 0    })
     })
 })
