@@ -14,11 +14,12 @@ YINI is a simple, human-friendly configuration format inspired by INI and JSON.
 ---
 
 ## 💡 Why YINI?
-- Easy to read and write — minimal syntax, maximum clarity.
-- Supports nested sections, strict/lenient modes, and all major data types.
+- **Easy to read and write**, minimal syntax, maximum clarity.
+- **Clear section nesting** without painful indentation rules.
+- **Supports strict/lenient modes**, and all major data types.
 - A perfect alternative to messy JSON, legacy INI, or complex YAML.
-- Built for both JavaScript and TypeScript.
-- Human-friendly, machine-friendly, and ready for modern projects.
+- Built for both **JavaScript and TypeScript**.
+- Both **human-friendly**, and **machine-friendly**.
   
 ## ✨ Features
 - Simple syntax (supports both strict and lenient modes).
@@ -125,8 +126,9 @@ Returns a JavaScript object representing the parsed YINI configuration file.
 
 ## Example Output
 ```js
+//  (JS object)
 {
-   App:{
+   App: {
       title: "My App Title",
       items: 25,
       isDarkTheme: false
@@ -135,9 +137,115 @@ Returns a JavaScript object representing the parsed YINI configuration file.
 ```
 
 ---
+
+## Intro to YINI Config Format
+
+### 1. Sections
+Group settings under a named header. A section header starts with `^`:
+
+```yini
+^ Server
+host = "localhost"
+port = 8080
+```
+
+### 2. Key = Value
+Each line inside a section is a **key** (name) and **value**, separated by `=`:
+
+```yini
+maxConnections = 100
+enableLogging   = true
+```
+
+Values can be:
+- **Strings** (always quoted): `"hello"` or `'world'`
+- **Numbers:** `42`, `3.14` or `-10`
+- **Booleans:** `true`, `false`, `on`, `off`, `yes`, `no` (all case-insensitive)
+- --todo-- **Lists:** `["red", "green", "blue"]`
+
+### 3. Nested Sections
+Add extra carets (^) to nest subsections:
+```yini
+^ App
+^^ Database
+host = "db.example.com"
+```
+
+If you prefer, you can indent the nested section for visibility:
+```yini
+^ Main
+    ^^ Sub
+    host = "db.example.com"
+```
+
+One can nest multiple sections:
+```yini
+^ Root
+^^ Sub
+^^^ SubSub
+^ BackToRoot
+```
+
+Example with indented sections:
+```yini
+^ Root
+value = 'At level 1'
+    ^^ Sub
+    value = 'At level 2'
+        ^^^ SubSub
+        value = 'At level 3'
+        
+^ BackToRoot
+value = 'Back at level 1'
+```
+
+The above Yini code will produce the following JavaScript object:
+```js
+{
+  Root: {
+    value: 'At level 1',
+    Sub: { value: 'At level 2', SubSub: { value: 'At level 3' } }
+  },
+  BackToRoot: { value: 'Back at level 1' }
+}
+```
+
+### 4. Comments
+Add notes with `//` or `#`:
+
+```yini
+# This is a line comment
+timeout = 30  // in seconds
+```
+
+```yini
+// This is a line comment
+interval = 30  # in seconds
+```
+
+Caveèt: Note that there must be a space after the `#` and start of the comment. Otherwise it will be misimpreted as a hexadecimal number.
+
+### Complete Example
+
+```yini
+@yini       # Optional marker to identify YINI format.
+
+^ App
+name    = "MyApp"
+version = "1.0.0"
+
+^^ Database
+host     = "db.example.com"
+port     = 5432
+--userList = ["alice", "bob", "carol"]
+
+// Uncomment below to enable debug mode.
+// debug = on
+```
+
 ---
 
-### Bigger Example
+### Advanced Example
 
 ```js
 const YINI = require('yini-parser'); // Or: import YINI from 'yini-parser';
@@ -183,26 +291,27 @@ console.log(config);
 
 #### Output:
 ```js
+// (JS object)
 {
-    "App": {
-        "name": "Nested Example",
-        "version": "1.0.0",
-        "debug": false,
-        "Database": {
-            "host": "db.example.com",
-            "port": 3306,
-            "user": "appuser",
-            "password": "dbpassword",
-            "Pool": {
-                "min": 2,
-                "max": 10,
-                "idleTimeout": 300
+    App: {
+        name: "Nested Example",
+        version: "1.0.0",
+        debug: false,
+        Database: {
+            host: "db.example.com",
+            port: 3306,
+            user: "appuser",
+            password: "dbpassword",
+            Pool: {
+                min: 2,
+                max: 10,
+                idleTimeout: 300
             }
         },
-        "Logging": {
-            "level": "info",
-            "logToFile": true,
-            "filePath": "./logs/app.log"
+        Logging: {
+            level: "info",
+            logToFile: true,
+            filePath: "./logs/app.log"
         }
     }
 }

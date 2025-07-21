@@ -197,17 +197,17 @@ Expected JS output:
         //     id = 32403  # The correct app id.
         //     title = "My Program"
         // `
-        const validYini = `^ Title
-            username = 'tester three'
-            isSysOp = NO
-
-                ^^  SubSection
-                theme = "special-dark"
-                notifications = ON
-
-                ^^ SubSection // NOT OK, SubSection already exists
-                myValue = 456
-`
+        const validYini = `
+        ^ Root
+        value = 'At level 1'
+            ^^ Sub
+            value = 'At level 2'
+                ^^^ SubSub
+                value = 'At level 3'
+                
+        ^ BackToRoot
+        value = 'Bach at level 1'
+        `
 
         YINI.parse(validYini, true)
 
