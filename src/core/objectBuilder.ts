@@ -84,6 +84,7 @@ class Builder {
             const level = currentChainC.originLevel
             const nestingIndex = level - 1 // For debugging purposes.
             const chain: TJSObject = currentChainC.chain // For debugging purposes.
+
             debugPrint(
                 `Got new chain from syntaxTreeC._syntaxTree[${i}] to be mounted onto parent...`,
             )
@@ -134,6 +135,10 @@ class Builder {
         workingSubTree: IChainContainer, // First section must start at level 1.
     ): IChainContainer {
         debugPrint('-> Builder: mountChainOntoLevel(..)')
+        if (isDebug()) {
+            printObject(chainC)
+        }
+
         if (chainC.originLevel > 1) {
             // NOP
         } else {

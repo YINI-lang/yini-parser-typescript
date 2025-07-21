@@ -198,13 +198,9 @@ Expected JS output:
         //     title = "My Program"
         // `
         const validYini = `
-        < Title
-        username = 'tester three'
-        isSysOp = NO
-
-            << Sub.Title // NOT OK, dot notation NOT allowed.
-            theme = "special-dark"
-            notifications = ON
+// This whole line is a comment.
+            ^SectionName# This part is a comment.
+            // This whole line is a comment.
         `
 
         YINI.parse(validYini, true)

@@ -8,9 +8,8 @@
 import { execSync } from 'child_process'
 import YINI from '../../src'
 import { debugPrint, toPrettyJSON } from '../../src/utils/system'
-
 // @ts-ignore
-// import * as testCJS from '../fixtures/test-src-files/test-cjs'
+import * as testCJS from '../fixtures/test-src-files/test-cjs'
 
 /**
  * Final, Miscellaneous & Complementary Smoke Tests.
@@ -172,10 +171,72 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         // expect(toPrettyJSON(result)).toEqual(toPrettyJSON(answer))
     })
 
+    test('9.a. Should throw error if using existing section name at level 1.', () => {
+        // Arrange.
+        const invalidYini = `
+            < SubTitle
+            theme = "special-dark"
+            notifications = ON
+
+            < SubTitle // NOT OK, SubTitle already exists
+            theme2 = "special-dark"
+        `
+
+        // Act & Assert.
+        expect(() => {
+            YINI.parse(invalidYini)
+            debugPrint(invalidYini)
+        }).toThrow()
+    })
+
+    test('9.b. Should throw error if using existing section name at level 1.', () => {
+        // Arrange.
+        const invalidYini = `
+            < Title
+            username = 'tester three'
+            isSysOp = NO
+
+            < SubTitle
+            theme = "special-dark"
+            notifications = ON
+
+            < SubTitle // NOT OK, SubTitle already exists
+            theme2 = "special-dark"
+        `
+
+        // Act & Assert.
+        expect(() => {
+            YINI.parse(invalidYini)
+            debugPrint(invalidYini)
+        }).toThrow()
+    })
+
+    test('9.c. Should throw error if using existing section name at level 1.', () => {
+        // Arrange.
+        const invalidYini = `
+            ^ Title
+            username = 'tester three'
+            isSysOp = NO
+
+                ^^  SubSection
+                theme = "special-dark"
+                notifications = ON
+
+                ^^ SubSection // NOT OK, SubSection already exists
+                theme2 = "special-dark"
+        `
+
+        // Act & Assert.
+        expect(() => {
+            YINI.parse(invalidYini)
+            debugPrint(invalidYini)
+        }).toThrow()
+    })
+
     // Skipping dual build for cjs and esm for now
-    xtest('10. Has Default in CommonJS (from "dist/cjs").', () => {
-        // const hasDefault = testCJS.hasDefaultInCommonJS()
-        // expect(hasDefault).toEqual(true)
+    test('10. Has Default in CommonJS (in "dist/").', () => {
+        const hasDefault = testCJS.hasDefaultInCommonJS()
+        expect(hasDefault).toEqual(true)
     })
 
     // Skipping dual build for cjs and esm for now

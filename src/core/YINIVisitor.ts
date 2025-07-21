@@ -105,13 +105,15 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     private meta_numOfChains = 0 // For stats.
     private meta_maxLevelSection = 0 // For stats.
 
+    private existingSectionTitles: Map<string, boolean> = new Map()
+
     constructor(errorHandler: ErrorDataHandler, isStrict: boolean) {
         super()
         this.errorHandler = errorHandler
         this.isStrict = isStrict
     }
 
-    private pushOnTree = (sReslult: ISectionResult): void => {
+    private pushOnTree = (ctx: any, sReslult: ISectionResult): void => {
         if (isDebug()) {
             console.log()
             debugPrint('--- In pushOnTree(..) --------')
@@ -119,6 +121,29 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             printObject(sReslult)
         }
 
+        const key = sReslult.level + '-' + sReslult.name
+        debugPrint('KKKKKK, key = ' + key)
+        if (this.existingSectionTitles.has(key)) {
+            this.errorHandler!.pushOrBail(
+                ctx,
+                'Syntax-Error',
+                'Section name already exists',
+                'Cannot redefine section name: "' +
+                    sReslult.name +
+                    '" at level ' +
+                    sReslult.level +
+                    '.',
+            )
+        } else {
+            if (sReslult.members === undefined) {
+                debugPrint(
+                    'This sReslult does not hold any valid members (=undefined)',
+                )
+            } else {
+                this.existingSectionTitles.set(key, true)
+                printObject(this.existingSectionTitles)
+            }
+        }
         // if (
         //     sReslult.level === 0 &&
         //     (!sReslult.name || sReslult.name === 'undefined')
@@ -207,7 +232,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             )
 
             const topSectionResult: ISectionResult = this.visitSection(section)
-            this.pushOnTree(topSectionResult)
+            this.pushOnTree(ctx, topSectionResult)
             const topSectionName: string | undefined = topSectionResult?.name
             const topSectionMembers: any = topSectionResult?.members
             const topSectionLevel: any = topSectionResult?.level // This must have a value of 1.
@@ -549,7 +574,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 this.lastActiveSectionAtLevels[this.level - 1] = {
                     [sectionName]: { ...members },
                 }
-                this.pushOnTree({
+                this.pushOnTree(ctx, {
                     level: sectionLevel,
                     name: sectionName,
                     members,

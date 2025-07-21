@@ -3,7 +3,7 @@
  */
 
 // NOTE: (!) Importat below is with require!
-const yini = require('../../../dist/cjs/index.js')
+const yini = require('../../../dist/index.js')
 
 // Test if has default export.
 function hasDefaultInCommonJS() {

@@ -2,7 +2,7 @@
  * This file contains general system helper functions (utils).
  * @note More specific YINI helper functions should go into yiniHelpers.ts-file.
  */
-
+import util from 'util'
 import { isDebug, isDev, isProdEnv, isTestEnv } from '../config/env'
 
 export const debugPrint = (str: any = '') => {
@@ -18,9 +18,23 @@ export const toPrettyJSON = (obj: any): string => {
     return str
 }
 
-export const printObject = (obj: any) => {
+/** Pretty-prints a JavaScript object as formatted JSON to the console.
+ * Strict JSON, all keys are enclosed in ", etc.
+ */
+export const printJSON = (obj: any) => {
     if (isProdEnv() || (isTestEnv() && !isDebug())) return
 
     const str = toPrettyJSON(obj)
     console.log(str)
+}
+
+/**
+ * Print a full JavaScript object in a human-readable way (not as JSON).
+ * Not strict JSON, and shows functions, symbols, getters/setters, and class names.
+ * @param isColors If true, the output is styled with ANSI color codes.
+ */
+export const printObject = (obj: any, isColors = true) => {
+    if (isProdEnv() || (isTestEnv() && !isDebug())) return
+
+    console.log(util.inspect(obj, { depth: null, colors: isColors }))
 }
