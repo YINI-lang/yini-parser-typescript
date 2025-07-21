@@ -197,11 +197,17 @@ Expected JS output:
         //     id = 32403  # The correct app id.
         //     title = "My Program"
         // `
-        const validYini = `
-// This whole line is a comment.
-            ^SectionName# This part is a comment.
-            // This whole line is a comment.
-        `
+        const validYini = `^ Title
+            username = 'tester three'
+            isSysOp = NO
+
+                ^^  SubSection
+                theme = "special-dark"
+                notifications = ON
+
+                ^^ SubSection // NOT OK, SubSection already exists
+                theme2 = "special-dark"
+`
 
         YINI.parse(validYini, true)
 

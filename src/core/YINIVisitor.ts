@@ -726,7 +726,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                     )
                 } else {
                     this.meta_numOfMembers++
-                    if ((value?.type as TDataType) === 'Null') {
+                    // if ((value?.type as TDataType) === 'Null') {
+                    if ((type as TDataType) === 'Null') {
                         members[key] = null
                     } else {
                         isDebug() && console.log()
@@ -735,6 +736,14 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                             'About to mount a single member or section onto members...',
                         )
                         isDebug() && console.log({ [key]: value })
+
+                        if ((type as TDataType) === 'Object') {
+                            debugPrint('      type = "' + type + '"')
+                            debugPrint('this.level = "' + this.level + '"')
+                            debugPrint(
+                                'DDDDDDDD: sectionName / objectKey: ' + key,
+                            )
+                        }
 
                         Object.assign(members, { [key]: value })
                         debugPrint(
