@@ -282,7 +282,7 @@ title = "MyTitle"
 ```
 
 ### 8. Disabled Lines
-Prefix any valid line with -- to skip it entirely:
+Prefix any valid line with `--` to skip it entirely:
 ```yini
 --maxRetries = 5
 ```
@@ -311,7 +311,7 @@ port     = 5432
 ### Advanced Example
 
 ```js
-const YINI = require('yini-parser'); // Or: import YINI from 'yini-parser';
+const YINI = require('yini-parser').default; // Or: import YINI from 'yini-parser';
 
 const config = YINI.parse(`
     /*
