@@ -40,7 +40,7 @@ That's it!
 - Familiar config file style (inspired by INI, JSON, Python, and Markdown).
 - Easy programmatic usage.
 - Only the `YINI` class is exported; all internal details are private.
-- --todo-- Supports alternative list notation, colon‑style lists:
+- --wip-- Supports alternative list notation (colon‑style lists):
     ```yini
     fruits:
         'Pear',
@@ -147,7 +147,7 @@ Returns a JavaScript object representing the parsed YINI configuration file.
 
 ## Example Output
 ```js
-//  (JS object)
+// JS object
 {
    App: {
       title: "My App Title",
@@ -162,61 +162,61 @@ Returns a JavaScript object representing the parsed YINI configuration file.
 ## Intro to YINI Config Format
 
 ### 1. Sections
-Group settings under a named header. A section header starts with `^`:
+Group settings under a named header. A section header starts with `^`.
 
+Start a section with `^`, e.g.:
 ```yini
-^ Server
-host = "localhost"
-port = 8080
+^ App
+title = "AppName"
 ```
 
 ### 2. Key = Value
-Each line inside a section is a **key** (name) and **value**, separated by `=`:
+Each line inside a section is a **key** (name) and **value**, separated by `=`.
 
+Write settings as `key = value`:
 ```yini
 maxConnections = 100
-enableLogging   = true
+enableLogging  = true
 ```
 
+### 3. Values
 Values can be:
 - **Strings** (always quoted): `"hello"` or `'world'` (either single or double quoted)
 - **Numbers:** `42`, `3.14` or `-10`
 - **Booleans:** `true`, `false`, `on`, `off`, `yes`, `no` (all case-insensitive)
-- --todo-- **Lists:** `["red", "green", "blue"]`
+- **Nulls:** `null` or a blank value after `=` (in lenient mode)
+- --wip-- **Lists:**
+  *  JSON‑style: `["red", "green", "blue"]`
+  *  Colon‑style:
+        ```yini
+        fruits:
+            "Pear",
+            "Cherry",
+            "Banana"
+        ```
 
-### 3. Comments
-Add line and inline notes with `//` or `#`:
+### 4. Comments
+Various commenting styles are supported:
 ```yini
 // This is a line comment
 timeout = 30  // inline comment
-
-# This is also a line comment
-interval = 30  # inline comment
+# This is also a line comment (must have a space after #)
+interval = 30  # inline comment (must have a space after #)
+/* Block comment spanning
+   multiple lines */
+; Full line comment (must be whole line).
 ```
+
+Pick one style per file for consistency.
 
 Caveat: Note that **there must be a space** after the `#` and start of the comment. Otherwise it will be misinterpreted as a hexadecimal number.
 
-Multi line comment with `/* ... */` is also supported, and full line comments with `;`:
+### 5. Nested Sections
+Use extra carets `^` for sub‑sections:
 ```yini
-/*
-    This is a multi line block comment.
-*/
-
-; Full line comment.
-^ Server
-host = "localhost"
-port = 8080
-```
-
-
-Though, it's recommended to stick to one style per file for consistency.
-
-### 4. Nested Sections
-Add extra carets (^) to nest subsections:
-```yini
-^ App
-^^ Database
-host = "db.example.com"
+^ Parent
+^^ Child
+^^^ SubChild
 ```
 
 If you prefer, you can indent the nested section for visibility:
@@ -249,6 +249,7 @@ value = 'Back at level 1'
 
 The above Yini code will produce the following JavaScript object:
 ```js
+// JS object
 {
   Root: {
     value: 'At level 1',
@@ -258,7 +259,35 @@ The above Yini code will produce the following JavaScript object:
 }
 ```
 
-### Complete Example
+### 6. Lists
+--Work-in-Progress--
+```yini
+// JSON‑style list
+colors = ["red", "green", "blue"]
+
+// Colon‑style list
+fruits:
+  "Pear",
+  "Cherry",
+  "Banana"
+```
+
+### 7. Document Terminator (strict mode)
+End a file explicitly with:
+```yini
+^ App
+title = "MyTitle"
+
+/END    // Must be included in strict mode.
+```
+
+### 8. Disabled Lines
+Prefix any valid line with -- to skip it entirely:
+```yini
+--maxRetries = 5
+```
+
+### 9. Complete Example
 
 ```yini
 @yini       # Optional marker to identify YINI format.
@@ -266,14 +295,15 @@ The above Yini code will produce the following JavaScript object:
 ^ App
 name    = "MyApp"
 version = "1.0.0"
+debug   = off  // Turn on for debugging.
 
 ^^ Database
-host     = "db.example.com"
+host     = "db.local"
 port     = 5432
+--user   = "secret"  # This line is disabled!
 --userList = ["alice", "bob", "carol"]
 
-// Uncomment below to enable debug mode.
-// debug = on
+/END
 ```
 
 ---
@@ -324,7 +354,7 @@ console.log(config);
 
 #### Output:
 ```js
-// (JS object)
+// JS object
 {
     App: {
         name: "Nested Example",
