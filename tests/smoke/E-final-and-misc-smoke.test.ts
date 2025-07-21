@@ -211,7 +211,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         }).toThrow()
     })
 
-    test('9.c. Should throw error if using existing section name at level 1.', () => {
+    test('9.c. Should throw error if using existing section name at level 2.', () => {
         // Arrange.
         const invalidYini = `
             ^ Title

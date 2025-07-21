@@ -105,7 +105,31 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     private meta_numOfChains = 0 // For stats.
     private meta_maxLevelSection = 0 // For stats.
 
-    private existingSectionTitles: Map<string, boolean> = new Map()
+    // private existingSectionTitles: Map<string, boolean> = new Map()
+
+    private existingSectionTitlesAtLevels: Map<string, boolean>[] = []
+
+    private hasDefinedSectionTitle = (
+        sectionName: string,
+        level: number,
+    ): boolean => {
+        const mapAtCurrentLevel: Map<string, boolean> =
+            this.existingSectionTitlesAtLevels[level - 1]
+
+        return mapAtCurrentLevel?.has(sectionName)
+    }
+
+    private setDefineSectionTitle = (sectionName: string, level: number) => {
+        let mapAtCurrentLevel: Map<string, boolean> =
+            this.existingSectionTitlesAtLevels[level - 1]
+
+        if (!mapAtCurrentLevel) {
+            mapAtCurrentLevel = new Map()
+            this.existingSectionTitlesAtLevels[level - 1] = mapAtCurrentLevel
+        }
+
+        mapAtCurrentLevel.set(sectionName, true)
+    }
 
     constructor(errorHandler: ErrorDataHandler, isStrict: boolean) {
         super()
@@ -123,7 +147,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
         const key = sReslult.level + '-' + sReslult.name
         debugPrint('KKKKKK, key = ' + key)
-        if (this.existingSectionTitles.has(key)) {
+        // if (this.existingSectionTitles.has(key)) {
+        if (this.hasDefinedSectionTitle(key, sReslult.level)) {
             this.errorHandler!.pushOrBail(
                 ctx,
                 'Syntax-Error',
@@ -140,8 +165,9 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                     'This sReslult does not hold any valid members (=undefined)',
                 )
             } else {
-                this.existingSectionTitles.set(key, true)
-                printObject(this.existingSectionTitles)
+                // this.existingSectionTitles.set(key, true)
+                this.setDefineSectionTitle(key, sReslult.level)
+                // printObject(this.existingSectionTitles)
             }
         }
         // if (
@@ -737,13 +763,23 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                         )
                         isDebug() && console.log({ [key]: value })
 
-                        if ((type as TDataType) === 'Object') {
-                            debugPrint('      type = "' + type + '"')
-                            debugPrint('this.level = "' + this.level + '"')
-                            debugPrint(
-                                'DDDDDDDD: sectionName / objectKey: ' + key,
-                            )
-                        }
+                        // if ((type as TDataType) === 'Object') {
+                        //     const isExistingSectionName =
+                        //         this.hasDefinedSectionTitle(key, this.level)
+                        //     debugPrint('      type = "' + type + '"')
+                        //     debugPrint('this.level = "' + this.level + '"')
+                        //     debugPrint(
+                        //         'DDDDDDDD: sectionName / objectKey: ' + key,
+                        //     )
+
+                        //     debugPrint(
+                        //         'Is already defined at this level? ' +
+                        //             isExistingSectionName,
+                        //     )
+                        //     if (!isExistingSectionName) {
+                        //         this.setDefineSectionTitle(key, this.level)
+                        //     }
+                        // }
 
                         Object.assign(members, { [key]: value })
                         debugPrint(

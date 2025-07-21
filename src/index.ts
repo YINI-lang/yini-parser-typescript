@@ -206,7 +206,7 @@ Expected JS output:
                 notifications = ON
 
                 ^^ SubSection // NOT OK, SubSection already exists
-                theme2 = "special-dark"
+                myValue = 456
 `
 
         YINI.parse(validYini, true)
