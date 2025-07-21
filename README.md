@@ -13,6 +13,20 @@ YINI is a simple, human-friendly configuration format inspired by INI and JSON.
 
 ---
 
+## Quick Start
+
+A simple configuration:
+```yini
+^ App
+name    = 'My Title'
+items   = 25
+enabled = true
+```
+
+That's it!
+
+---
+
 ## 💡 Why YINI?
 - **Easy to read and write**, minimal syntax, maximum clarity.
 - **Clear section nesting** without painful indentation rules.
@@ -23,12 +37,19 @@ YINI is a simple, human-friendly configuration format inspired by INI and JSON.
   
 ## ✨ Features
 - Simple syntax (supports both strict and lenient modes).
-- Familiar config file style (inspired by INI, YAML, TOML).
+- Familiar config file style (inspired by INI, JSON, Python, and Markdown).
 - Easy programmatic usage.
 - Only the `YINI` class is exported; all internal details are private.
+- --todo-- Supports alternative list notation, colon‑style lists:
+    ```yini
+    fruits:
+        'Pear',
+        'Cherry',
+        'Banana'
+    ```
 
 ### Limitations
-Not all features of the full YINI specification are implemented yet.
+Not all features of the full YINI are implemented yet.
 
 See [FEATURE-CHECKLIST.md](https://github.com/YINI-lang/yini-parser-typescript/blob/main/FEATURE-CHECKLIST.md) for the current list of implemented YINI features.
 
@@ -158,12 +179,39 @@ enableLogging   = true
 ```
 
 Values can be:
-- **Strings** (always quoted): `"hello"` or `'world'`
+- **Strings** (always quoted): `"hello"` or `'world'` (either single or double quoted)
 - **Numbers:** `42`, `3.14` or `-10`
 - **Booleans:** `true`, `false`, `on`, `off`, `yes`, `no` (all case-insensitive)
 - --todo-- **Lists:** `["red", "green", "blue"]`
 
-### 3. Nested Sections
+### 3. Comments
+Add line and inline notes with `//` or `#`:
+```yini
+// This is a line comment
+timeout = 30  // inline comment
+
+# This is also a line comment
+interval = 30  # inline comment
+```
+
+Caveat: Note that **there must be a space** after the `#` and start of the comment. Otherwise it will be misinterpreted as a hexadecimal number.
+
+Multi line comment with `/* ... */` is also supported, and full line comments with `;`:
+```yini
+/*
+    This is a multi line block comment.
+*/
+
+; Full line comment.
+^ Server
+host = "localhost"
+port = 8080
+```
+
+
+Though, it's recommended to stick to one style per file for consistency.
+
+### 4. Nested Sections
 Add extra carets (^) to nest subsections:
 ```yini
 ^ App
@@ -209,21 +257,6 @@ The above Yini code will produce the following JavaScript object:
   BackToRoot: { value: 'Back at level 1' }
 }
 ```
-
-### 4. Comments
-Add notes with `//` or `#`:
-
-```yini
-# This is a line comment
-timeout = 30  // in seconds
-```
-
-```yini
-// This is a line comment
-interval = 30  # in seconds
-```
-
-Caveèt: Note that there must be a space after the `#` and start of the comment. Otherwise it will be misimpreted as a hexadecimal number.
 
 ### Complete Example
 
