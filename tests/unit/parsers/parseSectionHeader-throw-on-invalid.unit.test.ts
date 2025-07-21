@@ -26,10 +26,10 @@ describe('Throw error when parsing bad header marker (classic and numeric shorth
         }).toThrow()
     })
 
-    test('1.b. Should throw error if parsing bad classic header (more than 6 marker (~) characters).', () => {
+    test('1.b. Should throw error if parsing bad classic header (more than 6 marker (<) characters).', () => {
         // Arrange.
         const invalidYini = `
-        ~~~~~~~ InvalidHeaderMarker // INVALID: More than 6 marker characters.
+        <<<<<<< InvalidHeaderMarker // INVALID: More than 6 marker characters.
         `
 
         // Act & Assert.
@@ -76,10 +76,10 @@ describe('Throw error when parsing bad header marker (classic and numeric shorth
         }).toThrow()
     })
 
-    test('2.b. Should throw error if parsing bad numeric shorthand marker header with (~).', () => {
+    test('2.b. Should throw error if parsing bad numeric shorthand marker header with (<).', () => {
         // Arrange.
         const invalidYini = `
-        ~0 InvalidHeaderMarker // INVALID: Numeric shorthand marker.
+        <0 InvalidHeaderMarker // INVALID: Numeric shorthand marker.
         value = 3
         `
 
@@ -127,10 +127,10 @@ describe('Throw error when parsing bad header marker (classic and numeric shorth
         }).toThrow()
     })
 
-    test('3.b. Should throw error if parsing bad section header marker (~).', () => {
+    test('3.b. Should throw error if parsing bad section header marker (<).', () => {
         // Arrange.
         const invalidYini = `
-        ~~10 InvalidHeaderMarker // INVALID section header marker.
+        <<10 InvalidHeaderMarker // INVALID section header marker.
         `
 
         // Act & Assert.
@@ -178,11 +178,11 @@ describe('Throw error when parsing bad header marker (classic and numeric shorth
     test('5. Should throw error if mixing section header types.', () => {
         // Arrange.
         const invalidYini = `
-        ~1 user3
+        <1 user3
         username = 'tester three'
         isSysOp = NO
 
-            ~~2 prefs // NOT OK, bad section marker, cannot mix marker types.
+            <<2 prefs // NOT OK, bad section marker, cannot mix marker types.
             theme = "special-dark"
             notifications = ON
         `
@@ -196,11 +196,11 @@ describe('Throw error when parsing bad header marker (classic and numeric shorth
     test('6. Should throw error if using a dot (.) in section title.', () => {
         // Arrange.
         const invalidYini = `
-        ~ Title
+        < Title
         username = 'tester three'
         isSysOp = NO
 
-            ~~ Sub.Title // NOT OK, dot notation NOT allowed.
+            << Sub.Title // NOT OK, dot notation NOT allowed.
             theme = "special-dark"
             notifications = ON
         `

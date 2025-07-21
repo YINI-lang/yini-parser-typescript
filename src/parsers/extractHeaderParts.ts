@@ -68,7 +68,7 @@ const extractHeaderParts = (
     // 1. Skip leading whitespace.
     while (pos < len && (str[pos] === ' ' || str[pos] === '\t')) pos++
 
-    // 2. Collect marker(s): ^, ~, §, €.
+    // 2. Collect marker(s): ^, <, §, €.
     while (pos < len && isMarkerCharacter(str[pos])) {
         markerCharsPart += str[pos]
         pos++

@@ -557,9 +557,9 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         expect(isBacktickedName).toEqual(true)
     })
 
-    test('10.a. Extract parts for classic section header with alternative marker (~), level 2 with any WS delimeters and backticked name.', () => {
+    test('10.a. Extract parts for classic section header with alternative marker (<), level 2 with any WS delimeters and backticked name.', () => {
         // Arrange.
-        const fixture = '~~\t\t    Title'
+        const fixture = '<<\t\t    Title'
         // Act.
         const {
             strMarkerChars,
@@ -569,15 +569,15 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         } = extractHeaderParts(fixture)
         // Assert.
         expect(strSectionName).not.toEqual('nonCorrectName')
-        expect(strMarkerChars).toEqual('~~')
+        expect(strMarkerChars).toEqual('<<')
         expect(strSectionName).toEqual('Title')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(false)
     })
 
-    test('10.b. Extract parts for classic section header with alternative marker (~), level 2 with any WS delimeters and backticked name.', () => {
+    test('10.b. Extract parts for classic section header with alternative marker (<), level 2 with any WS delimeters and backticked name.', () => {
         // Arrange.
-        const fixture = '~~\t  \t  `Section Title`'
+        const fixture = '<<\t  \t  `Section Title`'
         // Act.
         const {
             strMarkerChars,
@@ -587,15 +587,15 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         } = extractHeaderParts(fixture)
         // Assert.
         expect(strSectionName).not.toEqual('nonCorrectName')
-        expect(strMarkerChars).toEqual('~~')
+        expect(strMarkerChars).toEqual('<<')
         expect(strSectionName).toEqual('`Section Title`')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(true)
     })
 
-    test('10.c. Extract parts for classic section header with alternative marker (~), level 2 with any WS delimeters, backticked name and a comment.', () => {
+    test('10.c. Extract parts for classic section header with alternative marker (<), level 2 with any WS delimeters, backticked name and a comment.', () => {
         // Arrange.
-        const fixture = '~~\t  \t  `Section Title` // This is a comment.'
+        const fixture = '<<\t  \t  `Section Title` // This is a comment.'
         // Act.
         const {
             strMarkerChars,
@@ -605,7 +605,7 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         } = extractHeaderParts(fixture)
         // Assert.
         expect(strSectionName).not.toEqual('nonCorrectName')
-        expect(strMarkerChars).toEqual('~~')
+        expect(strMarkerChars).toEqual('<<')
         expect(strSectionName).toEqual('`Section Title`')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(true)

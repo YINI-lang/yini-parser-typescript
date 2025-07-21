@@ -1,6 +1,6 @@
 import { isDebug } from '../config/env'
 import { IChainContainer, TJSObject, TSyntaxTreeContainer } from '../core/types'
-import { debugPrint, printObject } from '../utils/system'
+import { debugPrint, printObject, toPrettyJSON } from '../utils/system'
 import { ErrorDataHandler } from './ErrorDataHandler'
 
 /**
@@ -84,6 +84,7 @@ class Builder {
             const level = currentChainC.originLevel
             const nestingIndex = level - 1 // For debugging purposes.
             const chain: TJSObject = currentChainC.chain // For debugging purposes.
+
             debugPrint(
                 `Got new chain from syntaxTreeC._syntaxTree[${i}] to be mounted onto parent...`,
             )
@@ -134,6 +135,10 @@ class Builder {
         workingSubTree: IChainContainer, // First section must start at level 1.
     ): IChainContainer {
         debugPrint('-> Builder: mountChainOntoLevel(..)')
+        if (isDebug()) {
+            printObject(chainC)
+        }
+
         if (chainC.originLevel > 1) {
             // NOP
         } else {
@@ -176,6 +181,7 @@ class Builder {
             workingSubTree.chain,
             chain,
             targetLevel,
+            this.errorHandler,
         )
 
         if (isDebug()) {
@@ -232,6 +238,7 @@ const mountObjectAtLevel = (
     objectSrc: Record<string, any>,
     objectDest: Record<string, any>,
     level: number,
+    errorHandler: ErrorDataHandler,
 ): Record<string, any> => {
     // Deep copy to avoid mutating the input.
     const result = JSON.parse(JSON.stringify(objectSrc))
@@ -255,6 +262,28 @@ const mountObjectAtLevel = (
         }
         current = current[nextKey]
         currentLevel++
+    }
+
+    debugPrint('--------')
+    debugPrint('   current = ' + toPrettyJSON(current))
+    const [firstKey] = Object.keys(objectDest)
+    debugPrint('objectDest = ' + firstKey)
+    if (Object.prototype.hasOwnProperty.call(current, firstKey)) {
+        //@todo Add metadata with line number, onto chainC, so can use line number in error reporting
+        debugPrint(`(!) sectionName already exist, name: "${firstKey}", in: `)
+        debugPrint(toPrettyJSON(current))
+        // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+        errorHandler!.pushOrBail(
+            null,
+            'Syntax-Error',
+            'Section name already exists',
+            'Cannot redefine section name: "' +
+                firstKey +
+                '" at level ' +
+                currentLevel +
+                '.',
+        )
+        return current
     }
 
     // Mount objectDest onto the object at the required level.

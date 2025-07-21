@@ -105,13 +105,39 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     private meta_numOfChains = 0 // For stats.
     private meta_maxLevelSection = 0 // For stats.
 
+    // private existingSectionTitles: Map<string, boolean> = new Map()
+
+    private existingSectionTitlesAtLevels: Map<string, boolean>[] = []
+
+    private hasDefinedSectionTitle = (
+        sectionName: string,
+        level: number,
+    ): boolean => {
+        const mapAtCurrentLevel: Map<string, boolean> =
+            this.existingSectionTitlesAtLevels[level - 1]
+
+        return mapAtCurrentLevel?.has(sectionName)
+    }
+
+    private setDefineSectionTitle = (sectionName: string, level: number) => {
+        let mapAtCurrentLevel: Map<string, boolean> =
+            this.existingSectionTitlesAtLevels[level - 1]
+
+        if (!mapAtCurrentLevel) {
+            mapAtCurrentLevel = new Map()
+            this.existingSectionTitlesAtLevels[level - 1] = mapAtCurrentLevel
+        }
+
+        mapAtCurrentLevel.set(sectionName, true)
+    }
+
     constructor(errorHandler: ErrorDataHandler, isStrict: boolean) {
         super()
         this.errorHandler = errorHandler
         this.isStrict = isStrict
     }
 
-    private pushOnTree = (sReslult: ISectionResult): void => {
+    private pushOnTree = (ctx: any, sReslult: ISectionResult): void => {
         if (isDebug()) {
             console.log()
             debugPrint('--- In pushOnTree(..) --------')
@@ -119,6 +145,31 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             printObject(sReslult)
         }
 
+        const key = sReslult.level + '-' + sReslult.name
+        debugPrint('KKKKKK, key = ' + key)
+        // if (this.existingSectionTitles.has(key)) {
+        if (this.hasDefinedSectionTitle(key, sReslult.level)) {
+            this.errorHandler!.pushOrBail(
+                ctx,
+                'Syntax-Error',
+                'Section name already exists',
+                'Cannot redefine section name: "' +
+                    sReslult.name +
+                    '" at level ' +
+                    sReslult.level +
+                    '.',
+            )
+        } else {
+            if (sReslult.members === undefined) {
+                debugPrint(
+                    'This sReslult does not hold any valid members (=undefined)',
+                )
+            } else {
+                // this.existingSectionTitles.set(key, true)
+                this.setDefineSectionTitle(key, sReslult.level)
+                // printObject(this.existingSectionTitles)
+            }
+        }
         // if (
         //     sReslult.level === 0 &&
         //     (!sReslult.name || sReslult.name === 'undefined')
@@ -207,7 +258,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             )
 
             const topSectionResult: ISectionResult = this.visitSection(section)
-            this.pushOnTree(topSectionResult)
+            this.pushOnTree(ctx, topSectionResult)
             const topSectionName: string | undefined = topSectionResult?.name
             const topSectionMembers: any = topSectionResult?.members
             const topSectionLevel: any = topSectionResult?.level // This must have a value of 1.
@@ -549,7 +600,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 this.lastActiveSectionAtLevels[this.level - 1] = {
                     [sectionName]: { ...members },
                 }
-                this.pushOnTree({
+                this.pushOnTree(ctx, {
                     level: sectionLevel,
                     name: sectionName,
                     members,
@@ -701,7 +752,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                     )
                 } else {
                     this.meta_numOfMembers++
-                    if ((value?.type as TDataType) === 'Null') {
+                    // if ((value?.type as TDataType) === 'Null') {
+                    if ((type as TDataType) === 'Null') {
                         members[key] = null
                     } else {
                         isDebug() && console.log()
@@ -710,6 +762,24 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                             'About to mount a single member or section onto members...',
                         )
                         isDebug() && console.log({ [key]: value })
+
+                        // if ((type as TDataType) === 'Object') {
+                        //     const isExistingSectionName =
+                        //         this.hasDefinedSectionTitle(key, this.level)
+                        //     debugPrint('      type = "' + type + '"')
+                        //     debugPrint('this.level = "' + this.level + '"')
+                        //     debugPrint(
+                        //         'DDDDDDDD: sectionName / objectKey: ' + key,
+                        //     )
+
+                        //     debugPrint(
+                        //         'Is already defined at this level? ' +
+                        //             isExistingSectionName,
+                        //     )
+                        //     if (!isExistingSectionName) {
+                        //         this.setDefineSectionTitle(key, this.level)
+                        //     }
+                        // }
 
                         Object.assign(members, { [key]: value })
                         debugPrint(
