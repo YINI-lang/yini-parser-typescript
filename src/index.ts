@@ -198,16 +198,16 @@ Expected JS output:
         //     title = "My Program"
         // `
         const validYini = `
-        ~1 user3
+        ~ Title
         username = 'tester three'
         isSysOp = NO
 
-            ~~2 prefs // NOT OK, bad section marker, cannot mix marker types.
+            ~~ Sub.Title // NOT OK, dot notation NOT allowed.
             theme = "special-dark"
             notifications = ON
         `
 
-        YINI.parse(validYini, false, 'auto', true)
+        YINI.parse(validYini, true)
 
         //         YINI.parse(`
         // ^ Section1

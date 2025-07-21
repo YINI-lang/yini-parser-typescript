@@ -192,4 +192,22 @@ describe('Throw error when parsing bad header marker (classic and numeric shorth
             parseSectionHeader(invalidYini, eh, null)
         }).toThrow()
     })
+
+    test('6. Should throw error if using a dot (.) in section title.', () => {
+        // Arrange.
+        const invalidYini = `
+        ~ Title
+        username = 'tester three'
+        isSysOp = NO
+
+            ~~ Sub.Title // NOT OK, dot notation NOT allowed.
+            theme = "special-dark"
+            notifications = ON
+        `
+
+        // Act & Assert.
+        expect(() => {
+            parseSectionHeader(invalidYini, eh, null)
+        }).toThrow()
+    })
 })

@@ -117,7 +117,8 @@ IDENT: ('a' ..'z' | 'A' ..'Z' | '_') (
 		'a' ..'z'
 		| 'A' ..'Z'
 		| '0' ..'9'
-		| '_'
+		| '_' | '.'
+
 	)*
 	| IDENT_BACKTICKED
 	| IDENT_INVALID;

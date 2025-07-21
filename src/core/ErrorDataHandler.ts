@@ -212,7 +212,7 @@ export class ErrorDataHandler {
     ) => {
         console.error(issueTitle[0]) // Print the issue title.
         msgWhat && console.error(msgWhat)
-        msgWhy && console.error(msgWhy)
+        msgWhy && console.log(msgWhy)
         msgHint && console.log(msgHint)
     }
 
@@ -223,14 +223,14 @@ export class ErrorDataHandler {
     ) => {
         console.error(issueTitle[1]) // Print the issue title.
         msgWhat && console.error(msgWhat)
-        msgWhy && console.error(msgWhy)
+        msgWhy && console.log(msgWhy)
         msgHint && console.log(msgHint)
     }
 
     private emitSyntaxError = (msgWhat: string, msgWhy = '', msgHint = '') => {
         console.error(issueTitle[2]) // Print the issue title.
         msgWhat && console.error(msgWhat)
-        msgWhy && console.error(msgWhy)
+        msgWhy && console.log(msgWhy)
         msgHint && console.log(msgHint)
     }
 
@@ -241,21 +241,21 @@ export class ErrorDataHandler {
     ) => {
         console.warn(issueTitle[3]) // Print the issue title.
         msgWhat && console.warn(msgWhat)
-        msgWhy && console.warn(msgWhy)
+        msgWhy && console.log(msgWhy)
         msgHint && console.log(msgHint)
     }
 
     private emitNotice = (msgWhat: string, msgWhy = '', msgHint = '') => {
         console.warn(issueTitle[4]) // Print the issue title.
         msgWhat && console.warn(msgWhat)
-        msgWhy && console.warn(msgWhy)
+        msgWhy && console.log(msgWhy)
         msgHint && console.log(msgHint)
     }
 
     private emitInfo = (msgWhat: string, msgWhy = '', msgHint = '') => {
         console.info(issueTitle[5]) // Print the issue title.
         msgWhat && console.info(msgWhat)
-        msgWhy && console.info(msgWhy)
+        msgWhy && console.log(msgWhy)
         msgHint && console.log(msgHint)
     }
 
