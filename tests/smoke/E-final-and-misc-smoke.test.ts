@@ -8,8 +8,9 @@
 import { execSync } from 'child_process'
 import YINI from '../../src'
 import { debugPrint, toPrettyJSON } from '../../src/utils/system'
+
 // @ts-ignore
-import * as testCJS from '../fixtures/test-src-files/test-cjs'
+// import * as testCJS from '../fixtures/test-src-files/test-cjs'
 
 /**
  * Final, Miscellaneous & Complementary Smoke Tests.
@@ -234,9 +235,9 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
     })
 
     // Skipping dual build for cjs and esm for now
-    test('10. Has Default in CommonJS (in "dist/").', () => {
-        const hasDefault = testCJS.hasDefaultInCommonJS()
-        expect(hasDefault).toEqual(true)
+    xtest('10. Has Default in CommonJS (in "dist/").', () => {
+        // const hasDefault = testCJS.hasDefaultInCommonJS()
+        // expect(hasDefault).toEqual(true)
     })
 
     // Skipping dual build for cjs and esm for now
