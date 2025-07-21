@@ -498,9 +498,9 @@ describe('Parse classic section header unit tests:', () => {
         expect(sectionLevel).toEqual(6)
     })
 
-    test('10.a. Identify classic section header with level 1 and alternative character marker (~).', () => {
+    test('10.a. Identify classic section header with level 1 and alternative character marker (<).', () => {
         // Arrange.
-        const fixture = '~ SectionName'
+        const fixture = '< SectionName'
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
@@ -546,9 +546,9 @@ describe('Parse classic section header unit tests:', () => {
         expect(sectionLevel).toEqual(2)
     })
 
-    test('11.a. Identify classic section header with level 4 and alternative character marker (~).', () => {
+    test('11.a. Identify classic section header with level 4 and alternative character marker (<).', () => {
         // Arrange.
-        const fixture = '~~~~   SectionName // This part is a comment.'
+        const fixture = '<<<<   SectionName // This part is a comment.'
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,

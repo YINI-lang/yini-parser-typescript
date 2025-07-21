@@ -325,7 +325,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Section names with spaces etc.</td>
   </tr>
   <tr>
-    <td>Standard/basic/classic section marks (^, ~)</td>
+    <td>Standard/basic/classic section marks (^, <)</td>
     <td>🔲</td>
     <td><code></code></td>
     <td>✅</td>

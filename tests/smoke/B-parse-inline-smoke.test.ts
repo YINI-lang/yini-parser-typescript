@@ -236,11 +236,11 @@ empty = { }`
     test('9. Short-Hand and Alternative Section Notations', () => {
         // Arrange.
         const validYini = `
-~ user
+< user
 username = 'tester two'
 isSysOp = YES
 
-    ~~ prefs
+    << prefs
     theme = "light"
     notifications = OFF
 
@@ -253,11 +253,11 @@ key = "Level 4 section"
 key = "Level 5 section"
 item = 77
 
-~1 user3
+<1 user3
 username = 'tester three'
 isSysOp = NO
 
-    ~2 prefs
+    <2 prefs
     theme = "special-dark"
     notifications = ON
 

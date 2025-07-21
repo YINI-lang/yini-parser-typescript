@@ -7,7 +7,7 @@ import { isEnclosedInBackticks, splitLines } from './utils/string'
 import { debugPrint } from './utils/system'
 
 const SECTION_MARKER1 = '^'
-const SECTION_MARKER2 = '~'
+const SECTION_MARKER2 = '<'
 const SECTION_MARKER3 = '\u00A7' // Section sign §.
 const SECTION_MARKER4 = '\u20AC' // Euro sign €.
 

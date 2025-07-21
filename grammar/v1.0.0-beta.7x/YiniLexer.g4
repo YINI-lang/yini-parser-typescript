@@ -42,7 +42,7 @@ fragment SECTION_MARKER
 // gives more control and enables better user feedback
 fragment SECTION_MARKER_BASIC_REPEAT
     : CARET+   // up to 6 carets (parser will reject more than 6)
-    | TILDE+   // up to 6 tildes
+    | LT+      // up to 6 LS characters
     | SS+      // up to 6 '§' characters
     | EUR+     // up to 6 '€' characters
     ;
@@ -50,11 +50,11 @@ fragment SECTION_MARKER_BASIC_REPEAT
 // Shorthand: a single marker followed by a positive integer (1 or larger).
 // Examples: ^7, ~12, §100, €42
 fragment SECTION_MARKER_SHORTHAND
-    : (CARET | TILDE | SS | EUR) [1-9] DIGIT*
+    : (CARET | LT | SS | EUR) [1-9] DIGIT*
     ;
 
 fragment SECTION_MARKER_INVALID
-    : (CARET | TILDE | SS | EUR)+ DIGIT+
+    : (CARET | LT | SS | EUR)+ DIGIT+
     ;
 
 TERMINAL_TOKEN options {
@@ -64,7 +64,6 @@ TERMINAL_TOKEN options {
 SS: '\u00A7'; // Section sign §.
 EUR: '\u20AC'; // Euro sign €.
 CARET: '^';
-TILDE: '~';
 GT: '>'; // Greater Than.
 LT: '<'; // Less Than.
 

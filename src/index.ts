@@ -162,11 +162,11 @@ Expected JS output:
         // YINI.parse(`^1 SectionName`, false, 2)
 
         //         const validYini = `
-        // ~ user
+        // < user
         // username = 'tester two'
         // isSysOp = YES
 
-        //     ~~ prefs
+        //     << prefs
         //     theme = "light"
         //     notifications = OFF
 
@@ -179,11 +179,11 @@ Expected JS output:
         // key = "Level 5 section"
         // item = 77
 
-        // ~1 user3
+        // <1 user3
         // username = 'tester three'
         // isSysOp = NO
 
-        //     ~~2 prefs
+        //     <<2 prefs
         //     theme = "special-dark"
         //     notifications = ON
 
@@ -198,11 +198,11 @@ Expected JS output:
         //     title = "My Program"
         // `
         const validYini = `
-        ~ Title
+        < Title
         username = 'tester three'
         isSysOp = NO
 
-            ~~ Sub.Title // NOT OK, dot notation NOT allowed.
+            << Sub.Title // NOT OK, dot notation NOT allowed.
             theme = "special-dark"
             notifications = ON
         `
