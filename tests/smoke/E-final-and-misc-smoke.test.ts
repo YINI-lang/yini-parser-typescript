@@ -246,4 +246,49 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
             stdio: 'inherit',
         })
     })
+
+    test('20. Should throw parsing a corrupt Yini with bailSensitivity 2 = "Abort-Even-on-Warnings".', () => {
+        // Arrange.
+        const failLevel = 2
+        const corruptYini = `
+            ^ App
+            title = 'MyAppTitle'
+            items = 25
+            items = 90  // (!) Redefinition!
+            isDarkTheme = true
+        `
+
+        // Act & Assert.
+        expect(() => {
+            const result = YINI.parse(corruptYini, false, failLevel)
+            debugPrint(corruptYini)
+        }).toThrow()
+    })
+
+    test('21. Should succeed parsing a corrupt Yini with bailSensitivity 0 = "Ignore-Errors".', () => {
+        // Arrange.
+        const failLevel = 0
+        const corruptYini = `
+            ^ App
+            title = 'MyAppTitle'
+            items = 25
+            items = 90  // (!) Redefinition!
+            isDarkTheme = true
+        `
+
+        // Act.
+        const result = YINI.parse(corruptYini, false, failLevel)
+        debugPrint(result)
+
+        // Assert.
+        const answer = {
+            App: {
+                title: 'MyAppTitle',
+                items: 25,
+                isDarkTheme: true,
+            },
+        }
+        expect(toPrettyJSON(result)).toEqual(toPrettyJSON(answer))
+        expect(result.meta).toEqual(undefined)
+    })
 })

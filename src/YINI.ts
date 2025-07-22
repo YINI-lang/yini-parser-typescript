@@ -20,9 +20,20 @@ export default class YINI {
     public static filePath: string = '' // Used in error reporting.
 
     /**
-     * @param yiniContent YINI code as a string, can be multiple lines.
-     * @note The order of properties (members) in each JavaScript object (section) may differ from the order in the input YINI content.
-     * @returns The parsed JavaScript object.
+     * Parse YINI content into a JavaScript object.
+     *
+     * @param yiniContent      YINI code as a string (multi‑line content supported).
+     * @param strictMode       If `true`, enforce strict parsing rules (e.g. require `/END`, disallow trailing commas).
+     * @param bailSensitivity  Controls how errors and warnings are handled:
+     *   - `'auto'`               : Auto‑select level (strict→1, lenient→0)
+     *   - `0` / `'Ignore-Errors'`    : Continue parsing despite errors; log them and attempt recovery.
+     *   - `1` / `'Abort-on-Errors'`  : Stop parsing on the first error.
+     *   - `2` / `'Abort-Even-on-Warnings'`: Stop parsing on the first warning **or** error.
+     * @param includeMetaData  If `true`, return additional metadata (e.g. warnings, statistics) alongside the parsed object.
+     *
+     * @note The order of properties in each output object may differ from their order in the YINI source.
+     *
+     * @returns A JavaScript object representing the parsed YINI content.
      */
     public static parse = (
         yiniContent: string,
@@ -79,9 +90,20 @@ export default class YINI {
     }
 
     /**
+     * Parse a YINI file into a JavaScript object.
+     *
      * @param yiniFile Path to the YINI file.
-     * @note The order of properties (members) in each JavaScript object (section) may differ from the order in the input YINI file.
-     * @returns The parsed JavaScript object.
+     * @param strictMode       If `true`, enforce strict parsing rules (e.g. require `/END`, disallow trailing commas).
+     * @param bailSensitivity  Controls how errors and warnings are handled:
+     *   - `'auto'`               : Auto‑select level (strict→1, lenient→0)
+     *   - `0` / `'Ignore-Errors'`    : Continue parsing despite errors; log them and attempt recovery.
+     *   - `1` / `'Abort-on-Errors'`  : Stop parsing on the first error.
+     *   - `2` / `'Abort-Even-on-Warnings'`: Stop parsing on the first warning **or** error.
+     * @param includeMetaData  If `true`, return additional metadata (e.g. warnings, statistics) alongside the parsed object.
+     *
+     * @note The order of properties in each output object may differ from their order in the YINI source.
+     *
+     * @returns A JavaScript object representing the parsed YINI content.
      */
     public static parseFile = (
         filePath: string,

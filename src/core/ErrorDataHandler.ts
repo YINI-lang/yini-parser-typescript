@@ -145,12 +145,12 @@ export class ErrorDataHandler {
                     this.persistThreshold === '1-Abort-on-Errors' ||
                     this.persistThreshold === '2-Abort-Even-on-Warnings'
                 ) {
-                    if (process.env.NODE_ENV === 'test') {
-                        // In test, throw an error instead of exiting.
-                        throw new Error(`Internal-Error: ${msgWhat}`)
-                    } else {
-                        process.exit(2)
-                    }
+                    // if (process.env.NODE_ENV === 'test') {
+                    // In test, throw an error instead of exiting.
+                    throw new Error(`Internal-Error: ${msgWhat}`)
+                    // } else {
+                    //     process.exit(2)
+                    // }
                 }
                 break
             case 'Syntax-Error':
@@ -160,24 +160,24 @@ export class ErrorDataHandler {
                     this.persistThreshold === '1-Abort-on-Errors' ||
                     this.persistThreshold === '2-Abort-Even-on-Warnings'
                 ) {
-                    if (process.env.NODE_ENV === 'test') {
-                        // In test, throw an error instead of exiting.
-                        throw new Error(`Syntax-Error: ${'' + msgWhat}`)
-                    } else {
-                        process.exit(3)
-                    }
+                    // if (process.env.NODE_ENV === 'test') {
+                    // In test, throw an error instead of exiting.
+                    throw new Error(`Syntax-Error: ${'' + msgWhat}`)
+                    // } else {
+                    //     process.exit(3)
+                    // }
                 }
                 break
             case 'Syntax-Warning':
                 this.numSyntaxWarnings++
                 this.emitSyntaxWarning(msgWhat, msgWhy, msgHint)
                 if (this.persistThreshold === '2-Abort-Even-on-Warnings') {
-                    if (process.env.NODE_ENV === 'test') {
-                        // In test, throw an error instead of exiting.
-                        throw new Error(`Syntax-Warning: ${msgWhat}`)
-                    } else {
-                        process.exit(4)
-                    }
+                    // if (process.env.NODE_ENV === 'test') {
+                    // In test, throw an error instead of exiting.
+                    throw new Error(`Syntax-Warning: ${msgWhat}`)
+                    // } else {
+                    //     process.exit(4)
+                    // }
                 }
                 break
             case 'Notice':
@@ -192,16 +192,16 @@ export class ErrorDataHandler {
                 this.numFatalErrors++
                 this.emitFatalError(msgWhat, msgWhy, msgHint)
                 // CANNOT recover fatal errors, will lead to an exit!
-                if (process.env.NODE_ENV === 'test') {
-                    // In test, throw an error instead of exiting.
-                    throw new Error(`Internal-Error: ${msgWhat}`)
-                } else {
-                    process.exit(1)
-                    // (!) Not sure about the below yet, if it's preferable in this case...
-                    // Use this instead of process.exit(1), this will
-                    // lead to that the current thread(s) will exit as well.
-                    // process.exitCode = 1
-                }
+                // if (process.env.NODE_ENV === 'test') {
+                // In test, throw an error instead of exiting.
+                throw new Error(`Internal-Error: ${msgWhat}`)
+            // } else {
+            //     process.exit(1)
+            // (!) Not sure about the below yet, if it's preferable in this case...
+            // Use this instead of process.exit(1), this will
+            // lead to that the current thread(s) will exit as well.
+            // process.exitCode = 1
+            // }
         }
     }
 

@@ -34,7 +34,7 @@ sValue = 2
  */
 
 export type TPersistThreshold =
-    | '0-Ignore-Errors' // Don't bail on error, persist and try to recover.
+    | '0-Ignore-Errors' // Don't bail/fail on error, persist and try to recover.
     | '1-Abort-on-Errors'
     | '2-Abort-Even-on-Warnings'
 

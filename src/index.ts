@@ -197,19 +197,15 @@ Expected JS output:
         //     id = 32403  # The correct app id.
         //     title = "My Program"
         // `
-        const validYini = `
-        ^ Root
-        value = 'At level 1'
-            ^^ Sub
-            value = 'At level 2'
-                ^^^ SubSub
-                value = 'At level 3'
-                
-        ^ BackToRoot
-        value = 'Bach at level 1'
+        const corruptYini = `
+            ^ App
+            title = 'MyApp Title'
+            items = 25
+            items = 90  // (!) Redefinition!
+            isDarkTheme = true
         `
 
-        YINI.parse(validYini, true)
+        YINI.parse(corruptYini, false, 2)
 
         //         YINI.parse(`
         // ^ Section1
