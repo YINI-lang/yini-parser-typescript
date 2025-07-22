@@ -172,6 +172,8 @@ title = "AppName"
 
 > Alternative section markers to `^` are also supported: `<`, `§`, `€` (e.g. `< Section`).
 
+> See section 9 for more advanced marker and naming options.
+
 ### 2. Key = Value
 Each line inside a section is a **key** (name) and **value**, separated by `=`.
 
@@ -304,7 +306,37 @@ Prefix any valid line with `--` to skip it entirely:
 --maxRetries = 5
 ```
 
-### 9. Complete Example
+### 9. Advanced: Alternative Section Markers & Naming
+In addition to the standard syntax, YINI supports several advanced options:
+
+- (a.) **Alternative section markers:**  
+  Besides `^`, you can use `<`, `§`, or `€` as section header markers.  
+  
+  ```yini
+  < MySection
+  § Settings
+  € MyApp
+  ```
+
+- (b.) **Backticked section names and key names:**  
+  Use backticks (`) to allow spaces or special characters in section or key names:
+
+  ```yini
+    ^ `Section name with spaces`
+    `user id` = 42
+  ```
+
+- (c.) **Numeric shorthand section markers:**  
+  To create deeply nested sections (beyond 6 levels), use numeric shorthand:
+
+  ```yini
+  ^7 DeepSection    # Equivalent to 7 carets: ^^^^^^^ DeepSection
+  <10 VeryDeep      # Equivalent to <<<<<<<<<<< VeryDeep
+  ```
+
+👆 Though, can not mix standard/classic and numeric shorthand markers in the same section header.
+
+### 10. Complete Example
 
 ```yini
 @yini       # Optional marker to identify YINI format.
