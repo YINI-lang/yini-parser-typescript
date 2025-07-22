@@ -80,7 +80,8 @@ pnpm add yini-parser
 **Note:** Only a default export (YINI) is provided. Named imports are not supported.
 ```js
 const YINI = require('yini-parser').default;
-// If you get undefined, try:
+// (!) If you get undefined, try:
+// (Some Node.js setups require the .default property, others don't, due to ESM/CommonJS interop quirks.)
 const YINI = require('yini-parser');
 
 // Parse from string.
@@ -183,6 +184,8 @@ maxConnections = 100
 enableLogging  = true
 ```
 
+> See section 9 for more advanced marker and naming options.
+
 #### 💡Tip
 Use backticks (\`) to quote section or key names that contain spaces or special characters.
 
@@ -199,7 +202,7 @@ Values can be:
 - **Numbers:** `42`, `3.14` or `-10`
 - **Booleans:** `true`, `false`, `on`, `off`, `yes`, `no` (all case-insensitive)
 - **Nulls:** Use `null` or leave the value blank after `=` (in lenient mode)
-- 🚧 *(Planned – not yet implemented in parser)* **Lists:**
+- *(Planned – not yet implemented in parser)* **Lists:**
   *  JSON‑style: `["red", "green", "blue"]`
   *  Colon‑style:
         ```yini
@@ -277,7 +280,7 @@ The above Yini code will produce the following JavaScript object:
 ```
 
 ### 6. Lists
-🚧 *(Planned – not yet implemented in parser)*
+👆 *List support is planned for an upcoming release.*
 ```yini
 // JSON‑style list
 colors = ["red", "green", "blue"]
@@ -288,6 +291,8 @@ fruits:
   "Cherry",
   "Banana"
 ```
+
+> Both single and double quotes can be used for string values in YINI.
 
 ### 7. Document Terminator (strict mode)
 The `/END` marker is required only in strict mode, and optional in lenient (default) mode.
