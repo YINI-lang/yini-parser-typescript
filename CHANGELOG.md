@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 1.0.0-alpha.7
+- Fixed serious bug that on error did exit process.
+- Pached and updated JSDoc for remaing params for the functions parse(..) and parseFile(..).
+- Changed the WIPs in the readme to "Planned – not yet implemented"-tag.
+
 ## 1.0.0-alpha.6
 - The YINI specificaiton discontinued alternative marker character `~` (visually ambiguous) in favor of `<`.
 - The parser can now detect invalid . characters in identifiers (both keys and section names), allowing it to emit a clear error message to the user.

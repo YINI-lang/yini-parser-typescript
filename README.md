@@ -40,7 +40,7 @@ That's it!
 - Familiar config file style (inspired by INI, JSON, Python, and Markdown).
 - Easy programmatic usage.
 - Only the `YINI` class is exported; all internal details are private.
-- --wip-- Supports alternative list notation (colon‑style lists):
+- 🚧 *(Planned – not yet implemented in parser)* Supports alternative list notation (colon‑style lists):
     ```yini
     fruits:
         'Pear',
@@ -79,9 +79,9 @@ pnpm add yini-parser
 ### Node.js (CommonJS)
 **Note:** Only a default export (YINI) is provided. Named imports are not supported.
 ```js
-const YINI = require('yini-parser');
-// If you get undefined, try:
 const YINI = require('yini-parser').default;
+// If you get undefined, try:
+const YINI = require('yini-parser');
 
 // Parse from string.
 const config = YINI.parse(`
@@ -162,13 +162,15 @@ Returns a JavaScript object representing the parsed YINI configuration file.
 ## Intro to YINI Config Format
 
 ### 1. Sections
-Group settings under a named header. A section header starts with `^`.
+Group settings under a named header. A section header name starts with `^`.
 
 Start a section with `^`, e.g.:
 ```yini
 ^ App
 title = "AppName"
 ```
+
+> Alternative section markers to `^` are also supported: `<`, `§`, `€` (e.g. `< Section`).
 
 ### 2. Key = Value
 Each line inside a section is a **key** (name) and **value**, separated by `=`.
@@ -179,13 +181,23 @@ maxConnections = 100
 enableLogging  = true
 ```
 
+#### 💡Tip
+Use backticks (\`) to quote section or key names that contain spaces or special characters.
+
+Key names with spaces/special characters can be backticked:
+
+```yini
+ user id  = 1            # Invalid ❌
+`user id` = 1            # Valid ✅
+```
+
 ### 3. Values
 Values can be:
 - **Strings** (always quoted): `"hello"` or `'world'` (either single or double quoted)
 - **Numbers:** `42`, `3.14` or `-10`
 - **Booleans:** `true`, `false`, `on`, `off`, `yes`, `no` (all case-insensitive)
-- **Nulls:** `null` or a blank value after `=` (in lenient mode)
-- --wip-- **Lists:**
+- **Nulls:** Use `null` or leave the value blank after `=` (in lenient mode)
+- 🚧 *(Planned – not yet implemented in parser)* **Lists:**
   *  JSON‑style: `["red", "green", "blue"]`
   *  Colon‑style:
         ```yini
@@ -207,7 +219,7 @@ interval = 30  # inline comment (must have a space after #)
 ; Full line comment (must be whole line).
 ```
 
-Pick one style per file for consistency.
+Tip: 💡For best compatibility, stick to one comment style per file.
 
 Caveat: Note that **there must be a space** after the `#` and start of the comment. Otherwise it will be misinterpreted as a hexadecimal number.
 
@@ -216,6 +228,9 @@ Use extra carets `^` for sub‑sections:
 ```yini
 ^ Parent
 ^^ Child
+
+// Add another caret `^` and you get a sub-section
+// of the previous section, and so...
 ^^^ SubChild
 ```
 
@@ -260,7 +275,7 @@ The above Yini code will produce the following JavaScript object:
 ```
 
 ### 6. Lists
---Work-in-Progress--
+🚧 *(Planned – not yet implemented in parser)*
 ```yini
 // JSON‑style list
 colors = ["red", "green", "blue"]
@@ -273,6 +288,8 @@ fruits:
 ```
 
 ### 7. Document Terminator (strict mode)
+The `/END` marker is required only in strict mode, and optional in lenient (default) mode.
+
 End a file explicitly with:
 ```yini
 ^ App
@@ -300,7 +317,7 @@ debug   = off  // Turn on for debugging.
 ^^ Database
 host     = "db.local"
 port     = 5432
---user   = "secret"  # This line is disabled!
+--user   = "secret"  # This line is disabled due to --.
 --userList = ["alice", "bob", "carol"]
 
 /END

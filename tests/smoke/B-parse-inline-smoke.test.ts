@@ -162,20 +162,59 @@ username = "tester"
         //@todo Add the rest of the members too
     })
 
-    xtest('6. List Types.', () => {
+    xtest('6.a. A simple list.', () => {
         // Arrange.
         const validYini = `
-@YINI
-^ Lists
-simple = [1, 2, 3]
-mixed = ["A", 10, true, null]
-nested = [[1, 2], [3, 4]]
-trailing = [5, 6, 7, ]        // Trailing comma allowed in lenient mode
+            ^ List
+            simple = [10, 20, 30]
+        `
 
-colonlist:
-  "a",
-  "b",
-  "c",`
+        // Act.
+        const result = YINI.parse(validYini)
+        debugPrint(result)
+
+        // Assert.
+        expect(result.List.simple.length).toEqual(3)
+        expect(result.List.simple[0]).toEqual(10)
+        expect(result.List.simple[1]).toEqual(20)
+        expect(result.List.simple[2]).toEqual(30)
+    })
+
+    xtest('6.b. Different JSON-style list types.', () => {
+        // Arrange.
+        const validYini = `
+            ^ Lists
+            simple = [1, 2, 3]
+            mixed = ["A", 10, true, null]
+            nested = [[1, 2], [3, 4]]
+            trailing = [5, 6, 7, ]        // Trailing comma allowed in lenient mode
+        `
+
+        // Act.
+        const result = YINI.parse(validYini)
+        debugPrint(result)
+
+        // Assert.
+        //expect(result.TypesDemo.string2).toEqual('World')
+        //@todo Add the rest of the members too
+    })
+
+    xtest('6.c. JSON-style and colon style lists.', () => {
+        // Arrange.
+        const validYini = `
+            @yini
+
+            ^ Lists
+            simple = [1, 2, 3]
+            mixed = ["A", 10, true, null]
+            nested = [[1, 2], [3, 4]]
+            trailing = [5, 6, 7, ]        // Trailing comma allowed in lenient mode
+
+            colonlist:
+            "a",
+            "b",
+            "c",
+        `
 
         // Act.
         const result = YINI.parse(validYini)
