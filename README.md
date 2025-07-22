@@ -18,7 +18,7 @@ YINI is a simple, human-friendly configuration format inspired by INI and JSON.
 A simple configuration:
 ```yini
 ^ App
-name    = 'My Title'
+name    = 'My Title'    // App display name.
 items   = 25
 enabled = true
 ```
@@ -224,9 +224,13 @@ interval = 30  # inline comment (must have a space after #)
 ; Full line comment (must be whole line).
 ```
 
-Tip: 💡For best compatibility, stick to one comment style per file.
+> **Tip:** You can add comments anywhere—above, beside, or below any setting or section.
+> 
+👆 **Caveat:** If you use `#` for comments, always put a space after the `#`.
+(Otherwise, the parser might misinterpret it as part of a value.)
 
-Caveat: Note that **there must be a space** after the `#` and start of the comment. Otherwise it will be misinterpreted as a hexadecimal number.
+💡**Tip:** You can use any comment style in your file.
+For best readability, try to stick to one style per file.
 
 ### 5. Nested Sections
 Use extra carets `^` for sub‑sections:
@@ -279,6 +283,8 @@ The above Yini code will produce the following JavaScript object:
 }
 ```
 
+> See section 9 for more advanced marker and naming options.
+
 ### 6. Lists
 👆 *List support is planned for an upcoming release.*
 ```yini
@@ -292,7 +298,7 @@ fruits:
   "Banana"
 ```
 
-> Both single and double quotes can be used for string values in YINI.
+> You can use either single or double quotes for string values in YINI.
 
 ### 7. Document Terminator (strict mode)
 The `/END` marker is required only in strict mode, and optional in lenient (default) mode.

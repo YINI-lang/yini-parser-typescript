@@ -1,6 +1,6 @@
 {
     "name": "yini-parser",
-    "version": "1.0.0-alpha.6",
+    "version": "1.0.0-alpha.7",
     "description": "Simple and flexible config parser for Node.js. YINI: an enhanced, readable alternative to JSON, INI, and YAML—built for modern JavaScript and TypeScript projects.",
     "keywords": [
         "yini",

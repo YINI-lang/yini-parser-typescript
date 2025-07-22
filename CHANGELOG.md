@@ -4,6 +4,7 @@
 - Fixed serious bug that on error did exit process.
 - Pached and updated JSDoc for remaing params for the functions parse(..) and parseFile(..).
 - Changed the WIPs in the readme to "Planned – not yet implemented"-tag.
+- Updated readme and especially "Intro to YINI Config Format".
 
 ## 1.0.0-alpha.6
 - The YINI specificaiton discontinued alternative marker character `~` (visually ambiguous) in favor of `<`.
