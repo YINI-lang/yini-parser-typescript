@@ -1285,7 +1285,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         // }
         let result: IResult
         if (ctx.value()) {
-            result = this.visit(ctx.value())
+            result = this.visit(ctx.value()) as IResult
         } else {
             result = { type: 'Null', value: null } as IResult
         }
@@ -1297,9 +1297,13 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             console.log()
         }
 
-        //@todo, when parsing list structure seem correct, enable below return raw value (based on type)
-        // return result
-        return 'value'
+        //return 'value'
+        switch ((<any>result).type) {
+            case 'String':
+                return `${(<any>result).value}`
+            default:
+                return (<any>result).value
+        }
     }
 
     /**
