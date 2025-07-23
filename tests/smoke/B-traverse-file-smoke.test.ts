@@ -53,7 +53,7 @@ describe('Parse-File Smoke Tests:', () => {
     })
 
     //@todo Enable test (after can parse list (colon based)).
-    xtest('Parse file "3-cli-application-options.*".', () => {
+    test('Parse file "3-cli-application-options.*".', () => {
         // Arrange.
         const fileName = '3-cli-application-options.smoke.yini'
         const fullPath = path.join(baseDir, fileName)

@@ -198,8 +198,13 @@ Expected JS output:
         //     title = "My Program"
         // `
         const corruptYini = `
-    ^ App
-    title = "My App"
+            ^ CLI
+            //command = "deploy"
+            //dryRun = false
+            verbosity = 2
+            includePaths = ["src/", "lib/", "config/"]
+            --excludePatterns: "*.test.ts", "*.spec.js"
+            timeout = 60
         `
 
         YINI.parse(corruptYini, false, 2)

@@ -16,7 +16,7 @@ command = "deploy"
 dry_run = false
 verbosity = 2
 include_paths = ["src/", "lib/", "config/"]
-exclude_patterns: "*.test.ts", "*.spec.js"
+--exclude_patterns: "*.test.ts", "*.spec.js"
 timeout = 60
 
 	; Output settings.
