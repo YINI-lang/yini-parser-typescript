@@ -1240,13 +1240,32 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             debugPrint(
                 'In visitElements(..) detected that elements() has no elements',
             )
-            elements = []
+            elements = undefined
         } else {
             debugPrint('In visitElements(..) detected elements in elements()')
             elements = this.visit(ctx.elements())
+
+            if (isDebug()) {
+                console.log('result of visited elements:')
+                printObject(elements)
+            }
         }
 
-        return { type: 'List', value: elements.value } as IResult
+        const returnValues: any[] = elements
+            ? [resultElem].concat(elements.value)
+            : [resultElem]
+
+        debugPrint('<- Leaving visitElements(..)')
+        if (isDebug()) {
+            console.log('returnValues:')
+            printObject(returnValues)
+        }
+
+        return {
+            type: 'List',
+            // value: [resultElem].concat(elements.value),
+            value: returnValues,
+        } as IResult
     }
 
     /**
@@ -1255,12 +1274,32 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      * @return the visitor result
      */
     // visitElement?: (ctx: ElementContext) => IResult
-    visitElement = (ctx: ElementContext): IResult => {
+    // visitElement = (ctx: ElementContext): IResult => {
+    visitElement = (ctx: ElementContext): any => {
+        debugPrint('-> Entered visitElement(..)')
+
+        // if (ctx.value()) {
+        //     return this.visit(ctx.value())
+        // } else {
+        //     return { type: 'Null', value: null } as IResult
+        // }
+        let result: IResult
         if (ctx.value()) {
-            return this.visit(ctx.value())
+            result = this.visit(ctx.value())
         } else {
-            return { type: 'Null', value: null } as IResult
+            result = { type: 'Null', value: null } as IResult
         }
+
+        debugPrint('<- Leaving visitElement(..)')
+        if (isDebug()) {
+            console.log('returning:')
+            printObject(result)
+            console.log()
+        }
+
+        //@todo, when parsing list structure seem correct, enable below return raw value (based on type)
+        // return result
+        return 'value'
     }
 
     /**
