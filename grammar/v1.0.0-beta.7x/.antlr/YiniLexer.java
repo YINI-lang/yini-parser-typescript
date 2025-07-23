@@ -54,7 +54,7 @@ public class YiniLexer extends Lexer {
 		return new String[] {
 			null, null, null, null, "'\\u00A7'", "'\\u20AC'", "'^'", "'>'", "'<'", 
 			"'='", "'#'", "','", "':'", "'['", "']'", "'{'", "'}'", "'+'", "'$'", 
-			"'%'", "'@'", "';'"
+			"'%'", "'@'", "';'", null, null, null, "'{}'", "'[]'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();

@@ -1177,7 +1177,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
         if (!ctx.elements()) {
             debugPrint('Detected elements() is [], in list brackets')
-            elements = []
+            // elements = []
+            return { type: 'List', value: [] } as IResult
         } else {
             debugPrint('Detected elements() has items, in list brackets')
             elements = this.visit(ctx.elements())
