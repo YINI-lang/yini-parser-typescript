@@ -162,7 +162,7 @@ username = "tester"
         //@todo Add the rest of the members too
     })
 
-    xtest('6.a. A simple list.', () => {
+    test('6.a. A simple list.', () => {
         // Arrange.
         const validYini = `
             ^ List
@@ -180,12 +180,13 @@ username = "tester"
         expect(result.List.simple[2]).toEqual(30)
     })
 
-    xtest('6.b. Different JSON-style list types.', () => {
+    test('6.b. Different JSON-style list types.', () => {
         // Arrange.
         const validYini = `
             ^ Lists
             simple = [1, 2, 3]
             mixed = ["A", 10, true, null]
+            empty = []
             nested = [[1, 2], [3, 4]]
             trailing = [5, 6, 7, ]        // Trailing comma allowed in lenient mode
         `
@@ -328,7 +329,7 @@ isSysOp = NO
     })
 
     //@todo Enable when can parse lists...
-    xtest('10. Parse inline AppConfig (Mixed).', () => {
+    test('10. Parse inline AppConfig (Mixed).', () => {
         // Arrange.
         // Act.
         const result = YINI.parse(fixture10Yini)
