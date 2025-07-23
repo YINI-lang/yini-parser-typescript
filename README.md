@@ -441,6 +441,13 @@ console.log(config);
 ```
 ---
 
+## 🤝 Contributing
+We welcome feedback, bug reports, feature requests, and code contributions!
+- [Open an Issue](https://github.com/YINI-lang/yini-parser-typescript/issues)
+- [Start a Discussion](https://github.com/YINI-lang/yini-parser-typescript/discussions)
+  
+---
+
 ## 📚 Documentation
 - [Development Setup](./docs/Development%20Setup.md) — How to run, test, and build the project, etc.
 - [Conventions](./docs/Conventions.md) — Project conventions, naming patterns, etc.
