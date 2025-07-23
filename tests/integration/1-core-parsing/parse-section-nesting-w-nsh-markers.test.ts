@@ -24,7 +24,16 @@ describe('Parse section nesting w NUMERIC SHORTHAND markers:', () => {
         expect(!!result).toEqual(true)
         expect(result.Section1).not.toBe('this should fail')
         expect(JSON.stringify(result, null, 4)).toEqual(
-            JSON.stringify({ Section1: { Section11: { value: 11 } } }, null, 4),
+            JSON.stringify(
+                {
+                    Main: {
+                        Sub1: { SubSub1: { valueSS1: 'Something.' } },
+                        Sub2: { SubSub2: { valueSS2: false } },
+                    },
+                },
+                null,
+                4,
+            ),
         )
     })
 })

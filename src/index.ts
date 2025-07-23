@@ -198,17 +198,13 @@ Expected JS output:
         //     title = "My Program"
         // `
         const corruptYini = `
-            ^ Lists
-numberList = [
-    1,
-    2,
-    3
-]
-            mixed = ["A", 10, true, null]
-            empty = []
-            nested = [[1, 2], [3, 4]]
-            trailing = [5, 6, 7, ]        // Trailing comma allowed in lenient mode
-            userList = ["alice", "bob", "carol"]
+^1 Main
+    ^2 Sub1
+        ^3 SubSub1
+        valueSS1 = "Something."
+    ^2 Sub2
+        ^3 SubSub2
+        valueSS2 = OFF
             `
 
         YINI.parse(corruptYini)
