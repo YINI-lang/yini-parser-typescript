@@ -198,14 +198,16 @@ Expected JS output:
         //     title = "My Program"
         // `
         const corruptYini = `
-            ^ App
-            title = 'MyApp Title'
-            items = 25
-            items = 90  // (!) Redefinition!
-            isDarkTheme = true
-        `
+<1 Main
+<2 Sub1
+<3 SubSub1
+valueSS1 = yes
+<2 Sub2
+<3 SubSub2
+valueSS2 = 322
+            `
 
-        YINI.parse(corruptYini, false, 2)
+        YINI.parse(corruptYini)
 
         //         YINI.parse(`
         // ^ Section1

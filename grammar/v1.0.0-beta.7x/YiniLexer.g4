@@ -28,9 +28,9 @@ fragment EBD: ('0' | '1') ('0' | '1') ('0' | '1');
 
 SECTION_HEAD: [ \t]* SECTION_MARKER [ \t]* WS* IDENT NL+;
 
-// Section markers: '^', '~', '§', '€'.
+// Section markers: '^', '<', '§', '€'.
 // – Up to six repeated markers are allowed (the parser must enforce the ≤ 6 rule).
-// – For levels beyond 6, use the numeric shorthand form (e.g. ^7, ~12, §100, €42).
+// – For levels beyond 6, use the numeric shorthand form (e.g. ^7, <12, §100, €42).
 fragment SECTION_MARKER
     : SECTION_MARKER_BASIC_REPEAT // Classic/repeating marker section headers (e.g. ^^ SectionName).
     | SECTION_MARKER_SHORTHAND // Numeric shorthand section headers (e.g. ^7 SectionName.
@@ -48,7 +48,7 @@ fragment SECTION_MARKER_BASIC_REPEAT
     ;
 
 // Shorthand: a single marker followed by a positive integer (1 or larger).
-// Examples: ^7, ~12, §100, €42
+// Examples: ^7, <12, §100, €42
 fragment SECTION_MARKER_SHORTHAND
     : (CARET | LT | SS | EUR) [1-9] DIGIT*
     ;
@@ -94,8 +94,8 @@ NULL options {
 	caseInsensitive = true;
 }: 'null';
 
-EMPTY_OBJECT: '{' '}';
-EMPTY_LIST: '[' ']';
+EMPTY_OBJECT: '{}';
+EMPTY_LIST: '[]';
 
 SHEBANG: '#!' ~[\n\r\b\f\t]* NL;
 

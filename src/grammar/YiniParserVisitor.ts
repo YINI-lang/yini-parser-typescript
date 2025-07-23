@@ -22,6 +22,8 @@ import { Null_literalContext } from "./YiniParser.js";
 import { String_literalContext } from "./YiniParser.js";
 import { String_concatContext } from "./YiniParser.js";
 import { Boolean_literalContext } from "./YiniParser.js";
+import { Empty_objectContext } from "./YiniParser.js";
+import { Empty_listContext } from "./YiniParser.js";
 
 
 /**
@@ -146,5 +148,17 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 * @return the visitor result
 	 */
 	visitBoolean_literal?: (ctx: Boolean_literalContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.empty_object`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitEmpty_object?: (ctx: Empty_objectContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.empty_list`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitEmpty_list?: (ctx: Empty_listContext) => Result;
 }
 

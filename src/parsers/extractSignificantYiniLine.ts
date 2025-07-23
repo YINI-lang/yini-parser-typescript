@@ -63,6 +63,13 @@ export const extractYiniLine = (rawYiniContent: string) => {
             debugPrint(
                 '(!) Did find several significant lines in rawYiniContent! - Maybe internal error...',
             )
+            debugPrint(
+                'significantLines[0] = >>>' + significantLines[0] + '<<<',
+            )
+            debugPrint(
+                'significantLines[1] = >>>' + significantLines[1] + '<<<',
+            )
+
         // throw new Error(
         //     'Internal error: Detected several row lines in rawYiniContent: >>>' +
         //         rawYiniContent +

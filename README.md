@@ -40,6 +40,7 @@ That's it!
 - Familiar config file style (inspired by INI, JSON, Python, and Markdown).
 - Easy programmatic usage.
 - Only the `YINI` class is exported; all internal details are private.
+- Lists: `list = [10, 20, 30]`
 - 🚧 *(Planned – not yet implemented in parser)* Supports alternative list notation (colon‑style lists):
     ```yini
     fruits:
@@ -202,15 +203,9 @@ Values can be:
 - **Numbers:** `42`, `3.14` or `-10`
 - **Booleans:** `true`, `false`, `on`, `off`, `yes`, `no` (all case-insensitive)
 - **Nulls:** Use `null` or leave the value blank after `=` (in lenient mode)
-- *(Planned – not yet implemented in parser)* **Lists:**
-  *  JSON‑style: `["red", "green", "blue"]`
-  *  Colon‑style:
-        ```yini
-        fruits:
-            "Pear",
-            "Cherry",
-            "Banana"
-        ```
+- **Lists:**
+  * JSON‑style: `["red", "green", "blue"]`
+  * Colon‑style: *(Planned – not yet implemented in parser)* 
 
 ### 4. Comments
 Various commenting styles are supported:
@@ -286,12 +281,19 @@ The above Yini code will produce the following JavaScript object:
 > See section 9 for more advanced marker and naming options.
 
 ### 6. Lists
-👆 *List support is planned for an upcoming release.*
 ```yini
-// JSON‑style list
+// JSON‑style lists
 colors = ["red", "green", "blue"]
 
+numberList = [
+    10,
+    20,
+    30
+]
+
+
 // Colon‑style list
+// 👆 Colon‑style list support is planned for an upcoming release.
 fruits:
   "Pear",
   "Cherry",
@@ -361,7 +363,7 @@ debug   = off  // Turn on for debugging.
 host     = "db.local"
 port     = 5432
 --user   = "secret"  # This line is disabled due to --.
---userList = ["alice", "bob", "carol"]
+userList = ["alice", "bob", "carol"]
 
 /END
 ```
@@ -439,6 +441,13 @@ console.log(config);
     }
 }
 ```
+---
+
+## 🤝 Contributing
+We welcome feedback, bug reports, feature requests, and code contributions!
+- [Open an Issue](https://github.com/YINI-lang/yini-parser-typescript/issues)
+- [Start a Discussion](https://github.com/YINI-lang/yini-parser-typescript/discussions)
+  
 ---
 
 ## 📚 Documentation

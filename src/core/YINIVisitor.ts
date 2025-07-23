@@ -1049,7 +1049,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         if (ctx.boolean_literal()) return this.visit(ctx.boolean_literal())
         if (ctx.null_literal()) return this.visit(ctx.null_literal())
         if (ctx.object_literal()) return this.visit(ctx.object_literal())
-        //   if (ctx.list()) return this.visit(ctx.list())
+        if (ctx.list_in_brackets()) return this.visit(ctx.list_in_brackets())
         //   if (ctx.string_concat()) return this.visit(ctx.string_concat())
         return null
     }
@@ -1171,8 +1171,27 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      */
     // visitList_in_brackets?: (ctx: List_in_bracketsContext) => IResult
     visitList_in_brackets = (ctx: List_in_bracketsContext): IResult => {
-        const elements = ctx.elements() ? this.visit(ctx.elements()) : []
-        return { type: 'List', value: elements } as IResult
+        debugPrint('-> Entered visitList_in_brackets(..)')
+
+        let elements: any = []
+
+        if (!ctx.elements()) {
+            debugPrint('Detected elements() is [], in list brackets')
+            // elements = []
+            return { type: 'List', value: [] } as IResult
+        } else {
+            debugPrint('Detected elements() has items, in list brackets')
+            elements = this.visit(ctx.elements())
+        }
+
+        debugPrint('<- Leaving visitList_in_brackets(..)')
+        if (isDebug()) {
+            console.log('returning:')
+            console.log({ type: 'List', value: elements.value })
+            console.log()
+        }
+
+        return { type: 'List', value: elements.value } as IResult
     }
 
     /**
@@ -1180,7 +1199,75 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitElements?: (ctx: ElementsContext) => IResult
+    visitElements = (ctx: ElementsContext): IResult => {
+        debugPrint('-> Entered visitElements(..)')
+
+        const firstElem = ctx.element()
+        let elements: any = []
+
+        debugPrint('            element  = ' + firstElem)
+        debugPrint('  element.getText()  = ' + firstElem.getText())
+        debugPrint('            elements = ' + !!ctx.elements())
+
+        const resultElem = ctx.element()
+            ? this.visitElement(ctx.element())
+            : null
+        const resultTypeElem = (<any>resultElem)?.type
+        const resultValueElem = (<any>resultElem)?.value
+        debugPrint(
+            ' elem type  = ' + resultTypeElem + '          @visitElements(..)',
+        )
+        debugPrint(
+            ' elem value = ' + resultValueElem + '         @visitElements(..)',
+        )
+
+        const resultElems = ctx.elements()
+            ? this.visitElements(ctx.elements())
+            : null
+        const resultTypeElems = (<any>resultElems)?.type
+        const resultValueElems = (<any>resultElems)?.value
+        debugPrint(
+            ' elems type  = ' +
+                resultTypeElems +
+                '          @visitElements(..)',
+        )
+        debugPrint(
+            ' elems value = ' +
+                resultValueElems +
+                '         @visitElements(..)',
+        )
+
+        if (!ctx.elements()) {
+            debugPrint(
+                'In visitElements(..) detected that elements() has no elements',
+            )
+            elements = undefined
+        } else {
+            debugPrint('In visitElements(..) detected elements in elements()')
+            elements = this.visit(ctx.elements())
+
+            if (isDebug()) {
+                console.log('result of visited elements:')
+                printObject(elements)
+            }
+        }
+
+        const returnValues: any[] = elements
+            ? [resultElem].concat(elements.value)
+            : [resultElem]
+
+        debugPrint('<- Leaving visitElements(..)')
+        if (isDebug()) {
+            console.log('returnValues:')
+            printObject(returnValues)
+        }
+
+        return {
+            type: 'List',
+            // value: [resultElem].concat(elements.value),
+            value: returnValues,
+        } as IResult
+    }
 
     /**
      * Visit a parse tree produced by `YiniParser.element`.
@@ -1188,11 +1275,35 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      * @return the visitor result
      */
     // visitElement?: (ctx: ElementContext) => IResult
-    visitElement = (ctx: ElementContext): IResult => {
+    // visitElement = (ctx: ElementContext): IResult => {
+    visitElement = (ctx: ElementContext): any => {
+        debugPrint('-> Entered visitElement(..)')
+
+        // if (ctx.value()) {
+        //     return this.visit(ctx.value())
+        // } else {
+        //     return { type: 'Null', value: null } as IResult
+        // }
+        let result: IResult
         if (ctx.value()) {
-            return this.visit(ctx.value())
+            result = this.visit(ctx.value()) as IResult
         } else {
-            return { type: 'Null', value: null } as any
+            result = { type: 'Null', value: null } as IResult
+        }
+
+        debugPrint('<- Leaving visitElement(..)')
+        if (isDebug()) {
+            console.log('returning:')
+            printObject(result)
+            console.log()
+        }
+
+        //return 'value'
+        switch ((<any>result).type) {
+            case 'String':
+                return `${(<any>result).value}`
+            default:
+                return (<any>result).value
         }
     }
 

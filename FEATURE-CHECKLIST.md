@@ -599,9 +599,9 @@ https://github.com/YINI-lang/YINI-spec
 
   <tr>
     <td>Bracketed lists ([])</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>key = [a, b, c]</code></td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>Trailing comma allowed and is ignored (lenient only)</td>
@@ -617,9 +617,9 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>Nested lists inside lists</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>Lists themselves are literals and can be nested</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td></td>

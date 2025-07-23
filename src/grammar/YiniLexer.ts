@@ -72,7 +72,10 @@ export default class YiniLexer extends Lexer {
                                                             "']'", "'{'", 
                                                             "'}'", "'+'", 
                                                             "'$'", "'%'", 
-                                                            "'@'", "';'" ];
+                                                            "'@'", "';'", 
+                                                            null, null, 
+                                                            null, "'{}'", 
+                                                            "'[]'" ];
 	public static readonly symbolicNames: (string | null)[] = [ null, "YINI_MARKER", 
                                                              "SECTION_HEAD", 
                                                              "TERMINAL_TOKEN", 
