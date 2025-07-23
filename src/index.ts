@@ -199,11 +199,16 @@ Expected JS output:
         // `
         const corruptYini = `
             ^ Lists
-            simple = [1, 2, 3]
+numberList = [
+    1,
+    2,
+    3
+]
             mixed = ["A", 10, true, null]
             empty = []
             nested = [[1, 2], [3, 4]]
             trailing = [5, 6, 7, ]        // Trailing comma allowed in lenient mode
+            userList = ["alice", "bob", "carol"]
             `
 
         YINI.parse(corruptYini)

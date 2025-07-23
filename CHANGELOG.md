@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## --Upcoming--
+- Implemented support for colon lists, both empty and with elements, including nested lists. Also updated to the latest grammar, which fixes handling of empty lists with or without spaces or tabs between the brackets.
+
 ## 1.0.0-alpha.7
 - Fixed serious bug that on error did exit process.
 - Pached and updated JSDoc for remaing params for the functions parse(..) and parseFile(..).
