@@ -197,17 +197,39 @@ Expected JS output:
         //     id = 32403  # The correct app id.
         //     title = "My Program"
         // `
-        const corruptYini = `
-<1 Main
-<2 Sub1
-<3 SubSub1
-valueSS1 = yes
-<2 Sub2
-<3 SubSub2
-valueSS2 = 322
+
+        /*
+        const yini = `
+^ App
+name    = 'My Title'    // App display name.
+items   = 25
+isDarkMode = true
+
+    // Sub-section of App.
+    ^^ Special
+    primaryColor = #336699
+    isCaching = false
             `
 
-        YINI.parse(corruptYini)
+        YINI.parse(yini)
+*/
+
+        const config = YINI.parse(`
+^ App
+name     = 'My Title'    // App display name.
+items    = 25
+darkMode = true
+
+    // Sub-section of App.
+    ^^ Special
+    primaryColor = #336699
+    isCaching = false
+`)
+
+        console.log(config.App.name) // My Title
+        console.log(config.App.Special.isCaching) // false
+        console.log()
+        console.log(config)
 
         //         YINI.parse(`
         // ^ Section1

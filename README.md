@@ -17,25 +17,47 @@ YINI is a simple, human-friendly configuration format inspired by INI and JSON.
 
 ## Quick Start
 
-A simple configuration:
-```yini
+A simple configuration (TypeScript):
+```ts
+import YINI from 'yini-parser'
+
+const config = YINI.parse(`
 ^ App
-name    = 'My Title'    // App display name.
-items   = 25
-enabled = true
+name     = 'My Title'    // App display name.
+items    = 25
+darkMode = true
+
+    // Sub-section of App.
+    ^^ Special
+    primaryColor = #336699
+    isCaching = false
+`)
+
+// If parsing config from a file, use:
+// const config = YINI.parseFile('./config.yini')
+
+console.log(config.App.name) // My Title
+console.log(config.App.Special.isCaching) // false
+console.log()
+console.log(config)
+```
+
+**Output to console:**
+```js
+My Title
+false
+
+{
+  App: {
+    name: 'My Title',
+    items: 25,
+    darkMode: true,
+    Special: { primaryColor: 3368601, isCaching: false }
+  }
+}
 ```
 
 That's it!
-
-## 📂 Examples
-
-See the [examples/](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples) folder for:
-
-- Basic YINI file with common types and comments
-- Nested sections example
-- Comparison with JSON/YAML config
-
-These examples are also included in the npm package.
 
 ## 💡 Why YINI?
 - **Easy to read and write**, minimal syntax, maximum clarity.
@@ -45,130 +67,6 @@ These examples are also included in the npm package.
 - **Supports strict/lenient modes**, and all major data types.
 - Both **human-friendly**, and **machine-friendly**.
   
-## ✨ Features
-- Simple syntax (supports both strict and lenient modes).
-- Familiar config file style (inspired by INI, JSON, Python, and Markdown).
-- Easy programmatic usage.
-- Only the `YINI` class is exported; all internal details are private.
-- Lists: `list = [10, 20, 30]`
-- 🚧 *(Planned – not yet implemented in parser)* Supports alternative list notation (colon‑style lists):
-    ```yini
-    fruits:
-        'Pear',
-        'Cherry',
-        'Banana'
-    ```
-
-### Limitations
-Not all features of the full YINI are implemented yet.
-
-See [FEATURE-CHECKLIST.md](https://github.com/YINI-lang/yini-parser-typescript/blob/main/FEATURE-CHECKLIST.md) for the current list of implemented YINI features.
-
----
-
-## 🚀 Installation
-
-With **npm**:
-```sh
-npm install yini-parser
-```
-
-With **yarn**:
-```sh
-yarn add yini-parser
-```
-
-With **pnpm**:
-```sh
-pnpm add yini-parser
-```
-
----
-
-## Usage
-
-### Node.js (CommonJS)
-**Note:** Only a default export (YINI) is provided. Named imports are not supported.
-```js
-const YINI = require('yini-parser').default;
-// (!) If you get undefined, try:
-// (Some Node.js setups require the .default property, others don't, due to ESM/CommonJS interop quirks.)
-const YINI = require('yini-parser');
-
-// Parse from string.
-const config = YINI.parse(`
-    ^ App
-    title = 'My App Title'
-    items = 25
-    isDarkTheme = true
-`);
-
-// Parse from file.
-const configFromFile = YINI.parseFile('./config.yini');
-```
-
-### TypeScript (with `"esModuleInterop": true`)
-```ts
-import YINI from 'yini-parser';
-
-// Parse from string.
-const config = YINI.parse(`
-    ^ App
-    title = "My App Title"
-    items = 25
-    isDarkTheme = OFF
-`);
-
-// Parse from file.
-const configFromFile = YINI.parseFile('./config.yini');
-```
-
----
-
-## Example Output
-```js
-// JS object
-{
-   App: {
-      title: "My App Title",
-      items: 25,
-      isDarkTheme: false
-   }
-}
-```
-
----
-
-## API
-
-Only the `YINI` class is exposed in the public API, with two static methods: `parse` and `parseFile`.
-
-### `YINI.parse(yiniContent: string, strictMode?: boolean, bailSensitivity: 'auto' | 0 | 1 | 2 = "auto", includeMetaData = false): object`
-
-Parses YINI code from a string.  
-
-**Params:**
-- `yiniContent`: The YINI configuration as a string.
-- `strictMode`: (optional, default `false`) Parse in strict mode.
-- `bailSensitivity`: (optional, default `"auto"`) Error tolerance level.
-  * If `bailSensitivity` is `"auto"` then bail sensitivity level will be set to 0 if in non-strict mode, if in strict mode then level 1 will be used automatically.
-- `includeMetaData`: If true then additional meta data will be returned along the object.
-
-**Bail sensitivity levels:**
-- 0 = 'Ignore-Errors' // Don't bail on errors, persist and try to recover.
-- 1 = 'Abort-on-Errors'
-- 2 = 'Abort-Even-on-Warnings'
-
-Returns a JavaScript object representing the parsed configuration (YINI content).
-
-### `YINI.parseFile(filePath: string, strictMode?: boolean, bailSensitivity: 'auto' | 0 | 1 | 2 = "auto", includeMetaData = false): object`
-
-Parses YINI code from a file.
-- `filePath`: Path to the `.yini` file.
-- Other parameters are the same as `parse(..)`.
-
-Returns a JavaScript object representing the parsed YINI configuration file.
-
 ---
 
 ## Intro to YINI Config Format
@@ -380,6 +278,94 @@ userList = ["alice", "bob", "carol"]
 
 ---
 
+## Usage
+
+### Installation
+
+With **npm**:
+```sh
+npm install yini-parser
+```
+
+With **yarn**:
+```sh
+yarn add yini-parser
+```
+
+With **pnpm**:
+```sh
+pnpm add yini-parser
+```
+
+### Node.js (CommonJS)
+**Note:** Only a default export (YINI) is provided. Named imports are not supported.
+```js
+const YINI = require('yini-parser').default;
+// (!) If you get undefined, try:
+// (Some Node.js setups require the .default property, others don't, due to ESM/CommonJS interop quirks.)
+const YINI = require('yini-parser');
+
+// Parse from string.
+const config = YINI.parse(`
+    ^ App
+    title = 'My App Title'
+    items = 25
+    isDarkTheme = true
+`);
+
+// Parse from file.
+const configFromFile = YINI.parseFile('./config.yini');
+```
+
+### TypeScript (with `"esModuleInterop": true`)
+```ts
+import YINI from 'yini-parser';
+
+// Parse from string.
+const config = YINI.parse(`
+    ^ App
+    title = "My App Title"
+    items = 25
+    isDarkTheme = OFF
+`);
+
+// Parse from file.
+const configFromFile = YINI.parseFile('./config.yini');
+```
+
+### Example Output
+```js
+// JS object
+{
+   App: {
+      title: "My App Title",
+      items: 25,
+      isDarkTheme: false
+   }
+}
+```
+
+---
+
+## ✨ Features
+- Simple syntax (supports both strict and lenient modes).
+- Familiar config file style (inspired by INI, JSON, Python, and Markdown).
+- Easy programmatic usage.
+- Only the `YINI` class is exported; all internal details are private.
+- Lists: `list = [10, 20, 30]`
+- 🚧 *(Planned – not yet implemented in parser)* Supports alternative list notation (colon‑style lists):
+    ```yini
+    fruits:
+        'Pear',
+        'Cherry',
+        'Banana'
+    ```
+
+### Limitations
+Not all features of the full YINI are implemented yet.
+
+See [FEATURE-CHECKLIST.md](https://github.com/YINI-lang/yini-parser-typescript/blob/main/FEATURE-CHECKLIST.md) for the current list of implemented YINI features.
+
 ## 🚧 Missing or Upcoming Features
 
 This parser currently supports all core YINI syntax for values, comments, section headers, and basic nesting.
@@ -393,6 +379,16 @@ The following features from the [YINI specification](https://github.com/YINI-lan
 - Full strict mode validation
 
 You can follow progress in the [YINI parser GitHub repo-FEATURE-CHECKLIST](https://github.com/YINI-lang/yini-parser-typescript/blob/main/FEATURE-CHECKLIST.md). Contributions and feature requests are welcome!
+
+## 📂 Examples
+
+See the [examples/](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples) folder for:
+
+- Basic YINI file with common types and comments
+- Nested sections example
+- Comparison with JSON/YAML config
+
+These examples are also included in the npm package.
 
 ---
 
@@ -467,6 +463,39 @@ console.log(config);
     }
 }
 ```
+
+---
+
+## API
+
+Only the `YINI` class is exposed in the public API, with two static methods: `parse` and `parseFile`.
+
+### `YINI.parse(yiniContent: string, strictMode?: boolean, bailSensitivity: 'auto' | 0 | 1 | 2 = "auto", includeMetaData = false): object`
+
+Parses YINI code from a string.  
+
+**Params:**
+- `yiniContent`: The YINI configuration as a string.
+- `strictMode`: (optional, default `false`) Parse in strict mode.
+- `bailSensitivity`: (optional, default `"auto"`) Error tolerance level.
+  * If `bailSensitivity` is `"auto"` then bail sensitivity level will be set to 0 if in non-strict mode, if in strict mode then level 1 will be used automatically.
+- `includeMetaData`: If true then additional meta data will be returned along the object.
+
+**Bail sensitivity levels:**
+- 0 = 'Ignore-Errors' // Don't bail on errors, persist and try to recover.
+- 1 = 'Abort-on-Errors'
+- 2 = 'Abort-Even-on-Warnings'
+
+Returns a JavaScript object representing the parsed configuration (YINI content).
+
+### `YINI.parseFile(filePath: string, strictMode?: boolean, bailSensitivity: 'auto' | 0 | 1 | 2 = "auto", includeMetaData = false): object`
+
+Parses YINI code from a file.
+- `filePath`: Path to the `.yini` file.
+- Other parameters are the same as `parse(..)`.
+
+Returns a JavaScript object representing the parsed YINI configuration file.
+
 ---
 
 ## 🤝 Contributing
