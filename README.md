@@ -17,7 +17,7 @@ YINI is a simple, human-friendly configuration format inspired by INI and JSON.
 
 ## Quick Start
 
-A simple configuration (TypeScript):
+A minimal example using YINI in TypeScript:
 ```ts
 import YINI from 'yini-parser'
 
@@ -33,16 +33,16 @@ darkMode = true
     isCaching = false
 `)
 
-// If parsing config from a file, use:
+// To parse from a file instead:
 // const config = YINI.parseFile('./config.yini')
 
-console.log(config.App.name) // My Title
-console.log(config.App.Special.isCaching) // false
+console.log(config.App.name)                // My Title
+console.log(config.App.Special.isCaching)   // false
 console.log()
 console.log(config)
 ```
 
-**Output to console:**
+**Output:**
 ```js
 My Title
 false
@@ -66,6 +66,7 @@ That's it!
 - Built for both **JavaScript and TypeScript**.
 - **Supports strict/lenient modes**, and all major data types.
 - Both **human-friendly**, and **machine-friendly**.
+- Want the full syntax reference? See the [YINI Specification](https://github.com/YINI-lang/YINI-spec).
   
 ---
 
