@@ -1,6 +1,27 @@
-# YINI Parser – TypeScript
+# YINI Parser for Node.js
+
+YINI is a clean, minimal, and human-readable config format for structured configuration. This parser implements the YINI spec in TypeScript for Node.js, with support for nested sections, strict/lenient modes, and typed values.
 
 [![npm version](https://img.shields.io/npm/v/yini-parser.svg)](https://www.npmjs.com/package/yini-parser) [![All Tests](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml)
+
+```sh
+npm install yini-parser
+```
+
+```ts
+import YINI from 'yini-parser'
+const config = YINI.parseFile('./config.yini')
+```
+
+A clean, minimal, human-readable config format—designed as an alternative to INI, YAML, and JSON.
+
+➡️ See full [documentation or YINI format specification](https://github.com/YINI-lang/YINI-spec)
+
+⭐ **Enjoying YINI?** If you find this project useful, please consider [starring it on GitHub](https://github.com/YINI-lang/yini-parser-typescript) — it helps others discover it!
+
+---
+
+## YINI Parser – TypeScript
 
 > 🚧 This package is in **beta**. The core API is stabilizing, some more advanced features may still change. Feedback and bug reports are welcome!
 
@@ -12,8 +33,6 @@ This library implements the official YINI specification using TypeScript + ANTLR
 YINI is a simple, human-friendly configuration format inspired by INI and JSON.
 
 ---
-
-⭐ **Enjoying YINI?** If you find this project useful, please consider [starring it on GitHub](https://github.com/YINI-lang/yini-parser-typescript) — it helps others discover it!
 
 ## Quick Start
 
@@ -58,6 +77,8 @@ false
 ```
 
 That's it!
+
+▶️ Link to [examples/](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples) files.
 
 ## 💡 Why YINI?
 - **Easy to read and write**, minimal syntax, maximum clarity.
