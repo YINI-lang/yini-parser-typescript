@@ -1,6 +1,7 @@
 # CHANGELOG
 
-## --Upcoming--
+## --Upcoming-- -beta
+- Package updated to **beta**. The core API is stabilizing, some more advanced features may still change.
 - Implemented support for colon lists, both empty and with elements, including nested lists. Also updated to the latest grammar, which fixes handling of empty lists with or without spaces or tabs between the brackets.
 
 ## 1.0.0-alpha.7
