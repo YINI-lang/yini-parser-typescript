@@ -1,0 +1,15 @@
+/*
+    basic-explained.yini
+*/
+
+@yini  // Optional marker indicating this is a YINI config file.
+
+^ App  // Section header: defines the "App" section.
+title = 'My App'     // A string (single-quoted or double-quoted are both supported).
+items = 10           // A number value.
+debug = ON           // Boolean true (ON/OFF are case-insensitive aliases for true/false).
+
+^ Server  // Another top-level section.
+host = "localhost"   // A string using double quotes.
+port = 8080          // A number value.
+useTLS = OFF         // Boolean false.

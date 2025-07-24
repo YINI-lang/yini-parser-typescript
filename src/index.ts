@@ -198,38 +198,36 @@ Expected JS output:
         //     title = "My Program"
         // `
 
-        /*
         const yini = `
-^ App
-name    = 'My Title'    // App display name.
-items   = 25
-isDarkMode = true
+/*
+    nested.yini
+    Demonstrates nested sections in YINI format.
+*/
 
-    // Sub-section of App.
-    ^^ Special
+@yini
+
+^ App                  // Top-level section: App
+name = 'Nested Demo App'
+version = "1.2.3"
+
+    ^^ Theme           // Nested under App: App.Theme
     primaryColor = #336699
-    isCaching = false
+    darkMode = true
+
+
+        ^^^ Overrides  // Nested under Theme: App.Theme.Overrides
+        darkMode = false
+        fontSize = 14
+
+^ Database             // Another top-level section: Database
+host = "db.local"
+port = 5432
+
+    ^^ Credentials     // Nested under Database: Database.Credentials    username = "admin"
+    password = "secret"
             `
 
         YINI.parse(yini)
-*/
-
-        const config = YINI.parse(`
-^ App
-name     = 'My Title'    // App display name.
-items    = 25
-darkMode = true
-
-    // Sub-section of App.
-    ^^ Special
-    primaryColor = #336699
-    isCaching = false
-`)
-
-        console.log(config.App.name) // My Title
-        console.log(config.App.Special.isCaching) // false
-        console.log()
-        console.log(config)
 
         //         YINI.parse(`
         // ^ Section1

@@ -81,12 +81,13 @@ That's it!
 ▶️ Link to [examples/](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples) files.
 
 ## 💡 Why YINI?
-- **Easy to read and write**, minimal syntax, maximum clarity.
+- **Easy to read and write**, minimal syntax noise, maximum clarity.
 - **Clear and minimal section nesting** without painful indentation rules or long dot nested strings, etc.
 - A perfect alternative to messy JSON, legacy INI, or complex YAML.
 - Built for both **JavaScript and TypeScript**.
 - **Supports strict/lenient modes**, and all major data types.
 - Both **human-friendly**, and **machine-friendly**.
+- 👉 See [how YINI compares to JSON, YAML, INI, and TOML](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples/compare-formats.md).
 - Want the full syntax reference? See the [YINI Specification](https://github.com/YINI-lang/YINI-spec).
   
 ---

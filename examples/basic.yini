@@ -1,0 +1,11 @@
+@yini
+
+^ App
+title = 'My App'
+items = 10
+debug = ON
+
+^ Server
+host = "localhost"
+port = 8080
+useTLS = OFF
