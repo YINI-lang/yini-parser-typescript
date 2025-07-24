@@ -529,8 +529,8 @@ We welcome feedback, bug reports, feature requests, and code contributions!
 ---
 
 ## 📚 Documentation
-- [Development Setup](./docs/Development%20Setup.md) — How to run, test, and build the project, etc.
-- [Conventions](./docs/Conventions.md) — Project conventions, naming patterns, etc.
+- [Development Setup](https://github.com/YINI-lang/yini-parser-typescript/blob/main/docs/Development-Setup.md) — How to run, test, and build the project, etc.
+- [Conventions](https://github.com/YINI-lang/yini-parser-typescript/blob/main/docs/Conventions.md) — Project conventions, naming patterns, etc.
 
 ---
 
