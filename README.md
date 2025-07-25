@@ -130,7 +130,7 @@ Key names with spaces/special characters can be backticked:
 
 ### 3. Values
 Values can be:
-- **Strings** (always quoted): `"hello"` or `'world'` (either single or double quoted)
+- **Strings** (always quoted): `'hello'` or `"world"` (either single or double quoted)
 - **Numbers:** `42`, `3.14` or `-10`
 - **Booleans:** `true`, `false`, `on`, `off`, `yes`, `no` (all case-insensitive)
 - **Nulls:** Use `null` or leave the value blank after `=` (in lenient mode)
@@ -152,8 +152,11 @@ interval = 30  # inline comment (must have a space after #)
 
 > **Tip:** You can add comments anywhere—above, beside, or below any setting or section.
 > 
-👆 **Caveat:** If you use `#` for comments, always put a space after the `#`.
+👆 **Caveat 1:** If you use `#` for comments, always put a space after the `#`.
 (Otherwise, the parser might misinterpret it as part of a value.)
+
+👆 **Caveat 2:** `;` is used only for full-line comments. The `;` must be the first non-whitespace character on a line (only spaces or tabs are allowed before it).
+(If `;` appears later in the line, the parser may treat it as part of a value or as a line delimiter, not as a comment.)
 
 💡**Tip:** You can use any comment style in your file.
 For best readability, try to stick to one style per file.
@@ -278,7 +281,10 @@ In addition to the standard syntax, YINI supports several advanced options:
   <10 VeryDeep      # Equivalent to <<<<<<<<<<< VeryDeep
   ```
 
-👆 Though, can not mix standard/classic and numeric shorthand markers in the same section header.
+  👆 Though, can not mix standard/classic and numeric shorthand markers in the same section header.
+
+- (d.) **More features:**  
+  The YINI format supports even more features than listed here, such as additional number notations, string types, and advanced escaping. For full details, see the [latest release of the YINI specification](https://github.com/YINI-lang/YINI-spec/blob/release/YINI-Specification.md).
 
 ### 10. Complete Example
 
@@ -375,7 +381,7 @@ const configFromFile = YINI.parseFile('./config.yini');
 - Familiar config file style (inspired by INI, JSON, Python, and Markdown).
 - Easy programmatic usage.
 - Only the `YINI` class is exported; all internal details are private.
-- Lists: `list = [10, 20, 30]`
+- Lists (bracketed): `list = [10, 20, 30]`
 - 🚧 *(Planned – not yet implemented in parser)* Supports alternative list notation (colon‑style lists):
     ```yini
     fruits:
