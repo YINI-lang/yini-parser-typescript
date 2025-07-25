@@ -23,7 +23,10 @@ import {
 import { debugPrint } from './utils/system'
 import YINI from './YINI'
 
-export { default } from './YINI'
+// export { default } from './YINI'
+export const parse = YINI.parse
+export const parseFile = YINI.parseFile
+export default YINI
 
 debugPrint()
 debugPrint('-> Entered index.ts')
