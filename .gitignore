@@ -24,6 +24,10 @@ src/**/*.d.ts
 !test-cjs.js
 !esm-smoke.js
 
+# DO NOT ignore js files in examples.
+!examples/basic-output.js
+!examples/nested-output.js
+
 # ANTLR4 output directory where all output is generated to.
 gen-output
 
