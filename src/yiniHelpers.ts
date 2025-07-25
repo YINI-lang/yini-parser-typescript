@@ -3,8 +3,8 @@
  * @note More general helper functions should go into the dir "src/utils/".
  */
 
+import { debugPrint } from './utils/print'
 import { isEnclosedInBackticks, splitLines } from './utils/string'
-import { debugPrint } from './utils/system'
 
 const SECTION_MARKER1 = '^'
 const SECTION_MARKER2 = '<'

@@ -7,7 +7,7 @@
 
 import { execSync } from 'child_process'
 import YINI from '../../src'
-import { debugPrint, toPrettyJSON } from '../../src/utils/system'
+import { debugPrint, toPrettyJSON } from '../../src/utils/print'
 
 // @ts-ignore
 // import * as testCJS from '../fixtures/test-src-files/test-cjs'

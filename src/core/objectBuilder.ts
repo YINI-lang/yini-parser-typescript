@@ -1,6 +1,6 @@
 import { isDebug } from '../config/env'
 import { IChainContainer, TJSObject, TSyntaxTreeContainer } from '../core/types'
-import { debugPrint, printObject, toPrettyJSON } from '../utils/system'
+import { debugPrint, printObject, toPrettyJSON } from '../utils/print'
 import { ErrorDataHandler } from './ErrorDataHandler'
 
 /**

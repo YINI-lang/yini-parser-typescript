@@ -1,9 +1,9 @@
+import { debugPrint } from '../../../src/utils/print'
 import {
     splitLines,
     stripNLAndAfter,
     trimBackticks,
 } from '../../../src/utils/string'
-import { debugPrint } from '../../../src/utils/system'
 
 /**
  * splitLines(..) Tests.

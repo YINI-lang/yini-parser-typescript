@@ -1,6 +1,6 @@
 import { isDebug } from '../config/env'
 import { TDataType } from '../core/YINIVisitor'
-import { debugPrint } from '../utils/system'
+import { debugPrint } from '../utils/print'
 
 const parseNumberLiteral = (
     txt: string,

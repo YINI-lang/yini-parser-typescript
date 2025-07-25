@@ -10,7 +10,7 @@
 
 import path from 'path'
 import YINI from '../../src'
-import { debugPrint } from '../../src/utils/system'
+import { debugPrint } from '../../src/utils/print'
 
 const DIR_OF_FIXTURES = '../fixtures/smoke-fixtures'
 

@@ -1,6 +1,6 @@
 import { isDebug } from '../config/env'
+import { debugPrint, printObject } from '../utils/print'
 import { splitLines } from '../utils/string'
-import { debugPrint, printObject } from '../utils/system'
 import { stripCommentsAndAfter } from '../yiniHelpers'
 
 /**

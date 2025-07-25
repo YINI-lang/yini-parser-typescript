@@ -6,7 +6,7 @@
  */
 
 import YINI from '../../src'
-import { debugPrint } from '../../src/utils/system'
+import { debugPrint } from '../../src/utils/print'
 
 const fixture10Yini = `
 ^ AppConfig

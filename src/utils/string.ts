@@ -3,7 +3,7 @@
  * @note More specific YINI helper functions should go into yiniHelpers.ts-file.
  */
 
-import { debugPrint } from './system'
+import { debugPrint } from './print'
 
 /**
  * Splits a string into an array of lines, handling both LF and CRLF newlines.

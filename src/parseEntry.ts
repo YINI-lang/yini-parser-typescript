@@ -17,7 +17,7 @@ import {
 import YINIVisitor from './core/YINIVisitor'
 import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
-import { debugPrint, printObject } from './utils/system'
+import { debugPrint, printObject } from './utils/print'
 
 class MyErrorListener implements ErrorListener<any> {
     public errors: string[] = []

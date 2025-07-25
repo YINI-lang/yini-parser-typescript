@@ -1,11 +1,7 @@
 import path from 'path'
 import YINI from '../../../src'
 import { isDebug } from '../../../src/config/env'
-import {
-    debugPrint,
-    printObject,
-    toPrettyJSON,
-} from '../../../src/utils/system'
+import { debugPrint, printObject, toPrettyJSON } from '../../../src/utils/print'
 
 const DIR_OF_FIXTURES = '../../fixtures/valid/section-nesting-w-nsh-markers'
 

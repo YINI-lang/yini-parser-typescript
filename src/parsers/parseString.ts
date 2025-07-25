@@ -1,5 +1,5 @@
 import { isDebug } from '../config/env'
-import { debugPrint } from '../utils/system'
+import { debugPrint } from '../utils/print'
 
 const parseStringLiteral = (raw: string): string => {
     debugPrint('-> Entered parseStringLiteral(..)')

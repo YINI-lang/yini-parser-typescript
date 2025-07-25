@@ -1,5 +1,5 @@
 import { getFileNameExtension } from '../../../src/utils/pathAndFileName'
-import { debugPrint } from '../../../src/utils/system'
+import { debugPrint } from '../../../src/utils/print'
 
 /**
  * Utils-Path and File Name Unit Tests.

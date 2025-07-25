@@ -1,5 +1,5 @@
 import { isDebug } from '../config/env'
-import { debugPrint } from '../utils/system'
+import { debugPrint } from '../utils/print'
 import { TIssueType, TPersistThreshold } from './types'
 
 interface IIssuePayload {

@@ -4,8 +4,8 @@ import { TSectionHeaderType } from '../core/types'
 import { SectionContext } from '../grammar/YiniParser'
 import extractHeaderParts from '../parsers/extractHeaderParts'
 import { extractYiniLine } from '../parsers/extractSignificantYiniLine'
+import { debugPrint } from '../utils/print'
 import { isAlpha, trimBackticks } from '../utils/string'
-import { debugPrint } from '../utils/system'
 import { isValidBacktickedIdent, isValidSimpleIdent } from '../yiniHelpers'
 
 /**

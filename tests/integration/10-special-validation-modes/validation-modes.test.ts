@@ -1,7 +1,7 @@
 import path from 'path'
 import YINI from '../../../src'
 import { isDebug } from '../../../src/config/env'
-import { debugPrint, printObject } from '../../../src/utils/system'
+import { debugPrint, printObject } from '../../../src/utils/print'
 
 /**
  * Validation modes tests.

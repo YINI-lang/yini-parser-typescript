@@ -7,7 +7,7 @@ import {
 } from './core/types'
 import { parseMain } from './parseEntry'
 import { getFileNameExtension } from './utils/pathAndFileName'
-import { debugPrint, devPrint, printObject } from './utils/system'
+import { debugPrint, devPrint, printObject } from './utils/print'
 
 type TBailSensitivity = 'auto' & TBailSensitivityLevel
 

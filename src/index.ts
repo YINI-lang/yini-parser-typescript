@@ -20,7 +20,7 @@ import {
     localAppEnv,
     localNodeEnv,
 } from './config/env'
-import { debugPrint } from './utils/system'
+import { debugPrint } from './utils/print'
 import YINI from './YINI'
 
 // export { default } from './YINI'
