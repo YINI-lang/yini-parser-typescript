@@ -115,6 +115,7 @@ Here's an overview of the project's directory structure — to help users unders
 │   ├── smoke/                    // Smoke tests
 │   ├── unit/                     // Unit tests
 |   ├── integration/              // Integration tests
+│   ├── golden/                   // Golden tests (input/output pairs)
 │   └── fixtures/                 // ALL test data (**in one place**)
 │       ├── valid/                // Fixture valid data (mostly for integration tests)
 │       ├── invalid/              // Fixture invalid data (mostly for integration tests)

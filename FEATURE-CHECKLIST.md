@@ -556,7 +556,7 @@ https://github.com/YINI-lang/YINI-spec
   <tr>
     <td>Objects</td>
     <td>🔲</td>
-    <td><code>{ key = value, ... }</code></td>
+    <td><code>{ key: value, ... }</code></td>
     <td>🔲</td>
     <td>🔲</td>
     <td>🔲</td>

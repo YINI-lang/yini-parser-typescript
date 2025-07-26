@@ -937,7 +937,7 @@ export default class YiniParser extends Parser {
 			}
 
 			this.state = 220;
-			this.match(YiniParser.EQ);
+			this.match(YiniParser.COLON);
 			this.state = 224;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
@@ -1627,7 +1627,7 @@ export default class YiniParser extends Parser {
 	3,38,19,0,208,210,5,39,0,0,209,208,1,0,0,0,210,213,1,0,0,0,211,209,1,0,
 	0,0,211,212,1,0,0,0,212,215,1,0,0,0,213,211,1,0,0,0,214,190,1,0,0,0,214,
 	207,1,0,0,0,215,17,1,0,0,0,216,218,5,29,0,0,217,219,5,41,0,0,218,217,1,
-	0,0,0,218,219,1,0,0,0,219,220,1,0,0,0,220,224,5,9,0,0,221,223,5,39,0,0,
+	0,0,0,218,219,1,0,0,0,219,220,1,0,0,0,220,224,5,12,0,0,221,223,5,39,0,0,
 	222,221,1,0,0,0,223,226,1,0,0,0,224,222,1,0,0,0,224,225,1,0,0,0,225,227,
 	1,0,0,0,226,224,1,0,0,0,227,228,3,12,6,0,228,19,1,0,0,0,229,232,3,24,12,
 	0,230,232,3,22,11,0,231,229,1,0,0,0,231,230,1,0,0,0,232,21,1,0,0,0,233,
@@ -2017,8 +2017,8 @@ export class ObjectMemberContext extends ParserRuleContext {
 	public KEY(): TerminalNode {
 		return this.getToken(YiniParser.KEY, 0);
 	}
-	public EQ(): TerminalNode {
-		return this.getToken(YiniParser.EQ, 0);
+	public COLON(): TerminalNode {
+		return this.getToken(YiniParser.COLON, 0);
 	}
 	public value(): ValueContext {
 		return this.getTypedRuleContext(ValueContext, 0) as ValueContext;

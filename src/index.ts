@@ -202,33 +202,9 @@ Expected JS output:
         // `
 
         const yini = `
-/*
-    nested.yini
-    Demonstrates nested sections in YINI format.
-*/
-
-@yini
-
-^ App                  // Top-level section: App
-name = 'Nested Demo App'
-version = "1.2.3"
-
-    ^^ Theme           // Nested under App: App.Theme
-    primaryColor = #336699
-    darkMode = true
-
-
-        ^^^ Overrides  // Nested under Theme: App.Theme.Overrides
-        darkMode = false
-        fontSize = 14
-
-^ Database             // Another top-level section: Database
-host = "db.local"
-port = 5432
-
-    ^^ Credentials     // Nested under Database: Database.Credentials    username = "admin"
-    password = "secret"
-            `
+            ^ Database
+            pool = { max: 10, min: 2 }
+        `
 
         YINI.parse(yini)
 

@@ -13,3 +13,13 @@ Since this is a library, envs should default to "production" (quietely) when not
 Since `process.exit` is global, it will kill the whole process including the users application using this library.
 
 Instead, on error it shoud throw an error.
+
+## Tests
+
+The `tests` directory consists of different test types and test data files:
+
+- **`fixtures/`**: Shared data files used by unit, integration, and smoke tests.
+- **`unit/`**: Tests individual functions or modules in isolation.
+- **`smoke/`**: Quick, lightweight tests that check core parser functionality and features.
+- **`integration/`**: Tests multiple components working together in various scenarios.
+- **`golden/`**: Runs the parser on input files and compares the output to expected "golden" output files. These tests should be the most comprehensive.
