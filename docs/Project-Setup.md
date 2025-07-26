@@ -1,4 +1,6 @@
-# Development Setup
+# Project Setup
+
+Here you'll find some info for install/setup/directory structure.
 
 ## Pre-requisites
 - `nvm` (Node Version Manager)
