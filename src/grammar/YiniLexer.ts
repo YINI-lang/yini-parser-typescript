@@ -1,4 +1,4 @@
-// Generated from grammar/v1.0.0-beta.7x/YiniLexer.g4 by ANTLR 4.13.2
+// Generated from grammar/v1.0.0-rc.1/YiniLexer.g4 by ANTLR 4.13.2
 // noinspection ES6UnusedImports,JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 import {
 	ATN,
