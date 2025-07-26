@@ -13,7 +13,7 @@
 - Node.js
 - TypeScript
 - Jest (tests)
-- GitHub Actions (CI)
+- GitHub Actions (CI/CD)
 - ESLint (code style / linting)
 - ANTLR4 grammar integration
 

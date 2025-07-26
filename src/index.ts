@@ -201,12 +201,12 @@ Expected JS output:
         //     title = "My Program"
         // `
 
-        const yini = `
-            ^ Database
-            pool = { max: 10, min: 2 }
+        const yini = ` // corrupt yini
+^ Section
+= missing_key_name  // In strict should throw error, while lenient should pass
         `
 
-        YINI.parse(yini)
+        YINI.parse(yini, true)
 
         //         YINI.parse(`
         // ^ Section1
