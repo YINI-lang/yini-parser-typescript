@@ -71,7 +71,10 @@ false
     name: 'My Title',
     items: 25,
     darkMode: true,
-    Special: { primaryColor: 3368601, isCaching: false }
+    Special: { 
+      primaryColor: 3368601,
+      isCaching: false
+    }
   }
 }
 ```

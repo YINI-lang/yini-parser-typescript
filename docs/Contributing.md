@@ -13,7 +13,7 @@ If you find any bugs or errors in the `YINI` parser, something is not what you e
 
 ## Quick Start
 
-Head over to the [Development-Setup](./Development-Setup.md).
+Head over to the [Development-Setup](./Project-Setup.md).
 
 ## Submitting Changes
 

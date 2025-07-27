@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 1.0.0-beta.1
+## 1.0.0-beta.1 - 2025-07-26
 - Package updated to **beta**. The core API is stabilizing, some more advanced features may still change.
 - Bugfix, fixed exports cleanly (so this lib can be imported in CJS and in full ESM).
 - Implemented support for colon lists, both empty and with elements, including nested lists. Also updated to the latest grammar, which fixes handling of empty lists with or without spaces or tabs between the brackets.
