@@ -201,10 +201,17 @@ Expected JS output:
         //     title = "My Program"
         // `
 
-        const yini = ` // corrupt yini
+        //         const yini = ` // corrupt yini
+        // ^ Section
+        // = "missing_key_name"  // In strict should throw error, while lenient should pass
+        //         `
+        const yini = `/*
+    corrupt.yini
+
+    In strict should throw error, while lenient should pass.
+*/
 ^ Section
-= missing_key_name  // In strict should throw error, while lenient should pass
-        `
+= "missing key name"`
 
         YINI.parse(yini, true)
 
