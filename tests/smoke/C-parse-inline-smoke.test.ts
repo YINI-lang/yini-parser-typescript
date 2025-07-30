@@ -5,8 +5,8 @@
  * @note These samples/fixtures are different than the tests for parseFile(..).
  */
 
-import YINI from '../../src'
 import { debugPrint } from '../../src/utils/print'
+import { parseYINI } from '../test-helpers'
 
 const fixture10Yini = `
 ^ AppConfig
@@ -32,14 +32,6 @@ author = 'Smoke Test'
 created = null
 /END
 `
-
-/**
- * Parse in lenient-mode, but fail on all errors.
- */
-const parseYINI = (content: string, isStrict = false) => {
-    const result = YINI.parse(content, isStrict, 1)
-    return result
-}
 
 /**
  * Parse-Inline Smoke Tests.
