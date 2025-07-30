@@ -27,8 +27,7 @@ describe('Issue #25 Tests:', () => {
         expect(result.Section.key).toEqual(123)
     })
 
-    //@todo Fix issue 25, in strict-mode should throw!
-    xtest('2. Should throw error in strict mode.', () => {
+    test('2. Should throw error in strict mode.', () => {
         // Arrange.
         const fileName = 'corrupt-missing-key.yini'
         const fullPath = path.join(baseDir, fileName)
