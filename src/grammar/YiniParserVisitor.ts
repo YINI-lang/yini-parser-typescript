@@ -1,4 +1,4 @@
-// Generated from grammar/v1.0.0-rc.1/YiniParser.g4 by ANTLR 4.13.2
+// Generated from grammar/v1.0.0-rc.1x/YiniParser.g4 by ANTLR 4.13.2
 
 import {ParseTreeVisitor} from 'antlr4';
 
@@ -24,6 +24,7 @@ import { String_concatContext } from "./YiniParser.js";
 import { Boolean_literalContext } from "./YiniParser.js";
 import { Empty_objectContext } from "./YiniParser.js";
 import { Empty_listContext } from "./YiniParser.js";
+import { Bad_memberContext } from "./YiniParser.js";
 
 
 /**
@@ -160,5 +161,11 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 * @return the visitor result
 	 */
 	visitEmpty_list?: (ctx: Empty_listContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.bad_member`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitBad_member?: (ctx: Bad_memberContext) => Result;
 }
 

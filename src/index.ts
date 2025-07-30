@@ -205,15 +205,12 @@ Expected JS output:
         // ^ Section
         // = "missing_key_name"  // In strict should throw error, while lenient should pass
         //         `
-        const yini = `/*
-    corrupt.yini
+        const yini = `
+            ^ List
+            simple = [10, 20, 30]
+`
 
-    In strict should throw error, while lenient should pass.
-*/
-^ Section
-= "missing key name"`
-
-        YINI.parse(yini, true)
+        YINI.parse(yini, false)
 
         //         YINI.parse(`
         // ^ Section1

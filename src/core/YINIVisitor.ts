@@ -2,6 +2,7 @@ import assert from 'assert'
 import { TokenStream } from 'antlr4'
 import { isDebug } from '../config/env'
 import {
+    Bad_memberContext,
     Boolean_literalContext,
     ElementContext,
     ElementsContext,
@@ -700,6 +701,29 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             members: members,
         } as ISectionResult
     }
+
+    /**
+     * Visit a parse tree produced by `YiniParser.bad_member`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitBad_member = (ctx: Bad_memberContext): any => {
+        ctx.REST
+        this.errorHandler!.pushOrBail(
+            ctx,
+            'Syntax-Error',
+            'Invalid or malformed member found.',
+            `Offending text: ${ctx.getText()}`,
+        )
+    }
+
+    // public Bad_memberContext bad_member() {
+    // 	return getRuleContext(Bad_memberContext.class,0);
+    // }
+    // bad_member = (ctx: any): any => {
+    //     console.log('BBBBAD')
+    //     process.exit()
+    // }
 
     /**
      * Visit a parse tree produced by `YiniParser.terminal_line`.

@@ -34,6 +34,14 @@ created = null
 `
 
 /**
+ * Parse in lenient-mode, but fail on all errors.
+ */
+const parseYINI = (content: string, isStrict = false) => {
+    const result = YINI.parse(content, isStrict, 1)
+    return result
+}
+
+/**
  * Parse-Inline Smoke Tests.
  */
 describe('Parse-Inline Smoke Tests:', () => {
@@ -44,7 +52,7 @@ describe('Parse-Inline Smoke Tests:', () => {
         // Arrange.
         const validYini = 'number=42'
         // Act.
-        const result = YINI.parse(validYini)
+        const result = parseYINI(validYini)
         debugPrint(result)
         // Assert.
         expect(result.number).toEqual(42)
@@ -55,7 +63,7 @@ describe('Parse-Inline Smoke Tests:', () => {
         // Arrange.
         const validYini = '^Title'
         // Act.
-        const result = YINI.parse(validYini)
+        const result = parseYINI(validYini)
         debugPrint(result)
         // Assert.
         expect(result.Title).toBeDefined()
@@ -66,7 +74,7 @@ describe('Parse-Inline Smoke Tests:', () => {
         const validYini = `^title
 another=64`
         // Act.
-        const result = YINI.parse(validYini)
+        const result = parseYINI(validYini)
         debugPrint(result)
         // Assert.
         expect(result.title.another).toEqual(64)
@@ -78,7 +86,7 @@ another=64`
     \t^ Section
     \tnumber = -1`
         // Act.
-        const result = YINI.parse(validYini)
+        const result = parseYINI(validYini)
         debugPrint(result)
         // Assert.
         expect(result.Section.number).toEqual(-1)
@@ -90,7 +98,7 @@ another=64`
 name = 'YINI Smoke Test'
 version = 3`
         // Act.
-        const result = YINI.parse(validYini)
+        const result = parseYINI(validYini)
         debugPrint(result)
         // Assert.
         expect(result.Main.name).toEqual('YINI Smoke Test')
@@ -113,7 +121,7 @@ username = "tester"
         setting = 99`
 
         // Act.
-        const result = YINI.parse(validYini)
+        const result = parseYINI(validYini)
         debugPrint(result)
 
         // Assert.
@@ -143,7 +151,7 @@ username = "tester"
     empty_val =          # ← Null (lenient mode)`
 
         // Act.
-        const result = YINI.parse(validYini)
+        const result = parseYINI(validYini)
         debugPrint(result)
 
         // Assert.
@@ -170,7 +178,7 @@ username = "tester"
         `
 
         // Act.
-        const result = YINI.parse(validYini)
+        const result = parseYINI(validYini)
         debugPrint(result)
 
         // Assert.
@@ -192,7 +200,7 @@ username = "tester"
         `
 
         // Act.
-        const result = YINI.parse(validYini)
+        const result = parseYINI(validYini)
         debugPrint(result)
 
         // Assert.
@@ -218,7 +226,7 @@ username = "tester"
         `
 
         // Act.
-        const result = YINI.parse(validYini)
+        const result = parseYINI(validYini)
         debugPrint(result)
 
         // Assert.
@@ -235,7 +243,7 @@ nested = { inner = { foo = "bar" }, number = 2 }
 empty = { }`
 
         // Act.
-        const result = YINI.parse(validYini)
+        const result = parseYINI(validYini)
         debugPrint(result)
 
         // Assert.
@@ -263,7 +271,7 @@ empty = { }`
 `
 
         // Act.
-        const result = YINI.parse(validYini)
+        const result = parseYINI(validYini)
         debugPrint(result)
 
         // Assert.
@@ -304,7 +312,7 @@ isSysOp = NO
 `
 
         // Act.
-        const result = YINI.parse(validYini)
+        const result = parseYINI(validYini)
         debugPrint(result)
 
         // Assert.
@@ -332,7 +340,7 @@ isSysOp = NO
     xtest('10. Parse inline AppConfig (Mixed).', () => {
         // Arrange.
         // Act.
-        const result = YINI.parse(fixture10Yini)
+        const result = parseYINI(fixture10Yini)
         debugPrint(result)
         // Assert.
         expect(!!result).toEqual(true)

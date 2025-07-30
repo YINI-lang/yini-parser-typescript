@@ -1,7 +1,7 @@
 
 
-PARSER_FILE=grammar/v1.0.0-rc.1/YiniParser.g4
-LEXER_FILE=grammar/v1.0.0-rc.1/YiniLexer.g4
+PARSER_FILE=grammar/v1.0.0-rc.1x/YiniParser.g4
+LEXER_FILE=grammar/v1.0.0-rc.1x/YiniLexer.g4
 
 ANTLR4=libs/antlr4/antlr-4.13.2-complete.jar
 

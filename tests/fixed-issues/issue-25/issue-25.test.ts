@@ -10,10 +10,10 @@ const DIR_OF_FIXTURES = './'
 describe('Issue #25 Tests:', () => {
     // Dir with smoke fixtures.
     const baseDir = path.join(__dirname, DIR_OF_FIXTURES)
+    const fileName = 'corrupt-missing-key.yini'
 
     test('1. Should succeed parsing in lenient mode.', () => {
         // Arrange.
-        const fileName = 'corrupt-missing-key.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
@@ -29,7 +29,7 @@ describe('Issue #25 Tests:', () => {
 
     test('2. Should throw error in strict mode.', () => {
         // Arrange.
-        const fileName = 'corrupt-missing-key.yini'
+        //const fileName = 'corrupt-missing-key.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act & Assert.

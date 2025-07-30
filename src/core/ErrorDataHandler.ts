@@ -1,4 +1,4 @@
-import { isDebug } from '../config/env'
+import { isDebug, isTestEnv } from '../config/env'
 import { debugPrint } from '../utils/print'
 import { TIssueType, TPersistThreshold } from './types'
 
