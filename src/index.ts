@@ -20,7 +20,7 @@ import {
     localAppEnv,
     localNodeEnv,
 } from './config/env'
-import { debugPrint } from './utils/print'
+import { debugPrint, toPrettyJSON } from './utils/print'
 import YINI from './YINI'
 
 // export { default } from './YINI'
@@ -206,14 +206,14 @@ Expected JS output:
         // = "missing_key_name"  // In strict should throw error, while lenient should pass
         //         `
         const yini = `
---^ Numbers
-int1 = 0
-int2 = 123
-int3 = -42
-int4 = +9999
+^ Strings
+double1 = "hello world"
+double2 = "single-quoted"
+double3 = "123 !@#"
 `
 
-        YINI.parse(yini, false)
+        // YINI.parse(yini, false)
+        console.log(toPrettyJSON(YINI.parse(yini, false)))
 
         //         parseUntilError(`
         // ^ Section1
