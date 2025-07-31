@@ -206,13 +206,10 @@ Expected JS output:
         // = "missing_key_name"  // In strict should throw error, while lenient should pass
         //         `
         const yini = `
+// NOTE: Raw string doesn't support escapes, escape sequences will appear as-is!
+
 ^ StringsWithQuotes
-double6 = "He replied: 'yes!'"
-
-// NOTE: Raw string doesn't support escapes!
---double8 = "Backslash: \\ and quote: \""
---double13 = "Unicode: café \"crème\""
-
+str = 'Hello \"World\"'
     `
 
         // YINI.parse(yini, false)
