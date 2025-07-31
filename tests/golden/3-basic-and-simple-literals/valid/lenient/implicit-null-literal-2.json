@@ -1,0 +1,7 @@
+{
+    "ImplicitNullInLenient": {
+        "val1": 300,
+        "val2": null,
+        "val3": "My name"
+    }
+}

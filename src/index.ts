@@ -20,7 +20,7 @@ import {
     localAppEnv,
     localNodeEnv,
 } from './config/env'
-import { debugPrint } from './utils/print'
+import { debugPrint, toPrettyJSON } from './utils/print'
 import YINI from './YINI'
 
 // export { default } from './YINI'
@@ -206,35 +206,17 @@ Expected JS output:
         // = "missing_key_name"  // In strict should throw error, while lenient should pass
         //         `
         const yini = `
-@YINI
+^ StringsWithQuotes
+double6 = "He replied: 'yes!'"
 
-/*
+// NOTE: Raw string doesn't support escapes!
+--double8 = "Backslash: \\ and quote: \""
+--double13 = "Unicode: café \"crème\""
 
-Features:
-  - Alternative section marker
-  - Nested sections
-  - Objects
-  - Strings (double quotes)
-  - Numbers, booleans, nulls
+    `
 
-*/
-
-< Database
-type = "postgres"
-host = "localhost"
-port = 5432
-username = "admin"
-password = "s3cr3t"
-db_name = "myapp"
-pool = { max: 10, min: 2, idle: 10000 }
-
-    << Options
-    ssl = off
-    connection_timeout = 30
-    retry_attempts = 3
-`
-
-        YINI.parse(yini, false)
+        // YINI.parse(yini, false)
+        console.log(toPrettyJSON(YINI.parse(yini, false)))
 
         //         parseUntilError(`
         // ^ Section1

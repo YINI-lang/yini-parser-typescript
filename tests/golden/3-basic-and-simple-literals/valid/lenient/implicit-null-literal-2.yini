@@ -1,0 +1,4 @@
+^ ImplicitNullInLenient
+val1 = 300
+val2 =	// (!) Missing null is OK in lenient mode.
+val3 = "My name"

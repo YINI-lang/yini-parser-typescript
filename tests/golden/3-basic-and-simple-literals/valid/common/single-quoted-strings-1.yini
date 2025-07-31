@@ -1,0 +1,4 @@
+^ Strings
+single1 = 'hello world'
+single2 = 'single-quoted'
+single3 = '123 !@#'

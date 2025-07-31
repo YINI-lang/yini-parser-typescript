@@ -195,38 +195,38 @@ https://github.com/YINI-lang/YINI-spec
 
   <tr>
     <td>Integer and float numbers</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>123</code>, <code>3.14</code></td>
     <td>✅</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>Basic numbers</td>
   </tr>
   <tr>
     <td>Basic strings, single and double quoted</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>'Hello'</code>, <code>"World"</code>, including handle slash, backslash, and inline quotes</td>
     <td>✅</td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>Basic strings without prefix</td>
   </tr>
   <tr>
     <td>All Boolean literals</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>true</code>, <code>false</code>, <code>Yes</code>, <code>No</code>, <code>ON</code>, <code>OFF</code></td>
     <td>✅</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
     <td><b>⚠️Case-insensitive</b></td>
   </tr>
   <tr>
     <td>(Explicit) All Null literals</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>null</code>, <code>NULL</code>, <code>Null</code>etc</td>
     <td>✅</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
     <td><b>⚠️Case-insensitive</b></td>
   </tr>
 </table>
