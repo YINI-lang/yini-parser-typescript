@@ -1,0 +1,3 @@
+^ App
+active      = enable     # ❌ Not a valid boolean literal
+deactivated = disable    # ❌ Not a valid boolean literal

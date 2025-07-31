@@ -1,0 +1,4 @@
+^ App
+public      = yesno      # ❌ Not a valid boolean literal
+hidden      = xxx        # ❌ Not a valid boolean literal
+active2     = trues      # ❌ Typo, not a valid literal

@@ -11,29 +11,51 @@ export interface IFileList {
 
 describe('Golden Tests: 3-Golden tests for Basic and Simple literals.', () => {
     const dirSyntaxGroup = '3-basic-and-simple-literals'
-    const baseDir = path.join(__dirname, dirSyntaxGroup, 'valid')
+    const baseDirGood = path.join(__dirname, dirSyntaxGroup, 'valid')
+    const baseDirBad = path.join(__dirname, dirSyntaxGroup, 'invalid')
 
-    test.each(fileListLenient.valid)('Parses correctly: %s', (file) => {
+    test.each(fileListLenient.valid)(
+        'Should parse and output correctly: %s',
+        (file) => {
+            // Arrange.
+            const baseFile = path.join(baseDirGood, file)
+            const yiniFile = baseFile + '.yini'
+            const jsonFile = baseFile + '.json'
+            // debugPrint('fileAndPath = ' + fileAndPath)
+            // console.log('fileAndPath = ' + fileAndPath)
+
+            // Check if files exists.
+            if (!fs.existsSync(yiniFile))
+                throw new Error(`Missing YINI file: ${yiniFile}`)
+            if (!fs.existsSync(jsonFile))
+                throw new Error(`Missing JSON file: ${jsonFile}`)
+
+            // Act.
+            const result = parseFileUntilError(yiniFile)
+            const correct = JSON.parse(fs.readFileSync(jsonFile, 'utf8'))
+            // console.log(result)
+            // console.log(correct)
+
+            // Assert.
+            expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
+        },
+    )
+
+    test.each(fileListLenient.invalid)('Should throw error: %s', (file) => {
         // Arrange.
-        const baseFile = path.join(baseDir, file)
+        const baseFile = path.join(baseDirBad, file)
         const yiniFile = baseFile + '.yini'
-        const jsonFile = baseFile + '.json'
         // debugPrint('fileAndPath = ' + fileAndPath)
-        // console.log('fileAndPath = ' + fileAndPath)
+        console.log('yiniFile = ' + yiniFile)
 
-        // Check if files exists.
+        // Check if file exists.
         if (!fs.existsSync(yiniFile))
             throw new Error(`Missing YINI file: ${yiniFile}`)
-        if (!fs.existsSync(jsonFile))
-            throw new Error(`Missing JSON file: ${jsonFile}`)
 
-        // Act.
-        const result = parseFileUntilError(yiniFile)
-        const correct = JSON.parse(fs.readFileSync(jsonFile, 'utf8'))
-        // console.log(result)
-        // console.log(correct)
-
-        // Assert.
-        expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
+        // Act & Assert.
+        expect(() => {
+            const result = parseFileUntilError(yiniFile)
+            // console.log(result)
+        }).toThrow()
     })
 })

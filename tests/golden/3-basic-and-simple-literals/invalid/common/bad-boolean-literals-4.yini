@@ -1,0 +1,4 @@
+^ App
+feature     = maybe      # ❌ Not a recognized boolean literal
+logging     = "on"       # ❌ Quoted, so it's a string not a boolean
+debug       = 'off'      # ❌ Quoted, so it's a string not a boolean

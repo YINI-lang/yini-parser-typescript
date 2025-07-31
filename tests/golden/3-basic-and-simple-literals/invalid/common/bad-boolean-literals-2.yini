@@ -1,0 +1,3 @@
+^ App
+isReady     = Y          # ❌ Not a valid boolean literal (should use 'yes', not 'Y')
+isStopped   = N          # ❌ Not a valid boolean literal (should use 'no', not 'N')
