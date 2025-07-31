@@ -1,0 +1,6 @@
+^ ExplicitNulls
+val1 = null
+val2 = NULL
+val3 = Null
+val4 = nULL
+

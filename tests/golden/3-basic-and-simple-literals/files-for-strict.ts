@@ -1,6 +1,6 @@
 import { IFileList } from '../golden-test-helpers'
 
-export const fileListLenient: IFileList = {
+export const fileListStrict: IFileList = {
     valid: [
         'common/boolean-literals-1',
         'common/boolean-literals-2',
@@ -15,9 +15,6 @@ export const fileListLenient: IFileList = {
         'common/single-quoted-strings-1',
         'common/single-quoted-strings-2',
         //'common/single-quoted-strings-3',
-        'lenient/implicit-null-literal-1',
-        'lenient/implicit-null-literal-2',
-        'lenient/implicit-null-literal-3',
     ],
     invalid: [
         'common/bad-boolean-literals-1',
@@ -39,5 +36,8 @@ export const fileListLenient: IFileList = {
         'common/bad-single-quoted-string-3',
         'common/bad-single-quoted-string-4',
         'common/bad-single-quoted-string-5',
+        'strict/bad-implicit-null-literal-1',
+        'strict/bad-implicit-null-literal-2',
+        'strict/bad-implicit-null-literal-3',
     ],
 }

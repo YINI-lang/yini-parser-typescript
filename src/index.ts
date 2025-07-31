@@ -206,11 +206,12 @@ Expected JS output:
         // = "missing_key_name"  // In strict should throw error, while lenient should pass
         //         `
         const yini = `
-^ String
-str = " " "
-
---str = "hello world""
-`
+^ App
+    ^^ ImplicitNullInLenient
+    val1 = 300
+    val2 =
+    val3 = "Some text."
+    `
 
         // YINI.parse(yini, false)
         console.log(toPrettyJSON(YINI.parse(yini, false)))
