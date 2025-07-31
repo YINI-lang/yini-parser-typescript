@@ -207,10 +207,7 @@ Expected JS output:
         //         `
         const yini = `
 ^ App
-    ^^ ImplicitNullInLenient
-    val1 = 300
-    val2 =
-    val3 = "Some text."
+str = "Hello\\World"
     `
 
         // YINI.parse(yini, false)
