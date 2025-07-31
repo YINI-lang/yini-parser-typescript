@@ -1,6 +1,7 @@
 import path from 'path'
 import YINI from '../../../src'
 import { debugPrint } from '../../../src/utils/print'
+import { parseUntilError } from '../../test-helpers'
 
 const DIR_OF_FIXTURES = '../../fixtures/valid/level-two-deep'
 
@@ -19,7 +20,7 @@ describe('Throw error when parsing bad section head tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(fixture)
+            parseUntilError(fixture)
         }).toThrow()
     })
 
@@ -35,7 +36,7 @@ describe('Throw error when parsing bad section head tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(fixture)
+            parseUntilError(fixture)
         }).toThrow()
     })
 
@@ -47,7 +48,7 @@ describe('Throw error when parsing bad section head tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(fixture)
+            parseUntilError(fixture)
         }).toThrow()
     })
 
@@ -61,7 +62,7 @@ describe('Throw error when parsing bad section head tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(fixture)
+            parseUntilError(fixture)
         }).toThrow()
     })
 
@@ -74,7 +75,7 @@ describe('Throw error when parsing bad section head tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(fixture)
+            parseUntilError(fixture)
         }).toThrow()
     })
 
@@ -92,7 +93,7 @@ describe('Throw error when parsing bad section head tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(fixture)
+            parseUntilError(fixture)
         }).toThrow()
     })
 
@@ -104,7 +105,7 @@ describe('Throw error when parsing bad section head tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(fixture)
+            parseUntilError(fixture)
         }).toThrow()
     })
 
@@ -119,7 +120,7 @@ describe('Throw error when parsing bad section head tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(fixture)
+            parseUntilError(fixture)
         }).toThrow()
     })
 
@@ -132,7 +133,7 @@ describe('Throw error when parsing bad section head tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(fixture)
+            parseUntilError(fixture)
         }).toThrow()
     })
 
@@ -147,7 +148,7 @@ describe('Throw error when parsing bad section head tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(fixture)
+            parseUntilError(fixture)
         }).toThrow()
     })
 
@@ -160,7 +161,7 @@ describe('Throw error when parsing bad section head tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(invalidYini)
+            parseUntilError(invalidYini)
         }).toThrow()
     })
 
@@ -179,7 +180,7 @@ describe('Throw error when parsing bad section head tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(invalidYini)
+            parseUntilError(invalidYini)
         }).toThrow()
     })
 })

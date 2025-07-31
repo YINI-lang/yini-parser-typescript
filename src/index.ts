@@ -106,17 +106,17 @@ listItems = ["a", "b", "c"]
     // if (isDebug()) {
     //     console.debug(input2)
     // }
-    // YINI.parse(input2)
+    // parseUntilError(input2)
 
     // debugPrint('invalidInput1:')
     // if (isDebug()) {
     //     console.debug(invalidInput1)
     // }
-    // YINI.parse(invalidInput1)
+    // parseUntilError(invalidInput1)
 
     if (localAppEnv === 'local' && localNodeEnv !== 'test') {
         /*
-		YINI.parse(`
+		parseUntilError(`
 --^ Section0
 	--value = 0
 ^ Section1
@@ -135,7 +135,7 @@ listItems = ["a", "b", "c"]
 `)
     }
 */
-        // YINI.parse(`number = 42`)
+        // parseUntilError(`number = 42`)
         /*
 Expected JS output:
 { 
@@ -146,7 +146,7 @@ Expected JS output:
 */
 
         /*
-        YINI.parse(
+        parseUntilError(
             `
 // Using numeric shorthand section markers.
 
@@ -162,7 +162,7 @@ Expected JS output:
         )
 */
 
-        // YINI.parse(`^1 SectionName`, false, 2)
+        // parseUntilError(`^1 SectionName`, false, 2)
 
         //         const validYini = `
         // < user
@@ -193,7 +193,7 @@ Expected JS output:
         // `
 
         //         // Act.
-        //         const result = YINI.parse(validYini)
+        //         const result = parseUntilError(validYini)
         //         debugPrint(result)
 
         // const validYini = `^ App
@@ -205,17 +205,38 @@ Expected JS output:
         // ^ Section
         // = "missing_key_name"  // In strict should throw error, while lenient should pass
         //         `
-        const yini = `/*
-    corrupt.yini
+        const yini = `
+@YINI
 
-    In strict should throw error, while lenient should pass.
+/*
+
+Features:
+  - Alternative section marker
+  - Nested sections
+  - Objects
+  - Strings (double quotes)
+  - Numbers, booleans, nulls
+
 */
-^ Section
-= "missing key name"`
 
-        YINI.parse(yini, true)
+< Database
+type = "postgres"
+host = "localhost"
+port = 5432
+username = "admin"
+password = "s3cr3t"
+db_name = "myapp"
+pool = { max: 10, min: 2, idle: 10000 }
 
-        //         YINI.parse(`
+    << Options
+    ssl = off
+    connection_timeout = 30
+    retry_attempts = 3
+`
+
+        YINI.parse(yini, false)
+
+        //         parseUntilError(`
         // ^ Section1
         //             ^^ Section2
         //             ^^^ Section3

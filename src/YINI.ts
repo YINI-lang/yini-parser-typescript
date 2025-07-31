@@ -59,7 +59,7 @@ export default class YINI {
         if (bailSensitivity === 'auto') {
             if (!strictMode) level = 0
             if (strictMode) level = 1
-            if (process.env.NODE_ENV === 'test') level = 1
+            // if (process.env.NODE_ENV === 'test') level = 1
         } else {
             level = bailSensitivity
         }
@@ -137,7 +137,7 @@ export default class YINI {
         if (bailSensitivity === 'auto') {
             if (!strictMode) level = 0
             if (strictMode) level = 1
-            if (process.env.NODE_ENV === 'test') level = 1
+            // if (process.env.NODE_ENV === 'test') level = 1
         } else {
             level = bailSensitivity
         }
