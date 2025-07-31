@@ -8,6 +8,7 @@
 import { execSync } from 'child_process'
 import YINI from '../../src'
 import { debugPrint, toPrettyJSON } from '../../src/utils/print'
+import { parseYINI } from '../test-helpers'
 
 // @ts-ignore
 // import * as testCJS from '../fixtures/test-src-files/test-cjs'
@@ -26,7 +27,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
             isDarkTheme = true`
 
         // Act.
-        const result = YINI.parse(validYini)
+        const result = parseYINI(validYini)
         debugPrint(result)
 
         // Assert.
@@ -56,7 +57,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
             port = 5432    
         `
         // Act.
-        const metaResult = YINI.parse(validYini, false, 'auto', true)
+        const metaResult = parseYINI(validYini, false, true)
         debugPrint(metaResult)
 
         // Assert.
@@ -114,7 +115,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
             /END
         `
         // Act.
-        const metaResult = YINI.parse(validYini, true, 'auto', true)
+        const metaResult = parseYINI(validYini, true, true)
         debugPrint(metaResult)
 
         // Assert.
@@ -155,7 +156,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(invalidYini)
+            parseYINI(invalidYini)
             debugPrint(invalidYini)
         }).toThrow()
     })
@@ -185,7 +186,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(invalidYini)
+            parseYINI(invalidYini)
             debugPrint(invalidYini)
         }).toThrow()
     })
@@ -207,7 +208,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(invalidYini)
+            parseYINI(invalidYini)
             debugPrint(invalidYini)
         }).toThrow()
     })
@@ -229,7 +230,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(invalidYini)
+            parseYINI(invalidYini)
             debugPrint(invalidYini)
         }).toThrow()
     })
