@@ -206,10 +206,10 @@ Expected JS output:
         // = "missing_key_name"  // In strict should throw error, while lenient should pass
         //         `
         const yini = `
-^ Strings
-double1 = "hello world"
-double2 = "single-quoted"
-double3 = "123 !@#"
+^ String
+str = " " "
+
+--str = "hello world""
 `
 
         // YINI.parse(yini, false)

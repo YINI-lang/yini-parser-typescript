@@ -19,7 +19,7 @@ import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
 import { debugPrint, printObject } from './utils/print'
 
-class MyErrorListener implements ErrorListener<any> {
+class MyParserErrorListener implements ErrorListener<any> {
     public errors: string[] = []
     private errorHandler: ErrorDataHandler
 
@@ -35,7 +35,7 @@ class MyErrorListener implements ErrorListener<any> {
         msg: string,
         e: RecognitionException | undefined,
     ): void {
-        debugPrint('ANTLR grammar cached an error')
+        debugPrint('ANTLR parser cached an error')
         this.errors.push(`Line ${line}:${charPositionInLine} ${msg}`)
 
         const msgWhat = `Syntax error, at line: ${line}`
@@ -48,6 +48,33 @@ class MyErrorListener implements ErrorListener<any> {
     reportAmbiguity(...args: any[]): void {}
     reportAttemptingFullContext(...args: any[]): void {}
     reportContextSensitivity(...args: any[]): void {}
+}
+
+class MyLexerErrorListener implements ErrorListener<any> {
+    public errors: string[] = []
+    private errorHandler: ErrorDataHandler
+
+    constructor(errorHandler: ErrorDataHandler) {
+        this.errorHandler = errorHandler
+    }
+
+    syntaxError(
+        recognizer: any,
+        offendingSymbol: any,
+        line: number,
+        charPositionInLine: number,
+        msg: string,
+        e: RecognitionException | undefined,
+    ) {
+        // Handle the error as you want:
+        debugPrint('ANTLR parser cached an error')
+        this.errors.push(`Line ${line}:${charPositionInLine} ${msg}`)
+
+        const msgWhat = `Syntax error, at line: ${line}`
+        const msgWhy = `At about column ${1 + charPositionInLine} ${msg}`
+
+        this.errorHandler.pushOrBail(null, 'Syntax-Error', msgWhat, msgWhy)
+    }
 }
 
 export const parseMain = (
@@ -87,21 +114,35 @@ export const parseMain = (
     const parser = new YiniParser(tokenStream)
 
     const errorHandler = new ErrorDataHandler(persistThreshold)
-    const errorListener = new MyErrorListener(errorHandler)
 
-    parser.removeErrorListeners() // Removes the default console error output.
-    parser.addErrorListener(errorListener)
+    // Remove the default ConsoleErrorListener
+    lexer.removeErrorListeners() // Removes the default lexer console error output.
+    const lexerErrorListener = new MyLexerErrorListener(errorHandler)
+    lexer.addErrorListener(lexerErrorListener)
+
+    // const errorListener = new MyParserErrorListener(errorHandler)
+
+    parser.removeErrorListeners() // Removes the default parser console error output.
+    const parserErrorListener = new MyParserErrorListener(errorHandler)
+    parser.addErrorListener(parserErrorListener)
 
     debugPrint()
     debugPrint('--- Starting parsing... ---')
 
     const parseTree: YiniContext = parser.yini() // The function yini() is the start rule.
-    if (errorListener.errors.length > 0) {
+    if (
+        parserErrorListener.errors.length > 0 ||
+        lexerErrorListener.errors.length > 0
+    ) {
         debugPrint('*** ERROR detected ***')
 
         if (isDebug()) {
             // Handle or display syntax errors
-            console.error('Syntax errors detected:', errorListener.errors)
+            console.error(
+                'Syntax errors detected:',
+                parserErrorListener.errors,
+                lexerErrorListener.errors,
+            )
             //process.exit(1)
         }
     }

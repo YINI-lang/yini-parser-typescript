@@ -198,8 +198,8 @@ https://github.com/YINI-lang/YINI-spec
     <td>🔲</td>
     <td><code>123</code>, <code>3.14</code></td>
     <td>✅</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>Basic numbers</td>
   </tr>
   <tr>
@@ -213,11 +213,11 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>All Boolean literals</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>true</code>, <code>false</code>, <code>Yes</code>, <code>No</code>, <code>ON</code>, <code>OFF</code></td>
     <td>✅</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
     <td><b>⚠️Case-insensitive</b></td>
   </tr>
   <tr>
