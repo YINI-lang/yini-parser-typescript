@@ -206,32 +206,11 @@ Expected JS output:
         // = "missing_key_name"  // In strict should throw error, while lenient should pass
         //         `
         const yini = `
-@YINI
-
-/*
-
-Features:
-  - Alternative section marker
-  - Nested sections
-  - Objects
-  - Strings (double quotes)
-  - Numbers, booleans, nulls
-
-*/
-
-< Database
-type = "postgres"
-host = "localhost"
-port = 5432
-username = "admin"
-password = "s3cr3t"
-db_name = "myapp"
-pool = { max: 10, min: 2, idle: 10000 }
-
-    << Options
-    ssl = off
-    connection_timeout = 30
-    retry_attempts = 3
+--^ Numbers
+int1 = 0
+int2 = 123
+int3 = -42
+int4 = +9999
 `
 
         YINI.parse(yini, false)
