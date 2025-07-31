@@ -92,4 +92,4 @@ empty_list: EMPTY_LIST | '[' NL* ']';
 
 //bad_member: (KEY|REST)? WS? EQ? WS? (value|REST)? NL?;
 //bad_member: KEY? WS? EQ WS? value? NL?;
-bad_member:  REST? WS? EQ WS? (value|REST) NL?;
+bad_member:  WS? (REST|value)? WS? EQ (value|REST) NL?;
