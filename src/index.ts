@@ -206,12 +206,13 @@ Expected JS output:
         // = "missing_key_name"  // In strict should throw error, while lenient should pass
         //         `
         const yini = `
-^ Numbers
-float9  = -9.999e+99         // Large negative float, scientific
---float10 = 0.000000000000000000001  // Smallest normal value you expect to support
---float11 = -0.000000000000000000001 // Negative small
-float12 = 2.2250738585072014e-308  // Smallest positive normal double
-float13 = -1.7976931348623157e+308 // Min (negative) JS double
+^ StringsWithQuotes
+double6 = "He replied: 'yes!'"
+
+// NOTE: Raw string doesn't support escapes!
+--double8 = "Backslash: \\ and quote: \""
+--double13 = "Unicode: café \"crème\""
+
     `
 
         // YINI.parse(yini, false)

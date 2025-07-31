@@ -1,0 +1,3 @@
+^ StringsWithQuotes
+str1 = "Hello 'World'"
+str2 = "It's fine!"

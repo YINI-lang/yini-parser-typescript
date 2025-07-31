@@ -1,0 +1,6 @@
+^ StringsWithQuotes
+double6 = "He replied: 'yes!'"
+
+// NOTE: Raw string doesn't support escapes!
+--double8 = "Backslash: \\ and quote: \""
+--double13 = "Unicode: café \"crème\""
