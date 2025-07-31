@@ -206,19 +206,35 @@ Expected JS output:
         // = "missing_key_name"  // In strict should throw error, while lenient should pass
         //         `
         const yini = `
-            ^ Title
-            username = 'tester three'
-            isSysOp = NO
+@YINI
 
-                ^^  SubSection
-                theme = "special-dark"
-                notifications = ON
+/*
 
-                ^^ SubSection // NOT OK, SubSection already exists
-                theme2 = "special-dark"
+Features:
+  - Alternative section marker
+  - Nested sections
+  - Objects
+  - Strings (double quotes)
+  - Numbers, booleans, nulls
+
+*/
+
+< Database
+type = "postgres"
+host = "localhost"
+port = 5432
+username = "admin"
+password = "s3cr3t"
+db_name = "myapp"
+pool = { max: 10, min: 2, idle: 10000 }
+
+    << Options
+    ssl = off
+    connection_timeout = 30
+    retry_attempts = 3
 `
 
-        parseYINI(yini, false)
+        YINI.parse(yini, false)
 
         //         parseYINI(`
         // ^ Section1
