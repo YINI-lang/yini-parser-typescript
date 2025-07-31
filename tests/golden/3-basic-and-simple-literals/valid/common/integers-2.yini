@@ -1,0 +1,5 @@
+^ Numbers
+int5 = 100000             // Hundred thousand
+int6 = -987654            // Negative, six digits
+int7 = 2147483647         // Max 32-bit signed int
+int8 = -2147483648        // Min 32-bit signed int

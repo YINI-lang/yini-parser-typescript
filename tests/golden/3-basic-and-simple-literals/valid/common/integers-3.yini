@@ -1,0 +1,5 @@
+^ Numbers
+int9 = 9223372036854775807     // Max 64-bit signed int
+int10 = -9223372036854775808   // Min 64-bit signed int
+int11 = 1000000000000000000000 // 10^21 (large, for overflow checks)
+int12 = -1000000000000000000000 // -10^21

@@ -1,0 +1,4 @@
+// NOTE: Strings are raw by default, and a / should appear as-is.
+
+^ App
+rawStr = "Hello//World"
