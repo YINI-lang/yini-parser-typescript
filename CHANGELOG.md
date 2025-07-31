@@ -3,7 +3,7 @@
 ## 1.0.0-beta.1x
 - Fixed catching lexer related errors correctly.
 - Improves error and test handling for invalid YINI syntax.
-- Grammar logic updated to catch bad systax specifically related to bad syntax for members.
+- Grammar logic updated to catch bad systax specifically related to bad syntax for (key-value) members.
 - Added another testing suited for reported tests.
 - Added another testing suite for golden tests.
 
