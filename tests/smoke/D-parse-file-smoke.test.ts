@@ -7,7 +7,7 @@
 import path from 'path'
 import YINI from '../../src'
 import { debugPrint } from '../../src/utils/print'
-import { parseYINIFile } from '../test-helpers'
+import { parseFileUntilError } from '../test-helpers'
 
 const DIR_OF_FIXTURES = '../fixtures/smoke-fixtures'
 
@@ -26,7 +26,7 @@ describe('Parse-File Smoke Tests:', () => {
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const result = parseYINIFile(fullPath)
+        const result = parseFileUntilError(fullPath)
         debugPrint('fullPath = ' + fullPath)
         debugPrint(result)
 
@@ -41,7 +41,7 @@ describe('Parse-File Smoke Tests:', () => {
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const result = parseYINIFile(fullPath)
+        const result = parseFileUntilError(fullPath)
         debugPrint(result)
 
         // Assert.
@@ -55,7 +55,7 @@ describe('Parse-File Smoke Tests:', () => {
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const result = parseYINIFile(fullPath)
+        const result = parseFileUntilError(fullPath)
         debugPrint(result)
 
         // Assert.
@@ -69,7 +69,7 @@ describe('Parse-File Smoke Tests:', () => {
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const result = parseYINIFile(fullPath)
+        const result = parseFileUntilError(fullPath)
         debugPrint(result)
 
         // Assert.
@@ -83,7 +83,7 @@ describe('Parse-File Smoke Tests:', () => {
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const result = parseYINIFile(fullPath)
+        const result = parseFileUntilError(fullPath)
         debugPrint(result)
 
         // Assert.
@@ -97,7 +97,7 @@ describe('Parse-File Smoke Tests:', () => {
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const result = parseYINIFile(fullPath)
+        const result = parseFileUntilError(fullPath)
         debugPrint(result)
 
         // Assert.
@@ -112,7 +112,7 @@ describe('Parse-File Smoke Tests:', () => {
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const result = parseYINIFile(fullPath)
+        const result = parseFileUntilError(fullPath)
         debugPrint(result)
 
         // Assert.
@@ -126,7 +126,7 @@ describe('Parse-File Smoke Tests:', () => {
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const result = parseYINIFile(fullPath)
+        const result = parseFileUntilError(fullPath)
         debugPrint(result)
 
         // Assert.
@@ -140,7 +140,7 @@ describe('Parse-File Smoke Tests:', () => {
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const result = parseYINIFile(fullPath)
+        const result = parseFileUntilError(fullPath)
         debugPrint(result)
 
         // Assert.
@@ -154,7 +154,7 @@ describe('Parse-File Smoke Tests:', () => {
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const result = parseYINIFile(fullPath)
+        const result = parseFileUntilError(fullPath)
         debugPrint(result)
 
         // Assert.

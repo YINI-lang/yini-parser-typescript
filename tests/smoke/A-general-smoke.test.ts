@@ -2,7 +2,7 @@ import path from 'path'
 import YINI from '../../src'
 import { isDebug, isDev, isDevEnv, isProdEnv } from '../../src/config/env'
 import { debugPrint, printObject } from '../../src/utils/print'
-import { parseYINI } from '../test-helpers'
+import { parseUntilError } from '../test-helpers'
 
 /**
  * Environment Smoke Tests.
@@ -12,7 +12,7 @@ xdescribe('Environment Smoke Tests:', () => {
         // Arrange.
         // process.env['APP_ENV'] = undefined
         // Act.
-        // parseYINI('^Section')
+        // parseUntilError('^Section')
         // const { localNodeEnv, localAppEnv } = initEnvs()
         // initEnvs()
         // Assert.
@@ -48,7 +48,7 @@ describe('General Smoke Tests:', () => {
             strVar = "Hello World!"
             intVar = 98.21`
         // Act.
-        const result = parseYINI(validYini)
+        const result = parseUntilError(validYini)
         debugPrint(result)
         // Assert.
         expect(result.sectionTitle.strVar).toEqual('Hello World!')
@@ -61,7 +61,7 @@ describe('General Smoke Tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            parseYINI(fixture)
+            parseUntilError(fixture)
         }).toThrow()
     })
 
@@ -75,7 +75,7 @@ describe('General Smoke Tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            parseYINI(fixture)
+            parseUntilError(fixture)
         }).toThrow()
     })
 
@@ -96,7 +96,7 @@ describe('General Smoke Tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            parseYINI(fixture)
+            parseUntilError(fixture)
         }).toThrow()
     })
 
@@ -111,7 +111,7 @@ describe('General Smoke Tests:', () => {
         `
 
         // Act.
-        const result = parseYINI(fixture)
+        const result = parseUntilError(fixture)
         debugPrint(result)
 
         // Assert.
@@ -212,7 +212,7 @@ describe('General Smoke Tests:', () => {
         `
 
         // Act.
-        const result1 = parseYINI(fixture1)
+        const result1 = parseUntilError(fixture1)
         isDebug() && printObject(result1)
 
         // Assert.
@@ -224,7 +224,7 @@ describe('General Smoke Tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            parseYINI(fixture2)
+            parseUntilError(fixture2)
         }).toThrow()
     })
 
@@ -237,7 +237,7 @@ describe('General Smoke Tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            parseYINI(invalidYini)
+            parseUntilError(invalidYini)
         }).toThrow()
     })
 
@@ -249,7 +249,7 @@ describe('General Smoke Tests:', () => {
         `
         // Act.
         isDebug() && printObject(validYini)
-        const result = parseYINI(validYini)
+        const result = parseUntilError(validYini)
         debugPrint(result)
         // Assert.
         expect(result.App.id).toEqual(32403)
@@ -265,7 +265,7 @@ describe('General Smoke Tests:', () => {
         `
         // Act.
         isDebug() && printObject(validYini)
-        const result = parseYINI(validYini)
+        const result = parseUntilError(validYini)
         isDebug() && printObject(result)
 
         // Assert.
@@ -287,7 +287,7 @@ describe('General Smoke Tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            parseYINI(invalidYini)
+            parseUntilError(invalidYini)
             debugPrint(invalidYini)
         }).toThrow()
     })
@@ -304,7 +304,7 @@ describe('General Smoke Tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            parseYINI(invalidYini)
+            parseUntilError(invalidYini)
             debugPrint(invalidYini)
         }).toThrow()
     })

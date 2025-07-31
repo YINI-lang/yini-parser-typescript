@@ -7,7 +7,7 @@ import YINI from '../src/YINI'
  * @note Wraps YINI.parse(..) with bailSensitivity
  * set to 1 ('Abort-on-Errors' mode).
  */
-export const parseYINI = (
+export const parseUntilError = (
     content: string,
     isStrictMode = false,
     isIncludeMeta = false,
@@ -23,7 +23,7 @@ export const parseYINI = (
  * @note Wraps YINI.parseFile(..) with bailSensitivity
  * set to 1 ('Abort-on-Errors' mode).
  */
-export const parseYINIFile = (
+export const parseFileUntilError = (
     content: string,
     isStrictMode = false,
     isIncludeMeta = false,

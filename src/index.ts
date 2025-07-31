@@ -106,17 +106,17 @@ listItems = ["a", "b", "c"]
     // if (isDebug()) {
     //     console.debug(input2)
     // }
-    // parseYINI(input2)
+    // parseUntilError(input2)
 
     // debugPrint('invalidInput1:')
     // if (isDebug()) {
     //     console.debug(invalidInput1)
     // }
-    // parseYINI(invalidInput1)
+    // parseUntilError(invalidInput1)
 
     if (localAppEnv === 'local' && localNodeEnv !== 'test') {
         /*
-		parseYINI(`
+		parseUntilError(`
 --^ Section0
 	--value = 0
 ^ Section1
@@ -135,7 +135,7 @@ listItems = ["a", "b", "c"]
 `)
     }
 */
-        // parseYINI(`number = 42`)
+        // parseUntilError(`number = 42`)
         /*
 Expected JS output:
 { 
@@ -146,7 +146,7 @@ Expected JS output:
 */
 
         /*
-        parseYINI(
+        parseUntilError(
             `
 // Using numeric shorthand section markers.
 
@@ -162,7 +162,7 @@ Expected JS output:
         )
 */
 
-        // parseYINI(`^1 SectionName`, false, 2)
+        // parseUntilError(`^1 SectionName`, false, 2)
 
         //         const validYini = `
         // < user
@@ -193,7 +193,7 @@ Expected JS output:
         // `
 
         //         // Act.
-        //         const result = parseYINI(validYini)
+        //         const result = parseUntilError(validYini)
         //         debugPrint(result)
 
         // const validYini = `^ App
@@ -236,7 +236,7 @@ pool = { max: 10, min: 2, idle: 10000 }
 
         YINI.parse(yini, false)
 
-        //         parseYINI(`
+        //         parseUntilError(`
         // ^ Section1
         //             ^^ Section2
         //             ^^^ Section3
