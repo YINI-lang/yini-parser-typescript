@@ -236,7 +236,7 @@ IDENT_INVALID
     ;
 
 fragment REST_CHAR:
-    ~[ \t\r\n'"`=,0123456789]
+    ~([ \t\r\n'"`=,0123456789/-] | '[' | ']')
     ;
 
 REST: REST_CHAR REST_CHAR*;

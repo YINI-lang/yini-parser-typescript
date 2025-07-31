@@ -106,17 +106,17 @@ listItems = ["a", "b", "c"]
     // if (isDebug()) {
     //     console.debug(input2)
     // }
-    // YINI.parse(input2)
+    // parseYINI(input2)
 
     // debugPrint('invalidInput1:')
     // if (isDebug()) {
     //     console.debug(invalidInput1)
     // }
-    // YINI.parse(invalidInput1)
+    // parseYINI(invalidInput1)
 
     if (localAppEnv === 'local' && localNodeEnv !== 'test') {
         /*
-		YINI.parse(`
+		parseYINI(`
 --^ Section0
 	--value = 0
 ^ Section1
@@ -135,7 +135,7 @@ listItems = ["a", "b", "c"]
 `)
     }
 */
-        // YINI.parse(`number = 42`)
+        // parseYINI(`number = 42`)
         /*
 Expected JS output:
 { 
@@ -146,7 +146,7 @@ Expected JS output:
 */
 
         /*
-        YINI.parse(
+        parseYINI(
             `
 // Using numeric shorthand section markers.
 
@@ -162,7 +162,7 @@ Expected JS output:
         )
 */
 
-        // YINI.parse(`^1 SectionName`, false, 2)
+        // parseYINI(`^1 SectionName`, false, 2)
 
         //         const validYini = `
         // < user
@@ -193,7 +193,7 @@ Expected JS output:
         // `
 
         //         // Act.
-        //         const result = YINI.parse(validYini)
+        //         const result = parseYINI(validYini)
         //         debugPrint(result)
 
         // const validYini = `^ App
@@ -206,13 +206,21 @@ Expected JS output:
         // = "missing_key_name"  // In strict should throw error, while lenient should pass
         //         `
         const yini = `
-            ^ List
-            simple = [10, 20, 30]
+            ^ Title
+            username = 'tester three'
+            isSysOp = NO
+
+                ^^  SubSection
+                theme = "special-dark"
+                notifications = ON
+
+                ^^ SubSection // NOT OK, SubSection already exists
+                theme2 = "special-dark"
 `
 
-        YINI.parse(yini, false)
+        parseYINI(yini, false)
 
-        //         YINI.parse(`
+        //         parseYINI(`
         // ^ Section1
         //             ^^ Section2
         //             ^^^ Section3
