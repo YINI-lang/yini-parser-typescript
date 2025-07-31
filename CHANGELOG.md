@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 1.0.0-beta.1x
+- Improves error and test handling for invalid YINI syntax.
+- Grammar logic updated to catch bad systax specifically related to bad syntax for members.
+- Added another testing suited for reported tests.
+
 ## 1.0.0-beta.1 - 2025-07-26
 - Package updated to **beta**. The core API is stabilizing, some more advanced features may still change.
 - Bugfix, fixed exports cleanly (so this lib can be imported in CJS and in full ESM).

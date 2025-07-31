@@ -118,6 +118,7 @@ Here's an overview of the project's directory structure — to help users unders
 │   ├── unit/                     // Unit tests
 |   ├── integration/              // Integration tests
 │   ├── golden/                   // Golden tests (input/output pairs)
+│   ├── fixed-issues/             // Tests for reported issues.
 │   └── fixtures/                 // ALL test data (**in one place**)
 │       ├── valid/                // Fixture valid data (mostly for integration tests)
 │       ├── invalid/              // Fixture invalid data (mostly for integration tests)

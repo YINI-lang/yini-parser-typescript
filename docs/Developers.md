@@ -23,3 +23,4 @@ The `tests` directory consists of different test types and test data files:
 - **`smoke/`**: Quick, lightweight tests that check core parser functionality and features.
 - **`integration/`**: Tests multiple components working together in various scenarios.
 - **`golden/`**: Runs the parser on input files and compares the output to expected "golden" output files. These tests should be the most comprehensive.
+- **`fixed-issues/`**: Contains inputs for reported issues and related test cases, used to verify parser fixes.
