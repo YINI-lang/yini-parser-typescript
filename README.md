@@ -550,6 +550,7 @@ We welcome feedback, bug reports, feature requests, and code contributions!
 - ➡️ [Official YINI Parser on npm](https://www.npmjs.com/package/yini-parser) (npm)
 - ➡️ [YINI Parser GitHub Repo](https://github.com/YINI-lang/yini-parser-typescript) (GitHub)
 - ➡️ [YINI vs Other Formats](https://github.com/YINI-lang/YINI-spec/blob/develop/Docs/Examples%20of%20YINI%20vs%20Other%20Formats.md)
+- ➡️ [YINI Project](https://github.com/YINI-lang) (home)
 
 ---
 

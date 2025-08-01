@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 1.0.0-beta.1x
+## 1.0.1-beta - 2025 Aug
 - Fixed catching lexer related errors correctly.
 - Improves error and test handling for invalid YINI syntax.
 - Grammar logic updated to catch bad systax specifically related to bad syntax for (key-value) members.
