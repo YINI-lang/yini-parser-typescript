@@ -207,9 +207,6 @@ Expected JS output:
         //         `
         const yini = `
 // NOTE: Raw string doesn't support escapes, escape sequences will appear as-is!
-
-^ StringsWithQuotes
-str = 'Hello \"World\"'
     `
 
         // YINI.parse(yini, false)
