@@ -4,8 +4,9 @@
 - Fixed catching lexer related errors correctly.
 - Improves error and test handling for invalid YINI syntax.
 - Grammar logic updated to catch bad systax specifically related to bad syntax for (key-value) members.
-- Added another testing suited for reported tests.
+- Added another testing suite for reported and fixed tests.
 - Added another testing suite for golden tests.
+- Updated to the latest grammar (logic) version 1.0.0-rc.2.
 
 ## 1.0.0-beta.1 - 2025-07-26
 - Package updated to **beta**. The core API is stabilizing, some more advanced features may still change.
@@ -13,7 +14,7 @@
 - Implemented support for colon lists, both empty and with elements, including nested lists. Also updated to the latest grammar, which fixes handling of empty lists with or without spaces or tabs between the brackets.
 - Optimized the top part of readme for npmjs Short Page.
 - Added a dir `examples/` with a few example Yini files, `compare-formats.md` and TS file.
-- Updated to the latest grammar (logic) to the spec 1.0.0-rc.1.
+- Updated to the latest grammar (logic) version 1.0.0-rc.1.
 
 ## 1.0.0-alpha.7
 - Fixed serious bug that on error did exit process.

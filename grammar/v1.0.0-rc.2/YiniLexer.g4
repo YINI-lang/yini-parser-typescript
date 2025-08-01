@@ -10,7 +10,7 @@
 /* 
  This grammar aims to follow, as closely as possible,
  the YINI format specification version:
- 1.0.0-rc.1x
+ 1.0.0-rc.2 - 2025 Aug.
  
  Feedback, bug reports and improvements are welcomed here
  https://github.com/YINI-lang/YINI-spec
@@ -235,8 +235,10 @@ IDENT_INVALID
     : [0-9][a-zA-Z0-9_]*
     ;
 
+// For matching bad character.
 fragment REST_CHAR:
     ~([ \t\r\n'"`=,0123456789/-] | '[' | ']' | '{' | '}' | ':')
     ;
 
+// For catching bad content.
 REST: REST_CHAR REST_CHAR*;

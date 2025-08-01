@@ -1,4 +1,4 @@
-// Generated from grammar/v1.0.0-rc.1x/YiniParser.g4 by ANTLR 4.13.2
+// Generated from grammar/v1.0.0-rc.2/YiniParser.g4 by ANTLR 4.13.2
 
 import {ParseTreeVisitor} from 'antlr4';
 
