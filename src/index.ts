@@ -206,7 +206,14 @@ Expected JS output:
         // = "missing_key_name"  // In strict should throw error, while lenient should pass
         //         `
         const yini = `
-// NOTE: Raw string doesn't support escapes, escape sequences will appear as-is!
+/*
+    corrupt yini
+    In strict should throw error, while lenient should pass.
+*/
+
+^ Section
+value = 42
+333 = "missing_key_name"	// (!) Invalid key!
     `
 
         // YINI.parse(yini, false)
