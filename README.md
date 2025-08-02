@@ -34,6 +34,20 @@ YINI is a simple, human-friendly configuration format inspired by INI and JSON.
 
 ---
 
+## 🙋‍♀️ Why YINI?
+
+Why another config format?? And why YINI...?
+
+Yes, we know — there are already plenty of good config formats out there: INI, JSON, YAML, TOML... and they all do a good job in their own ways.
+
+YINI wasn't created to compete — it began as a small, personal attempt to find something a bit more readable than JSON, a bit more structured than INI, and a bit less surprising than YAML.
+
+But it also grew out of practical need: a desire for a config format that's easy to read and write (especially when it comes to nested sections), yet with just enough structure to support real-world use.
+
+It fills a niche we happened to care about — and honestly, it was built partly just for the fun of it. If you find it useful too, that's a bonus. 🙂
+
+---
+
 ## Quick Start
 
 A minimal example using YINI in TypeScript:
