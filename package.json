@@ -19,7 +19,7 @@
         "nodejs",
         "javascript"
     ],
-    "homepage": "https://m4se.com/yini-lang.org/",
+    "homepage": "https://github.com/YINI-lang/yini-parser-typescript",
     "license": "Apache-2.0",
     "files": [
         "dist/",
