@@ -52,7 +52,7 @@ It fills a niche we happened to care about — and honestly, it was built partly
 - **Simple like INI** — but with strong typing, comments, and nested sections.
 - **Easy to read and write** — minimal syntax noise, maximum clarity.
 - **Clear, minimal section nesting** — no painful indentation or long dot-delimited keys.
-- Built for both **JavaScript and TypeScript**.
+- This repo/parser is built for both **JavaScript and TypeScript**.
 - **Supports strict and lenient modes**, and all major data types.
 - Both **human-friendly** and **machine-friendly**.
 - 👉 See [how YINI compares to JSON, YAML, INI, and TOML](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples/compare-formats.md).
