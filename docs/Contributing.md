@@ -3,7 +3,7 @@
 - First things first: welcome!
 - Feedback, bug reports, suggestions, or even a bit of roasting are all welcome.
 - Feel free to open a [discussion](https://github.com/YINI-lang/yini-parser-typescript/discussions) or [issue](https://github.com/YINI-lang/yini-parser-typescript/issues).
-- 
+
 ---
 
 Even though `yini-parser` is in beta, your feedback, suggestions, and contributions are **highly valued**.
