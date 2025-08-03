@@ -97,7 +97,7 @@ That's it!
 
 ▶️ Link to [examples/](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples) files.
 
-## 💡 Why YINI?
+## 💡 What is YINI?
 - **Simple like INI** — but with strong typing, comments, and nested sections.
 - **Easy to read and write** — minimal syntax noise, maximum clarity.
 - **Clear, minimal section nesting** — no painful indentation or long dot-delimited keys.
