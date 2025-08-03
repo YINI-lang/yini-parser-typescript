@@ -1,6 +1,6 @@
 # YINI Parser for Node.js
 
-YINI is a clean, minimal, and human-readable config format for structured configuration. This parser implements the YINI spec in TypeScript for Node.js, with support for nested sections, strict/lenient modes, and typed values.
+A TypeScript/Node.js parser for YINI — a clean, type-safe, structured config format with simple nested sections, comments, and support for strict validation.
 
 [![npm version](https://img.shields.io/npm/v/yini-parser.svg)](https://www.npmjs.com/package/yini-parser) [![All Tests](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml)
 
@@ -13,7 +13,7 @@ import YINI from 'yini-parser'
 const config = YINI.parseFile('./config.yini')
 ```
 
-A clean, minimal, human-readable config format—designed as an alternative to INI, YAML, and JSON.
+YINI (Yet another INI): YINI is a lightweight, human-friendly configuration format — simpler than YAML, but more expressive than INI.
 
 ➡️ See full [documentation or YINI format specification](https://github.com/YINI-lang/YINI-spec)
 
@@ -98,12 +98,12 @@ That's it!
 ▶️ Link to [examples/](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples) files.
 
 ## 💡 Why YINI?
-- **Easy to read and write**, minimal syntax noise, maximum clarity.
-- **Clear and minimal section nesting** without painful indentation rules or long dot nested strings, etc.
-- A perfect alternative to messy JSON, legacy INI, or complex YAML.
+- **Simple like INI** — but with strong typing, comments, and nested sections.
+- **Easy to read and write** — minimal syntax noise, maximum clarity.
+- **Clear, minimal section nesting** — no painful indentation or long dot-delimited keys.
 - Built for both **JavaScript and TypeScript**.
-- **Supports strict/lenient modes**, and all major data types.
-- Both **human-friendly**, and **machine-friendly**.
+- **Supports strict and lenient modes**, and all major data types.
+- Both **human-friendly** and **machine-friendly**.
 - 👉 See [how YINI compares to JSON, YAML, INI, and TOML](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples/compare-formats.md).
 - Want the full syntax reference? See the [YINI Specification](https://github.com/YINI-lang/YINI-spec).
   

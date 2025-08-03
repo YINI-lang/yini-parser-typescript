@@ -206,15 +206,11 @@ Expected JS output:
         // = "missing_key_name"  // In strict should throw error, while lenient should pass
         //         `
         const yini = `
-/*
-    corrupt yini
-    In strict should throw error, while lenient should pass.
-*/
-
-^ Section
-value = 42
-333 = "missing_key_name"	// (!) Invalid key!
-    `
+^ App
+    title = 'My App Title'
+    items = 25
+    isDarkTheme = true
+            `
 
         // YINI.parse(yini, false)
         console.log(toPrettyJSON(YINI.parse(yini, false)))
