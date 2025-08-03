@@ -26,9 +26,7 @@ Notes:
 
 In `package.json`, this line must be present:
 ```json
-...
 "type": "commonjs"
-...
 ```
 
 This means any .js files (config files, etc) must use `require()` instead of `import`.
