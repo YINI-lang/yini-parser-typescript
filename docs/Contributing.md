@@ -1,15 +1,14 @@
 # Contributing
 
-- First things first, welcome!
-- Feedback, bug reports, suggestions, and code contributions are welcome!
-- Feedback welcome 💬 — open an Issue or a Discussion.
-
-
+- First things first: welcome!
+- Feedback, bug reports, suggestions, or even a bit of roasting are all welcome.
+- Feel free to open a [discussion](https://github.com/YINI-lang/yini-parser-typescript/discussions) or [issue](https://github.com/YINI-lang/yini-parser-typescript/issues).
+- 
 ---
 
-Even though `yini-parser` is in beta state, your feedback, suggestions, and contributions are highly valued. 
+Even though `yini-parser` is in beta, your feedback, suggestions, and contributions are **highly valued**.
 
-If you find any bugs or errors in the `YINI` parser, something is not what you except to function, or anything else, feel free to make a new issue :)
+If you find any bugs, errors or other issues in the YINI parser, if something doesn't work as you expect, or you have other ideas—please make a new issue!
 
 ## Quick Start
 
@@ -17,16 +16,13 @@ Head over to the [Development-Setup](./Project-Setup.md).
 
 ## Submitting Changes
 
-Did you write a patch that fixes a bug or other issue?
+Of course, you are free to fork this repo and mess around with it. 😄  
+Did you write a patch that fixes a bug, adds a new feature or implenting test cases in tests? Thank you!
 
-Thank you!
-
-- Open a pull request (PR) against the `main` branch (make sure all tests passes by running `npm run test`).
+- Open a pull request (PR) against the `main` branch (make sure all tests pass by running `npm run test`).
 - Name the branch using one of the following prefixes:
-  * `fix/` if the branch is meant to fix an issue.
-  * `update/` if the branch updates information or data.
-  * `feature/` if the branch adds a new feature.
+  * `fix/`  for bug fixes.
+  * `update/` for updates to docs or data.
+  * `feature/` for new features.
   
-  **But before that, create an issue to discuss it so that PR is less likely to be wasted!** :)
-
-
+  **Before submitting a PR, it's a good idea to create an issue to discuss your changes—so your PR is less likely to be wasted!** 🙂

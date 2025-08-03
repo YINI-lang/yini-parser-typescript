@@ -2,3 +2,5 @@
 Hello there, your feedback, bug reports, suggestions, and code contributions are welcome!
 
 Head over to **[docs/Contributing.md](<./docs/Contributing.md>)**
+
+Or start a [discussion here](https://github.com/YINI-lang/yini-parser-typescript/discussions) :)
