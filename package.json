@@ -99,6 +99,9 @@
             "prettier --config ./.prettierrc --write"
         ]
     },
+    "publishConfig": {
+        "registry": "https://npm.pkg.github.com"
+    },
     "engines": {
         "node": ">=16"
     },
