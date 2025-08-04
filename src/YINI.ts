@@ -130,6 +130,7 @@ export default class YINI {
             hasNoNewlineAtEOF = true
         }
 
+        /*
         YINI.filePath = filePath
         let level: TBailSensitivityLevel = 0
         // if (bailSensitivity === 'auto' && !strictMode) level = 0
@@ -162,8 +163,13 @@ export default class YINI {
 
             devPrint('Complete result:')
             printObject(result)
-        }
-
+        }*/
+        const result = this.parse(
+            content,
+            strictMode,
+            bailSensitivity,
+            includeMetaData,
+        )
         return result
     }
 }
