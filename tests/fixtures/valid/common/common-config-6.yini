@@ -1,0 +1,43 @@
+@yini
+
+/*
+    Example: Web Application Configuration
+
+    Note:
+    - Each ^ at the start of a line defines a section.
+    - Multiple ^ characters indicate the nesting level (sub-section depth).
+      For example:
+        ^   = top-level section
+        ^^  = sub-section (child of previous section)
+        ^^^ = sub-sub-section (child of previous sub-section)
+*/
+
+^ App                 // Defines a top-level section named "App".
+name = "ExampleApp Web"
+version = "1.2.3"
+debug = false
+
+    ^^ Logging        // Defines a sub-section "Logging" under "App".
+    level = "info"
+    file = "logs/app.log"
+    maxSize = 1048576
+
+    ^^ Database       // Defines a sub-section "Database" under "App".
+    type = "postgres"
+    host = "db.example.com"
+    port = 5432
+    username = "some_user"
+    password = "s3cret"
+    poolSize = 10
+
+        ^^^ Options   // Defines a sub-section "Options" under "Database".
+        ssl = true
+        connectionTimeout = 30
+
+    ^^ Features       // Defines a sub-section "Features" under "App".
+    enableSignup = true
+    betaBanner = false
+
+^ Env                 // Defines another top-level section named "Env".
+NODE_ENV = "production"
+TIMEZONE = "Europe/Gothenburg"

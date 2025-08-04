@@ -206,34 +206,30 @@ Expected JS output:
         // = "missing_key_name"  // In strict should throw error, while lenient should pass
         //         `
         const yini = `
-/*
-    Example: Local Image Processing Tool Configuration
-*/
+^ window
+title = 'Sample Window'  // Strings can be enclosed in either ' or ".
+id = 'window_main'
 
-^ General
-outputDir = "./results"
-overwrite = false
+^ image
+src = 'gfx/bg.png'
+id = 'bg1'
+isCentered = true
 
-    ^^ Watermark
-    enabled = true
-    text = "Sample"
-    opacity = 0.3
+^ text
+content = 'Click here!'
+id = 'text1'
+isCentered = true
+url = 'images/'
 
-^ Filters
-enabled = true
-
-    ^^ Blur
-    radius = 2
-
-    ^^ Sharpen
-    amount = 1.2
-
-    ^^ Custom
-    script = "./filters/custom-filter.js"
+// Following is a list with other lists as elements.
+styles = [
+    ['font-weight', 'bold'], ['size', 36], ['font', 'arial']
+]
             `
 
-        // YINI.parse(yini, false)
         console.log(toPrettyJSON(YINI.parse(yini, false)))
+        // const fileName = './tests/fixtures/valid/common/common-config-2.yini'
+        // YINI.parseFile(fileName, false)
 
         //         parseUntilError(`
         // ^ Section1

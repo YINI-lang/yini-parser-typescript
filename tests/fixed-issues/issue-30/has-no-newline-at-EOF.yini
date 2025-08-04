@@ -1,0 +1,7 @@
+@yini
+
+^ General
+outputDir = "./results"
+overwrite = false
+
+// (!) NOTE: This file should have no newline at EOF!
