@@ -1,6 +1,6 @@
 # YINI Parser for Node.js
 
-A TypeScript/Node.js parser for YINI — A structured config format with nested sections, comments, and support for strict validation.
+A TypeScript/Node.js parser for YINI — A type-safe, structured, and human-readable config format with nested sections, types, comments, and support for strict validation.
 
 [![npm version](https://img.shields.io/npm/v/yini-parser.svg)](https://www.npmjs.com/package/yini-parser) [![All Tests](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml)
 
