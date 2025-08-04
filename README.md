@@ -1,6 +1,6 @@
 # YINI Parser for Node.js
 
-A TypeScript/Node.js parser for YINI — a clean, type-safe, structured config format with simple nested sections, comments, and support for strict validation.
+A TypeScript/Node.js parser for YINI — A structured config format with nested sections, comments, and support for strict validation.
 
 [![npm version](https://img.shields.io/npm/v/yini-parser.svg)](https://www.npmjs.com/package/yini-parser) [![All Tests](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml)
 
@@ -13,7 +13,7 @@ import YINI from 'yini-parser'
 const config = YINI.parseFile('./config.yini')
 ```
 
-YINI (Yet another INI): YINI is a lightweight, human-friendly configuration format — simpler than YAML, but more expressive than INI.
+YINI (Yet another INI): YINI is a configuration format designed for readability and structure, inspired by INI and YAML.
 
 ➡️ See full [documentation or YINI format specification](https://github.com/YINI-lang/YINI-spec)
 
@@ -35,7 +35,7 @@ YINI is a simple, human-friendly configuration format inspired by INI and JSON.
 ---
 
 ## 🙋‍♀️ Why YINI?
-- **YINI is an alternative** to other great config formats like INI, JSON, YAML, XML, and TOML — designed for clarity, simplicity, and straightforward section nesting.
+- **YINI is an alternative** to other great config formats like INI, JSON, YAML, XML, and TOML — Supports section nesting and explicit syntax for configuration files.
 - **Started as a personal project and a research challenge:** Provides structure similar to INI, with features inspired by JSON and YAML.
 - **Built for clarity:**
     * Uses minimal syntax for humans, especially for nested sections.
@@ -47,11 +47,11 @@ YINI is a simple, human-friendly configuration format inspired by INI and JSON.
 
 ## 💡 What is YINI?
 - **Simple like INI** — but with strong typing, comments, and nested sections.
-- **Easy to read and write** — minimal syntax noise, maximum clarity.
-- **Clear, minimal section nesting** — no painful indentation or long dot-delimited keys.
+- **Provides concise, structured syntax** for configuration.
+- Supports section nesting **without requiring indentation or dot-delimited keys**.
 - This repo/parser is built for both **JavaScript and TypeScript**.
 - **Supports strict and lenient modes**, and all major data types.
-- Both **human-friendly** and **machine-friendly**.
+- Can be **edited manually** or **processed programmatically**.
 - 👉 See [how YINI compares to JSON, YAML, INI, and TOML](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples/compare-formats.md).
 - Want the full syntax reference? See the [YINI Specification](https://github.com/YINI-lang/YINI-spec).
   
