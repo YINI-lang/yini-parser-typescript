@@ -206,10 +206,30 @@ Expected JS output:
         // = "missing_key_name"  // In strict should throw error, while lenient should pass
         //         `
         const yini = `
-^ App
-    title = 'My App Title'
-    items = 25
-    isDarkTheme = true
+/*
+    Example: Local Image Processing Tool Configuration
+*/
+
+^ General
+outputDir = "./results"
+overwrite = false
+
+    ^^ Watermark
+    enabled = true
+    text = "Sample"
+    opacity = 0.3
+
+^ Filters
+enabled = true
+
+    ^^ Blur
+    radius = 2
+
+    ^^ Sharpen
+    amount = 1.2
+
+    ^^ Custom
+    script = "./filters/custom-filter.js"
             `
 
         // YINI.parse(yini, false)
