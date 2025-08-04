@@ -112,8 +112,9 @@ That's it!
 ---
 
 ## Intro to YINI Config Format
+**YINI** is a simple and readable configuration format. Sections are defined with `^ SectionName`, and values are assigned using `key = value`. The format supports common data types (same as those found in JSON), including strings, numbers, booleans, nulls, and lists. 
 
-For a beginner-friendly walkthrough and basic usage examples, see the [Getting Started: Intro to YINI Config Format](https://github.com/YINI-lang/YINI-spec/blob/develop/Docs/Intro-to-YINI-Config-Format.md) tutorial.
+To learn more, see the [Getting Started: Intro to YINI Config Format](https://github.com/YINI-lang/YINI-spec/blob/develop/Docs/Intro-to-YINI-Config-Format.md) tutorial.
 
 ---
 
@@ -360,7 +361,7 @@ We welcome feedback, bug reports, feature requests, and code contributions!
 - ➡️ [Read the YINI Specification](https://github.com/YINI-lang/YINI-spec/blob/release/YINI-Specification.md#table-of-contents)  
   *Full formal spec for the YINI format, including syntax and features.*
 
-- ➡️ [YINI Parser on GitHub](https://github.com/YINI-lang/yini-parser-typescript)  
+- ➡️ [YINI CLI on GitHub](https://github.com/YINI-lang/yini-cli)  
   *TypeScript source code, issue tracker, and contributing guide.*
 
 - ➡️ [YINI vs Other Formats](https://github.com/YINI-lang/YINI-spec/tree/release#-summary-difference-with-other-formats)  
@@ -370,7 +371,7 @@ We welcome feedback, bug reports, feature requests, and code contributions!
   *Learn about the motivations and design decisions behind YINI.*
 
 - ➡️ [YINI Project](https://github.com/YINI-lang)  
-  *YINI home.
+  *YINI home.*
 
 ---
 
