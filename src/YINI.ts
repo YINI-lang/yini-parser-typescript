@@ -130,8 +130,8 @@ export default class YINI {
             hasNoNewlineAtEOF = true
         }
 
-        /*
         YINI.filePath = filePath
+        /*
         let level: TBailSensitivityLevel = 0
         // if (bailSensitivity === 'auto' && !strictMode) level = 0
         // if (bailSensitivity === 'auto' && strictMode) level = 1
@@ -170,6 +170,11 @@ export default class YINI {
             bailSensitivity,
             includeMetaData,
         )
+        if (hasNoNewlineAtEOF) {
+            console.warn(
+                `No newline at end of file, it\'s recommended to end a file with a newline. File:\n"${filePath}"`,
+            )
+        }
         return result
     }
 }

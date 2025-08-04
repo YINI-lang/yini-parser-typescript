@@ -1,0 +1,24 @@
+/*
+    Example: Local Image Processing Tool Configuration
+*/
+
+^ General
+outputDir = "./results"
+overwrite = false
+
+    ^^ Watermark
+    enabled = true
+    text = "Sample"
+    opacity = 0.3
+
+^ Filters
+enabled = true
+
+    ^^ Blur
+    radius = 2
+
+    ^^ Sharpen
+    amount = 1.2
+
+    ^^ Custom
+    script = "./filters/custom-filter.js"

@@ -9,7 +9,6 @@ const DIR_OF_FIXTURES = './'
  * Tests for issue #25.
  */
 describe('Issue #25 Tests:', () => {
-    // Dir with smoke fixtures.
     const baseDir = path.join(__dirname, DIR_OF_FIXTURES)
     const fileName = 'corrupt-missing-key.yini'
 

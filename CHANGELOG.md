@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## --dev/uppcoming--
+- Fixed an issue where parseFile(..) did not output a warning when parsing a file missing a newline at EOF. Plus added test cases to check that it is fixed (in `tests/fixed-issues/issue-30`).
+
 ## 1.0.1-beta - 2025 Aug
 - Fixed catching lexer related errors correctly.
 - Improves error and test handling for invalid YINI syntax.
