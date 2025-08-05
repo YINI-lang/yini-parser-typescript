@@ -31,6 +31,9 @@ src/**/*.d.ts
 # ANTLR4 output directory where all output is generated to.
 gen-output
 
+# Ignore .antlr dir itself and all its contents.
+**/.antlr/**
+
 # Ignore logs...
 logs
 *.log
@@ -40,5 +43,4 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
-*.antlr
 *.local
