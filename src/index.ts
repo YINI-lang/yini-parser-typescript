@@ -206,28 +206,120 @@ Expected JS output:
         // = "missing_key_name"  // In strict should throw error, while lenient should pass
         //         `
         const yini = `
-^ window
-title = 'Sample Window'  // Strings can be enclosed in either ' or ".
-id = 'window_main'
+#!/usr/bin/env yini
 
-^ image
-src = 'gfx/bg.png'
-id = 'bg1'
-isCentered = true
+/*
+    A comprehensive YINI example that exercises as
+    many syntax features, section header styles, data
+    types, and comment types as possible.
+*/
 
-^ text
-content = 'Click here!'
-id = 'text1'
-isCentered = true
-url = 'images/'
+/*
+ * Optional directive variants (use only one "@yini" per file)
+ */
+//@yini
+//@Yini
+//@YINI
 
-// Following is a list with other lists as elements.
-styles = [
-    ['font-weight', 'bold'], ['size', 36], ['font', 'arial']
-]
+/*
+    Example of a YINI document - all features showcased.
+*/
+
+// Block comments (as above) and inline double-slash comments.
+; Semicolon full-line comment (must be at start of line).
+# Hash comment with space after hash.
+#   Hash comment with tabs and spaces after hash.
+-- Disabled line, appears dim/ghosted.
+--env = "dev"  // Disabled assignment (should be ignored).
+// Double-slash comment
+
+^ Section                  // Basic section header
+Enabled = true
+customName = 'MyService'
+count = 42
+count2 = -1
+count3 = 0
+float = 0.42
+--float2 = -0.123
+--float3 = 0.0
+--float4 = 0.00
+--float5 = 321.0001
+--float6 = -99.0099
+--exp = 0.99e3
+--exp2 = -0.30e2
+hexValue = 0xDEADBEEF
+hexAlt = #FFEEAA
+flag = ON     // Boolean alternative literal
+debug = off   // Lowercase boolean
+
+rawString = "This is a\\n**raw**\\nstring, it's as-is, no escapes are interpreted"
+rawStringWithSingleQuote = 'This is a "raw" string, it is as-is, no escapes are interpreted'
+
+// Triple quoted string, are multi-line. 
+// (!) NOTE: Only enclosed in double quotes supported!
+doc1 = """Raw triple-quoted
+string with \\n not interpreted
+and line breaks kept."""
+
+doc2 = C"""Classic triple-quoted
+string: newlines and escapes like \\n
+are interpreted."""
+
+    ^^ Cache             // Nested section with classic marker
+    type = "redis"
+    TTL = 3600
+    enabled = FALSE
+    list = [1, 2, 3, "str", true, null]
+
+        ^^^ Options      // Third-level section
+        host = '127.0.0.1'
+        port = 6379
+        _meta = { id: 1, name: "Main", tags: {a: 3, b: 2, c: 1} }
+        _meta2 = [ 'style', ['Volvo', 'Doc', 'Cat'] ]
+        _meta3 = [ 'font', 42, 'UI', [55, 44, 33], "default", 'description of' ]
+        _meta4 = [
+            {role: "admin", value: 1},
+            {role: "user", value: 2},
+            {role: "guest", value: 0}
+        ]
+
+^ Env                    // New top-level section
+code = "dev"
+mode = ON
+pi = 3.14159
+list_empty = []
+object_empty = {}
+
+; Shorthand numeric section marker headers.
+^1 Database    # Section header using numeric shorthand (^1)
+enabled = true
+user = "root"
+password = 'secret'
+roles = ["admin", "user", "guest"]
+timeout = null
+
+    ^2 Cache    # Sub-section using numeric shorthand (^2)
+    type = "memcached"
+    TTL = 1800
+
+        ^3 Options      # Third-level sub-section with numeric marker
+        host = "192.168.1.1"
+        port = 11211
+
+< AlternativeMarkerSection
+val = 123
+
+    << AltSubSection
+    val2 = "abc"
+
+        <<< AltThirdLevel
+        val3 = false
+
+// End of demo
+
             `
 
-        console.log(toPrettyJSON(YINI.parse(yini, false)))
+        console.log(toPrettyJSON(YINI.parse(yini, true)))
         // const fileName = './tests/fixtures/valid/common/common-config-2.yini'
         // YINI.parseFile(fileName, false)
 
