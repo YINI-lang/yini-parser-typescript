@@ -384,25 +384,25 @@ https://github.com/YINI-lang/YINI-spec
     <th>Test</th>
     <th>Verf</th>
     <th>Notes</th>
-  </tr>
+    </tr>
 
   <tr>
     <td>Negative numbers</td>
     <td>🔲</td>
     <td><code>-123</code>, <code>-9.22</code></td>
     <td>✅</td>
+    <td>✅</td>
     <td>🔲</td>
-    <td>🔲</td>
-    <td></td>
+    <td>Borh ints and floats</td>
   </tr>
   <tr>
     <td>Exponent notation numbers</td>
     <td>🔲</td>
     <td><code>3e4</code></td>
+    <td>✅</td>
+    <td>✅</td>
     <td>🔲</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td></td>
+    <td>Incl. neg. exp.</td>
   </tr>
   <tr>
     <td>Binary numbers</td>

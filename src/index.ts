@@ -206,22 +206,17 @@ Expected JS output:
         // = "missing_key_name"  // In strict should throw error, while lenient should pass
         //         `
         const yini = `
-^ Section                  // Basic section header
-enabled = true
-specialFeature55 = ON
-custom_name_333 = 'MyService'
-__os__ = "AOS4"
-count = 42
-count2 = -1
-count3 = 0
-float = 0.42
-float2 = -0.123
-float3 = 0.0
-float4 = 0.00
-float5 = 321.0001
-float6 = -99.0099
-exp = 0.99e3
-exp2 = -0.30e2
+^ Section                   // Basic section header
+tiny = 1e-5                 // 0.00001
+big = 2e5                   // 200000
+seconds_in_year = 3.1536e7  // 31536000
+short = 5e1                 // 50
+floaty = 7.77e2             // 777
+milli = 1e-3                // 0.001
+value1 = .33                // 0.33
+value2 = -.33               // -0.33
+value3 = .3e5               // 30000.0
+value4 = -.3e5              // -30000.0
             `
 
         console.log(toPrettyJSON(YINI.parse(yini, true)))

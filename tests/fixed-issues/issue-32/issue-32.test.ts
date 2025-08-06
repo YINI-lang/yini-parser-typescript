@@ -24,10 +24,10 @@ describe('Issue #32 Tests:', () => {
 
         // Assert.
         expect(result.Section.float2).toEqual(-0.123)
-        expect(result.Section.float2).toEqual(0.0)
-        expect(result.Section.float2).toEqual(0.0)
-        expect(result.Section.float2).toEqual(321.0001)
-        expect(result.Section.float2).toEqual(-99.0099)
+        expect(result.Section.float3).toEqual(0.0)
+        expect(result.Section.float4).toEqual(0.0)
+        expect(result.Section.float5).toEqual(321.0001)
+        expect(result.Section.float6).toEqual(-99.0099)
         expect(result.Section.exp).toEqual(0.99e3)
         expect(result.Section.exp2).toEqual(-0.3e2)
     })
@@ -124,7 +124,7 @@ describe('Additional issue #32 Tests:', () => {
             value = .33
         `
         // Act.
-        const result = YINI.parseFile(validYini, true)
+        const result = YINI.parse(validYini, true)
         debugPrint('result:')
         debugPrint(result)
 
@@ -138,7 +138,7 @@ describe('Additional issue #32 Tests:', () => {
             value = -.33
         `
         // Act.
-        const result = YINI.parseFile(validYini, true)
+        const result = YINI.parse(validYini, true)
         debugPrint('result:')
         debugPrint(result)
 
@@ -152,7 +152,7 @@ describe('Additional issue #32 Tests:', () => {
             value = .3e5
         `
         // Act.
-        const result = YINI.parseFile(validYini, true)
+        const result = YINI.parse(validYini, true)
         debugPrint('result:')
         debugPrint(result)
 
@@ -166,7 +166,7 @@ describe('Additional issue #32 Tests:', () => {
             value = -.3e5
         `
         // Act.
-        const result = YINI.parseFile(validYini, true)
+        const result = YINI.parse(validYini, true)
         debugPrint('result:')
         debugPrint(result)
 

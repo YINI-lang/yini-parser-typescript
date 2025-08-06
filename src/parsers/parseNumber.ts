@@ -7,6 +7,15 @@ const parseNumberLiteral = (
 ): { type: TDataType; value: number } => {
     debugPrint('-> Entered parseNumberLiteral(..), txt: ' + txt)
 
+    if (/^[+-]?(?:\d+\.\d*|\d*\.?\d+)e[+-]?\d+$/i.test(txt)) {
+        // Exp. numbers
+        debugPrint('* Identified as an exp number')
+        return {
+            type: 'Number-Float',
+            // value: parseInt(txt.replace('#', '0x'), 16),
+            value: parseFloat(txt),
+        }
+    }
     if (/^0[xX]|#/.test(txt)) {
         // Prefix: 0x, 0X, #
         debugPrint('* Identified as a hex number')
