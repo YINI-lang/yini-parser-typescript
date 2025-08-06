@@ -217,36 +217,67 @@ Expected JS output:
 /*
  * Optional directive variants (use only one "@yini" per file)
  */
-//@yini
-//@Yini
-//@YINI
+@yini
+--@Yini
+--@YINI
 
 /*
     Example of a YINI document - all features showcased.
 */
 
+/*
+ * All comment types/styles
+ */
 // Block comments (as above) and inline double-slash comments.
 ; Semicolon full-line comment (must be at start of line).
-# Hash comment with space after hash.
-#   Hash comment with tabs and spaces after hash.
--- Disabled line, appears dim/ghosted.
+# Hash comment with space after hash (must have tab/space after hash).
+#   Hash comment with tabs and spaces after hash (must have tab/space after hash).
+-- Disabled line, ignored by the parser.
 --env = "dev"  // Disabled assignment (should be ignored).
 // Double-slash comment
 
-^ Section                  // Basic section header
-Enabled = true
-customName = 'MyService'
-count = 42
-count2 = -1
-count3 = 0
-float = 0.42
---float2 = -0.123
---float3 = 0.0
---float4 = 0.00
---float5 = 321.0001
---float6 = -99.0099
---exp = 0.99e3
---exp2 = -0.30e2
+/*
+ * All basic types
+ */
+
+^ TopSection                // Basic section header (this is a double-slash inline-comment)
+; Strings are raw by default
+rawStr = "Hello world"      // Member is key-value pair, (this is a hash inline-comment)
+string1  = 'My Service Name' // With single quotes
+string2 = "My Service Name" // With double quotes
+string3 = 'C:\\Users\\Name'   // Strings are raw by default
+string4 = './**'            // Any \ are preserved as-is in raw strings
+string5 = "\\__/"             # Hash inline comment
+string6 = "**/*.js.map"      # Hash inline comment
+; Integer numbers
+int1  = 42
+int2 = -1
+int3 = 0
+; Floating point numbers
+float1  = 0.42
+float2 = -0.123
+float3 = 0.0
+float4 = 0.00
+float5 = 321.0001
+float6 = -99.0099
+; Boolean literals are case-insensitive
+bool1 = true
+bool2 = false
+bool3 = Yes     # Alternative true
+bool4 = No      # Alternative false
+bool5 = ON      # Alternative true
+bool6 = OFF     # Alternative false
+
+/*
+ * More advanced numbers number notations
+ */
+
+^^ MoreAdvancedNumbers      // Sub-section of "TopSection"
+; Exponential numbers (scientific notation)
+exp1 = 0.99e3
+exp2 = -0.30e2
+exp3 = 1.0e0    // Edge-case!
+exp4 = .5e2      # Edge-case!
 hexValue = 0xDEADBEEF
 hexAlt = #FFEEAA
 flag = ON     // Boolean alternative literal
