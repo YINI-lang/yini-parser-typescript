@@ -12,13 +12,15 @@ Here you'll find some info for install/setup/directory structure.
 ---
 
 ## 🏗 Main Techs
-- Node.js
-- TypeScript
-- Jest (tests)
-- GitHub Actions (CI/CD)
-- ESLint (code style / linting)
-- ANTLR4 grammar integration
-
+- **TypeScript** - Core language for the parser and API
+- **Node.js** - Uses CommonJS (CJS) for compatibility (as opposed to ESM (ECMAScript Modules))
+- **ANTLR4** - Grammar-driven lexer and parser generation
+- **Grammar integration/implementation** - Of the ANTLR4-generated lexer/parser in TypeScript
+- **Jest** - Testing framework for all test suites
+- **CI/CD** - GitHub Actions for continuous integration and automated releases
+- **Prettier / ESLint** - Code formatting and linting tools
+- **cross-env** - Environment variable management
+  
 ---
 
 Notes:
