@@ -207,11 +207,12 @@ Expected JS output:
         //         `
         const yini = `
 #!/usr/bin/env yini
+# Optional shebang, must appear on first line
 
 /*
     A comprehensive YINI example that exercises as
     many syntax features, section header styles, data
-    types, and comment types as possible.
+    types, and comment types/styles as possible.
 */
 
 /*
@@ -239,9 +240,9 @@ Expected JS output:
 /*
  * All basic types
  */
-
 ^ TopSection                // Basic section header (this is a double-slash inline-comment)
-; Strings are raw by default
+
+; Strings are raw by default, string must always be enclosed by quotes
 rawStr = "Hello world"      // Member is key-value pair, (this is a hash inline-comment)
 string1  = 'My Service Name' // With single quotes
 string2 = "My Service Name" // With double quotes
@@ -249,10 +250,12 @@ string3 = 'C:\\Users\\Name'   // Strings are raw by default
 string4 = './**'            // Any \ are preserved as-is in raw strings
 string5 = "\\__/"             # Hash inline comment
 string6 = "**/*.js.map"      # Hash inline comment
+
 ; Integer numbers
 int1  = 42
 int2 = -1
 int3 = 0
+
 ; Floating point numbers
 float1  = 0.42
 float2 = -0.123
@@ -260,6 +263,7 @@ float3 = 0.0
 float4 = 0.00
 float5 = 321.0001
 float6 = -99.0099
+
 ; Boolean literals are case-insensitive
 bool1 = true
 bool2 = false
@@ -268,31 +272,60 @@ bool4 = No      # Alternative false
 bool5 = ON      # Alternative true
 bool6 = OFF     # Alternative false
 
+; Null literals are also case-insensitive
+null1 = null
+null2 = Null
+null3 = NULL
+
 /*
  * More advanced numbers number notations
  */
-
 ^^ MoreAdvancedNumbers      // Sub-section of "TopSection"
+
 ; Exponential numbers (scientific notation)
 exp1 = 0.99e3
 exp2 = -0.30e2
 exp3 = 1.0e0    // Edge-case!
 exp4 = .5e2      # Edge-case!
-hexValue = 0xDEADBEEF
-hexAlt = #FFEEAA
-flag = ON     // Boolean alternative literal
-debug = off   // Lowercase boolean
+; Hexadecimal notation
+hex2 = #FFEEAA    // A hash without any tab/space after is interpreted as hex
+hex1 = 0xDEADBEEF   // The common "0x" works too
+; Binary notation
+//@todo
+; Duodecimal notation
+//@todo
+; Oct notation
+//@todo
 
-rawString = "This is a\\n**raw**\\nstring, it's as-is, no escapes are interpreted"
-rawStringWithSingleQuote = 'This is a "raw" string, it is as-is, no escapes are interpreted'
+; Raw strings can optionally be prefixed with R or r to be explicit
+rawString1 = R'This is a "raw" string, it is as-is, no escapes are interpreted'
+rawString2 = r"This is a\\n**raw**\\nstring, it's as-is, no escapes are interpreted"
+
+; Hyper strings are prefixed with H or h
+; They are multi-line, trims & normalizes whitespaces
+hyperStr1 = H'
+    This is a
+        multi-line  string.
+    All   extra   spaces
+are   normalized!'
+; Above resulting value: This will trim and normalize whitespace
+hyperStr2 = h"
+        This is a multi-line  string. All   extra   spaces are   normalized!
+    "
+; Above resulting value: This will trim and normalize whitespace
+
+; Classic strings are prefixed with C or c
+; They support and interpret escape sequences like \\n, \\t
+classicStr1 = C'Hello,\\nWorld!\\tWelcome to YINI.'
+classicStr2 = c"Hello,\\nWorld!\\tWelcome to YINI."
 
 // Triple quoted string, are multi-line. 
 // (!) NOTE: Only enclosed in double quotes supported!
-doc1 = """Raw triple-quoted
+tripleQStr = """Raw triple-quoted
 string with \\n not interpreted
 and line breaks kept."""
 
-doc2 = C"""Classic triple-quoted
+tripleQClassicStr = C"""Classic triple-quoted (prefixed with C or c)
 string: newlines and escapes like \\n
 are interpreted."""
 
@@ -305,10 +338,10 @@ are interpreted."""
         ^^^ Options      // Third-level section
         host = '127.0.0.1'
         port = 6379
-        _meta = { id: 1, name: "Main", tags: {a: 3, b: 2, c: 1} }
-        _meta2 = [ 'style', ['Volvo', 'Doc', 'Cat'] ]
-        _meta3 = [ 'font', 42, 'UI', [55, 44, 33], "default", 'description of' ]
-        _meta4 = [
+        _object = { id: 1, name: "Main", tags: {a: 3, b: 2, c: 1} }
+        _list = [ 'style', ['Volvo', 'Doc', 'Cat'] ]
+        _meta1 = [ 'font', 42, 'UI', [55, 44, 33], "default", 'description of' ]
+        _meta2 = [
             {role: "admin", value: 1},
             {role: "user", value: 2},
             {role: "guest", value: 0}
@@ -347,7 +380,6 @@ val = 123
         val3 = false
 
 // End of demo
-
             `
 
         console.log(toPrettyJSON(YINI.parse(yini, true)))
