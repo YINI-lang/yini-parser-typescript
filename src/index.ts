@@ -206,28 +206,20 @@ Expected JS output:
         // = "missing_key_name"  // In strict should throw error, while lenient should pass
         //         `
         const yini = `
-^ window
-title = 'Sample Window'  // Strings can be enclosed in either ' or ".
-id = 'window_main'
-
-^ image
-src = 'gfx/bg.png'
-id = 'bg1'
-isCentered = true
-
-^ text
-content = 'Click here!'
-id = 'text1'
-isCentered = true
-url = 'images/'
-
-// Following is a list with other lists as elements.
-styles = [
-    ['font-weight', 'bold'], ['size', 36], ['font', 'arial']
-]
+^ Section                   // Basic section header
+tiny = 1e-5                 // 0.00001
+big = 2e5                   // 200000
+seconds_in_year = 3.1536e7  // 31536000
+short = 5e1                 // 50
+floaty = 7.77e2             // 777
+milli = 1e-3                // 0.001
+value1 = .33                // 0.33
+value2 = -.33               // -0.33
+value3 = .3e5               // 30000.0
+value4 = -.3e5              // -30000.0
             `
 
-        console.log(toPrettyJSON(YINI.parse(yini, false)))
+        console.log(toPrettyJSON(YINI.parse(yini, true)))
         // const fileName = './tests/fixtures/valid/common/common-config-2.yini'
         // YINI.parseFile(fileName, false)
 
