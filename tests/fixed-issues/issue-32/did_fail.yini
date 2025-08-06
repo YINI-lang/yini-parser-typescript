@@ -1,0 +1,13 @@
+/*
+	Issues with some floats, negative floats, and scientific notation
+	that is valid in other common programming languages, e.g. Python.
+*/
+
+^ Section
+float2 = -0.123
+float3 = 0.0    // This line works!
+float4 = 0.00
+float5 = 321.0001
+float6 = -99.0099
+exp = 0.99e3    // This line works!
+exp2 = -0.30e2
