@@ -105,6 +105,7 @@ That's it!
 
 ▶️ Link to [examples/](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples) files.
 
+▶️ Link to [Demo Apps](https://github.com/YINI-lang/yini-demo-apps/tree/main) with complete basic usage.
 ---
 
 ## Intro to YINI Config Format
