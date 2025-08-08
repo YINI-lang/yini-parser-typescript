@@ -5,6 +5,8 @@
     A comprehensive YINI example that exercises as
     many syntax features, section header styles, data
     types, and comment types/styles as possible.
+
+    Version: 1.0.0
 */
 
 /*
@@ -35,13 +37,13 @@
 ^ TopSection                // Basic section header (this is a double-slash inline-comment)
 
 ; Strings are raw by default, string must always be enclosed by quotes
-rawStr = "Hello world"       // Member is key-value pair, (this is a hash inline-comment)
-string1  = 'My Service Name' // With single quotes
-string2 = "My Service Name"  // With double quotes
-string3 = 'C:\Users\Name'    // Strings are raw by default
+rawStr = 'Hello world'       // Member is key-value pair, (this is a hash inline-comment)
+string1  = "My Service Name" // With double quotes
+string2 = 'My Service Name'  // With single quotes
+string3 = "C:\Users\Name"    // Strings are raw by default
 string4 = './**'             // Any \ are preserved as-is in raw strings
 string5 = "\__/"             # Hash inline comment
-string6 = "**/*.js.map"      # Hash inline comment
+string6 = '**/*.js.map'      # Hash inline comment
 
 ; Integer numbers
 int1  = 42
@@ -120,6 +122,17 @@ and line breaks kept."""
 tripleQClassicStr = C"""Classic triple-quoted (prefixed with C or c)
 string: newlines and escapes like \n
 are interpreted."""
+
+; Section names in headers can be backticked if they include
+; spacer or special characters.
+^ `Backticked Section Name`
+
+; Member keys can also be backticked.
+`Project Name` = "My Project"
+`Created By` = "Jane Developer"
+`License Type` = "MIT"
+`Is Active` = true
+
 
     ^^ Cache             // Nested section with classic marker
     type = "redis"
