@@ -205,21 +205,12 @@ Expected JS output:
         // ^ Section
         // = "missing_key_name"  // In strict should throw error, while lenient should pass
         //         `
-        const yini = `
-^ Section                   // Basic section header
-tiny = 1e-5                 // 0.00001
-big = 2e5                   // 200000
-seconds_in_year = 3.1536e7  // 31536000
-short = 5e1                 // 50
-floaty = 7.77e2             // 777
-milli = 1e-3                // 0.001
-value1 = .33                // 0.33
-value2 = -.33               // -0.33
-value3 = .3e5               // 30000.0
-value4 = -.3e5              // -30000.0
-            `
 
-        console.log(toPrettyJSON(YINI.parse(yini, true)))
+        // console.log(toPrettyJSON(YINI.parse(yini, true)))
+        console.log(
+            toPrettyJSON(YINI.parseFile('comprehensive-example.yini', true)),
+        )
+
         // const fileName = './tests/fixtures/valid/common/common-config-2.yini'
         // YINI.parseFile(fileName, false)
 
