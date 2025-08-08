@@ -38,10 +38,9 @@ YINI is a simple, human-friendly configuration format inspired by INI and JSON.
 - **YINI is an alternative** to other great config formats like INI, JSON, YAML, XML, and TOML — Supports section nesting and explicit syntax for configuration files.
 - **Started as a personal project and a research challenge:** Provides structure similar to INI, with features inspired by JSON and YAML.
 - **Built for clarity:**
-    * Uses minimal syntax for humans, especially for nested sections.
-    * Uses a concise syntax, aims to not have too much syntax noise.
+    * Uses a concise syntax to minimize unnecessary characters.
     * Supports commonly used configuration structures.
-- *Originated from practical needs **for configuration clarity, simplicity, minimalism, and flexibility**.
+- *Developed to meet practical needs, driven by curiosity and a desire **for configuration clarity, simplicity, minimalism, and flexibility**.
 
 ---
 
@@ -52,7 +51,7 @@ YINI is a simple, human-friendly configuration format inspired by INI and JSON.
 - This repo/parser is built for both **JavaScript and TypeScript**.
 - **Supports strict and lenient modes**, and all major data types.
 - Can be **edited manually** or **processed programmatically**.
-- 👉 See [how YINI compares to JSON, YAML, INI, and TOML](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples/compare-formats.md).
+- 👉 See [how YINI compares with JSON, YAML, INI, and TOML](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples/compare-formats.md).
 - Want the full syntax reference? See the [YINI Specification](https://github.com/YINI-lang/YINI-spec).
   
 ---
