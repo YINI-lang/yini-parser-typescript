@@ -9,8 +9,6 @@ import { parseMain } from './parseEntry'
 import { getFileNameExtension } from './utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from './utils/print'
 
-type TBailSensitivity = 'auto' & TBailSensitivityLevel
-
 /**
  * This class is the public API, which exposes only parse(..) and
  * parseFile(..), rest of the implementation details are hidden.
@@ -54,12 +52,9 @@ export default class YINI {
         }
 
         let level: TBailSensitivityLevel = 0
-        // if (bailSensitivity === 'auto' && !strictMode) level = 0
-        // if (bailSensitivity === 'auto' && strictMode) level = 1
         if (bailSensitivity === 'auto') {
             if (!strictMode) level = 0
             if (strictMode) level = 1
-            // if (process.env.NODE_ENV === 'test') level = 1
         } else {
             level = bailSensitivity
         }
@@ -131,39 +126,6 @@ export default class YINI {
         }
 
         YINI.filePath = filePath
-        /*
-        let level: TBailSensitivityLevel = 0
-        // if (bailSensitivity === 'auto' && !strictMode) level = 0
-        // if (bailSensitivity === 'auto' && strictMode) level = 1
-        if (bailSensitivity === 'auto') {
-            if (!strictMode) level = 0
-            if (strictMode) level = 1
-            // if (process.env.NODE_ENV === 'test') level = 1
-        } else {
-            level = bailSensitivity
-        }
-
-        const options: IParseMainOptions = {
-            isStrict: strictMode,
-            bailSensitivityLevel: level,
-            isIncludeMeta: includeMetaData,
-            isWithDiagnostics: isDev() || isDebug(),
-            isWithTiming: isDebug(),
-        }
-
-        debugPrint()
-        debugPrint('==== Call parse ==========================')
-        const result: any = parseMain(content, options)
-        debugPrint('==== End call parse ==========================\n')
-
-        if (isDev()) {
-            console.log()
-            devPrint('YINI.parse(..): result:')
-            console.log(result)
-
-            devPrint('Complete result:')
-            printObject(result)
-        }*/
         const result = this.parse(
             content,
             strictMode,

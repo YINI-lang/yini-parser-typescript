@@ -99,9 +99,9 @@ if (isProdEnv()) {
         //     title = "My Program"
         // `
 
-        const yini = ` // corrupt yini
+        const yini = `
         ^ Section
-        = "missing_key_name"  // In strict should throw error, while lenient should pass
+        qq = "missing_key_name"  // In strict should throw error, while lenient should pass
                 `
 
         console.log(toPrettyJSON(YINI.parse(yini, true)))
