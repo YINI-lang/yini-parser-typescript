@@ -1,0 +1,8 @@
+// Common negative edge-case decimal integers.
+^ NegInts
+int1 = -0
+int2 = -1                     // smallest negative integer
+int3 = -2                     // just below -1
+int4 = -2147483648            // min 32-bit signed integer
+int5 = -9223372036854775808   // min 64-bit signed integer
+int6 = -999999999             // large negative but still within 32-bit range

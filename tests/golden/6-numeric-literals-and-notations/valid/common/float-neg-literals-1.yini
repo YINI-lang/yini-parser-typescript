@@ -1,0 +1,12 @@
+^ NegFloat
+float1 = -0.0                // negative zero (distinct sign bit in IEEE 754)
+float2 = -1.0                // smallest negative whole number as float
+float3 = -3.4028234663852886 // approx min (most negative) 32-bit float
+float4 = -340282346638528860.5
+float5 = -9999999999999999.0 // largest negative integer exactly representable in float
+^ NegFloat2
+float1 = -0.0                // negative zero (distinct sign bit in IEEE 754)
+float2 = -1.0                // smallest negative whole number as float
+float3 = -3.4028234663852886 // approx min (most negative) 32-bit float
+float4 = -340282346638528860.5
+float5 = -9999999999999999.0 // largest negative integer exactly representable in float

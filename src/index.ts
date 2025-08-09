@@ -101,10 +101,12 @@ if (isProdEnv()) {
 
         const yini = `
         ^ Section
-        qq = "missing_key_name"  // In strict should throw error, while lenient should pass
+float3 = 3.4028234663852886 // approx max 32-bit float (IEEE 754 single precision)
+float4 = 340282346638528860
+float5 = 9999999999999999.0 // large float near 53-bit integer precision limit
                 `
 
-        console.log(toPrettyJSON(YINI.parse(yini, true)))
+        console.log(toPrettyJSON(YINI.parse(yini, false)))
 
         // console.log(
         //     toPrettyJSON(YINI.parseFile('comprehensive-example.yini', true)),

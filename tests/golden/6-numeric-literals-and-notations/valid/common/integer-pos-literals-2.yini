@@ -1,0 +1,14 @@
+// Common positive edge-case decimal integers.
+^ PosInts
+int1 = 0
+int2 = 1                  // smallest positive integer
+int3 = 2147483647         // max 32-bit signed integer
+int4 = 9223372036854775807 // max 64-bit signed integer
+int5 = 999999999          // large positive but still within 32-bit range
+
+^ PosInts2
+int1 = +0
+int2 = +1                  // smallest positive integer
+int3 = +2147483647         // max 32-bit signed integer
+int4 = +9223372036854775807 // max 64-bit signed integer
+int5 = +999999999          // large positive but still within 32-bit range

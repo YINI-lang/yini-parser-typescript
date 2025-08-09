@@ -1,0 +1,2 @@
+^ BadFloat
+badFloat = 5.     # NOT a valid float literal

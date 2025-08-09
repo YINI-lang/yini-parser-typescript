@@ -1,0 +1,8 @@
+// Common edge-case decimal integers.
+^ Integers
+int1 = 0                     // zero
+int2 = +0                    // zero
+int3 = 1                     // smallest positive integer
+int4 = -1                    // smallest negative integer
+int5 = 9223372036854775807   // max 64-bit signed integer
+int6 = -9223372036854775808  // min 64-bit signed integer

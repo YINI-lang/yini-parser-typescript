@@ -388,12 +388,12 @@ https://github.com/YINI-lang/YINI-spec
 
   <tr>
     <td>Negative numbers</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>-123</code>, <code>-9.22</code></td>
     <td>✅</td>
     <td>✅</td>
-    <td>🔲</td>
-    <td>Borh ints and floats</td>
+    <td>✅</td>
+    <td>Both ints and floats</td>
   </tr>
   <tr>
     <td>Exponent notation numbers</td>
