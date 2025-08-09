@@ -1,12 +1,12 @@
-// import { isDebug&&console.log } from './utils/general'
-
 /*
-	https://pauloe-me.medium.com/typescript-npm-package-publishing-a-beginners-guide-40b95908e69c
+	https://github.com/YINI-lang/yini-parser-typescript/blob/main/docs/Project-Setup.md
 	
 	Run the code with the following command:
-		npx ts-node index
-	or
 		npm start
+    or
+        npm run start:dev
+    or
+        npm run start:dev:debug
 	
 	/END
 */
@@ -23,7 +23,6 @@ import {
 import { debugPrint, toPrettyJSON } from './utils/print'
 import YINI from './YINI'
 
-// export { default } from './YINI'
 export const parse = YINI.parse
 export const parseFile = YINI.parseFile
 export default YINI
@@ -60,108 +59,7 @@ debugPrint()
 if (isProdEnv()) {
     // Do nothing, and exit.
 } else {
-    const invalidInput1 = `
-^ Settings
-fruit = "Pear"
-number = 5
-value q= "something"
-`
-
-    const invalidInput2 = `
-^ 	Config
-varAge = 30
-varName = abcd
-varNull = NULL
-`
-
-    const input1 = `
-^ 	SectionName
-varBool = true
-varBool2 = off
-varInt = 30
-varFloat = 12.34
-varStr = "Alice"
-listItems = ["a", "b", "c"]
-varE1 = 1e4
-varE2 = 1.23e4
-varE3 = 6.5E23
-/END
-`
-
-    const input2 = `
-^ 	Config
-varAge = 30
-varName = "Alice"
-varNull = NULL
-listItems = ["a", "b", "c"]
-	^^Extra
-	isExtra = true
-/END
-`
-
-    // const input = `
-    // # 	Config`;
-
-    // debugPrint('input2:')
-    // if (isDebug()) {
-    //     console.debug(input2)
-    // }
-    // parseUntilError(input2)
-
-    // debugPrint('invalidInput1:')
-    // if (isDebug()) {
-    //     console.debug(invalidInput1)
-    // }
-    // parseUntilError(invalidInput1)
-
     if (localAppEnv === 'local' && localNodeEnv !== 'test') {
-        /*
-		parseUntilError(`
---^ Section0
-	--value = 0
-^ Section1
-	value = 1
-
-^^ Section11
-	value = 11
-
- 	^^^ Section111
-	 value = 111
-//^^^^ Section2104
-	value = 24
-
-^ Section2
-	value = 2
-`)
-    }
-*/
-        // parseUntilError(`number = 42`)
-        /*
-Expected JS output:
-{ 
-  Section1: { value: 1, Section2: { value: 11 }},
-  Section2: { value: 2 }
-}
-
-*/
-
-        /*
-        parseUntilError(
-            `
-// Using numeric shorthand section markers.
-
-@yini
-
-// This whole line is a comment.
-            ^SectionName# This part is a comment.
-            // This whole line is a comment.
-            --x=1
-                `,
-            false,
-            2,
-        )
-*/
-
         // parseUntilError(`^1 SectionName`, false, 2)
 
         //         const validYini = `
@@ -201,15 +99,16 @@ Expected JS output:
         //     title = "My Program"
         // `
 
-        //         const yini = ` // corrupt yini
-        // ^ Section
-        // = "missing_key_name"  // In strict should throw error, while lenient should pass
-        //         `
+        const yini = ` // corrupt yini
+        ^ Section
+        = "missing_key_name"  // In strict should throw error, while lenient should pass
+                `
 
-        // console.log(toPrettyJSON(YINI.parse(yini, true)))
-        console.log(
-            toPrettyJSON(YINI.parseFile('comprehensive-example.yini', true)),
-        )
+        console.log(toPrettyJSON(YINI.parse(yini, true)))
+
+        // console.log(
+        //     toPrettyJSON(YINI.parseFile('comprehensive-example.yini', true)),
+        // )
 
         // const fileName = './tests/fixtures/valid/common/common-config-2.yini'
         // YINI.parseFile(fileName, false)

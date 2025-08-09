@@ -4,7 +4,7 @@ Here you'll find some info for install/setup/directory structure.
 
 ## Pre-requisites
 - `nvm` (Node Version Manager)
-- `java` (Needed to generate new code ANTLR, Java 22+)
+- `java` (Optional, needed to generate new code ANTLR, Java 22+)
 
 **Only if Windows:**
 - `Git Bash`
