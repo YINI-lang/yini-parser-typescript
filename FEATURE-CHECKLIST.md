@@ -43,8 +43,8 @@ https://github.com/YINI-lang/YINI-spec
 
   <tr>
     <td>Simple (key and header) identifiers</td>
-    <td>🔲</td>
-    <td><code></code></td>
+    <td>✅</td>
+    <td></td>
     <td>✅</td>
     <td>✅</td>
     <td>✅</td>
@@ -70,11 +70,11 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>Key-value pairs</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>Simple assignment <code>key = value</code></td>
     <td>✅</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>Core syntax</td>
   </tr>
   <tr>
@@ -181,7 +181,7 @@ https://github.com/YINI-lang/YINI-spec
 
 ---
 
-### 🚧 — 3. Basic / Simple Literals
+### ✅ — 3. Basic / Simple Literals
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -686,6 +686,15 @@ https://github.com/YINI-lang/YINI-spec
     <td>🔲</td>
     <td>🔲</td>
     <td></td>
+  </tr>
+  <tr>
+    <td>Detect multiple <code>@yini</code></td>
+    <td>🔲</td>
+    <td>If using multiple <code>@yini</code> should warn in lenient and cause error in strict mode</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>This requires updates in the grammar and its parser logic</td>
   </tr>
 </table>
 
