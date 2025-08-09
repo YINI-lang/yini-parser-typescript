@@ -1,0 +1,13 @@
+^ PosFloat
+float1 = 0.0                // smallest non-negative float
+float2 = 1.0                // smallest positive whole number as float
+float3 = 3.4028234663852886 // approx max 32-bit float (IEEE 754 single precision)
+float4 = 340282346638528860
+float5 = 9999999999999999.0 // large float near 53-bit integer precision limit
+
+^ PosFloat2
+float1 = +0.0                // smallest non-negative float
+float2 = +1.0                // smallest positive whole number as float
+float3 = +3.4028234663852886 // approx max 32-bit float (IEEE 754 single precision)
+float4 = +340282346638528860
+float5 = +9999999999999999.0 // large float near 53-bit integer precision limit

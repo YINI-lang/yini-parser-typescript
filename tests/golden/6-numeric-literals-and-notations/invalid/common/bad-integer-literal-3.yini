@@ -1,0 +1,2 @@
+^ BadInteger
+badInt = +00     # NOT a valid integer literal

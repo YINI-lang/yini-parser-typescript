@@ -1,0 +1,6 @@
+^ Floats
+float1 = .5       // leading decimal point without a zero
+float2 = -.25     // negative with leading decimal point
+float3 = 0.0      // zero as float
+float4 = 5.00
+float5 = -0.0     // negative zero as float
