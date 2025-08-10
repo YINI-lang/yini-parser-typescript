@@ -100,12 +100,17 @@ if (isProdEnv()) {
         // `
 
         const yini = `
-        ^Section
-            doz1 = 0z0     // zero in base-12
-            doz2 = 0z1     // smallest positive integer
-            doz3 = 0zX     // decimal 10 (X is digit for 10 in base-12)
-            doz4 = 0z10    // decimal 12
-            doz5 = 0z1E    // decimal 22 (E is digit for 11 in base-12)
+^ DozNumbers
+            ^^ WithXE
+            doz1 = 0z00
+            doz2 = 0z01    // One with leading zeros
+            doz3 = 0z100   // Decimal 144 (X/A is digit for 10 in base-12)
+            doz4 = 0z7EE   // Decimal 1151
+            doz5 = 0zX00   // Decimal 1440 (E/B is digit for 11 in base-12)
+
+            ^^ WithAB
+            doz6 = 0z7BB   // Decimal 1151
+            doz7 = 0zA00   // Decimal 1440 (E/B is digit for 11 in base-12)
                 `
 
         console.log(toPrettyJSON(YINI.parse(yini, false)))
