@@ -100,10 +100,17 @@ if (isProdEnv()) {
         // `
 
         const yini = `
-        ^ Section
-float3 = 3.4028234663852886 // approx max 32-bit float (IEEE 754 single precision)
-float4 = 340282346638528860
-float5 = 9999999999999999.0 // large float near 53-bit integer precision limit
+^ BinNumbers
+hex1 = -#10
+hex2 = 0x10
+hex3 = -0X10
+bin = 0b1010
+            bin1 = -0b0      // Zero in binary
+            bin2 = +0b1      // Smallest positive integer
+            bin3 = -0B10     // Decimal -2
+            bin4 = +0b1010   // Decimal 10
+            bin5 = -%1111   // Decimal -15
+            bin6 = +%010110 // Decimal 22
                 `
 
         console.log(toPrettyJSON(YINI.parse(yini, false)))

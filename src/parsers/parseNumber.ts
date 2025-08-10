@@ -16,21 +16,25 @@ const parseNumberLiteral = (
             value: parseFloat(txt),
         }
     }
-    if (/^0[xX]|#/.test(txt)) {
+    // --- Hexadecimal ---
+    if (/^[+-]?(0[xX]|#)/.test(txt)) {
         // Prefix: 0x, 0X, #
         debugPrint('* Identified as a hex number')
+        debugPrint('parsed out HEX: ' + txt.replace(/^[+-]?(0[xX]|#)/, ''))
         return {
             type: 'Number-Integer',
             // value: parseInt(txt.replace('#', '0x'), 16),
-            value: parseInt(txt.replace(/^0[xX]|#/, ''), 16),
+            value: parseInt(txt.replace(/^[+-]?(0[xX]|#)/, ''), 16),
         }
     }
-    if (/^0[bB]|%/.test(txt)) {
+    // --- Binary ---
+    if (/^[+-]?(0[bB]|%)/.test(txt)) {
         // Prefix: 0b, 0B, %
         debugPrint('* Identified as a bin number')
+        debugPrint('parsed out BIN: ' + txt.replace(/^[+-]?(0[bB]|%)/, ''))
         return {
             type: 'Number-Integer',
-            value: parseInt(txt.replace(/^0[bB]|%/, ''), 2),
+            value: parseInt(txt.replace(/^[+-]?(0[bB]|%)/, ''), 2),
         }
     }
     if (/^0[oO]/.test(txt)) {

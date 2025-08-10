@@ -2,10 +2,10 @@ import YINI from '../../../src'
 import { debugPrint, toPrettyJSON } from '../../../src/utils/print'
 
 /**
- * Hexadecimal number literal tests.
+ * Hexadecimal number literal tests (with #, 0x, and 0X).
  */
 describe('Hexadecimal number literal tests:', () => {
-    test('1.a) Should succeed parsing a bunch of common hex (uppcase) numbers with #.', () => {
+    test('1.a) Should succeed parsing a bunch of common HEX (uppcase) numbers with #.', () => {
         // Arrange.
         const validYini = `^ HexNumbers
             hex1 = #0
@@ -35,7 +35,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('1.b) Should succeed parsing a bunch of common hex (uppcase) numbers with 0x.', () => {
+    test('1.b) Should succeed parsing a bunch of common HEX (uppcase) numbers with 0x.', () => {
         // Arrange.
         const validYini = `^ HexNumbers
             hex1 = 0x0
@@ -65,7 +65,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('1.c) Should succeed parsing a bunch of common hex (uppcase) numbers with 0X.', () => {
+    test('1.c) Should succeed parsing a bunch of common HEX (uppcase) numbers with 0X.', () => {
         // Arrange.
         const validYini = `^ HexNumbers
             hex1 = 0X0
@@ -95,7 +95,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('2.a) Should succeed parsing a bunch of common hex (lowercase) numbers with #.', () => {
+    test('2.a) Should succeed parsing a bunch of common HEX (lowercase) numbers with #.', () => {
         // Arrange.
         const validYini = `^ HexNumbers
             hex1 = #0
@@ -125,7 +125,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('2.b) Should succeed parsing a bunch of common hex (lowercase) numbers with 0x.', () => {
+    test('2.b) Should succeed parsing a bunch of common HEX (lowercase) numbers with 0x.', () => {
         // Arrange.
         const validYini = `^ HexNumbers
             hex1 = 0x0
@@ -155,7 +155,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('2.c) Should succeed parsing a bunch of common hex (lowercase) numbers with 0x.', () => {
+    test('2.c) Should succeed parsing a bunch of common HEX (lowercase) numbers with 0x.', () => {
         // Arrange.
         const validYini = `^ HexNumbers
             hex1 = 0X0
@@ -185,7 +185,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('3.a) Should succeed parsing a bunch of edge-caes hex (uppcase) numbers with #.', () => {
+    test('3.a) Should succeed parsing a bunch of edge-caes HEX (uppcase) numbers with #.', () => {
         // Arrange.
         const validYini = `^ HexNumbers
             hex1 = #000
@@ -215,7 +215,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('3.b) Should succeed parsing a bunch of edge-caes hex (uppcase) numbers with 0x.', () => {
+    test('3.b) Should succeed parsing a bunch of edge-caes HEX (uppcase) numbers with 0x.', () => {
         // Arrange.
         const validYini = `^ HexNumbers
             hex1 = 0x000
@@ -245,7 +245,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('3.c) Should succeed parsing a bunch of edge-caes hex (uppcase) numbers with 0X.', () => {
+    test('3.c) Should succeed parsing a bunch of edge-caes HEX (uppcase) numbers with 0X.', () => {
         // Arrange.
         const validYini = `^ HexNumbers
             hex1 = 0X000
@@ -275,7 +275,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('4.a) Should succeed parsing a bunch of edge-caes hex (lowercase) numbers with #.', () => {
+    test('4.a) Should succeed parsing a bunch of edge-caes HEX (lowercase) numbers with #.', () => {
         // Arrange.
         const validYini = `^ HexNumbers
             hex1 = #000
@@ -305,7 +305,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('4.b) Should succeed parsing a bunch of edge-caes hex (lowercase) numbers with 0x.', () => {
+    test('4.b) Should succeed parsing a bunch of edge-caes HEX (lowercase) numbers with 0x.', () => {
         // Arrange.
         const validYini = `^ HexNumbers
             hex1 = 0x000
@@ -335,7 +335,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('4.c) Should succeed parsing a bunch of edge-caes hex (lowercase) numbers with 0x.', () => {
+    test('4.c) Should succeed parsing a bunch of edge-caes HEX (lowercase) numbers with 0x.', () => {
         // Arrange.
         const validYini = `^ HexNumbers
             hex1 = 0X000
@@ -365,7 +365,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('5.a) Should succeed parsing a bunch of neg/pos hex (mixed-case) numbers with #.', () => {
+    test('5.a) Should succeed parsing a bunch of neg/pos HEX (mixed-case) numbers with #.', () => {
         // Arrange.
         const validYini = `^ HexNumbers
             hex1 = -#0
@@ -395,7 +395,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('5.b) Should succeed parsing a bunch of neg/pos hex (mixed-case) numbers with 0x.', () => {
+    test('5.b) Should succeed parsing a bunch of neg/pos HEX (mixed-case) numbers with 0x.', () => {
         // Arrange.
         const validYini = `^ HexNumbers
             hex1 = -0x0
@@ -425,7 +425,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('5.c) Should succeed parsing a bunch of neg/pos hex (mixed-case) numbers with 0X.', () => {
+    test('5.c) Should succeed parsing a bunch of neg/pos HEX (mixed-case) numbers with 0X.', () => {
         // Arrange.
         const validYini = `^ HexNumbers
             hex1 = -0X0
@@ -455,7 +455,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('6.a) Should throw error parsing a bad hex number with # (lenient-mode).', () => {
+    test('6.a) Should throw error parsing a bad HEX number with # (lenient-mode).', () => {
         // Arrange.
         const badYini = `^ HexNumber
             badHex = #
@@ -469,7 +469,7 @@ describe('Hexadecimal number literal tests:', () => {
         }).toThrow()
     })
 
-    test('6.b) Should throw error parsing a bad hex number with # (strict-mode).', () => {
+    test('6.b) Should throw error parsing a bad HEX number with # (strict-mode).', () => {
         // Arrange.
         const badYini = `^ HexNumber
             badHex = #
@@ -483,7 +483,7 @@ describe('Hexadecimal number literal tests:', () => {
         }).toThrow()
     })
 
-    test('6.c) Should throw error parsing a bad hex number with 0x (lenient-mode).', () => {
+    test('6.c) Should throw error parsing a bad HEX number with 0x (lenient-mode).', () => {
         // Arrange.
         const badYini = `^ HexNumber
             badHex = 0x
@@ -497,7 +497,7 @@ describe('Hexadecimal number literal tests:', () => {
         }).toThrow()
     })
 
-    test('6.d) Should throw error parsing a bad hex number with 0x (strict-mode).', () => {
+    test('6.d) Should throw error parsing a bad HEX number with 0x (strict-mode).', () => {
         // Arrange.
         const badYini = `^ HexNumber
             badHex = 0x
@@ -511,7 +511,7 @@ describe('Hexadecimal number literal tests:', () => {
         }).toThrow()
     })
 
-    test('6.e) Should throw error parsing a bad hex number with 0X (lenient-mode).', () => {
+    test('6.e) Should throw error parsing a bad HEX number with 0X (lenient-mode).', () => {
         // Arrange.
         const badYini = `^ HexNumber
             badHex = 0X
@@ -525,7 +525,7 @@ describe('Hexadecimal number literal tests:', () => {
         }).toThrow()
     })
 
-    test('6.f) Should throw error parsing a bad hex number with 0X (strict-mode).', () => {
+    test('6.f) Should throw error parsing a bad HEX number with 0X (strict-mode).', () => {
         // Arrange.
         const badYini = `^ HexNumber
             badHex = 0X
@@ -539,10 +539,10 @@ describe('Hexadecimal number literal tests:', () => {
         }).toThrow()
     })
 
-    test('7.a) Should throw error parsing a bad hex number with # (lenient-mode).', () => {
+    test('7.a) Should throw error parsing a bad HEX number with # (lenient-mode).', () => {
         // Arrange.
         const badYini = `^ HexNumber
-            badHex = #G1    // Invalid hex digit "G"
+            badHex = #G1    // Invalid HEX digit "G"
         `
 
         // Act & Assert.
@@ -553,10 +553,10 @@ describe('Hexadecimal number literal tests:', () => {
         }).toThrow()
     })
 
-    test('7.b) Should throw error parsing a bad hex number with # (strict-mode).', () => {
+    test('7.b) Should throw error parsing a bad HEX number with # (strict-mode).', () => {
         // Arrange.
         const badYini = `^ HexNumber
-            badHex = #G1    // Invalid hex digit "G"
+            badHex = #G1    // Invalid HEX digit "G"
         `
 
         // Act & Assert.
@@ -567,10 +567,10 @@ describe('Hexadecimal number literal tests:', () => {
         }).toThrow()
     })
 
-    test('7.c) Should throw error parsing a bad hex number with 0x (lenient-mode).', () => {
+    test('7.c) Should throw error parsing a bad HEX number with 0x (lenient-mode).', () => {
         // Arrange.
         const badYini = `^ HexNumber
-            badHex = #G1    // Invalid hex digit "G"
+            badHex = #G1    // Invalid HEX digit "G"
         `
 
         // Act & Assert.
@@ -581,10 +581,10 @@ describe('Hexadecimal number literal tests:', () => {
         }).toThrow()
     })
 
-    test('7.d) Should throw error parsing a bad hex number with 0x (strict-mode).', () => {
+    test('7.d) Should throw error parsing a bad HEX number with 0x (strict-mode).', () => {
         // Arrange.
         const badYini = `^ HexNumber
-            badHex = #G1    // Invalid hex digit "G"
+            badHex = #G1    // Invalid HEX digit "G"
         `
 
         // Act & Assert.
@@ -595,10 +595,10 @@ describe('Hexadecimal number literal tests:', () => {
         }).toThrow()
     })
 
-    test('7.e) Should throw error parsing a bad hex number with 0X (lenient-mode).', () => {
+    test('7.e) Should throw error parsing a bad HEX number with 0X (lenient-mode).', () => {
         // Arrange.
         const badYini = `^ HexNumber
-            badHex = #G1    // Invalid hex digit "G"
+            badHex = #G1    // Invalid HEX digit "G"
         `
 
         // Act & Assert.
@@ -609,10 +609,10 @@ describe('Hexadecimal number literal tests:', () => {
         }).toThrow()
     })
 
-    test('7.f) Should throw error parsing a bad hex number with 0X (strict-mode).', () => {
+    test('7.f) Should throw error parsing a bad HEX number with 0X (strict-mode).', () => {
         // Arrange.
         const badYini = `^ HexNumber
-            badHex = #G1    // Invalid hex digit "G"
+            badHex = #G1    // Invalid HEX digit "G"
         `
 
         // Act & Assert.
@@ -623,7 +623,7 @@ describe('Hexadecimal number literal tests:', () => {
         }).toThrow()
     })
 
-    test('8.a) Should parse corrupt hex number with # (lenient-mode).', () => {
+    test('8.a) Should parse corrupt HEX number with # (lenient-mode).', () => {
         // Arrange.
         const corrupYini = `^ HexNumber
             badHex = -#     // Minus sign with no digits
@@ -640,7 +640,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(result.HexNumber.value).toEqual(100)
     })
 
-    test('8.b) Should throw error parsing a bad hex number with # (strict-mode).', () => {
+    test('8.b) Should throw error parsing a bad HEX number with # (strict-mode).', () => {
         // Arrange.
         const badYini = `^ HexNumber
             badHex = -#     // Minus sign with no digits
@@ -654,7 +654,7 @@ describe('Hexadecimal number literal tests:', () => {
         }).toThrow()
     })
 
-    test('8.c) Should throw error parsing a bad hex number with 0x (lenient-mode).', () => {
+    test('8.c) Should throw error parsing a bad HEX number with 0x (lenient-mode).', () => {
         // Arrange.
         const badYini = `^ HexNumber
             badHex = -0x     // Minus sign with no digits
@@ -668,7 +668,7 @@ describe('Hexadecimal number literal tests:', () => {
         }).toThrow()
     })
 
-    test('8.d) Should throw error parsing a bad hex number with 0x (strict-mode).', () => {
+    test('8.d) Should throw error parsing a bad HEX number with 0x (strict-mode).', () => {
         // Arrange.
         const badYini = `^ HexNumber
             badHex = -0x     // Minus sign with no digits
@@ -682,7 +682,7 @@ describe('Hexadecimal number literal tests:', () => {
         }).toThrow()
     })
 
-    test('8.e) Should throw error parsing a bad hex number with 0X (lenient-mode).', () => {
+    test('8.e) Should throw error parsing a bad HEX number with 0X (lenient-mode).', () => {
         // Arrange.
         const badYini = `^ HexNumber
             badHex = -0X     // Minus sign with no digits
@@ -696,7 +696,7 @@ describe('Hexadecimal number literal tests:', () => {
         }).toThrow()
     })
 
-    test('8.f) Should throw error parsing a bad hex number with 0X (strict-mode).', () => {
+    test('8.f) Should throw error parsing a bad HEX number with 0X (strict-mode).', () => {
         // Arrange.
         const badYini = `^ HexNumber
             badHex = -0X     // Minus sign with no digits

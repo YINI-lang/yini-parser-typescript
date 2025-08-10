@@ -1065,9 +1065,6 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         isDebug() && console.log()
         debugPrint('-> Entered visitValue(..)')
 
-        debugPrint('ctx.number_literal(): ' + ctx.number_literal())
-        debugPrint('ctx.boolean_literal(): ' + ctx.boolean_literal())
-
         if (ctx.string_literal()) return this.visit(ctx.string_literal())
         if (ctx.number_literal()) return this.visit(ctx.number_literal())
         if (ctx.boolean_literal()) return this.visit(ctx.boolean_literal())
