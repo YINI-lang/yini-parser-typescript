@@ -397,11 +397,11 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>Exponent notation numbers</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>3e4</code></td>
     <td>✅</td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>Incl. neg. exp.</td>
   </tr>
   <tr>
@@ -433,11 +433,11 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>Hexadecimal numbers</td>
-    <td>🔲</td>
-    <td><code>0xF390</code>, <code>#F390</code></td>
+    <td>✅</td>
+    <td><code>0xF390</code>, <code>#F390</code>, <code>0X3fa</code></td>
     <td>✅</td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>⚠️ 16-base, including alternative notation with #</td>
   </tr>
 </table>

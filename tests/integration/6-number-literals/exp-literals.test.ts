@@ -40,19 +40,19 @@ describe('Exp num literal tests:', () => {
         // Arrange.
         const validYini = `^ ExpNumbers
             value = 1.3e3
-            pi_approx = 3.14e0
+            pi_approx = +3.14e0
             avogadro = 6.022e23
-            planck = 6.626e-34
+            planck = +6.626e-34
             tiny = 1e-10
-            big = 2e8
+            big = +2e8
             seconds_in_year = 3.1536e7
-            short = 5e1
+            short = +5e1
             floaty = 7.77e2
-            milli = 1e-3
+            milli = +1e-3
             tiny_pos = 1e-10        // Edge-case!
-            huge_pos = 9.99e307     // Edge-case!
+            huge_pos = +9.99e307     // Edge-case!
             one_pos = 1.0e0         // Edge-case!
-            just_below_one = .999e0 // Edge-case!
+            just_below_one = +.999e0 // Edge-case!
             leading_dot_pos = .5e2  // Edge-case!
         `
 
