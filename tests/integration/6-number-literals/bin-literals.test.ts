@@ -277,8 +277,8 @@ describe('Binary number literal tests:', () => {
 
     test('4.a) Should throw error parsing a bad BIN number with # (lenient-mode).', () => {
         // Arrange.
-        const badYini = `^ HexNumber
-            badHex = #
+        const badYini = `^ BinNumber
+            badBin = %
         `
 
         // Act & Assert.
@@ -291,8 +291,8 @@ describe('Binary number literal tests:', () => {
 
     test('4.b) Should throw error parsing a bad BIN number with # (strict-mode).', () => {
         // Arrange.
-        const badYini = `^ HexNumber
-            badHex = #
+        const badYini = `^ BinNumber
+            badBin = %
         `
 
         // Act & Assert.
@@ -305,8 +305,8 @@ describe('Binary number literal tests:', () => {
 
     test('4.c) Should throw error parsing a bad BIN number with 0b (lenient-mode).', () => {
         // Arrange.
-        const badYini = `^ HexNumber
-            badHex = 0b
+        const badYini = `^ BinNumber
+            badBin = 0b
         `
 
         // Act & Assert.
@@ -319,8 +319,8 @@ describe('Binary number literal tests:', () => {
 
     test('4.d) Should throw error parsing a bad BIN number with 0b (strict-mode).', () => {
         // Arrange.
-        const badYini = `^ HexNumber
-            badHex = 0b
+        const badYini = `^ BinNumber
+            badBin = 0b
         `
 
         // Act & Assert.
@@ -333,8 +333,8 @@ describe('Binary number literal tests:', () => {
 
     test('4.e) Should throw error parsing a bad BIN number with 0B (lenient-mode).', () => {
         // Arrange.
-        const badYini = `^ HexNumber
-            badHex = 0B
+        const badYini = `^ BinNumber
+            badBin = 0B
         `
 
         // Act & Assert.
@@ -347,8 +347,8 @@ describe('Binary number literal tests:', () => {
 
     test('4.f) Should throw error parsing a bad BIN number with 0B (strict-mode).', () => {
         // Arrange.
-        const badYini = `^ HexNumber
-            badHex = 0B
+        const badYini = `^ BinNumber
+            badBin = 0B
         `
 
         // Act & Assert.
@@ -359,10 +359,10 @@ describe('Binary number literal tests:', () => {
         }).toThrow()
     })
 
-    test('5.a) Should throw error parsing a bad BIN number with # (lenient-mode).', () => {
+    test('5.a) Should throw error parsing a bad BIN number with % (lenient-mode).', () => {
         // Arrange.
-        const badYini = `^ HexNumber
-            badHex = #G1    // Invalid BIN digit "G"
+        const badYini = `^ BinNumber
+            badBin = %21    // Invalid BIN digit "2"
         `
 
         // Act & Assert.
@@ -373,10 +373,10 @@ describe('Binary number literal tests:', () => {
         }).toThrow()
     })
 
-    test('5.b) Should throw error parsing a bad BIN number with # (strict-mode).', () => {
+    test('5.b) Should throw error parsing a bad BIN number with % (strict-mode).', () => {
         // Arrange.
-        const badYini = `^ HexNumber
-            badHex = #G1    // Invalid BIN digit "G"
+        const badYini = `^ BinNumber
+            badBin = %21    // Invalid BIN digit "2"
         `
 
         // Act & Assert.
@@ -389,8 +389,8 @@ describe('Binary number literal tests:', () => {
 
     test('5.c) Should throw error parsing a bad BIN number with 0b (lenient-mode).', () => {
         // Arrange.
-        const badYini = `^ HexNumber
-            badHex = #G1    // Invalid BIN digit "G"
+        const badYini = `^ BinNumber
+            badBin = 0b21    // Invalid BIN digit "2"
         `
 
         // Act & Assert.
@@ -403,8 +403,8 @@ describe('Binary number literal tests:', () => {
 
     test('5.d) Should throw error parsing a bad BIN number with 0b (strict-mode).', () => {
         // Arrange.
-        const badYini = `^ HexNumber
-            badHex = #G1    // Invalid BIN digit "G"
+        const badYini = `^ BinNumber
+            badBin = 0b21    // Invalid BIN digit "2"
         `
 
         // Act & Assert.
@@ -417,8 +417,8 @@ describe('Binary number literal tests:', () => {
 
     test('5.e) Should throw error parsing a bad BIN number with 0B (lenient-mode).', () => {
         // Arrange.
-        const badYini = `^ HexNumber
-            badHex = #G1    // Invalid BIN digit "G"
+        const badYini = `^ BinNumber
+            badBin = 0B21    // Invalid BIN digit "2"
         `
 
         // Act & Assert.
@@ -431,8 +431,8 @@ describe('Binary number literal tests:', () => {
 
     test('5.f) Should throw error parsing a bad BIN number with 0B (strict-mode).', () => {
         // Arrange.
-        const badYini = `^ HexNumber
-            badHex = #G1    // Invalid BIN digit "G"
+        const badYini = `^ BinNumber
+            badBin = 0B21    // Invalid BIN digit "2"
         `
 
         // Act & Assert.
@@ -445,8 +445,8 @@ describe('Binary number literal tests:', () => {
 
     test('6.a) Should parse corrupt BIN number with # (lenient-mode).', () => {
         // Arrange.
-        const corrupYini = `^ HexNumber
-            badHex = -#     // Minus sign with no digits
+        const corrupYini = `^ BinNumber
+            badBin = -%     // Minus sign with no digits
             value = 100
         `
 
@@ -456,14 +456,14 @@ describe('Binary number literal tests:', () => {
         debugPrint(result)
 
         // Assert.
-        expect(result.HexNumber.badHex).toEqual(null)
-        expect(result.HexNumber.value).toEqual(100)
+        expect(result.BinNumber.badBin).toEqual(null)
+        expect(result.BinNumber.value).toEqual(100)
     })
 
     test('6.b) Should throw error parsing a bad BIN number with # (strict-mode).', () => {
         // Arrange.
-        const badYini = `^ HexNumber
-            badHex = -#     // Minus sign with no digits
+        const badYini = `^ BinNumber
+            badBin = -%     // Minus sign with no digits
         `
 
         // Act & Assert.
@@ -476,8 +476,8 @@ describe('Binary number literal tests:', () => {
 
     test('6.c) Should throw error parsing a bad BIN number with 0b (lenient-mode).', () => {
         // Arrange.
-        const badYini = `^ HexNumber
-            badHex = -0b     // Minus sign with no digits
+        const badYini = `^ BinNumber
+            badBin = -0b     // Minus sign with no digits
         `
 
         // Act & Assert.
@@ -490,8 +490,8 @@ describe('Binary number literal tests:', () => {
 
     test('6.d) Should throw error parsing a bad BIN number with 0b (strict-mode).', () => {
         // Arrange.
-        const badYini = `^ HexNumber
-            badHex = -0b     // Minus sign with no digits
+        const badYini = `^ BinNumber
+            badBin = -0b     // Minus sign with no digits
         `
 
         // Act & Assert.
@@ -504,8 +504,8 @@ describe('Binary number literal tests:', () => {
 
     test('6.e) Should throw error parsing a bad BIN number with 0B (lenient-mode).', () => {
         // Arrange.
-        const badYini = `^ HexNumber
-            badHex = -0B     // Minus sign with no digits
+        const badYini = `^ BinNumber
+            badBin = -0B     // Minus sign with no digits
         `
 
         // Act & Assert.
@@ -518,8 +518,8 @@ describe('Binary number literal tests:', () => {
 
     test('6.f) Should throw error parsing a bad BIN number with 0B (strict-mode).', () => {
         // Arrange.
-        const badYini = `^ HexNumber
-            badHex = -0B     // Minus sign with no digits
+        const badYini = `^ BinNumber
+            badBin = -0B     // Minus sign with no digits
         `
 
         // Act & Assert.

@@ -406,11 +406,11 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>Binary numbers</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>0b1010</code>, <code>%1010</code></td>
     <td>✅</td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>⚠️ Including alternative notation with %</td>
   </tr>
   <tr>

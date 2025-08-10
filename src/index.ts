@@ -102,7 +102,7 @@ if (isProdEnv()) {
         const yini = `
 ^ BinNumbers
 hex1 = -#10
-hex2 = 0x10
+hex2 = +0x10
 hex3 = -0X10
 bin = 0b1010
             bin1 = -0b0      // Zero in binary
