@@ -374,7 +374,7 @@ https://github.com/YINI-lang/YINI-spec
 
 ---
 
-### 🔲 — 6. Number Literals
+### ✅ — 6. Number Literals
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -424,11 +424,11 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>Duodecimal (dozenal)</td>
-    <td>🔲</td>
-    <td><code>0z2Ex9</code><code>x</code> = 10, <code>e</code> = 11</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td><code>0z2EX9</code>, <code>0z2AB9</code><code>X</code> = <code>A</code> = 10, <code>E</code> = <code>B</code> = 11</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>12-base</td>
   </tr>
   <tr>
