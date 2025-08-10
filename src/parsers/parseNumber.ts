@@ -16,7 +16,7 @@ const parseNumberLiteral = (
             value: parseFloat(txt),
         }
     }
-    // --- Hexadecimal ---
+    // --- Hexadecimal ---------
     if (/^[+-]?(0[xX]|#)/.test(txt)) {
         // Prefix: 0x, 0X, #
         debugPrint('* Identified as a hex number')
@@ -27,7 +27,7 @@ const parseNumberLiteral = (
             value: parseInt(txt.replace(/0[xX]|#/, ''), 16),
         }
     }
-    // --- Binary ---
+    // --- Binary ---------
     if (/^[+-]?(0[bB]|%)/.test(txt)) {
         // Prefix: 0b, 0B, %
         debugPrint('* Identified as a bin number')
@@ -37,12 +37,14 @@ const parseNumberLiteral = (
             value: parseInt(txt.replace(/0[bB]|%/, ''), 2),
         }
     }
-    if (/^0[oO]/.test(txt)) {
+    // --- Octal ---------
+    if (/^[+-]?0[oO]/.test(txt)) {
         // Prefix: 0o, 0O
-        debugPrint('* Identified as a ord number')
+        debugPrint('* Identified as a oct number')
+        debugPrint('parsed out OCT: ' + txt.replace(/0[oO]/, ''))
         return {
             type: 'Number-Integer',
-            value: parseInt(txt.replace(/^0[oO]/, ''), 8),
+            value: parseInt(txt.replace(/0[oO]/, ''), 8),
         }
     }
     if (/^0[zZ]/.test(txt)) {

@@ -95,7 +95,7 @@ describe('Binary number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('2.a) Should succeed parsing a bunch of edge-caes BIN numbers with %.', () => {
+    test('2.a) Should succeed parsing a bunch of edge-case BIN numbers with %.', () => {
         // Arrange.
         const validYini = `^ BinNumbers
             bin1 = %0                                  // Zero in binary
@@ -125,7 +125,7 @@ describe('Binary number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('2.b) Should succeed parsing a bunch of edge-caes BIN numbers with 0b.', () => {
+    test('2.b) Should succeed parsing a bunch of edge-case BIN numbers with 0b.', () => {
         // Arrange.
         const validYini = `^ BinNumbers
             bin1 = 0b0                                  // Zero in binary
@@ -155,7 +155,7 @@ describe('Binary number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('2.c) Should succeed parsing a bunch of edge-caes BIN numbers with 0B.', () => {
+    test('2.c) Should succeed parsing a bunch of edge-case BIN numbers with 0B.', () => {
         // Arrange.
         const validYini = `^ BinNumbers
             bin1 = 0B0                                  // Zero in binary

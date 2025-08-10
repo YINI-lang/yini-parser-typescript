@@ -105,12 +105,12 @@ hex1 = -#10
 hex2 = +0x10
 hex3 = -0X10
 bin = 0b1010
-            bin1 = -0b0      // Zero in binary
-            bin2 = +0b1      // Smallest positive integer
-            bin3 = -0B10     // Decimal -2
-            bin4 = +0b1010   // Decimal 10
-            bin5 = -%1111   // Decimal -15
-            bin6 = +%010110 // Decimal 22
+            oct1 = -0o0                     // Zero
+            oct2 = +0o0                     // Zero
+            oct3 = -0o177                    // Max signed 8-bit)
+            oct4 = +0o377                    // Max unsigned 8-bit)
+            oct5 = -0o17777777777            // Max signed 32-bit)
+            oct6 = +0o1777777777777777777777 // Max unsigned 64-bit)
                 `
 
         console.log(toPrettyJSON(YINI.parse(yini, false)))

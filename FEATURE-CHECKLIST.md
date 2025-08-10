@@ -415,11 +415,11 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>Octal numbers</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>0o7477</code></td>
     <td>✅</td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>8-base</td>
   </tr>
   <tr>

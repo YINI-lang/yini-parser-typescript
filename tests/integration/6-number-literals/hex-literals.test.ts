@@ -185,7 +185,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('3.a) Should succeed parsing a bunch of edge-caes HEX (uppcase) numbers with #.', () => {
+    test('3.a) Should succeed parsing a bunch of edge-case HEX (uppcase) numbers with #.', () => {
         // Arrange.
         const validYini = `^ HexNumbers
             hex1 = #000
@@ -215,7 +215,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('3.b) Should succeed parsing a bunch of edge-caes HEX (uppcase) numbers with 0x.', () => {
+    test('3.b) Should succeed parsing a bunch of edge-case HEX (uppcase) numbers with 0x.', () => {
         // Arrange.
         const validYini = `^ HexNumbers
             hex1 = 0x000
@@ -245,7 +245,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('3.c) Should succeed parsing a bunch of edge-caes HEX (uppcase) numbers with 0X.', () => {
+    test('3.c) Should succeed parsing a bunch of edge-case HEX (uppcase) numbers with 0X.', () => {
         // Arrange.
         const validYini = `^ HexNumbers
             hex1 = 0X000
@@ -275,7 +275,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('4.a) Should succeed parsing a bunch of edge-caes HEX (lowercase) numbers with #.', () => {
+    test('4.a) Should succeed parsing a bunch of edge-case HEX (lowercase) numbers with #.', () => {
         // Arrange.
         const validYini = `^ HexNumbers
             hex1 = #000
@@ -305,7 +305,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('4.b) Should succeed parsing a bunch of edge-caes HEX (lowercase) numbers with 0x.', () => {
+    test('4.b) Should succeed parsing a bunch of edge-case HEX (lowercase) numbers with 0x.', () => {
         // Arrange.
         const validYini = `^ HexNumbers
             hex1 = 0x000
@@ -335,7 +335,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('4.c) Should succeed parsing a bunch of edge-caes HEX (lowercase) numbers with 0x.', () => {
+    test('4.c) Should succeed parsing a bunch of edge-case HEX (lowercase) numbers with 0x.', () => {
         // Arrange.
         const validYini = `^ HexNumbers
             hex1 = 0X000
