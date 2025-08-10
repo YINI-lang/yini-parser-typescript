@@ -47,12 +47,17 @@ const parseNumberLiteral = (
             value: parseInt(txt.replace(/0[oO]/, ''), 8),
         }
     }
-    if (/^0[zZ]/.test(txt)) {
-        // Prefix: 0z, 0Z
+    // --- Duodecimal ---------
+    if (/^[+-]?0[zZ]/.test(txt)) {
+        // Prefix: 0z, 0Z, x = A = 10, e = B = 11.
         debugPrint('* Identified as a duodecimal number')
+        debugPrint('parsed out DOZ: ' + txt.replace(/0[zZ]/, ''))
+        txt = txt.replace(/[xX]/, 'A')
+        txt = txt.replace(/[eE]/, 'B')
+        debugPrint('Converter to AB form: ' + txt.replace(/0[zZ]/, ''))
         return {
             type: 'Number-Integer',
-            value: parseInt(txt.replace(/^0[zZ]/, ''), 12),
+            value: parseInt(txt.replace(/0[zZ]/, ''), 12),
         }
     }
 

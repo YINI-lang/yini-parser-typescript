@@ -100,17 +100,12 @@ if (isProdEnv()) {
         // `
 
         const yini = `
-^ BinNumbers
-hex1 = -#10
-hex2 = +0x10
-hex3 = -0X10
-bin = 0b1010
-            oct1 = -0o0                     // Zero
-            oct2 = +0o0                     // Zero
-            oct3 = -0o177                    // Max signed 8-bit)
-            oct4 = +0o377                    // Max unsigned 8-bit)
-            oct5 = -0o17777777777            // Max signed 32-bit)
-            oct6 = +0o1777777777777777777777 // Max unsigned 64-bit)
+        ^Section
+            doz1 = 0z0     // zero in base-12
+            doz2 = 0z1     // smallest positive integer
+            doz3 = 0zX     // decimal 10 (X is digit for 10 in base-12)
+            doz4 = 0z10    // decimal 12
+            doz5 = 0z1E    // decimal 22 (E is digit for 11 in base-12)
                 `
 
         console.log(toPrettyJSON(YINI.parse(yini, false)))

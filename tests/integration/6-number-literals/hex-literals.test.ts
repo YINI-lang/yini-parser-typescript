@@ -2,7 +2,7 @@ import YINI from '../../../src'
 import { debugPrint, toPrettyJSON } from '../../../src/utils/print'
 
 /**
- * Hexadecimal number literal tests (with #, 0x, and 0X).
+ * Hexadecimal (16-base) number literal tests (with #, 0x, and 0X).
  */
 describe('Hexadecimal number literal tests:', () => {
     test('1.a) Should succeed parsing a bunch of common HEX (uppcase) numbers with #.', () => {

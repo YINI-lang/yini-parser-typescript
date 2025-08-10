@@ -2,7 +2,7 @@ import YINI from '../../../src'
 import { debugPrint, toPrettyJSON } from '../../../src/utils/print'
 
 /**
- * Octal number literal tests.
+ * Octal (8-base) number literal tests.
  */
 describe('Octal number literal tests:', () => {
     test('1.a) Should succeed parsing a bunch of common OCT numbers with 0o.', () => {

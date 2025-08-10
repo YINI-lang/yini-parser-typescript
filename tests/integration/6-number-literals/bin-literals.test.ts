@@ -2,7 +2,7 @@ import YINI from '../../../src'
 import { debugPrint, toPrettyJSON } from '../../../src/utils/print'
 
 /**
- * Binary number literal tests.
+ * Binary (2-base) number literal tests.
  */
 describe('Binary number literal tests:', () => {
     test('1.a) Should succeed parsing a bunch of common BIN numbers with %.', () => {
