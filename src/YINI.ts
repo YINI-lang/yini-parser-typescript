@@ -134,7 +134,7 @@ export default class YINI {
         )
         if (hasNoNewlineAtEOF) {
             console.warn(
-                `No newline at end of file, it\'s recommended to end a file with a newline. File:\n"${filePath}"`,
+                `No newline at end of file, it's recommended to end a file with a newline. File:\n"${filePath}"`,
             )
         }
         return result
