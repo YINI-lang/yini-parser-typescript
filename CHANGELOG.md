@@ -1,5 +1,7 @@
 # CHANGELOG
 
+## --dev/uppcoming--
+
 ## 1.0.2-beta - 2025 Aug
 - Fixed issues with floats, including negative and exponential numbers with new test files here: `tests/fixed-issues/issue-32/*`
 - Fixed an issue where parseFile(..) did not output a warning when parsing a file missing a newline at EOF. Plus added test cases to check that it is fixed (in `tests/fixed-issues/issue-30`).
