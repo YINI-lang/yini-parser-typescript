@@ -1,9 +1,9 @@
 # CHANGELOG
 
 ## --dev/uppcoming--
-- Fixed and improved number parsing to fully support negative values and edge cases for integers, floats, hex, bin, octal, duodecimal, and exponential numbers. Based on updated lexer and parser grammar files, and added extensive tests to ensure correct and robust handling. Here: `tests/integration/6-number-literals/*`
 - Fixed issues with floats, including negative and exponential numbers with new test files here: `tests/fixed-issues/issue-32/*`
 - Fixed an issue where parseFile(..) did not output a warning when parsing a file missing a newline at EOF. Plus added test cases to check that it is fixed (in `tests/fixed-issues/issue-30`).
+- Fixed and improved number parsing to fully support negative values and edge cases for integers, floats, hex, bin, octal, duodecimal, and exponential numbers. Based on updated lexer and parser grammar files, and added extensive tests to ensure correct and robust handling. Here: `tests/integration/6-number-literals/*`
 
 ## 1.0.1-beta - 2025 Aug
 - Fixed catching lexer related errors correctly.
