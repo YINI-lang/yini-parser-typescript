@@ -100,18 +100,22 @@ if (isProdEnv()) {
         // `
 
         const yini = `
-^ DozNumbers
-            ^^ WithXE
-            doz1 = 0z00
-            doz2 = 0z01    // One with leading zeros
-            doz3 = 0z100   // Decimal 144 (X/A is digit for 10 in base-12)
-            doz4 = 0z7EE   // Decimal 1151
-            doz5 = 0zX00   // Decimal 1440 (E/B is digit for 11 in base-12)
+        @yini
 
-            ^^ WithAB
-            doz6 = 0z7BB   // Decimal 1151
-            doz7 = 0zA00   // Decimal 1440 (E/B is digit for 11 in base-12)
-                `
+        ^ NumberFormats
+
+          ^^ HexFormat              // Hexadecimal (base-16)
+             hex    = #FF0066       // Default notation
+             altHex = 0xFF0066      // Alternative notation
+          ^^ BinFormat              // Binary (base-2)
+             bin    = %10101111     // Default notation
+             altBin = 0b10101111    // Alternative notation
+          ^^ OctFormat              // Octal (base-8)
+             oct    = 0o755         // ( = decimal 493)
+          ^^ DozFormat              // Duodecimal (base-12)
+             doz    = 0z10XE        // Default notation:     X=10, E=11
+             altDoz = 0z10AB        // Alternative notation: A=10, B=11
+        ` // End.
 
         console.log(toPrettyJSON(YINI.parse(yini, false)))
 
