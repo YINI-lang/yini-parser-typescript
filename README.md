@@ -58,7 +58,7 @@ YINI is a simple, human-friendly configuration format inspired by INI and JSON.
 
 ## Quick Start
 
-A small example using YINI in TypeScript:
+A small example using YINI in TypeScript/JavaScript:
 ```ts
 import YINI from 'yini-parser'
 
