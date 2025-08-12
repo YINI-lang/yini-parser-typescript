@@ -58,20 +58,25 @@ YINI is a simple, human-friendly configuration format inspired by INI and JSON.
 
 ## Quick Start
 
-A minimal example using YINI in TypeScript:
+A small example using YINI in TypeScript:
 ```ts
 import YINI from 'yini-parser'
 
 const config = YINI.parse(`
-^ App
-name     = 'My Title'    // App display name.
-items    = 25
-darkMode = true
+    // YINI is a simple, human-readable configuration file format.
 
-    // Sub-section of App.
-    ^^ Special
-    primaryColor = #336699
-    isCaching = false
+    // Note: In YINI, spaces and tabs don't change meaning - 
+    // indentation is just for readability.
+
+    ^ App                      // Definition of section (group) "App" 
+      name     = 'My Title'    // Keys and values are written as key = value
+      items    = 25
+      darkMode = true          // "ON" and "YES" works too
+
+        // Sub-section of the "App" section
+        ^^ Special
+           primaryColor = #336699   // Hex number format
+           isCaching    = false     // "OFF" and "NO" works too
 `)
 
 // To parse from a file instead:
@@ -229,43 +234,42 @@ These examples are also included in the npm package.
 
 ---
 
-## Advanced Example
+## Bigger Example
 
 ```js
 const YINI = require('yini-parser').default; // Or: import YINI from 'yini-parser';
 
 const config = YINI.parse(`
-    /*
-        This is a multi-line block comment.
+    // This is a comment in YINI
+    // YINI is a simple, human-readable configuration file format.
+
+    // Note: In YINI, spaces and tabs don't change meaning - indentation is just
+    // for readability.
+
+    /*  This is a block comment
+
+        In YINI, section headers use repeated characters "^" at the start to
+        show their level: (Section header names are case-sensitive.)
+
+        ^ SectionLevel1
+        ^^ SectionLevel2
+        ^^^ SectionLevel3
     */
 
-    @yini
+    ^ App                           // Definition of section (group) "App" 
+      title = 'My App'
+      items = 25
+      debug = ON                    // "true" and "YES" works too
 
-    ^ App
-    name = "Nested Example"
-    version = "1.0.0"
-    debug = OFF  // This is a comment.
+    ^ Server                        // Definition of section (group) "Server"
+      host = 'localhost'
+      port = 8080
+      useTLS = OFF                  // "false" and "NO" works too
 
-        # Database settings.
-        ^^ Database
-        host = "db.example.com"
-        port = 3306
-        user = "appuser"
-        --password = "dbpassword"  # Disabled line due to --.
-        //password = "dbpassword"  # Not sure yet about this pw.
-        password = "dbpassword"  # Keep this secret.
-
-            // Commenting with slashes works too.
-            ^^^ Pool
-            min = 2
-            max = 10
-            idleTimeout = 300
-
-        /* Block comment on a single line. */
-        ^^ Logging
-        level = "info"
-        logToFile = ON # This is a comment.
-        filePath = "./logs/app.log"
+        // Sub-section of "Server"
+        ^^ Login
+          username = 'user_name'
+          password = 'your_password_here'
     
     /END
 `);
@@ -278,60 +282,41 @@ console.log(config);
 // JS object
 {
     App: {
-        name: "Nested Example",
-        version: "1.0.0",
-        debug: false,
-        Database: {
-            host: "db.example.com",
-            port: 3306,
-            user: "appuser",
-            password: "dbpassword",
-            Pool: {
-                min: 2,
-                max: 10,
-                idleTimeout: 300
-            }
-        },
-        Logging: {
-            level: "info",
-            logToFile: true,
-            filePath: "./logs/app.log"
+        title: 'My App', 
+        items: 25, 
+        debug: true
+    },
+    Server: {
+        host: 'localhost',
+        port: 8080,
+        useTLS: false,
+        Login: { 
+            username: 'user_name', 
+            password: 'your_password_here'
         }
     }
 }
 ```
 
----
-
-## API
-
-Only the `YINI` class is exposed in the public API, with two static methods: `parse` and `parseFile`.
-
-### `YINI.parse(yiniContent: string, strictMode?: boolean, bailSensitivity: 'auto' | 0 | 1 | 2 = "auto", includeMetaData = false): object`
-
-Parses YINI code from a string.  
-
-**Params:**
-- `yiniContent`: The YINI configuration as a string.
-- `strictMode`: (optional, default `false`) Parse in strict mode.
-- `bailSensitivity`: (optional, default `"auto"`) Error tolerance level.
-  * If `bailSensitivity` is `"auto"` then bail sensitivity level will be set to 0 if in non-strict mode, if in strict mode then level 1 will be used automatically.
-- `includeMetaData`: If true then additional meta data will be returned along the object.
-
-**Bail sensitivity levels:**
-- 0 = 'Ignore-Errors' // Don't bail on errors, persist and try to recover.
-- 1 = 'Abort-on-Errors'
-- 2 = 'Abort-Even-on-Warnings'
-
-Returns a JavaScript object representing the parsed configuration (YINI content).
-
-### `YINI.parseFile(filePath: string, strictMode?: boolean, bailSensitivity: 'auto' | 0 | 1 | 2 = "auto", includeMetaData = false): object`
-
-Parses YINI code from a file.
-- `filePath`: Path to the `.yini` file.
-- Other parameters are the same as `parse(..)`.
-
-Returns a JavaScript object representing the parsed YINI configuration file.
+### Output in JSON:
+```json
+{
+    "App": {
+        "title": "My App",
+        "items": 25,
+        "debug": true
+    },
+    "Server": {
+        "host": "localhost",
+        "port": 8080,
+        "useTLS": false,
+        "Login": {
+            "username": "user_name",
+            "password": "your_password_here"
+        }
+    }
+}
+```
 
 ---
 
