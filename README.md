@@ -21,7 +21,7 @@ YINI (Yet another INI): YINI is a configuration format designed for readability 
 
 ---
 
-## YINI Parser – TypeScript
+## YINI Parser – (source code in TypeScript)
 
 > 🚧 This package is in **beta**. The core API is stabilizing, some more advanced features may still change. Feedback and bug reports are welcome!
 
