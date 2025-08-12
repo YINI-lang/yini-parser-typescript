@@ -94,15 +94,15 @@ My Title
 false
 
 {
-  App: {
-    name: 'My Title',
-    items: 25,
-    darkMode: true,
-    Special: { 
-      primaryColor: 3368601,
-      isCaching: false
+    App: {
+        name: 'My Title',
+        items: 25,
+        darkMode: true,
+        Special: { 
+            primaryColor: 3368601,
+            isCaching: false
+        }
     }
-  }
 }
 ```
 
