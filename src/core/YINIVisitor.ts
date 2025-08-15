@@ -118,10 +118,15 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             printObject(sReslult)
         }
 
-        if (sReslult.level === -100) {
+        // if (sReslult.level === -100) {
+        if (sReslult.name === '@yini') {
             // NOTE: Level with -100 has special meaning, it's a @yini-marker and should be ignored.
+            // NOTE: Name with "@yini" has special meaning, it's a @yini-marker and should be ignored.
+            // debugPrint(
+            //     'Detected "-100" as a level in pushOnTree(..), ignoring to save it, and bailing function',
+            // )
             debugPrint(
-                'Detected "-100" as a level in pushOnTree(..), ignoring to save it, and bailing function',
+                'Detected "@yini" as a level in pushOnTree(..), ignoring to save it, and bailing function',
             )
             return
         }
@@ -426,11 +431,11 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             // NOTE: The @yini marker has no functional meaning currently, it's purely syntactic sugar.
             debugPrint('Detected a @yini-marker!!!')
             this.meta_hasYiniMarker = true
-            return {
-                level: -100,
-                name: '@yini',
-                members: undefined,
-            } as ISectionResult
+            // return {
+            //     level: -100,
+            //     name: '@yini',
+            //     members: undefined,
+            // } as ISectionResult
         }
 
         if (!line) {
