@@ -119,41 +119,15 @@ if (isProdEnv()) {
         ` // End.
         */
         const yini = `
-    // This is a comment in YINI
-    // YINI is a simple, human-readable configuration file format.
-
-    // Note: In YINI, spaces and tabs don't change meaning - indentation is just
-    // for readability.
-
-    /*  This is a block comment
-
-        In YINI, section headers use repeated characters "^" at the start to
-        show their level: (Section header names are case-sensitive.)
-
-        ^ SectionLevel1
-        ^^ SectionLevel2
-        ^^^ SectionLevel3
-    */
-
-    ^ App                           // Definition of section (group) "App" 
-      title = 'My App'
-      items = 25
-      debug = ON                    // "true" and "YES" works too
-
-    ^ Server                        // Definition of section (group) "Server"
-      host = 'localhost'
-      port = 8080
-      useTLS = OFF                  // "false" and "NO" works too
-
-        // Sub-section of "Server"
-        ^^ Login
-          username = 'user_name'
-          password = 'your_password_here'
-    
-    /END
+    @yini    
+    // Top comment
+    ^ CommentsDemo
+    val1 = 123  # Inline comment
+    val2 = 456  // Another comment
+    ; Full-line comment
 `
 
-        console.log(toPrettyJSON(YINI.parse(yini, false)))
+        console.log(toPrettyJSON(YINI.parse(yini, false, 'auto', true)))
 
         // console.log(
         //     toPrettyJSON(YINI.parseFile('comprehensive-example.yini', true)),

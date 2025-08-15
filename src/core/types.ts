@@ -33,6 +33,44 @@ sValue = 2
     
  */
 
+// interface YiniDocument {
+//     // sections: Record<string, any>
+//     _base: Record<string, any>
+//     // terminal?: string
+//     _hasTerminal?: boolean
+// }
+
+export type TDataType =
+    | undefined
+    | 'String'
+    | 'Number-Integer'
+    | 'Number-Float'
+    | 'Boolean'
+    | 'Null'
+    | 'Object'
+    | 'List'
+
+/*
+class CIResult {
+    private dataType: TDataType = undefined
+    private valueBool: boolean | undefined = undefined
+
+    //constructor() {}
+    getType = (): TDataType => this.dataType
+
+    makeBoolean = (isTrue: boolean) => {
+        this.dataType = 'Boolean'
+        this.valueBool = isTrue
+    }
+}
+*/
+
+// interface YIResult {
+//     key: string
+//     type: TDataType
+//     value: any
+// }
+
 export type TPersistThreshold =
     | '0-Ignore-Errors' // Don't bail/fail on error, persist and try to recover.
     | '1-Abort-on-Errors'
@@ -95,6 +133,7 @@ export interface IParseMetaData {
 export type TSyntaxTreeContainer = {
     _syntaxTree: TSyntaxTree
     _hasTerminal: boolean
+    _hasYiniMarker: boolean
     _meta_numOfSections: number
     _meta_numOfMembers: number
     _meta_numOfChains: number

@@ -32,51 +32,19 @@ import parseSectionHeader from '../parsers/parseSectionHeader'
 import parseStringLiteral from '../parsers/parseString'
 import { debugPrint, printObject } from '../utils/print'
 import { isEnclosedInBackticks, trimBackticks } from '../utils/string'
-import { isValidBacktickedIdent, isValidSimpleIdent } from '../yiniHelpers'
+import {
+    isValidBacktickedIdent,
+    isValidSimpleIdent,
+    stripCommentsAndAfter,
+} from '../yiniHelpers'
 import { ErrorDataHandler } from './ErrorDataHandler'
 import {
     IChainContainer,
     ISectionResult,
+    TDataType,
     TSyntaxTree,
     TSyntaxTreeContainer,
 } from './types'
-
-interface YiniDocument {
-    // sections: Record<string, any>
-    _base: Record<string, any>
-    // terminal?: string
-    _hasTerminal?: boolean
-}
-
-export type TDataType =
-    | undefined
-    | 'String'
-    | 'Number-Integer'
-    | 'Number-Float'
-    | 'Boolean'
-    | 'Null'
-    | 'Object'
-    | 'List'
-/*
-class CIResult {
-    private dataType: TDataType = undefined
-    private valueBool: boolean | undefined = undefined
-
-    //constructor() {}
-    getType = (): TDataType => this.dataType
-
-    makeBoolean = (isTrue: boolean) => {
-        this.dataType = 'Boolean'
-        this.valueBool = isTrue
-    }
-}
-*/
-
-interface YIResult {
-    key: string
-    type: TDataType
-    value: any
-}
 
 /**
  * This interface defines a complete generic visitor for a parse tree produced
@@ -101,6 +69,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     private prevLevel = 0
     private prevSectionName = '' // For error reporting purposes.
 
+    private meta_hasYiniMarker = false // For stats.
     private meta_numOfSections = 0 // For stats.
     private meta_numOfMembers = 0 // For stats.
     private meta_numOfChains = 0 // For stats.
@@ -138,6 +107,9 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         this.isStrict = isStrict
     }
 
+    /**
+     * @note NOTE: Level with -100 has special meaning, it's a @yini-marker and should be ignored.
+     */
     private pushOnTree = (ctx: any, sReslult: ISectionResult): void => {
         if (isDebug()) {
             console.log()
@@ -146,6 +118,13 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             printObject(sReslult)
         }
 
+        if (sReslult.level === -100) {
+            // NOTE: Level with -100 has special meaning, it's a @yini-marker and should be ignored.
+            debugPrint(
+                'Detected "-100" as a level in pushOnTree(..), ignoring to save it, and bailing function',
+            )
+            return
+        }
         const key = sReslult.level + '-' + sReslult.name
         debugPrint('KKKKKK, key = ' + key)
         // if (this.existingSectionTitles.has(key)) {
@@ -259,14 +238,27 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             )
 
             const topSectionResult: ISectionResult = this.visitSection(section)
-            this.pushOnTree(ctx, topSectionResult)
+
             const topSectionName: string | undefined = topSectionResult?.name
             const topSectionMembers: any = topSectionResult?.members
             const topSectionLevel: any = topSectionResult?.level // This must have a value of 1.
 
+            this.pushOnTree(ctx, topSectionResult)
+
             debugPrint('\ntopSectionResult (visitSection(..)):')
             if (isDebug()) {
                 console.log(topSectionResult)
+            }
+
+            if (
+                topSectionLevel === -100
+                //(<any>topSectionResult)?.level === -100
+                //&& topSectionResult?.name.toLowerCase() === '@yini'
+            ) {
+                debugPrint(
+                    'Detected "-100" as a level in section_list(..), ignoring to mount it',
+                )
+                return
             }
 
             debugPrint(
@@ -334,6 +326,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             // _base: this.resultSections,
             _syntaxTree: syntaxTree, // The Intermediate Tree, or AST.
             _hasTerminal: hasTerminal,
+            _hasYiniMarker: this.meta_hasYiniMarker,
             _meta_numOfSections: this.meta_numOfSections,
             _meta_numOfMembers: this.meta_numOfMembers,
             _meta_numOfChains: this.meta_numOfChains,
@@ -428,6 +421,17 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             //     debugPrint()
         }
         debugPrint('S4, line: >>>' + line + '<<<')
+
+        if (stripCommentsAndAfter(line).trim().toLowerCase() === '@yini') {
+            // NOTE: The @yini marker has no functional meaning currently, it's purely syntactic sugar.
+            debugPrint('Detected a @yini-marker!!!')
+            this.meta_hasYiniMarker = true
+            return {
+                level: -100,
+                name: '@yini',
+                members: undefined,
+            } as ISectionResult
+        }
 
         if (!line) {
             debugPrint('*** ERROR: Nothing to parse in section line')
@@ -695,6 +699,10 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             console.log()
         }
 
+        if (sectionLevel !== -100 && sectionName !== undefined) {
+            this.meta_numOfSections += 1
+        }
+
         return {
             level: sectionLevel,
             name: sectionName,
@@ -775,7 +783,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                             key,
                     )
                 } else {
-                    this.meta_numOfMembers++
+                    // this.meta_numOfMembers +=1
                     // if ((value?.type as TDataType) === 'Null') {
                     if ((type as TDataType) === 'Null') {
                         members[key] = null
@@ -908,6 +916,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 'Got constructed object of builtSection (visitSection(..):',
             )
             if (isDebug()) {
+                console.log('followingSection:')
                 console.log(followingSection)
             }
 
@@ -1007,20 +1016,6 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             this.errorHandler!.pushOrBail(ctx, 'Syntax-Error', 'Unknown input')
         }
 
-        // if (!isValidSimpleIdent(resultKey)) {
-        // if (resultType !== 'Object' && !isValidSimpleIdent(resultKey)) {
-        //     this.errorHandler!.pushOrBail(
-        //         ctx,
-        //         'Syntax-Error',
-        //         'Invalid name of this key of a member, key name: "' +
-        //             resultKey +
-        //             '"',
-        //         'Key name must start with: A-Z, a-z, or _, unless enclosed in backticks e.g. `' +
-        //             resultKey +
-        //             '`, `My key name`.',
-        //     )
-        // }
-
         debugPrint()
         debugPrint('<- Leaving visitMember(..)')
         if (isDebug()) {
@@ -1031,6 +1026,10 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 value: resultValue,
             })
             console.log()
+        }
+
+        if (resultType !== undefined) {
+            this.meta_numOfMembers += 1
         }
 
         return {
