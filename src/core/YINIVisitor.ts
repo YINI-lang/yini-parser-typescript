@@ -126,7 +126,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             //     'Detected "-100" as a level in pushOnTree(..), ignoring to save it, and bailing function',
             // )
             debugPrint(
-                'Detected "@yini" as a level in pushOnTree(..), ignoring to save it, and bailing function',
+                'Detected no name or "@yini" as a level in pushOnTree(..), ignoring to save it, and bailing function',
             )
             return
         }
@@ -261,7 +261,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 //&& topSectionResult?.name.toLowerCase() === '@yini'
             ) {
                 debugPrint(
-                    'Detected "-100" as a level in section_list(..), ignoring to mount it',
+                    `Detected "-100" as a level in section_list(..), ignoring to mount it (sectionName: "${topSectionName}")`,
                 )
                 return
             }
@@ -346,19 +346,22 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
      */
     // visitSection?: (ctx: SectionContext) => IResult;
     visitSection = (ctx: SectionContext): any => {
-        // let headMarkerType: TSectionHeaderType =
-        //     'Classic-Header-Marker'
+        type TLineEntity = 'Section-Header' | 'Section-Members' | 'Yini-Marker'
 
         isDebug() && console.log()
         debugPrint('-> Entered visitSection(..)')
+        let entity: TLineEntity = 'Section-Header'
 
         const res: Record<string, any> = {}
 
         debugPrint('start')
+        debugPrint(
+            '           has section members = ' + !!ctx.section_members(),
+        )
         debugPrint('XXXX0:ctx.getText()            = ' + ctx.getText())
         debugPrint('XXXX1:ctx.SECTION_HEAD()       = ' + ctx.SECTION_HEAD())
         debugPrint(
-            'XXXX1:SECTION_HEAD().getText() = ' +
+            'XXXX2:SECTION_HEAD().getText() = ' +
                 ctx.SECTION_HEAD()?.getText().trim(),
         )
         debugPrint('end\n')
@@ -427,29 +430,37 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         }
         debugPrint('S4, line: >>>' + line + '<<<')
 
-        if (stripCommentsAndAfter(line).trim().toLowerCase() === '@yini') {
-            // NOTE: The @yini marker has no functional meaning currently, it's purely syntactic sugar.
-            debugPrint('Detected a @yini-marker!!!')
-            this.meta_hasYiniMarker = true
-            // return {
-            //     level: -100,
-            //     name: '@yini',
-            //     members: undefined,
-            // } as ISectionResult
-        }
-
         if (!line) {
             debugPrint('*** ERROR: Nothing to parse in section line')
         }
 
+        let currentSectionName = ''
+        let currentSectionLevel = 0
         this.prevLevel = this.level
-        let { sectionName, sectionLevel } = parseSectionHeader(
-            line,
-            this.errorHandler!,
-            ctx,
-        )
-        this.level = sectionLevel
-        this.meta_numOfSections++
+        if (stripCommentsAndAfter(line).trim().toLowerCase() === '@yini') {
+            // NOTE: The @yini marker has no functional meaning currently, it's purely syntactic sugar.
+            debugPrint('Detected a @yini-marker, in visitSection(..)!!!')
+            entity = 'Yini-Marker'
+            this.meta_hasYiniMarker = true
+
+            // debugPrint('members = ' + ctx.section_members())
+            // const members = this.visitSection_members(ctx.section_members())
+            return {
+                level: -1,
+                name: '@yini',
+                members: undefined,
+            } as ISectionResult
+        } else {
+            let { sectionName, sectionLevel } = parseSectionHeader(
+                line,
+                this.errorHandler!,
+                ctx,
+            )
+            this.level = sectionLevel
+
+            currentSectionName = sectionName
+            currentSectionLevel = sectionLevel
+        }
 
         // ---------------------------------------------------------------
 
@@ -462,8 +473,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             nestDirection = 'higher'
         }
         debugPrint('-- In visitSection(..) ---------------------------')
-        debugPrint('            sectionName = ' + sectionName)
-        debugPrint('           sectionLevel = ' + sectionLevel)
+        debugPrint('            sectionName = ' + currentSectionName)
+        debugPrint('           sectionLevel = ' + currentSectionLevel)
         debugPrint('             this.level = ' + this.level)
         debugPrint('         this.prevLevel = ' + this.prevLevel)
         debugPrint('   this.prevSectionName = ' + this.prevSectionName)
@@ -486,7 +497,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                         'Invalid section header level ' +
                             this.level +
                             ', with section name "' +
-                            sectionName,
+                            currentSectionName,
                         'A section header may not start directly at level ' +
                             this.level +
                             ', skipping previous section levels. Please start with one level further down.',
@@ -497,10 +508,10 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                         ctx,
                         'Syntax-Error',
                         'Invalid section level jump of section header "' +
-                            sectionName +
+                            currentSectionName +
                             '"',
                         'Section header name "' +
-                            sectionName +
+                            currentSectionName +
                             '" with level ' +
                             this.level +
                             ' may not jump over (skip) intermediate section levels, from section header name "' +
@@ -512,16 +523,21 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                 }
             }
         }
-        this.prevSectionName = sectionName
+        this.prevSectionName = currentSectionName
 
-        debugPrint('About to visit members of section...')
         let members: any
-
+        // if (entity === 'Yini-Marker') {
+        //     debugPrint(
+        //         '(!) Skipping to visit members of section, due to yini-marker detected',
+        //     )
+        // } else {
+        debugPrint('About to visit members of section...')
         if (!ctx.section_members()) {
             debugPrint('(!) Section has no members!')
         } else {
             members = this.visitSection_members(ctx.section_members())
         }
+        // }
 
         // ---------------------------------------------------------------
         ctx.children?.forEach((child: any) => {
@@ -532,59 +548,37 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             this.numOfLevelOnes++
         }
 
-        //------------------------
-        // if (nestDirection === 'higher') {
+        //--------------------------------------
+
+        // if (entity === 'Yini-Marker') {
         //     debugPrint(
-        //         `Is level skipping: ${this.level - this.prevLevel} >= 2?`,
+        //         '(!) Skipping mounting anything in section, due to yini-marker detected',
         //     )
-
-        //     // if (Math.abs(this.prevLevel - this.level) >= 2) {
-        //     if (this.level - this.prevLevel >= 2) {
-        //         // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-        //         this.errorHandler!.pushOrBail(
-        //             ctx,
-        //             'Syntax-Error',
-        //             'Invalid section level jump of section header "' +
-        //                 sectionName +
-        //                 '"',
-        //             'Section header name "' +
-        //                 sectionName +
-        //                 '" with level ' +
-        //                 this.prevLevel +
-        //                 ' may not jump over previous section levels, from a section with level ' +
-        //                 this.level +
-        //                 ' (section name: "' +
-        //                 this.prevSectionName +
-        //                 '").',
-        //         )
-        //     }
-        // }
-        // this.prevSectionName = sectionName
-
+        // } else
         if (nestDirection !== 'higher') {
             debugPrint('About to reset result')
-            printObject({ [sectionName]: members })
+            printObject({ [currentSectionName]: members })
 
             debugPrint(`Current lastActiveSectionAtLevels[${this.level - 1}]`)
             printObject(this.lastActiveSectionAtLevels[this.level - 1])
 
             if (
-                // (level === 0 && !sectionName) ||
-                // (sectionName === 'undefined' && !!members)
-                sectionLevel === 0 &&
-                sectionName === 'undefined' &&
+                // (level === 0 && !currentSectionName) ||
+                // (currentSectionName === 'undefined' && !!members)
+                currentSectionLevel === 0 &&
+                currentSectionName === 'undefined' &&
                 !!members
             ) {
                 debugPrint('HIT2!!!!')
                 debugPrint(
-                    '(!) Detected a member (that does not have a sectionName), but a memberless object in "members"',
+                    '(!) Detected a member (that does not have a currentSectionName), but a memberless object in "members"',
                 )
-                sectionName = Object.keys(members)[0]
-                debugPrint('sectionName = ' + sectionName)
+                currentSectionName = Object.keys(members)[0]
+                debugPrint('currentSectionName = ' + currentSectionName)
                 members = {}
-                // this.lastActiveSectionAtLevels[0] = { [sectionName]: {} }
+                // this.lastActiveSectionAtLevels[0] = { [currentSectionName]: {} }
 
-                // this.pushOnTree({ level: 1, name: sectionName, members: {} })
+                // this.pushOnTree({ level: 1, name: currentSectionName, members: {} })
                 debugPrint(
                     '(!) Skipping mounted since this is actually a memberless section',
                 )
@@ -594,7 +588,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                     console.log('returning (a memberless section):')
                     console.log({
                         level: 1,
-                        name: sectionName,
+                        name: currentSectionName,
                         members: members,
                     })
                     console.log()
@@ -602,20 +596,20 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 
                 return {
                     level: 1,
-                    name: sectionName,
+                    name: currentSectionName,
                     members: members,
                 } as ISectionResult
             } else {
                 // Mount as append
                 this.lastActiveSectionAtLevels[this.level - 1] = {
-                    [sectionName]: { ...members },
+                    [currentSectionName]: { ...members },
                 }
                 this.pushOnTree(ctx, {
-                    level: sectionLevel,
-                    name: sectionName,
+                    level: currentSectionLevel,
+                    name: currentSectionName,
                     members,
                 })
-                // this.lastActiveSectionNameAtLevels.push(sectionName)
+                // this.lastActiveSectionNameAtLevels.push(currentSectionName)
                 debugPrint('Mounted as append')
             }
 
@@ -655,22 +649,24 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                     this.level,
             )
 
-            //this.lastActiveSectionNameAtLevels[this.level - 1] = sectionName
+            //this.lastActiveSectionNameAtLevels[this.level - 1] = currentSectionName
 
             debugPrint()
             debugPrint('Resetted local result')
-            sectionName = ''
+            currentSectionName = ''
             members = undefined
         }
+
         //------------------------
+
         debugPrint()
         if (isDebug()) {
             if (members) {
-                printObject({ [sectionName]: members })
+                printObject({ [currentSectionName]: members })
                 this.lastActiveSectionAtLevels[this.level - 1] = {
                     ...members,
                 }
-                // this.lastActiveSectionNameAtLevels[this.level - 1] = sectionName
+                // this.lastActiveSectionNameAtLevels[this.level - 1] = currentSectionName
                 debugPrint('Mounted as assigned')
 
                 debugPrint(`lastActiveSectionAtLevels[${this.level - 1}]`)
@@ -697,20 +693,24 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         if (isDebug()) {
             console.log('returning:')
             console.log({
-                sectionLevel: sectionLevel,
-                name: sectionName,
+                currentSectionLevel: currentSectionLevel,
+                name: currentSectionName,
                 members: members,
             })
             console.log()
         }
 
-        if (sectionLevel !== -100 && sectionName !== undefined) {
+        // if (currentSectionLevel !== -100 && currentSectionName !== undefined) {
+        if (currentSectionName) {
+            debugPrint(
+                `About inc meta_numOfSections, due to currentSectionName: "${currentSectionName}", level: ${currentSectionLevel}`,
+            )
             this.meta_numOfSections += 1
         }
 
         return {
-            level: sectionLevel,
-            name: sectionName,
+            level: currentSectionLevel,
+            name: currentSectionName,
             members: members,
         } as ISectionResult
     }
@@ -787,6 +787,11 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                         'Key already exists in this section scope (in this main section), key name: ' +
                             key,
                     )
+                } else if ((type as TDataType) === 'Section') {
+                    debugPrint(
+                        `About inc meta_numOfSections in visitMember_members(..), due to key: "${key}", type: '${type}'`,
+                    )
+                    this.meta_numOfSections += 1
                 } else {
                     // this.meta_numOfMembers +=1
                     // if ((value?.type as TDataType) === 'Null') {
@@ -806,7 +811,7 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                         //     debugPrint('      type = "' + type + '"')
                         //     debugPrint('this.level = "' + this.level + '"')
                         //     debugPrint(
-                        //         'DDDDDDDD: sectionName / objectKey: ' + key,
+                        //         'DDDDDDDD: currentSectionName / objectKey: ' + key,
                         //     )
 
                         //     debugPrint(
@@ -869,13 +874,13 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
     visitMember = (ctx: MemberContext) => {
         isDebug() && console.log()
         debugPrint('-> Entered visitMember(..)')
-        debugPrint('           key   = ' + ctx.KEY()?.getText().trim())
+        debugPrint('              key   = ' + ctx.KEY()?.getText().trim())
         debugPrint(
             'Or, section head = ' +
                 ctx.SECTION_HEAD()?.getText().trim() +
                 ' (head WITHOUT any members (ONLY detected here))',
         )
-        debugPrint('     ctx.value() = ' + ctx.value())
+        debugPrint('        ctx.value() = ' + ctx.value())
 
         // For logging and debugging purposes.
         let entityType: 'Member-Key' | 'Section-Head' | 'Unknown' = 'Unknown'
@@ -884,6 +889,40 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
         let resultKey: string = ''
         let resultValue: any = {}
         let followingSection: ISectionResult | null = null
+
+        // if (
+        //     stripCommentsAndAfter(ctx.YINI_MARKER() + '')
+        //         .trim()
+        //         .toLowerCase() === '@yini'
+        // ) {
+        //     // NOTE: The @yini marker has no functional meaning currently, it's purely syntactic sugar.
+        //     debugPrint('Detected a @yini-marker, in visitMember(..)!!!')
+        //     // entity = 'Yini-Marker'
+        //     this.meta_hasYiniMarker = true
+
+        //     // debugPrint('members = ' + ctx.section_members())
+        //     // const members = this.visitSection_members(ctx.section_members())
+
+        //     debugPrint()
+        //     debugPrint('<- Leaving visitMember(..) early due yini-marker found')
+        //     resultType = undefined
+        //     resultKey = ''
+        //     resultValue = undefined
+        //     if (isDebug()) {
+        //         console.log('returning:')
+        //         console.log({
+        //             type: resultType,
+        //             key: resultKey,
+        //             value: resultValue,
+        //         })
+        //         console.log()
+        //     }
+        //     return {
+        //         type: resultType,
+        //         key: resultKey,
+        //         value: resultValue,
+        //     } as IResult
+        // }
 
         // NOTE: (!) It can never be both a key and section head.
         if (ctx.KEY()?.getText().trim()) {
@@ -915,7 +954,14 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             const line = ctx.SECTION_HEAD().getText().trim()
             debugPrint('(!) Detected a section head instead: ' + line)
 
-            followingSection = this.visitSection(ctx)
+            // if (line) {
+            //     debugPrint(
+            //         `About inc meta_numOfSections in visitMember(..), due to line: "${line}"`,
+            //     )
+            //     this.meta_numOfSections += 1
+            // }
+
+            followingSection = this.visitSection(ctx as any)
             //  Object.assign(members, sectionObj)
             debugPrint(
                 'Got constructed object of builtSection (visitSection(..):',
@@ -926,7 +972,8 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             }
 
             //@todo  (Is this fixed now? 2025-07-10) Mount the nested object correctly!
-            resultType = 'Object'
+            // resultType = 'Object'
+            resultType = 'Section'
             // resultValue[nestedSection?.name] = nestedSection?.members
             resultValue = followingSection?.members || {}
             resultKey = followingSection!.name
@@ -1021,6 +1068,13 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             this.errorHandler!.pushOrBail(ctx, 'Syntax-Error', 'Unknown input')
         }
 
+        // if (resultType === 'Section') {
+        //     debugPrint(
+        //         `About inc meta_numOfSections in visitMember(..), due to resultKey: "${resultKey}", resultType: '${resultType}'`,
+        //     )
+        //     this.meta_numOfSections += 1
+        // }
+
         debugPrint()
         debugPrint('<- Leaving visitMember(..)')
         if (isDebug()) {
@@ -1033,7 +1087,11 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             console.log()
         }
 
-        if (resultType !== undefined) {
+        if (resultType !== undefined && resultType !== 'Section') {
+            // NOTE: (!) Count only literals, not any section headers!
+            debugPrint(
+                `About inc meta_numOfMembers, due to key of member: "${resultKey}", type: '${resultType}'`,
+            )
             this.meta_numOfMembers += 1
         }
 

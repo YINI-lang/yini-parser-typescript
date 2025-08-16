@@ -143,7 +143,6 @@ export const parseMain = (
                 parserErrorListener.errors,
                 lexerErrorListener.errors,
             )
-            //process.exit(1)
         }
     }
 
@@ -156,7 +155,6 @@ export const parseMain = (
     debugPrint(
         '=== Phase 2 ===================================================',
     )
-    //    const errorHandler = new ErrorDataHandler(persistThreshold)
 
     const visitor = new YINIVisitor(errorHandler, options.isStrict)
     const syntaxTreeC: TSyntaxTreeContainer = visitor.visit(
@@ -215,6 +213,7 @@ export const parseMain = (
     const metaData: IParseMetaData = {
         strictMode: options.isStrict,
         hasTerminal: syntaxTreeC._hasTerminal,
+        hasYiniMarker: syntaxTreeC._hasYiniMarker,
         sections: syntaxTreeC._meta_numOfSections,
         members: syntaxTreeC._meta_numOfMembers,
         sectionChains: syntaxTreeC._meta_numOfChains,

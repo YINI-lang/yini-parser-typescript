@@ -42,12 +42,13 @@ sValue = 2
 
 export type TDataType =
     | undefined
+    | 'Section' // Note: A section is indirectly an object, but main type is 'Section'.
     | 'String'
     | 'Number-Integer'
     | 'Number-Float'
     | 'Boolean'
     | 'Null'
-    | 'Object'
+    | 'Object' // Note: Object-literal.
     | 'List'
 
 /*
@@ -101,6 +102,7 @@ export interface IParseMetaData {
     // fullPath?: string
     strictMode: boolean
     hasTerminal: boolean
+    hasYiniMarker: boolean
     sections: null | number
     members: null | number
     keysParsed: null | number

@@ -461,7 +461,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>🔲</td>
     <td><code>'...'</code>, <code>"..."</code>, no escapes</td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>Single line, enclosed in ' or "</td>
   </tr>
@@ -695,6 +695,24 @@ https://github.com/YINI-lang/YINI-spec
     <td>🔲</td>
     <td>🔲</td>
     <td>This requires updates in the grammar and its parser logic</td>
+  </tr>
+  <tr>
+    <td>Meta: Count num of sections</td>
+    <td>🔲</td>
+    <td>Meta info</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Meta: Count num of members</td>
+    <td>🔲</td>
+    <td>Meta info</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Member literals</td>
   </tr>
 </table>
 
