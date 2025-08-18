@@ -50,17 +50,19 @@ import {
 
 // types.ts
 export type YiniScalar = string | number | boolean | null
+
+//@todo Below maybe expand with {value: YiniScalar, type: TType}
 export type YiniValue = YiniScalar | YiniValue[] | { [k: string]: YiniValue }
 
 export interface YiniSection {
     name: string
     level: number // 1..n
-    members: Map<string, YiniValue>
-    children: YiniSection[]
+    members: Map<string, YiniValue> // Members at this section.
+    children: YiniSection[] // Children sections (on the next level) of the current section.
 }
 
 export interface YiniDocument {
-    root: YiniSection // implicit root per spec impl notes
+    root: YiniSection // Implicit root per spec impl. notes.
     terminatorSeen: boolean // '/END' in strict mode
     mode: 'lenient' | 'strict'
     errors: string[]
@@ -185,6 +187,10 @@ function putMember(
     doc: YiniDocument,
     mode: BuildOptions['onDuplicateKey'] = 'warn',
 ) {
+    isDebug() && console.log()
+    debugPrint('-> Entered putMember(..)')
+    debugPrint(`putMember(..): key: '${key}', value: ${value}`)
+
     if (sec.members.has(key)) {
         switch (mode) {
             case 'error':
@@ -356,6 +362,9 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
      */
     // visitAssignment?: (ctx: AssignmentContext) => Result
     visitAssignment = (ctx: AssignmentContext): any => {
+        isDebug() && console.log()
+        debugPrint('-> Entered visitAssignment(..)')
+
         // assignment : member eol
         const mem = ctx.member()
         this.visitMember?.(mem)
@@ -369,8 +378,12 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
      */
     // visitMember?: (ctx: MemberContext) => Result
     visitMember = (ctx: MemberContext): any => {
+        isDebug() && console.log()
+        debugPrint('-> Entered visitMember(..)')
+
         // member: KEY WS? EQ WS? value?
         const key = ctx.getChild(0).getText()
+        debugPrint(`visitMember(..): key = '${key}'`)
 
         let valueNode = ctx.value?.()
         let value: YiniValue | undefined
@@ -385,6 +398,7 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
         } else {
             value = this.visitValue?.(valueNode) as YiniValue
         }
+        debugPrint('visitMember(..): value = ' + value)
 
         const current = this.sectionStack[this.sectionStack.length - 1]
         if (value !== undefined) {
