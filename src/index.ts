@@ -119,24 +119,33 @@ if (isProdEnv()) {
         ` // End.
         */
         const yini = `
-    --@yini    
+    @yini    
+    @YINI   ///dfsf
 
-    // This is a comment
-    ^ App
-      val1 = 123  # Inline comment
-      val2 = 456  // Another inline comment using #
+    < user
+    username = 'tester two'
+    isSysOp = YES
 
-        ; Full-line comment.
-        ^^ HexFormat              // Hexadecimal (base-16)
-            hex    = #FF0066       // Default notation
-            altHex = 0xFF0066      // Alternative notation
-        ^^ BinFormat              // Binary (base-2)
-            bin    = %10101111     // Default notation
-            altBin = 0b10101111    // Alternative notation
-    
-    ^ Special
-      title = "Sample Window"       // Strings can be enclosed in either ' or "
-      id = "window_main"    
+        << prefs
+        theme = "light"
+        notifications = OFF
+
+    ^1 user2
+    ^2 prefsOfUser2
+    ^3 deepSection
+    ^4 deeperSection
+    key = "Level 4 section"
+    ^5 yetDeeperSection
+    key = "Level 5 section"
+    item = 77
+
+    <1 user3
+    username = 'tester three'
+    isSysOp = NO
+
+        <2 Prefs
+        theme = "special-dark"
+        notifications = ON
 `
 
         console.log(toPrettyJSON(YINI.parse(yini, false, 'auto', true)))
