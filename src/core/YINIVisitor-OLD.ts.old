@@ -787,12 +787,14 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
                         'Key already exists in this section scope (in this main section), key name: ' +
                             key,
                     )
-                } else if ((type as TDataType) === 'Section') {
-                    debugPrint(
-                        `About inc meta_numOfSections in visitMember_members(..), due to key: "${key}", type: '${type}'`,
-                    )
-                    this.meta_numOfSections += 1
-                } else {
+                }
+                //  else if ((type as TDataType) === 'Section') {
+                //     debugPrint(
+                //         `About inc meta_numOfSections in visitMember_members(..), due to key: "${key}", type: '${type}'`,
+                //     )
+                //     this.meta_numOfSections += 1
+                // }
+                else {
                     // this.meta_numOfMembers +=1
                     // if ((value?.type as TDataType) === 'Null') {
                     if ((type as TDataType) === 'Null') {

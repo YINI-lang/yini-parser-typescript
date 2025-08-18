@@ -118,36 +118,47 @@ if (isProdEnv()) {
              altDoz = 0z10AB        // Alternative notation: A=10, B=11
         ` // End.
         */
+
         const yini = `
     @yini    
     @YINI   ///dfsf
 
-    < user
+    < User
     username = 'tester two'
     isSysOp = YES
 
-        << prefs
+        << Prefs
         theme = "light"
         notifications = OFF
 
-    ^1 user2
-    ^2 prefsOfUser2
-    ^3 deepSection
-    ^4 deeperSection
+    ^1 User2
+    ^2 PrefsOfUser2
+    ^3 DeepSection
+    ^4 DeeperSection
     key = "Level 4 section"
-    ^5 yetDeeperSection
+    ^5 YetDeeperSection
     key = "Level 5 section"
     item = 77
 
-    <1 user3
+    <1 User3
     username = 'tester three'
     isSysOp = NO
 
-        <2 Prefs
+        <2 Prefs2
         theme = "special-dark"
         notifications = ON
-`
 
+        <2 Special
+        value = 123
+        `
+
+        // npm run start:dev
+        // "timing": {
+        //     "totalMs": 158.421,
+        //     "phase1Ms": 151.36,
+        //     "phase2Ms": 6.92,
+        //     "phase3Ms": 0.14
+        // }
         console.log(toPrettyJSON(YINI.parse(yini, false, 'auto', true)))
 
         // console.log(

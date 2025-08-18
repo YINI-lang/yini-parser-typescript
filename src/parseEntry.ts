@@ -1,3 +1,4 @@
+import { performance } from 'perf_hooks'
 import {
     CharStreams,
     CommonTokenStream,
@@ -14,7 +15,7 @@ import {
     TPersistThreshold,
     TSyntaxTreeContainer,
 } from './core/types'
-import YINIVisitor from './core/YINIVisitor'
+import YiniAstBuilder from './core/YiniAstBuilder'
 import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
 import { debugPrint, printObject } from './utils/print'
@@ -91,6 +92,15 @@ export const parseMain = (
     debugPrint('-> Entered parseMain(..) in parseEntry')
     debugPrint('     isStrict mode = ' + options.isStrict)
     debugPrint('bailSensitivityLevel = ' + options.bailSensitivityLevel)
+    debugPrint('isIncludeMeta = ' + options.isIncludeMeta)
+    debugPrint('isWithDiagnostics = ' + options.isWithDiagnostics)
+    debugPrint('isWithTiming = ' + options.isWithTiming)
+
+    let startMs: number = 0
+    let totalMs: null | number = null
+    let phase1Ms: null | number = null
+    let phase2Ms: null | number = null
+    let phase3Ms: null | number = null
 
     let persistThreshold: TPersistThreshold
     switch (options.bailSensitivityLevel) {
@@ -108,6 +118,9 @@ export const parseMain = (
     debugPrint(
         '=== Phase 1 ===================================================',
     )
+    if (options.isWithTiming) {
+        startMs = performance.now()
+    }
     const inputStream = CharStreams.fromString(yiniContent)
     const lexer = new YiniLexer(inputStream)
     const tokenStream = new CommonTokenStream(lexer)
@@ -155,20 +168,25 @@ export const parseMain = (
     debugPrint(
         '=== Phase 2 ===================================================',
     )
+    if (options.isWithTiming) {
+        phase1Ms = performance.now() - startMs
+    }
 
-    const visitor = new YINIVisitor(errorHandler, options.isStrict)
-    const syntaxTreeC: TSyntaxTreeContainer = visitor.visit(
-        parseTree as any,
-    ) as TSyntaxTreeContainer
+    // const visitor = new YINIVisitor(errorHandler, options.isStrict)
+    const builder = new YiniAstBuilder(options)
+    const astTree = builder.build(parseTree)
+    // const syntaxTreeC: TSyntaxTreeContainer = visitor.visit(
+    //     parseTree as any,
+    // ) as TSyntaxTreeContainer
     if (isDebug()) {
         console.log()
         console.log(
             '**************************************************************************',
         )
         console.log(
-            '*** syntaxTreeContainer: *************************************************',
+            '*** astTree *************************************************',
         )
-        printObject(syntaxTreeC)
+        printObject(astTree)
         console.log(
             '**************************************************************************',
         )
@@ -185,11 +203,24 @@ export const parseMain = (
     debugPrint(
         '=== Phase 3 ===================================================',
     )
+    if (options.isWithTiming) {
+        phase2Ms = performance.now() - (startMs + phase1Ms!)
+    }
+
     // Construct.
-    const finalJSResult = constructFinalObject(syntaxTreeC, errorHandler)
+    // const finalJSResult = constructFinalObject(syntaxTreeC, errorHandler)
+    // const finalJSResult = builder.build(parseTree)
+
+    //@todo implement below so it takes the astTree
+    // const finalJSResult = constructFinalObject(astTree, errorHandler)
+    const finalJSResult = astTree //NOTE: ONLY TEMP so code runs
     debugPrint(
         '=== Ended phase 3 =============================================',
     )
+    if (options.isWithTiming) {
+        phase3Ms = performance.now() - (startMs + phase1Ms! + phase2Ms!)
+        totalMs = performance.now() - startMs
+    }
 
     debugPrint('visitor.visit(..): finalJSResult:')
     isDebug() && console.debug(finalJSResult)
@@ -212,18 +243,18 @@ export const parseMain = (
     // Construct meta data.
     const metaData: IParseMetaData = {
         strictMode: options.isStrict,
-        hasTerminal: syntaxTreeC._hasTerminal,
-        hasYiniMarker: syntaxTreeC._hasYiniMarker,
-        sections: syntaxTreeC._meta_numOfSections,
-        members: syntaxTreeC._meta_numOfMembers,
-        sectionChains: syntaxTreeC._meta_numOfChains,
+        hasTerminal: false, //syntaxTreeC._hasTerminal,
+        hasYiniMarker: false, //syntaxTreeC._hasYiniMarker,
+        sections: null, //syntaxTreeC._meta_numOfSections,
+        members: null, //syntaxTreeC._meta_numOfMembers,
+        sectionChains: null, //syntaxTreeC._meta_numOfChains,
         keysParsed: null,
-        timing: {
-            totalMs: null,
-            phase1Ms: null,
-            phase2Ms: null,
-            phase3Ms: null,
-        },
+        // timing: {
+        //     totalMs: !options.isWithTiming ? null : totalMs!.toFixed(3),
+        //     phase1Ms: !options.isWithTiming ? null : phase1Ms!.toFixed(3),
+        //     phase2Ms: !options.isWithTiming ? null : phase2Ms!.toFixed(3),
+        //     phase3Ms: !options.isWithTiming ? null : phase3Ms!.toFixed(3),
+        // },
     }
     if (options.isWithDiagnostics) {
         // Attach optional diagnostics.
@@ -247,10 +278,18 @@ export const parseMain = (
     if (options.isWithTiming) {
         // Attach optional timing data.
         metaData.timing = {
-            totalMs: null,
-            phase1Ms: null,
-            phase2Ms: null,
-            phase3Ms: null,
+            totalMs: !options.isWithTiming
+                ? null
+                : Number.parseFloat(totalMs!.toFixed(3) + ''),
+            phase1Ms: !options.isWithTiming
+                ? null
+                : Number.parseFloat(phase1Ms!.toFixed(3) + ''),
+            phase2Ms: !options.isWithTiming
+                ? null
+                : Number.parseFloat(phase2Ms!.toFixed(3) + ''),
+            phase3Ms: !options.isWithTiming
+                ? null
+                : Number.parseFloat(phase3Ms!.toFixed(3) + ''),
         }
     }
 

@@ -64,7 +64,7 @@ export default class YINI {
             bailSensitivityLevel: level,
             isIncludeMeta: includeMetaData,
             isWithDiagnostics: isDev() || isDebug(),
-            isWithTiming: isDebug(),
+            isWithTiming: isDev() || isDebug(),
         }
 
         debugPrint()
