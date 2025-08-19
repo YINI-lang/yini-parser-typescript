@@ -36,6 +36,7 @@ import { isEnclosedInBackticks, trimBackticks } from '../utils/string'
 import {
     isValidBacktickedIdent,
     isValidSimpleIdent,
+    printLiteral,
     stripCommentsAndAfter,
 } from '../yiniHelpers'
 import { ErrorDataHandler } from './ErrorDataHandler'
@@ -49,15 +50,40 @@ import {
 } from './types'
 
 // types.ts
-export type YiniScalar = string | number | boolean | null
+// export type YiniScalar = {
+//     type: TDataType
+//     value: string | number | boolean | null
+// }
+/**
+ * Scalar literal, a single, indivisible piece of data:
+ * string, number, boolean, and null.
+ */
+export type TScalarValue =
+    | { type: 'String'; value: string }
+    | { type: 'Number'; value: number }
+    | { type: 'Boolean'; value: boolean }
+    | { type: 'Null'; value: null }
 
-//@todo Below maybe expand with {value: YiniScalar, type: TType}
-export type YiniValue = YiniScalar | YiniValue[] | { [k: string]: YiniValue }
+/** Any literal value in YINI: scalar, list, or object. */
+export type TValueLiteral =
+    | TScalarValue
+    // | TValueLiteral[]
+    | TListValue
+    // | { [key: string]: TValueLiteral }
+    | TObjectValue
+
+// type TListValue = TValueLiteral[]
+type TListValue = { type: 'List'; elems: readonly TValueLiteral[] }
+type TObjectValue = {
+    type: 'Object'
+    //value: { [key: string]: TValueLiteral }
+    entries: Readonly<Record<string, TValueLiteral>>
+}
 
 export interface YiniSection {
     name: string
     level: number // 1..n
-    members: Map<string, YiniValue> // Members at this section.
+    members: Map<string, TValueLiteral> // Members at this section.
     children: YiniSection[] // Children sections (on the next level) of the current section.
 }
 
@@ -77,6 +103,32 @@ export interface BuildOptions {
 // -----------------------
 
 // Helpers -------------------------------------------------------------
+
+const makeScalarValue = (
+    type: 'String' | 'Number' | 'Boolean' | 'Null',
+    value: string | number | boolean | null = null,
+): TScalarValue => {
+    switch (type) {
+        case 'String':
+            return { type, value: value as string }
+        case 'Number':
+            return { type, value: value as number }
+        case 'Boolean':
+            return { type, value: !!value }
+        default:
+            new ErrorDataHandler().pushOrBail(
+                null,
+                'Fatal-Error',
+                `No such type in makeValue(..), type: ${type}, value: ${value}`,
+                'Something in the code is done incorrectly in order for this to happen... :S',
+            )
+    }
+    return { type: 'Null', value: null }
+}
+
+const makeListValue = (elems: TValueLiteral[] = []): TValueLiteral => {
+    return { type: 'List', elems }
+}
 
 function isBooleanWord(s: string): boolean {
     const v = s.toLowerCase()
@@ -183,7 +235,7 @@ function attachSection(
 function putMember(
     sec: YiniSection,
     key: string,
-    value: YiniValue,
+    value: TValueLiteral,
     doc: YiniDocument,
     mode: BuildOptions['onDuplicateKey'] = 'warn',
 ) {
@@ -386,17 +438,17 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
         debugPrint(`visitMember(..): key = '${key}'`)
 
         let valueNode = ctx.value?.()
-        let value: YiniValue | undefined
+        let value: TValueLiteral | undefined
 
         if (!valueNode) {
             // Empty value => Null in lenient mode, error in strict (Spec 12.3, 8.2). :contentReference[oaicite:10]{index=10}:contentReference[oaicite:11]{index=11}
-            if (this.mode === 'lenient') value = null
+            if (this.mode === 'lenient') value = makeScalarValue('Null')
             else
                 this.doc.errors.push(
                     `Strict mode: missing value for key '${key}'.`,
                 )
         } else {
-            value = this.visitValue?.(valueNode) as YiniValue
+            value = this.visitValue?.(valueNode) as TValueLiteral
         }
         debugPrint('visitMember(..): value = ' + value)
 
@@ -417,9 +469,20 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
         // KEY ':' elements? ; NOTE: ':' form is ONLY FOR LISTS (Spec 10.2). :contentReference[oaicite:12]{index=12}
         const key = ctx.getChild(0).getText()
         const els = ctx.elements?.()
-        const list = els ? (this.visitElements?.(els) as YiniValue[]) : []
+        // const list = els ? (this.visitElements?.(els) as TValueLiteral[]) : []
+        const list: TValueLiteral[] = els
+            ? (this.visitElements?.(els) as TValueLiteral[])
+            : []
         const current = this.sectionStack[this.sectionStack.length - 1]
-        putMember(current, key, list, this.doc, this.onDuplicateKey)
+
+        // putMember(current, key, list, this.doc, this.onDuplicateKey)
+        putMember(
+            current,
+            key,
+            makeListValue(list),
+            this.doc,
+            this.onDuplicateKey,
+        )
         return list
     }
 
@@ -432,25 +495,29 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
     visitValue = (ctx: ValueContext): any => {
         // value : null | string | number | boolean | list_literal | object_literal
         if (ctx.null_literal())
-            return this.visitNull_literal?.(ctx.null_literal()!) as YiniValue
+            return this.visitNull_literal?.(
+                ctx.null_literal()!,
+            ) as TValueLiteral
         if (ctx.string_literal())
             return this.visitString_literal?.(
                 ctx.string_literal()!,
-            ) as YiniValue
+            ) as TValueLiteral
         if (ctx.number_literal())
             return this.visitNumber_literal?.(
                 ctx.number_literal()!,
-            ) as YiniValue
+            ) as TValueLiteral
         if (ctx.boolean_literal())
             return this.visitBoolean_literal?.(
                 ctx.boolean_literal()!,
-            ) as YiniValue
+            ) as TValueLiteral
         if (ctx.list_literal())
-            return this.visitList_literal?.(ctx.list_literal()!) as YiniValue
+            return this.visitList_literal?.(
+                ctx.list_literal()!,
+            ) as TValueLiteral
         if (ctx.object_literal())
             return this.visitObject_literal?.(
                 ctx.object_literal()!,
-            ) as YiniValue
+            ) as TValueLiteral
 
         this.doc.errors.push('Unknown value node.')
         return null
@@ -464,12 +531,12 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
     // visitObject_literal?: (ctx: Object_literalContext) => Result
     visitObject_literal = (ctx: Object_literalContext): any => {
         // object: '{' object_members? '}'  (Spec 9.1). :contentReference[oaicite:13]{index=13}
-        const obj: Record<string, YiniValue> = {}
+        const obj: Record<string, TValueLiteral> = {}
         const members = ctx.object_members?.()
         if (members) {
             const list = this.visitObject_members?.(members) as Array<{
                 k: string
-                v: YiniValue
+                v: TValueLiteral
             }>
             for (const { k, v } of list) {
                 if (Object.prototype.hasOwnProperty.call(obj, k)) {
@@ -492,7 +559,7 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
      */
     // visitObject_members?: (ctx: Object_membersContext) => Result
     visitObject_members = (ctx: Object_membersContext): any => {
-        const out: Array<{ k: string; v: YiniValue }> = []
+        const out: Array<{ k: string; v: TValueLiteral }> = []
         // for (const m of ctx.object_member()) {
         for (const m of ctx.object_member_list()) {
             debugPrint('m of ctx.object_member_list():')
@@ -511,7 +578,7 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
     visitObject_member = (ctx: Object_memberContext): any => {
         // KEY ':' value
         const k = ctx.getChild(0).getText()
-        const v = this.visitValue?.(ctx.value()!) as YiniValue
+        const v = this.visitValue?.(ctx.value()!) as TValueLiteral
         return { k, v }
     }
 
@@ -524,7 +591,7 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
     visitList_literal = (ctx: List_literalContext): any => {
         // '[' elements? ']' ; empty_list handled by lexer (Spec 10.1). :contentReference[oaicite:14]{index=14}
         const els = ctx.elements?.()
-        return els ? (this.visitElements?.(els) as YiniValue[]) : []
+        return els ? (this.visitElements?.(els) as TValueLiteral[]) : []
     }
 
     /**
@@ -535,13 +602,13 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
     // visitElements?: (ctx: ElementsContext) => Result
     visitElements = (ctx: ElementsContext): any => {
         // value (',' value)* (optional trailing comma allowed in lenient mode for lists/objects) (Spec 12.3). :contentReference[oaicite:15]{index=15}
-        const values: YiniValue[] = []
+        const values: TValueLiteral[] = []
         // Elements grammar is left-recursive-ish via repetition; just visit all value() children.
         // for (const v of ctx.value()) {
         for (const v of ctx.value_list()) {
             debugPrint('v of ctx.value_list():')
             isDebug() && printObject(v)
-            values.push(this.visitValue?.(v) as YiniValue)
+            values.push(this.visitValue?.(v) as TValueLiteral)
         }
         return values
     }
@@ -553,7 +620,20 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
      */
     // visitNumber_literal?: (ctx: Number_literalContext) => Result
     visitNumber_literal = (ctx: Number_literalContext): any => {
-        return parseNumber(ctx.getText())
+        debugPrint('-> Entered visitNumber_literal(..)')
+
+        const rawText = ctx.getText()
+        const parsedNum = parseNumber(rawText)
+        const value = makeScalarValue('Number', parsedNum)
+
+        if (isDebug()) {
+            console.log('  rawText = ' + rawText)
+            console.log('parsedNum = ' + parsedNum)
+            console.log('Number literal:')
+            printLiteral(value)
+            // return parseNumber(ctx.getText())
+        }
+        return value
     }
 
     /**

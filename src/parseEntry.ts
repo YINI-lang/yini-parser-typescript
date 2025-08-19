@@ -96,11 +96,14 @@ export const parseMain = (
     debugPrint('isWithDiagnostics = ' + options.isWithDiagnostics)
     debugPrint('isWithTiming = ' + options.isWithTiming)
 
-    let startMs: number = 0
-    let totalMs: null | number = null
-    let phase1Ms: null | number = null
-    let phase2Ms: null | number = null
-    let phase3Ms: null | number = null
+    let timeStartMs: number = 0
+    let timeEnd1Ms: number = 0
+    let timeEnd2Ms: number = 0
+    let timeEnd3Ms: number = 0
+    // let totalMs: null | number = null
+    // let phase1Ms: null | number = null
+    // let phase2Ms: null | number = null
+    // let phase3Ms: null | number = null
 
     let persistThreshold: TPersistThreshold
     switch (options.bailSensitivityLevel) {
@@ -119,7 +122,7 @@ export const parseMain = (
         '=== Phase 1 ===================================================',
     )
     if (options.isWithTiming) {
-        startMs = performance.now()
+        timeStartMs = performance.now()
     }
     const inputStream = CharStreams.fromString(yiniContent)
     const lexer = new YiniLexer(inputStream)
@@ -169,7 +172,7 @@ export const parseMain = (
         '=== Phase 2 ===================================================',
     )
     if (options.isWithTiming) {
-        phase1Ms = performance.now() - startMs
+        timeEnd1Ms = performance.now()
     }
 
     // const visitor = new YINIVisitor(errorHandler, options.isStrict)
@@ -204,7 +207,7 @@ export const parseMain = (
         '=== Phase 3 ===================================================',
     )
     if (options.isWithTiming) {
-        phase2Ms = performance.now() - (startMs + phase1Ms!)
+        timeEnd2Ms = performance.now()
     }
 
     // Construct.
@@ -218,8 +221,7 @@ export const parseMain = (
         '=== Ended phase 3 =============================================',
     )
     if (options.isWithTiming) {
-        phase3Ms = performance.now() - (startMs + phase1Ms! + phase2Ms!)
-        totalMs = performance.now() - startMs
+        timeEnd3Ms = performance.now()
     }
 
     debugPrint('visitor.visit(..): finalJSResult:')
@@ -280,16 +282,16 @@ export const parseMain = (
         metaData.timing = {
             totalMs: !options.isWithTiming
                 ? null
-                : Number.parseFloat(totalMs!.toFixed(3) + ''),
+                : Number.parseFloat((timeEnd3Ms - timeStartMs).toFixed(3) + ''),
             phase1Ms: !options.isWithTiming
                 ? null
-                : Number.parseFloat(phase1Ms!.toFixed(3) + ''),
+                : Number.parseFloat((timeEnd1Ms - timeStartMs).toFixed(3) + ''),
             phase2Ms: !options.isWithTiming
                 ? null
-                : Number.parseFloat(phase2Ms!.toFixed(3) + ''),
+                : Number.parseFloat((timeEnd2Ms - timeEnd1Ms).toFixed(3) + ''),
             phase3Ms: !options.isWithTiming
                 ? null
-                : Number.parseFloat(phase3Ms!.toFixed(3) + ''),
+                : Number.parseFloat((timeEnd3Ms - timeEnd2Ms).toFixed(3) + ''),
         }
     }
 

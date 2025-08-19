@@ -3,6 +3,7 @@
  * @note More general helper functions should go into the dir "src/utils/".
  */
 
+import { TScalarValue, TValueLiteral } from './core/YiniAstBuilder'
 import { debugPrint } from './utils/print'
 import { isEnclosedInBackticks, splitLines } from './utils/string'
 
@@ -156,3 +157,36 @@ export const isValidBacktickedIdent = (str: string): boolean => {
     }
     return true
 }
+
+const assertNever = (x: never): never => {
+    throw new Error(`Unhandled: ${JSON.stringify(x)}`)
+}
+
+export const printLiteral = (value: TValueLiteral): string => {
+    switch (value.type) {
+        case 'String':
+            return value.value
+        case 'Number':
+            return String(value.value)
+        case 'Boolean':
+            return String(value.value)
+        case 'Null':
+            return 'null'
+        case 'List':
+            return `[${value.elems.map(printLiteral).join(', ')}]`
+        case 'Object':
+            return `{${Object.keys(value.entries).join(', ')}}`
+        default:
+            return assertNever(value) // ensures exhaustiveness
+    }
+}
+
+export const isScalar = (v: TValueLiteral): v is TScalarValue =>
+    v.type === 'String' ||
+    v.type === 'Number' ||
+    v.type === 'Boolean' ||
+    v.type === 'Null'
+
+// export const isList = (v: TValueLiteral): v is TListValue => v.type === 'List'
+// export const isObject = (v: TValueLiteral): v is TObjectValue =>
+//     v.type === 'Object'

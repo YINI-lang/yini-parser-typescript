@@ -40,16 +40,24 @@ sValue = 2
 //     _hasTerminal?: boolean
 // }
 
+// export type TDataType =
+//     | undefined
+//     | 'Section' // Note: A section is indirectly an object, but main type is 'Section'.
+//     | 'String'
+//     | 'Number-Integer'
+//     | 'Number-Float'
+//     | 'Boolean'
+//     | 'Null'
+//     | 'Object' // Note: Object-literal.
+//     | 'List'
+
 export type TDataType =
     | undefined
-    | 'Section' // Note: A section is indirectly an object, but main type is 'Section'.
     | 'String'
     | 'Number-Integer'
     | 'Number-Float'
     | 'Boolean'
     | 'Null'
-    | 'Object' // Note: Object-literal.
-    | 'List'
 
 /*
 class CIResult {
