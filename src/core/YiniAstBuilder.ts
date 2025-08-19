@@ -27,8 +27,10 @@ import {
 import YiniParserVisitor from '../grammar/YiniParserVisitor'
 import { extractYiniLine } from '../parsers/extractSignificantYiniLine'
 import parseBooleanLiteral from '../parsers/parseBoolean'
+import parseBoolean from '../parsers/parseBoolean'
 import parseNullLiteral from '../parsers/parseNull'
 import parseNumberLiteral from '../parsers/parseNumber'
+import parseNumber from '../parsers/parseNumber'
 import parseSectionHeader from '../parsers/parseSectionHeader'
 import parseStringLiteral from '../parsers/parseString'
 import { debugPrint, printObject } from '../utils/print'
@@ -101,30 +103,6 @@ const makeScalarValue = (
 
 const makeListValue = (elems: TValueLiteral[] = []): TValueLiteral => {
     return { type: 'List', elems }
-}
-
-function isBooleanWord(s: string): boolean {
-    const v = s.toLowerCase()
-    return (
-        v === 'true' ||
-        v === 'false' ||
-        v === 'on' ||
-        v === 'off' ||
-        v === 'yes' ||
-        v === 'no'
-    )
-}
-
-function toBoolean(s: string): boolean {
-    const v = s.toLowerCase()
-    return v === 'true' || v === 'on' || v === 'yes'
-}
-
-function parseNumber(text: string): number {
-    // The lexer already normalizes all number forms into NUMBER (decimals, exponents, alt bases),
-    // so a standard JS parse should be OK. (Spec 7.2–7.3) :contentReference[oaicite:4]{index=4}
-    // Use Number(...) rather than parseFloat to support hex-like (#F390 handled by lexer as NUMBER).
-    return Number(text)
 }
 
 function trimQuotes(text: string): string {
@@ -275,7 +253,7 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
     }
 
     // Public entry
-    build(ctx: YiniContext): YiniDocument {
+    public buildAST(ctx: YiniContext): YiniDocument {
         this.visitYini?.(ctx)
         // Enforce strict-mode terminator rule (/END required) (Spec 12.3). :contentReference[oaicite:8]{index=8}
         if (this.mode === 'strict' && !this.doc.terminatorSeen) {
@@ -466,7 +444,8 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
      */
     // visitValue?: (ctx: ValueContext) => Result
     visitValue = (ctx: ValueContext): any => {
-        // value : null | string | number | boolean | list_literal | object_literal
+        debugPrint('-> Entered visitValue(..)')
+
         if (ctx.null_literal())
             return this.visitNull_literal(ctx.null_literal()!) as TValueLiteral
         if (ctx.string_literal())
@@ -558,9 +537,16 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
      */
     // visitList_literal?: (ctx: List_literalContext) => Result
     visitList_literal = (ctx: List_literalContext): any => {
-        // '[' elements? ']' ; empty_list handled by lexer (Spec 10.1). :contentReference[oaicite:14]{index=14}
-        const els = ctx.elements?.()
-        return els ? (this.visitElements?.(els) as TValueLiteral[]) : []
+        debugPrint('-> Entered visitList_literal(..)')
+
+        // '[' elements? ']' ; empty_list handled by lexer (Spec section, 10.1). :contentReference[oaicite:14]{index=14}
+        const elems = this.visitElements(ctx.elements())
+        const value = makeListValue(elems)
+        if (isDebug()) {
+            console.log('List literal:')
+            printObject(value)
+        }
+        return value
     }
 
     /**
@@ -570,16 +556,22 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
      */
     // visitElements?: (ctx: ElementsContext) => Result
     visitElements = (ctx: ElementsContext): any => {
-        // value (',' value)* (optional trailing comma allowed in lenient mode for lists/objects) (Spec 12.3). :contentReference[oaicite:15]{index=15}
-        const values: TValueLiteral[] = []
-        // Elements grammar is left-recursive-ish via repetition; just visit all value() children.
-        // for (const v of ctx.value()) {
-        for (const v of ctx.value_list()) {
-            debugPrint('v of ctx.value_list():')
-            isDebug() && printObject(v)
-            values.push(this.visitValue?.(v) as TValueLiteral)
+        debugPrint('-> Entered visitElements(..)')
+        debugPrint('  elements.length = ' + ctx?.value_list().length)
+
+        // const elems = [this.visitValue(ctx.value_list()[0])]
+        const elems = !ctx?.value_list()
+            ? []
+            : ctx.value_list().map((elem) => {
+                  return this.visitValue(elem)
+              })
+
+        debugPrint('<- About to exit visitElements(..)')
+        if (isDebug()) {
+            console.log('Mapped value_list of elements in a list:')
+            printObject(elems)
         }
-        return values
+        return makeListValue(elems)
     }
 
     /**
@@ -593,11 +585,11 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
 
         const rawText = ctx.getText()
         const parsedNum = parseNumber(rawText)
-        const value: TScalarValue = makeScalarValue('Number', parsedNum)
+        const value: TScalarValue = makeScalarValue('Number', parsedNum.value)
 
         if (isDebug()) {
             console.log('  rawText = ' + rawText)
-            console.log('parsedNum = ' + parsedNum)
+            console.log('parsedNum = ' + parsedNum.value)
             console.log('Number literal:')
             printLiteral(value)
             // return parseNumber(ctx.getText())
@@ -613,6 +605,7 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
     // visitNull_literal?: (ctx: Null_literalContext) => Result
     visitNull_literal = (ctx: Null_literalContext): any => {
         debugPrint('-> Entered visitNull_literal(..)')
+        debugPrint('raw = ' + ctx.getText())
         return makeScalarValue('Null')
     }
 
@@ -658,7 +651,7 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
         debugPrint('-> Entered visitBoolean_literal(..)')
         const raw = ctx.getText()
         // Case-insensitive true/false/on/off/yes/no (Spec section, 8.1).
-        return makeScalarValue('Boolean', toBoolean(raw))
+        return makeScalarValue('Boolean', parseBoolean(raw))
     }
 
     /**

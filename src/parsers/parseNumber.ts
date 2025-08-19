@@ -1,17 +1,16 @@
 import { isDebug } from '../config/env'
-import { TDataType } from '../core/types'
 import { debugPrint } from '../utils/print'
 
 const parseNumberLiteral = (
     txt: string,
-): { type: TDataType; value: number } => {
+): { subType: 'Number-Integer' | 'Number-Float'; value: number } => {
     debugPrint('-> Entered parseNumberLiteral(..), txt: ' + txt)
 
     if (/^[+-]?(?:\d+\.\d*|\d*\.?\d+)e[+-]?\d+$/i.test(txt)) {
         // Exp. numbers
         debugPrint('* Identified as an exp number')
         return {
-            type: 'Number-Float',
+            subType: 'Number-Float',
             // value: parseInt(txt.replace('#', '0x'), 16),
             value: parseFloat(txt),
         }
@@ -22,7 +21,7 @@ const parseNumberLiteral = (
         debugPrint('* Identified as a hex number')
         debugPrint('parsed out HEX: ' + txt.replace(/0[xX]|#/, ''))
         return {
-            type: 'Number-Integer',
+            subType: 'Number-Integer',
             // value: parseInt(txt.replace('#', '0x'), 16),
             value: parseInt(txt.replace(/0[xX]|#/, ''), 16),
         }
@@ -33,7 +32,7 @@ const parseNumberLiteral = (
         debugPrint('* Identified as a bin number')
         debugPrint('parsed out BIN: ' + txt.replace(/0[bB]|%/, ''))
         return {
-            type: 'Number-Integer',
+            subType: 'Number-Integer',
             value: parseInt(txt.replace(/0[bB]|%/, ''), 2),
         }
     }
@@ -43,7 +42,7 @@ const parseNumberLiteral = (
         debugPrint('* Identified as a oct number')
         debugPrint('parsed out OCT: ' + txt.replace(/0[oO]/, ''))
         return {
-            type: 'Number-Integer',
+            subType: 'Number-Integer',
             value: parseInt(txt.replace(/0[oO]/, ''), 8),
         }
     }
@@ -56,7 +55,7 @@ const parseNumberLiteral = (
         txt = txt.replace(/[eE]/g, 'B')
         debugPrint('Converter to AB form: ' + txt.replace(/0[zZ]/, ''))
         return {
-            type: 'Number-Integer',
+            subType: 'Number-Integer',
             value: parseInt(txt.replace(/0[zZ]/, ''), 12),
         }
     }
@@ -64,14 +63,14 @@ const parseNumberLiteral = (
     // In a regex literal the dot must be escaped (\.) to match a literal '.'
     if (/\./.test(txt)) {
         debugPrint('* Identified as a float number')
-        return { type: 'Number-Float', value: parseFloat(txt) }
+        return { subType: 'Number-Float', value: parseFloat(txt) }
     }
 
     // TODO: Depending, on mode, below continue or break on error
     //console.error('Error: Failed to parse number value: ' + txt)
 
     debugPrint('* Identified as a int number')
-    return { type: 'Number-Integer', value: parseInt(txt) }
+    return { subType: 'Number-Integer', value: parseInt(txt) }
 }
 
 export default parseNumberLiteral

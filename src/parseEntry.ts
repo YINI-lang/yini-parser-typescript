@@ -177,7 +177,7 @@ export const parseMain = (
 
     // const visitor = new YINIVisitor(errorHandler, options.isStrict)
     const builder = new YiniAstBuilder(options)
-    const astTree = builder.build(parseTree)
+    const ast = builder.buildAST(parseTree)
     // const syntaxTreeC: TSyntaxTreeContainer = visitor.visit(
     //     parseTree as any,
     // ) as TSyntaxTreeContainer
@@ -186,10 +186,8 @@ export const parseMain = (
         console.log(
             '**************************************************************************',
         )
-        console.log(
-            '*** AST Tree *************************************************',
-        )
-        printObject(astTree)
+        console.log('*** AST *************************************************')
+        printObject(ast)
         console.log(
             '**************************************************************************',
         )
@@ -216,7 +214,7 @@ export const parseMain = (
 
     //@todo implement below so it takes the astTree
     // const finalJSResult = constructFinalObject(astTree, errorHandler)
-    const finalJSResult = astTree //NOTE: ONLY TEMP so code runs
+    const finalJSResult = ast //NOTE: ONLY TEMP so code runs
     debugPrint(
         '=== Ended phase 3 =============================================',
     )

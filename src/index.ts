@@ -126,7 +126,23 @@ if (isProdEnv()) {
     < User
     username = 'tester two'
     userId   = 234
+    userColor = #ffaa99
+    userPerm = 0O733
+    userFearues = %01101
     isSysOp = YES
+
+    listValue = [1, 2, 3]
+    listValue2 = ["a", "b"]
+    listValue3 = [434]
+    listValue4 = []
+    listValue5 = [1, ["a", "b", "c", [null, TRUE]], 3]
+    --listObject = { a: 1, b: 2}
+    /*
+    colonList:
+        1,
+        2,
+        3,
+    */
 
         << Prefs
         theme = "light"
