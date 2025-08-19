@@ -132,6 +132,7 @@ if (isProdEnv()) {
     isSysOp = YES
 
     listValue = [1, 2, 3]
+    listValueA: 3, 4, 5
     listValue2 = ["a", "b"]
     listValue3 = [434]
     listValue4 = []

@@ -5,10 +5,10 @@ import {
     AssignmentContext,
     Bad_memberContext,
     Boolean_literalContext,
+    Colon_list_declContext,
     ElementsContext,
     EolContext,
     List_literalContext,
-    ListAfterColonContext,
     Marker_stmtContext,
     MemberContext,
     Null_literalContext,
@@ -302,19 +302,19 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
     /**
      * Visit a parse tree produced by `YiniParser.stmt`.
      * @param ctx the parse tree
+     * @grammarRule eol | SECTION_HEAD | assignment | colon_list_decl | marker_stmt | bad_member
      * @return the visitor result
      */
     // visitStmt?: (ctx: StmtContext) => Result
     visitStmt = (ctx: StmtContext): any => {
-        // stmt : eol | SECTION_HEAD | assignment | listAfterColon | marker_stmt | bad_member
         const child: any = ctx.getChild(0)
         const ruleName = child?.constructor?.name ?? ''
 
         if (ruleName.includes('EolContext')) return this.visitEol?.(child)
         if (ruleName.includes('AssignmentContext'))
             return this.visitAssignment?.(child)
-        if (ruleName.includes('ListAfterColonContext'))
-            return this.visitListAfterColon?.(child)
+        if (ruleName.includes('Colon_list_declContext'))
+            return this.visitColon_list_decl?.(child)
         if (ruleName.includes('Marker_stmtContext'))
             return this.visitMarker_stmt?.(child)
 
@@ -377,6 +377,7 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
     /**
      * Visit a parse tree produced by `YiniParser.member`.
      * @param ctx the parse tree
+     * @grammarRule KEY WS? EQ WS? value?
      * @return the visitor result
      */
     // visitMember?: (ctx: MemberContext) => Result
@@ -411,30 +412,30 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
     }
 
     /**
-     * Visit a parse tree produced by `YiniParser.listAfterColon`.
+     * Visit a parse tree produced by `YiniParser.colon_list_decl`.
      * @param ctx the parse tree
+     * @grammarRule KEY WS? COLON (eol | WS+)* elements (eol | WS+)* eol
      * @return the visitor result
      */
-    // visitListAfterColon?: (ctx: ListAfterColonContext) => Result
-    visitListAfterColon = (ctx: ListAfterColonContext): any => {
-        // KEY ':' elements? ; NOTE: ':' form is ONLY FOR LISTS (Spec 10.2). :contentReference[oaicite:12]{index=12}
+    // visitColon_list_decl?: (ctx: ListAfterColonContext) => Result
+    visitColon_list_decl = (ctx: Colon_list_declContext): any => {
+        debugPrint('-> Entered visitColon_list_decl(..)')
+
         const key = ctx.getChild(0).getText()
-        const els = ctx.elements?.()
-        // const list = els ? (this.visitElements?.(els) as TValueLiteral[]) : []
-        const list: TValueLiteral[] = els
-            ? (this.visitElements?.(els) as TValueLiteral[])
-            : []
+        debugPrint(`visitColon_list_decl(..): key = '${key}'`)
+
+        const elems = this.visitElements(ctx.elements())
+        const value = makeListValue(elems)
         const current = this.sectionStack[this.sectionStack.length - 1]
 
         // putMember(current, key, list, this.doc, this.onDuplicateKey)
-        putMember(
-            current,
-            key,
-            makeListValue(list),
-            this.doc,
-            this.onDuplicateKey,
-        )
-        return list
+        putMember(current, key, value, this.doc, this.onDuplicateKey)
+        debugPrint('<- Exiting visitColon_list_decl(..)...')
+        if (isDebug()) {
+            console.log('List literal: (from a Colon-list)')
+            printObject(value)
+        }
+        return value
     }
 
     /**
@@ -542,6 +543,8 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
         // '[' elements? ']' ; empty_list handled by lexer (Spec section, 10.1). :contentReference[oaicite:14]{index=14}
         const elems = this.visitElements(ctx.elements())
         const value = makeListValue(elems)
+
+        debugPrint('<- Exiting visitList_literal(..)...')
         if (isDebug()) {
             console.log('List literal:')
             printObject(value)
@@ -552,14 +555,13 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
     /**
      * Visit a parse tree produced by `YiniParser.elements`.
      * @param ctx the parse tree
+     * @grammarRule value (NL* COMMA NL* value)* COMMA?
      * @return the visitor result
      */
-    // visitElements?: (ctx: ElementsContext) => Result
     visitElements = (ctx: ElementsContext): any => {
         debugPrint('-> Entered visitElements(..)')
         debugPrint('  elements.length = ' + ctx?.value_list().length)
 
-        // const elems = [this.visitValue(ctx.value_list()[0])]
         const elems = !ctx?.value_list()
             ? []
             : ctx.value_list().map((elem) => {

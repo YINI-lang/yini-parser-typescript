@@ -73,7 +73,7 @@ export default class YiniParser extends Parser {
 	public static readonly RULE_eol = 5;
 	public static readonly RULE_assignment = 6;
 	public static readonly RULE_member = 7;
-	public static readonly RULE_listAfterColon = 8;
+	public static readonly RULE_colon_list_decl = 8;
 	public static readonly RULE_value = 9;
 	public static readonly RULE_object_literal = 10;
 	public static readonly RULE_object_members = 11;
@@ -134,7 +134,7 @@ export default class YiniParser extends Parser {
 	// tslint:disable:no-trailing-whitespace
 	public static readonly ruleNames: string[] = [
 		"yini", "prolog", "terminal_stmt", "stmt", "marker_stmt", "eol", "assignment", 
-		"member", "listAfterColon", "value", "object_literal", "object_members", 
+		"member", "colon_list_decl", "value", "object_literal", "object_members", 
 		"object_member", "list_literal", "elements", "number_literal", "null_literal", 
 		"string_literal", "string_concat", "boolean_literal", "bad_member",
 	];
@@ -377,7 +377,7 @@ export default class YiniParser extends Parser {
 				this.enterOuterAlt(localctx, 4);
 				{
 				this.state = 84;
-				this.listAfterColon();
+				this.colon_list_decl();
 				}
 				break;
 			case 5:
@@ -578,9 +578,9 @@ export default class YiniParser extends Parser {
 		return localctx;
 	}
 	// @RuleVersion(0)
-	public listAfterColon(): ListAfterColonContext {
-		let localctx: ListAfterColonContext = new ListAfterColonContext(this, this._ctx, this.state);
-		this.enterRule(localctx, 16, YiniParser.RULE_listAfterColon);
+	public colon_list_decl(): Colon_list_declContext {
+		let localctx: Colon_list_declContext = new Colon_list_declContext(this, this._ctx, this.state);
+		this.enterRule(localctx, 16, YiniParser.RULE_colon_list_decl);
 		let _la: number;
 		try {
 			let _alt: number;
@@ -1751,8 +1751,8 @@ export class StmtContext extends ParserRuleContext {
 	public assignment(): AssignmentContext {
 		return this.getTypedRuleContext(AssignmentContext, 0) as AssignmentContext;
 	}
-	public listAfterColon(): ListAfterColonContext {
-		return this.getTypedRuleContext(ListAfterColonContext, 0) as ListAfterColonContext;
+	public colon_list_decl(): Colon_list_declContext {
+		return this.getTypedRuleContext(Colon_list_declContext, 0) as Colon_list_declContext;
 	}
 	public marker_stmt(): Marker_stmtContext {
 		return this.getTypedRuleContext(Marker_stmtContext, 0) as Marker_stmtContext;
@@ -1886,7 +1886,7 @@ export class MemberContext extends ParserRuleContext {
 }
 
 
-export class ListAfterColonContext extends ParserRuleContext {
+export class Colon_list_declContext extends ParserRuleContext {
 	constructor(parser?: YiniParser, parent?: ParserRuleContext, invokingState?: number) {
 		super(parent, invokingState);
     	this.parser = parser;
@@ -1913,12 +1913,12 @@ export class ListAfterColonContext extends ParserRuleContext {
 		return this.getToken(YiniParser.WS, i);
 	}
     public get ruleIndex(): number {
-    	return YiniParser.RULE_listAfterColon;
+    	return YiniParser.RULE_colon_list_decl;
 	}
 	// @Override
 	public accept<Result>(visitor: YiniParserVisitor<Result>): Result {
-		if (visitor.visitListAfterColon) {
-			return visitor.visitListAfterColon(this);
+		if (visitor.visitColon_list_decl) {
+			return visitor.visitColon_list_decl(this);
 		} else {
 			return visitor.visitChildren(this);
 		}

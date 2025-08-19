@@ -11,7 +11,7 @@ import { Marker_stmtContext } from "./YiniParser.js";
 import { EolContext } from "./YiniParser.js";
 import { AssignmentContext } from "./YiniParser.js";
 import { MemberContext } from "./YiniParser.js";
-import { ListAfterColonContext } from "./YiniParser.js";
+import { Colon_list_declContext } from "./YiniParser.js";
 import { ValueContext } from "./YiniParser.js";
 import { Object_literalContext } from "./YiniParser.js";
 import { Object_membersContext } from "./YiniParser.js";
@@ -83,11 +83,11 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 */
 	visitMember?: (ctx: MemberContext) => Result;
 	/**
-	 * Visit a parse tree produced by `YiniParser.listAfterColon`.
+	 * Visit a parse tree produced by `YiniParser.colon_list_decl`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitListAfterColon?: (ctx: ListAfterColonContext) => Result;
+	visitColon_list_decl?: (ctx: Colon_list_declContext) => Result;
 	/**
 	 * Visit a parse tree produced by `YiniParser.value`.
 	 * @param ctx the parse tree
