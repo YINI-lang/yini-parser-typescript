@@ -3,8 +3,13 @@
  * @note More general helper functions should go into the dir "src/utils/".
  */
 
-import { TScalarValue, TValueLiteral } from './core/YiniAstBuilder'
-import { debugPrint } from './utils/print'
+import {
+    TListValue,
+    TObjectValue,
+    TScalarValue,
+    TValueLiteral,
+} from './core/types'
+import { debugPrint, printObject } from './utils/print'
 import { isEnclosedInBackticks, splitLines } from './utils/string'
 
 const SECTION_MARKER1 = '^'
@@ -162,20 +167,20 @@ const assertNever = (x: never): never => {
     throw new Error(`Unhandled: ${JSON.stringify(x)}`)
 }
 
-export const printLiteral = (value: TValueLiteral): string => {
+export const printLiteral = (value: TValueLiteral): void => {
     switch (value.type) {
         case 'String':
-            return value.value
         case 'Number':
-            return String(value.value)
         case 'Boolean':
-            return String(value.value)
         case 'Null':
-            return 'null'
+            console.log('' + value.value)
+            break
         case 'List':
-            return `[${value.elems.map(printLiteral).join(', ')}]`
+            printObject((value as TListValue).elems)
+            break
         case 'Object':
-            return `{${Object.keys(value.entries).join(', ')}}`
+            printObject((value as TObjectValue).entries)
+            break
         default:
             return assertNever(value) // ensures exhaustiveness
     }

@@ -51,13 +51,44 @@ sValue = 2
 //     | 'Object' // Note: Object-literal.
 //     | 'List'
 
-export type TDataType =
-    | undefined
-    | 'String'
-    | 'Number-Integer'
-    | 'Number-Float'
-    | 'Boolean'
-    | 'Null'
+// types.ts
+// export type YiniScalar = {
+//     type: TDataType
+//     value: string | number | boolean | null
+// }
+/**
+ * Scalar literal, a single, indivisible piece of data:
+ * string, number, boolean, and null.
+ */
+export type TScalarValue =
+    | { type: 'String'; value: string }
+    | { type: 'Number'; value: number }
+    | { type: 'Boolean'; value: boolean }
+    | { type: 'Null'; value: null }
+
+/** Any literal value in YINI: scalar, list, or object. */
+export type TValueLiteral =
+    | TScalarValue
+    // | TValueLiteral[]
+    | TListValue
+    // | { [key: string]: TValueLiteral }
+    | TObjectValue
+
+// type TListValue = TValueLiteral[]
+export type TListValue = { type: 'List'; elems: readonly TValueLiteral[] }
+export type TObjectValue = {
+    type: 'Object'
+    //value: { [key: string]: TValueLiteral }
+    entries: Readonly<Record<string, TValueLiteral>>
+}
+
+// export type TDataType =
+//     | undefined
+//     | 'String'
+//     | 'Number-Integer'
+//     | 'Number-Float'
+//     | 'Boolean'
+//     | 'Null'
 
 /*
 class CIResult {

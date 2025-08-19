@@ -44,44 +44,15 @@ import {
     IChainContainer,
     IParseMainOptions,
     ISectionResult,
-    TDataType,
+    TListValue,
+    TScalarValue,
     TSyntaxTree,
     TSyntaxTreeContainer,
+    TValueLiteral,
 } from './types'
 
-// types.ts
-// export type YiniScalar = {
-//     type: TDataType
-//     value: string | number | boolean | null
-// }
-/**
- * Scalar literal, a single, indivisible piece of data:
- * string, number, boolean, and null.
- */
-export type TScalarValue =
-    | { type: 'String'; value: string }
-    | { type: 'Number'; value: number }
-    | { type: 'Boolean'; value: boolean }
-    | { type: 'Null'; value: null }
-
-/** Any literal value in YINI: scalar, list, or object. */
-export type TValueLiteral =
-    | TScalarValue
-    // | TValueLiteral[]
-    | TListValue
-    // | { [key: string]: TValueLiteral }
-    | TObjectValue
-
-// type TListValue = TValueLiteral[]
-type TListValue = { type: 'List'; elems: readonly TValueLiteral[] }
-type TObjectValue = {
-    type: 'Object'
-    //value: { [key: string]: TValueLiteral }
-    entries: Readonly<Record<string, TValueLiteral>>
-}
-
 export interface YiniSection {
-    name: string
+    sectionName: string
     level: number // 1..n
     members: Map<string, TValueLiteral> // Members at this section.
     children: YiniSection[] // Children sections (on the next level) of the current section.
@@ -115,6 +86,8 @@ const makeScalarValue = (
             return { type, value: value as number }
         case 'Boolean':
             return { type, value: !!value }
+        case 'Null':
+            return { type: 'Null', value: null }
         default:
             new ErrorDataHandler().pushOrBail(
                 null,
@@ -173,7 +146,7 @@ function trimQuotes(text: string): string {
 }
 
 function makeSection(name: string, level: number): YiniSection {
-    return { name, level, members: new Map(), children: [] }
+    return { sectionName: name, level, members: new Map(), children: [] }
 }
 
 /** Parse SECTION_HEAD token text → {level, name}.
@@ -247,12 +220,12 @@ function putMember(
         switch (mode) {
             case 'error':
                 doc.errors.push(
-                    `Duplicate key '${key}' in section '${sec.name}' (level ${sec.level}).`,
+                    `Duplicate key '${key}' in section '${sec.sectionName}' (level ${sec.level}).`,
                 )
                 break
             case 'warn':
                 doc.warnings.push(
-                    `Duplicate key '${key}' in section '${sec.name}' (keeping first).`,
+                    `Duplicate key '${key}' in section '${sec.sectionName}' (keeping first).`,
                 )
                 return // keep first
             case 'keep-first':
@@ -495,27 +468,23 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
     visitValue = (ctx: ValueContext): any => {
         // value : null | string | number | boolean | list_literal | object_literal
         if (ctx.null_literal())
-            return this.visitNull_literal?.(
-                ctx.null_literal()!,
-            ) as TValueLiteral
+            return this.visitNull_literal(ctx.null_literal()!) as TValueLiteral
         if (ctx.string_literal())
-            return this.visitString_literal?.(
+            return this.visitString_literal(
                 ctx.string_literal()!,
             ) as TValueLiteral
         if (ctx.number_literal())
-            return this.visitNumber_literal?.(
+            return this.visitNumber_literal(
                 ctx.number_literal()!,
             ) as TValueLiteral
         if (ctx.boolean_literal())
-            return this.visitBoolean_literal?.(
+            return this.visitBoolean_literal(
                 ctx.boolean_literal()!,
             ) as TValueLiteral
         if (ctx.list_literal())
-            return this.visitList_literal?.(
-                ctx.list_literal()!,
-            ) as TValueLiteral
+            return this.visitList_literal(ctx.list_literal()!) as TValueLiteral
         if (ctx.object_literal())
-            return this.visitObject_literal?.(
+            return this.visitObject_literal(
                 ctx.object_literal()!,
             ) as TValueLiteral
 
@@ -624,7 +593,7 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
 
         const rawText = ctx.getText()
         const parsedNum = parseNumber(rawText)
-        const value = makeScalarValue('Number', parsedNum)
+        const value: TScalarValue = makeScalarValue('Number', parsedNum)
 
         if (isDebug()) {
             console.log('  rawText = ' + rawText)
@@ -643,7 +612,8 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
      */
     // visitNull_literal?: (ctx: Null_literalContext) => Result
     visitNull_literal = (ctx: Null_literalContext): any => {
-        return null // (Spec 8.2) :contentReference[oaicite:16]{index=16}
+        debugPrint('-> Entered visitNull_literal(..)')
+        return makeScalarValue('Null')
     }
 
     /**
@@ -653,6 +623,8 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
      */
     // visitString_literal?: (ctx: String_literalContext) => Result
     visitString_literal = (ctx: String_literalContext): any => {
+        debugPrint('-> Entered visitString_literal(..)')
+
         // STRING (string_concat)*
         // Concatenate pieces with PLUS (Spec 6.6). Each piece is a STRING token; '+' is structural. :contentReference[oaicite:17]{index=17}
         let text = trimQuotes(ctx.STRING().getText())
@@ -662,7 +634,7 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
             isDebug() && printObject(c)
             text += this.visitString_concat?.(c)
         }
-        return text
+        return makeScalarValue('String', text)
     }
 
     /**
@@ -683,9 +655,10 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
      */
     // visitBoolean_literal?: (ctx: Boolean_literalContext) => Result
     visitBoolean_literal = (ctx: Boolean_literalContext): any => {
+        debugPrint('-> Entered visitBoolean_literal(..)')
         const raw = ctx.getText()
-        // case-insensitive true/false/on/off/yes/no (Spec 8.1). :contentReference[oaicite:18]{index=18}
-        return toBoolean(raw)
+        // Case-insensitive true/false/on/off/yes/no (Spec section, 8.1).
+        return makeScalarValue('Boolean', toBoolean(raw))
     }
 
     /**

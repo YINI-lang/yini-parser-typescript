@@ -125,11 +125,13 @@ if (isProdEnv()) {
 
     < User
     username = 'tester two'
+    userId   = 234
     isSysOp = YES
 
         << Prefs
         theme = "light"
         notifications = OFF
+        nullValue = NULL
 
     ^1 User2
     ^2 PrefsOfUser2
