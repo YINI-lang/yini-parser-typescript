@@ -131,12 +131,20 @@ if (isProdEnv()) {
     userFearues = %01101
     isSysOp = YES
 
-    listValue = [1, 2, 3]
-    listValueA: 3, 4, 5
+    map= { 
+        a: 3,
+        b: 4,
+        cc: 5,
+        \`d d\`: 3453
+        }
+
+    /*
+    listValueB: 3, 4, 5
     listValue2 = ["a", "b"]
     listValue3 = [434]
     listValue4 = []
     listValue5 = [1, ["a", "b", "c", [null, TRUE]], 3]
+    */
     --listObject = { a: 1, b: 2}
     /*
     colonList:

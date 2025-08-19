@@ -105,6 +105,12 @@ const makeListValue = (elems: TValueLiteral[] = []): TValueLiteral => {
     return { type: 'List', elems }
 }
 
+const makeObjectValue = (
+    entries: Record<string, TValueLiteral> = {},
+): TValueLiteral => {
+    return { type: 'Object', entries }
+}
+
 function trimQuotes(text: string): string {
     // STRING token already excludes quotes; the rule returns the literal with quotes present.
     // We’ll reliably strip the outer quote(s) and leave contents as-is (concat pieces handled below).
@@ -430,7 +436,7 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
 
         // putMember(current, key, list, this.doc, this.onDuplicateKey)
         putMember(current, key, value, this.doc, this.onDuplicateKey)
-        debugPrint('<- Exiting visitColon_list_decl(..)...')
+        debugPrint('<- About to exit visitColon_list_decl(..)...')
         if (isDebug()) {
             console.log('List literal: (from a Colon-list)')
             printObject(value)
@@ -475,11 +481,28 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
     /**
      * Visit a parse tree produced by `YiniParser.object_literal`.
      * @param ctx the parse tree
+     * @grammarRule OC NL* object_members? NL* CC NL* | EMPTY_OBJECT NL*
      * @return the visitor result
      */
-    // visitObject_literal?: (ctx: Object_literalContext) => Result
     visitObject_literal = (ctx: Object_literalContext): any => {
-        // object: '{' object_members? '}'  (Spec 9.1). :contentReference[oaicite:13]{index=13}
+        debugPrint('-> Entered visitObject_literal(..)')
+        // debugPrint('entries.EMPTY_OBJECT = ' + ctx?.EMPTY_OBJECT())
+        // debugPrint('entries.length = ' + ctx?.object_members())
+        // printObject(ctx)
+
+        const entries = this.visitObject_members(ctx?.object_members())
+        const value = makeObjectValue(entries)
+
+        debugPrint('<- About to exit visitObject_literal(..)...')
+        if (isDebug()) {
+            console.log('Object literal:')
+            printObject(value)
+        }
+        return value
+
+        // const entries = this.visitObject_members(ctx.object_members())
+
+        /*
         const obj: Record<string, TValueLiteral> = {}
         const members = ctx.object_members?.()
         if (members) {
@@ -499,41 +522,65 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
             }
         }
         return obj
+        */
     }
 
     /**
      * Visit a parse tree produced by `YiniParser.object_members`.
      * @param ctx the parse tree
+     * @grammarRule object_member (COMMA NL* object_member)* COMMA?
      * @return the visitor result
      */
-    // visitObject_members?: (ctx: Object_membersContext) => Result
     visitObject_members = (ctx: Object_membersContext): any => {
-        const out: Array<{ k: string; v: TValueLiteral }> = []
+        debugPrint('-> Entered visitObject_members(..)')
+        debugPrint('entries.length = ' + ctx?.object_member_list().length)
+
+        const entries: Array<{ k: string; v: TValueLiteral }> = []
         // for (const m of ctx.object_member()) {
         for (const m of ctx.object_member_list()) {
-            debugPrint('m of ctx.object_member_list():')
-            isDebug() && printObject(m)
-            out.push(this.visitObject_member?.(m) as any)
+            const rawKey = '' + m.KEY()
+            const key = trimBackticks(rawKey)
+
+            //@todo fortsättt här
+            debugPrint('rawKey = ' + rawKey)
+            debugPrint('   key = ' + key)
+            // m.debugPrint('m of ctx.object_member_list():')
+            // isDebug() && printObject(m)
+            // entries.push(this.visitObject_member?.(m) as any)
         }
-        return out
+
+        debugPrint('<- About to exit visitObject_members(..)')
+        return entries
     }
 
     /**
      * Visit a parse tree produced by `YiniParser.object_member`.
      * @param ctx the parse tree
+     * @grammarRule KEY WS? COLON NL* value
      * @return the visitor result
      */
     // visitObject_member?: (ctx: Object_memberContext) => Result
     visitObject_member = (ctx: Object_memberContext): any => {
-        // KEY ':' value
-        const k = ctx.getChild(0).getText()
-        const v = this.visitValue?.(ctx.value()!) as TValueLiteral
-        return { k, v }
+        debugPrint('-> Entered visitObject_member(..)')
+
+        const key: string = ctx.getChild(0).getText()
+        const value: TValueLiteral = this.visitValue?.(
+            ctx.value()!,
+        ) as TValueLiteral
+
+        debugPrint('<- About to exit visitObject_member(..)')
+        if (isDebug()) {
+            console.log('Returning:')
+            printObject({ key, value })
+        }
+
+        return { key, value }
     }
 
     /**
      * Visit a parse tree produced by `YiniParser.list_literal`.
      * @param ctx the parse tree
+     * @grammarRule OB NL* elements? NL* CB NL* | EMPTY_LIST NL*
      * @return the visitor result
      */
     // visitList_literal?: (ctx: List_literalContext) => Result
@@ -544,7 +591,7 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
         const elems = this.visitElements(ctx.elements())
         const value = makeListValue(elems)
 
-        debugPrint('<- Exiting visitList_literal(..)...')
+        debugPrint('<- About to exit visitList_literal(..)...')
         if (isDebug()) {
             console.log('List literal:')
             printObject(value)
