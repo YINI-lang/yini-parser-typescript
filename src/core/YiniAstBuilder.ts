@@ -80,16 +80,17 @@ export interface BuildOptions {
 const makeScalarValue = (
     type: 'String' | 'Number' | 'Boolean' | 'Null',
     value: string | number | boolean | null = null,
+    tag: string | undefined = undefined,
 ): TScalarValue => {
     switch (type) {
         case 'String':
-            return { type, value: value as string }
+            return { type, value: value as string, tag }
         case 'Number':
-            return { type, value: value as number }
+            return { type, value: value as number, tag }
         case 'Boolean':
-            return { type, value: !!value }
+            return { type, value: !!value, tag }
         case 'Null':
-            return { type: 'Null', value: null }
+            return { type: 'Null', value: null, tag }
         default:
             new ErrorDataHandler().pushOrBail(
                 null,
@@ -98,17 +99,21 @@ const makeScalarValue = (
                 'Something in the code is done incorrectly in order for this to happen... :S',
             )
     }
-    return { type: 'Null', value: null }
+    return { type: 'Null', value: null, tag }
 }
 
-const makeListValue = (elems: TValueLiteral[] = []): TValueLiteral => {
-    return { type: 'List', elems }
+const makeListValue = (
+    elems: TValueLiteral[] = [],
+    tag: string | undefined = undefined,
+): TValueLiteral => {
+    return { type: 'List', elems, tag }
 }
 
 const makeObjectValue = (
     entries: Record<string, TValueLiteral> = {},
+    tag: string | undefined = undefined,
 ): TValueLiteral => {
-    return { type: 'Object', entries }
+    return { type: 'Object', entries, tag }
 }
 
 function trimQuotes(text: string): string {
@@ -431,7 +436,7 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
         debugPrint(`visitColon_list_decl(..): key = '${key}'`)
 
         const elems = this.visitElements(ctx.elements())
-        const value = makeListValue(elems)
+        const value = makeListValue(elems, 'From colon-list')
         const current = this.sectionStack[this.sectionStack.length - 1]
 
         // putMember(current, key, list, this.doc, this.onDuplicateKey)
@@ -634,7 +639,11 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
 
         const rawText = ctx.getText()
         const parsedNum = parseNumber(rawText)
-        const value: TScalarValue = makeScalarValue('Number', parsedNum.value)
+        const value: TScalarValue = makeScalarValue(
+            'Number',
+            parsedNum.value,
+            parsedNum.tag,
+        )
 
         if (isDebug()) {
             console.log('  rawText = ' + rawText)

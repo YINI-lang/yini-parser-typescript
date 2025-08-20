@@ -61,10 +61,10 @@ sValue = 2
  * string, number, boolean, and null.
  */
 export type TScalarValue =
-    | { type: 'String'; value: string }
-    | { type: 'Number'; value: number }
-    | { type: 'Boolean'; value: boolean }
-    | { type: 'Null'; value: null }
+    | { type: 'String'; value: string; tag: string | undefined }
+    | { type: 'Number'; value: number; tag: string | undefined }
+    | { type: 'Boolean'; value: boolean; tag: string | undefined }
+    | { type: 'Null'; value: null; tag: string | undefined }
 
 /** Any literal value in YINI: scalar, list, or object. */
 export type TValueLiteral =
@@ -75,11 +75,16 @@ export type TValueLiteral =
     | TObjectValue
 
 // type TListValue = TValueLiteral[]
-export type TListValue = { type: 'List'; elems: readonly TValueLiteral[] }
+export type TListValue = {
+    type: 'List'
+    elems: readonly TValueLiteral[]
+    tag: string | undefined
+}
 export type TObjectValue = {
     type: 'Object'
     //value: { [key: string]: TValueLiteral }
     entries: Readonly<Record<string, TValueLiteral>>
+    tag: string | undefined
 }
 
 // export type TDataType =
