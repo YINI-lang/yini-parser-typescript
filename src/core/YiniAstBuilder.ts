@@ -421,7 +421,7 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
         if (!valueNode) {
             // Empty value => Null in lenient mode, error in strict (Spec 12.3, 8.2). :contentReference[oaicite:10]{index=10}:contentReference[oaicite:11]{index=11}
             if (this.mode === 'lenient')
-                value = makeScalarValue('Null', 'Implicit Null')
+                value = makeScalarValue('Null', null, 'Implicit Null')
             else
                 this.doc.errors.push(
                     `Strict mode: missing value for key '${key}'.`,
@@ -542,7 +542,7 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
     visitNull_literal = (ctx: Null_literalContext): any => {
         debugPrint('-> Entered visitNull_literal(..)')
         debugPrint('raw = ' + ctx.getText())
-        return makeScalarValue('Null', 'Explicit Null')
+        return makeScalarValue('Null', null, 'Explicit Null')
     }
 
     /**

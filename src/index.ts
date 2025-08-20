@@ -124,6 +124,8 @@ if (isProdEnv()) {
     @YINI   ///dfsf
 
     < User
+    nullKey = 
+    nullKey2 = NULL
     username = 'tester two'
     userId   = 234
     userColor = #ffaa99
