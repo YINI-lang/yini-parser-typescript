@@ -420,7 +420,8 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
 
         if (!valueNode) {
             // Empty value => Null in lenient mode, error in strict (Spec 12.3, 8.2). :contentReference[oaicite:10]{index=10}:contentReference[oaicite:11]{index=11}
-            if (this.mode === 'lenient') value = makeScalarValue('Null')
+            if (this.mode === 'lenient')
+                value = makeScalarValue('Null', 'Implicit Null')
             else
                 this.doc.errors.push(
                     `Strict mode: missing value for key '${key}'.`,
@@ -433,33 +434,6 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
         const current = this.sectionStack[this.sectionStack.length - 1]
         if (value !== undefined) {
             putMember(current, key, value, this.doc, this.onDuplicateKey)
-        }
-        return value
-    }
-
-    /**
-     * Visit a parse tree produced by `YiniParser.colon_list_decl`.
-     * @param ctx the parse tree
-     * @grammarRule KEY WS? COLON (eol | WS+)* elements (eol | WS+)* eol
-     * @return the visitor result
-     */
-    // visitColon_list_decl?: (ctx: ListAfterColonContext) => Result
-    visitColon_list_decl = (ctx: Colon_list_declContext): any => {
-        debugPrint('-> Entered visitColon_list_decl(..)')
-
-        const key = ctx.getChild(0).getText()
-        debugPrint(`visitColon_list_decl(..): key = '${key}'`)
-
-        const elems = this.visitElements(ctx.elements())
-        const value = makeListValue(elems, 'From colon-list')
-        const current = this.sectionStack[this.sectionStack.length - 1]
-
-        // putMember(current, key, list, this.doc, this.onDuplicateKey)
-        putMember(current, key, value, this.doc, this.onDuplicateKey)
-        debugPrint('<- About to exit visitColon_list_decl(..)...')
-        if (isDebug()) {
-            console.log('List literal: (from a Colon-list)')
-            printObject(value)
         }
         return value
     }
@@ -496,6 +470,125 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
 
         this.doc.errors.push('Unknown value node.')
         return null
+    }
+
+    /**
+     * Visit a parse tree produced by `YiniParser.string_literal`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    // visitString_literal?: (ctx: String_literalContext) => Result
+    visitString_literal = (ctx: String_literalContext): any => {
+        debugPrint('-> Entered visitString_literal(..)')
+
+        // STRING (string_concat)*
+        // Concatenate pieces with PLUS (Spec 6.6). Each piece is a STRING token; '+' is structural. :contentReference[oaicite:17]{index=17}
+        let text = trimQuotes(ctx.STRING().getText())
+        // for (const c of ctx.string_concat() ?? []) {
+        for (const c of ctx.string_concat_list() ?? []) {
+            debugPrint('c of ctx.string_concat():')
+            isDebug() && printObject(c)
+            text += this.visitString_concat?.(c)
+        }
+        return makeScalarValue('String', text)
+    }
+
+    /**
+     * Visit a parse tree produced by `YiniParser.number_literal`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    // visitNumber_literal?: (ctx: Number_literalContext) => Result
+    visitNumber_literal = (ctx: Number_literalContext): any => {
+        debugPrint('-> Entered visitNumber_literal(..)')
+
+        const rawText = ctx.getText()
+        const parsedNum = parseNumber(rawText)
+        const value: TScalarValue = makeScalarValue(
+            'Number',
+            parsedNum.value,
+            parsedNum.tag,
+        )
+
+        if (isDebug()) {
+            console.log('  rawText = ' + rawText)
+            console.log('parsedNum = ' + parsedNum.value)
+            console.log('Number literal:')
+            printLiteral(value)
+            // return parseNumber(ctx.getText())
+        }
+        return value
+    }
+
+    /**
+     * Visit a parse tree produced by `YiniParser.boolean_literal`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    // visitBoolean_literal?: (ctx: Boolean_literalContext) => Result
+    visitBoolean_literal = (ctx: Boolean_literalContext): any => {
+        debugPrint('-> Entered visitBoolean_literal(..)')
+        const raw = ctx.getText()
+        // Case-insensitive true/false/on/off/yes/no (Spec section, 8.1).
+        return makeScalarValue('Boolean', parseBoolean(raw))
+    }
+
+    /**
+     * Visit a parse tree produced by `YiniParser.null_literal`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    // visitNull_literal?: (ctx: Null_literalContext) => Result
+    visitNull_literal = (ctx: Null_literalContext): any => {
+        debugPrint('-> Entered visitNull_literal(..)')
+        debugPrint('raw = ' + ctx.getText())
+        return makeScalarValue('Null', 'Explicit Null')
+    }
+
+    /**
+     * Visit a parse tree produced by `YiniParser.list_literal`.
+     * @param ctx the parse tree
+     * @grammarRule OB NL* elements? NL* CB NL* | EMPTY_LIST NL*
+     * @return the visitor result
+     */
+    // visitList_literal?: (ctx: List_literalContext) => Result
+    visitList_literal = (ctx: List_literalContext): any => {
+        debugPrint('-> Entered visitList_literal(..)')
+
+        // '[' elements? ']' ; empty_list handled by lexer (Spec section, 10.1). :contentReference[oaicite:14]{index=14}
+        const elems = this.visitElements(ctx.elements())
+        const value = makeListValue(elems, 'From bracketed list')
+
+        debugPrint('<- About to exit visitList_literal(..)...')
+        if (isDebug()) {
+            console.log('List literal:')
+            printObject(value)
+        }
+        return value
+    }
+
+    /**
+     * Visit a parse tree produced by `YiniParser.elements`.
+     * @param ctx the parse tree
+     * @grammarRule value (NL* COMMA NL* value)* COMMA?
+     * @return the visitor result
+     */
+    visitElements = (ctx: ElementsContext): any => {
+        debugPrint('-> Entered visitElements(..)')
+        debugPrint('  elements.length = ' + ctx?.value_list().length)
+
+        const elems = !ctx?.value_list()
+            ? []
+            : ctx.value_list().map((elem) => {
+                  return this.visitValue(elem)
+              })
+
+        debugPrint('<- About to exit visitElements(..)')
+        if (isDebug()) {
+            console.log('Mapped value_list of elements in a list:')
+            printObject(elems)
+        }
+        return makeListValue(elems)
     }
 
     /**
@@ -557,6 +650,7 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
 
         const entries: Array<{ k: string; v: TValueLiteral }> = []
         // for (const m of ctx.object_member()) {
+        /*
         for (const m of ctx.object_member_list()) {
             const rawKey = '' + m.KEY()
             const key = trimBackticks(rawKey)
@@ -567,7 +661,12 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
             // m.debugPrint('m of ctx.object_member_list():')
             // isDebug() && printObject(m)
             // entries.push(this.visitObject_member?.(m) as any)
-        }
+        }*/
+        ctx.object_member_list().forEach((member) => {
+            const { key, value }: any = this.visitObject_member(member)
+            debugPrint('   key = ' + key)
+            entries[key] = value
+        })
 
         debugPrint('<- About to exit visitObject_members(..)')
         return entries
@@ -583,10 +682,20 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
     visitObject_member = (ctx: Object_memberContext): any => {
         debugPrint('-> Entered visitObject_member(..)')
 
+        /*
         const key: string = ctx.getChild(0).getText()
         const value: TValueLiteral = this.visitValue?.(
             ctx.value()!,
         ) as TValueLiteral
+         */
+        const rawKey = ctx.KEY().getText()
+        const key = trimBackticks(rawKey)
+        const value: TValueLiteral = ctx.value()
+            ? this.visitValue(ctx.value())
+            : makeScalarValue('Null', 'Implicit Null')
+
+        debugPrint('rawKey = ' + rawKey)
+        debugPrint('   key = ' + key)
 
         debugPrint('<- About to exit visitObject_member(..)')
         if (isDebug()) {
@@ -598,109 +707,30 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
     }
 
     /**
-     * Visit a parse tree produced by `YiniParser.list_literal`.
+     * Visit a parse tree produced by `YiniParser.colon_list_decl`.
      * @param ctx the parse tree
-     * @grammarRule OB NL* elements? NL* CB NL* | EMPTY_LIST NL*
+     * @grammarRule KEY WS? COLON (eol | WS+)* elements (eol | WS+)* eol
      * @return the visitor result
      */
-    // visitList_literal?: (ctx: List_literalContext) => Result
-    visitList_literal = (ctx: List_literalContext): any => {
-        debugPrint('-> Entered visitList_literal(..)')
+    // visitColon_list_decl?: (ctx: ListAfterColonContext) => Result
+    visitColon_list_decl = (ctx: Colon_list_declContext): any => {
+        debugPrint('-> Entered visitColon_list_decl(..)')
 
-        // '[' elements? ']' ; empty_list handled by lexer (Spec section, 10.1). :contentReference[oaicite:14]{index=14}
+        const key = ctx.getChild(0).getText()
+        debugPrint(`visitColon_list_decl(..): key = '${key}'`)
+
         const elems = this.visitElements(ctx.elements())
-        const value = makeListValue(elems)
+        const value = makeListValue(elems, 'From colon-list')
+        const current = this.sectionStack[this.sectionStack.length - 1]
 
-        debugPrint('<- About to exit visitList_literal(..)...')
+        // putMember(current, key, list, this.doc, this.onDuplicateKey)
+        putMember(current, key, value, this.doc, this.onDuplicateKey)
+        debugPrint('<- About to exit visitColon_list_decl(..)...')
         if (isDebug()) {
-            console.log('List literal:')
+            console.log('List literal: (from a Colon-list)')
             printObject(value)
         }
         return value
-    }
-
-    /**
-     * Visit a parse tree produced by `YiniParser.elements`.
-     * @param ctx the parse tree
-     * @grammarRule value (NL* COMMA NL* value)* COMMA?
-     * @return the visitor result
-     */
-    visitElements = (ctx: ElementsContext): any => {
-        debugPrint('-> Entered visitElements(..)')
-        debugPrint('  elements.length = ' + ctx?.value_list().length)
-
-        const elems = !ctx?.value_list()
-            ? []
-            : ctx.value_list().map((elem) => {
-                  return this.visitValue(elem)
-              })
-
-        debugPrint('<- About to exit visitElements(..)')
-        if (isDebug()) {
-            console.log('Mapped value_list of elements in a list:')
-            printObject(elems)
-        }
-        return makeListValue(elems)
-    }
-
-    /**
-     * Visit a parse tree produced by `YiniParser.number_literal`.
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    // visitNumber_literal?: (ctx: Number_literalContext) => Result
-    visitNumber_literal = (ctx: Number_literalContext): any => {
-        debugPrint('-> Entered visitNumber_literal(..)')
-
-        const rawText = ctx.getText()
-        const parsedNum = parseNumber(rawText)
-        const value: TScalarValue = makeScalarValue(
-            'Number',
-            parsedNum.value,
-            parsedNum.tag,
-        )
-
-        if (isDebug()) {
-            console.log('  rawText = ' + rawText)
-            console.log('parsedNum = ' + parsedNum.value)
-            console.log('Number literal:')
-            printLiteral(value)
-            // return parseNumber(ctx.getText())
-        }
-        return value
-    }
-
-    /**
-     * Visit a parse tree produced by `YiniParser.null_literal`.
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    // visitNull_literal?: (ctx: Null_literalContext) => Result
-    visitNull_literal = (ctx: Null_literalContext): any => {
-        debugPrint('-> Entered visitNull_literal(..)')
-        debugPrint('raw = ' + ctx.getText())
-        return makeScalarValue('Null')
-    }
-
-    /**
-     * Visit a parse tree produced by `YiniParser.string_literal`.
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    // visitString_literal?: (ctx: String_literalContext) => Result
-    visitString_literal = (ctx: String_literalContext): any => {
-        debugPrint('-> Entered visitString_literal(..)')
-
-        // STRING (string_concat)*
-        // Concatenate pieces with PLUS (Spec 6.6). Each piece is a STRING token; '+' is structural. :contentReference[oaicite:17]{index=17}
-        let text = trimQuotes(ctx.STRING().getText())
-        // for (const c of ctx.string_concat() ?? []) {
-        for (const c of ctx.string_concat_list() ?? []) {
-            debugPrint('c of ctx.string_concat():')
-            isDebug() && printObject(c)
-            text += this.visitString_concat?.(c)
-        }
-        return makeScalarValue('String', text)
     }
 
     /**
@@ -712,19 +742,6 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
     visitString_concat = (ctx: String_concatContext): any => {
         // PLUS STRING
         return trimQuotes(ctx.STRING().getText())
-    }
-
-    /**
-     * Visit a parse tree produced by `YiniParser.boolean_literal`.
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    // visitBoolean_literal?: (ctx: Boolean_literalContext) => Result
-    visitBoolean_literal = (ctx: Boolean_literalContext): any => {
-        debugPrint('-> Entered visitBoolean_literal(..)')
-        const raw = ctx.getText()
-        // Case-insensitive true/false/on/off/yes/no (Spec section, 8.1).
-        return makeScalarValue('Boolean', parseBoolean(raw))
     }
 
     /**

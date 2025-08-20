@@ -131,7 +131,7 @@ if (isProdEnv()) {
     userFearues = %01101
     isSysOp = YES
 
-    map= { 
+    map = { 
         a: 3,
         b: 4,
         cc: 5,
