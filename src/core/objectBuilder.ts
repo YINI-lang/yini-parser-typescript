@@ -1,293 +1,135 @@
 import { isDebug } from '../config/env'
-import { IChainContainer, TJSObject, TSyntaxTreeContainer } from '../core/types'
+import { TValueLiteral } from '../core/types'
 import { debugPrint, printObject, toPrettyJSON } from '../utils/print'
 import { ErrorDataHandler } from './ErrorDataHandler'
+import { YiniDocument, YiniSection } from './YiniAstBuilder'
 
 /**
- * Construct the final result of a JavaScript Object.
+ * Construct the final JavaScript Object.
+ * Transforms the AST to the plain JS object.
+ *
+ * - Keys are used exactly as-is.
+ * - Order of properties matches the AST traversal order.
+ *
+ * @note All `tag` fields MUST be ignored.
  */
-export const constructFinalObject = (
-    syntaxTreeC: TSyntaxTreeContainer,
+export const astToObject = (
+    ast: YiniDocument,
     errorHandler: ErrorDataHandler,
-): TJSObject => {
+    // ): TJSObject => {
+): Record<string, unknown> => {
     debugPrint('-> constructFinalObject(..)')
-    const bulder = new Builder(syntaxTreeC, errorHandler)
+    // return sectionChildrenToObject(ast.root)
 
-    if (isDebug()) {
-        console.log('Argument, syntaxTreeC:')
-        printObject(syntaxTreeC)
+    const out: Record<string, unknown> = {}
+    for (const child of ast.root.children) {
+        define(out, child.sectionName, sectionToObject(child))
     }
-
-    const jsObject = bulder.doCheckAndBuild()
-
-    debugPrint('<- About to leave constructFinalObject(..)')
-    if (isDebug()) {
-        console.log('Returning, jsObject:')
-        printObject(syntaxTreeC)
-    }
-
-    return jsObject
+    return out
 }
 
-class Builder {
-    private syntaxTreeC: TSyntaxTreeContainer
-    private errorHandler: ErrorDataHandler
+/** Convert only the children of a section into an object keyed by sectionName. */
+// function sectionChildrenToObject(
+//     section: YiniSection,
+// ): Record<string, unknown> {
+//     const out: Record<string, unknown> = {}
+//     for (const child of section.children) {
+//         out[child.sectionName] = sectionToObject(child)
+//     }
+//     return out
+// }
 
-    constructor(
-        syntaxTreeC: TSyntaxTreeContainer,
-        errorHandler: ErrorDataHandler,
-    ) {
-        debugPrint('-> Builder: constructor(..)')
+/** Convert a section (its members + nested sections) to a plain object. */
+// function sectionToObject(node: YiniSection): Record<string, unknown> {
+//     const obj: Record<string, unknown> = {}
 
-        this.syntaxTreeC = syntaxTreeC
-        this.errorHandler = errorHandler
+//     // Members → properties
+//     for (const [key, val] of node.members.entries()) {
+//         obj[key] = literalToJS(val)
+//     }
+
+//     // Nested sections → nested objects keyed by sectionName
+//     for (const child of node.children) {
+//         obj[child.sectionName] = sectionToObject(child)
+//     }
+
+//     return obj
+// }
+/**
+ * Convert a section (members + nested sections) to a plain
+ * object, preserving order.
+ */
+const sectionToObject = (node: YiniSection): Record<string, unknown> => {
+    const obj: Record<string, unknown> = {}
+
+    // 1) Members (Map preserves insertion order).
+    for (const [key, val] of node.members) {
+        define(obj, key, literalToJS(val))
     }
 
-    public doCheckAndBuild(): TJSObject {
-        debugPrint('-> Builder: doCheckAndBuild(..)')
-        if (!this.syntaxTreeC) {
-            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-            this.errorHandler.pushOrBail(
-                null,
-                'Fatal-Error',
-                'SyntaxTreeC is undefined',
-                'This is most likely caused by an internal error somewhere. The process cannot recover fully from this, sorry.',
-            )
-        }
-
-        const fullSubTreeList: IChainContainer[] = this.buildFullSubTrees(
-            this.syntaxTreeC!,
-        )
-
-        const jsObject = this.buildObjectFromList(fullSubTreeList)
-
-        return jsObject
+    // 2) Nested sections (array order preserved).
+    for (const child of node.children) {
+        define(obj, child.sectionName, sectionToObject(child))
     }
 
-    private buildFullSubTrees(
-        syntaxTreeC: TSyntaxTreeContainer,
-    ): IChainContainer[] {
-        debugPrint('-> Builder: buildFullSubTrees(..)')
-        isDebug() && console.log()
+    return obj
+}
 
-        const fullSubTreeList: IChainContainer[] = [] // List of FULL sub-trees.
+/**
+ * Convert a literal to plain JS, ignoring both `tag` and `type`.
+ * - Scalars: return primitive value
+ * - List:    return array (item order preserved)
+ * - Object:  return plain object; iterate keys in creation order
+ *
+ * @note All `tag` fields MUST be ignored.
+ */
+const literalToJS = (v: TValueLiteral): unknown => {
+    switch (v.type) {
+        case 'String':
+        case 'Number':
+        case 'Boolean':
+        case 'Null':
+            return v.value
 
-        // Current Working Full Sub-Tree (starting at level 1).
-        let workingFullSubTree = syntaxTreeC._syntaxTree[0] // (!) Any tree MUST START at level 1.
-        debugPrint(
-            `Setted new workingFullSubTree, from syntaxTreeC._syntaxTree[0]`,
-        )
+        case 'List':
+            return v.elems.map(literalToJS)
 
-        const len = syntaxTreeC._syntaxTree.length
-        for (let i = 1; i < len; i++) {
-            const currentChainC = syntaxTreeC._syntaxTree[i]
-            const level = currentChainC.originLevel
-            const nestingIndex = level - 1 // For debugging purposes.
-            const chain: TJSObject = currentChainC.chain // For debugging purposes.
-
-            debugPrint(
-                `Got new chain from syntaxTreeC._syntaxTree[${i}] to be mounted onto parent...`,
-            )
-
-            debugPrint('* level: ' + level + ' (i=' + i + '), chain: ' + chain)
-
-            if (level === 1) {
-                debugPrint(
-                    'HIT - Detected that currentChain starts with level 1',
-                )
-                fullSubTreeList.push(workingFullSubTree)
-                debugPrint(
-                    'The workingFullSubTree is finished, pushed it to the list.',
-                )
-                workingFullSubTree = syntaxTreeC._syntaxTree[i] // (!) The tree MUST START at level 1.
-                debugPrint(
-                    `Setted new workingFullSubTree, from syntaxTreeC._syntaxTree[${i}]`,
-                )
-            } else {
-                debugPrint(
-                    'About to mount currentChain onto workingFullSubTree at correct level...',
-                )
-                workingFullSubTree = this.mountChainOntoLevel(
-                    currentChainC,
-                    workingFullSubTree,
-                )
+        case 'Object': {
+            const out: Record<string, unknown> = {}
+            // for (const key of Object.keys(v.entries)) {
+            //     const entry = v.entries[key]
+            //     if (isScalar(entry)) {
+            //         // Scalar entries in object-literals: value
+            //         // out[key] = { type: entry.type, value: entry.value }
+            //         out[key] = entry.value
+            //     } else if (entry.type === 'List') {
+            //         out[key] = entry.elems.map(literalToJS)
+            //     } else {
+            //         out[key] = literalToJS(entry) // nested object-literal
+            //     }
+            // }
+            // Object.keys preserves property insertion order for plain objects
+            for (const k of Object.keys(v.entries)) {
+                define(out, k, literalToJS(v.entries[k]))
             }
-
-            debugPrint()
+            return out
         }
-
-        fullSubTreeList.push(workingFullSubTree)
-
-        if (isDebug()) {
-            console.log()
-            console.log(
-                '--- fullSubTreeList: (list of FULL sub-trees.) -------',
-            )
-            printObject(fullSubTreeList)
-            console.log()
-        }
-
-        return fullSubTreeList
-    }
-
-    private mountChainOntoLevel(
-        chainC: IChainContainer,
-        workingSubTree: IChainContainer, // First section must start at level 1.
-    ): IChainContainer {
-        debugPrint('-> Builder: mountChainOntoLevel(..)')
-        if (isDebug()) {
-            printObject(chainC)
-        }
-
-        if (chainC.originLevel > 1) {
-            // NOP
-        } else {
-            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-            this.errorHandler.pushOrBail(
-                null,
-                'Fatal-Error',
-                'Internal-Error: Detected incorrect chain in mountChainOntoLevel(..), start section has level: ' +
-                    chainC.originLevel,
-                'The (chain) must start with a section level higher than 1',
-                '' + printObject(chainC),
-            )
-        }
-        if (workingSubTree.originLevel != 1) {
-            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-            this.errorHandler.pushOrBail(
-                null,
-                'Fatal-Error',
-                'Internal-Error: Detected incorrect full sub-tree in mountChainOntoLevel(..), start section has level: ' +
-                    chainC.originLevel,
-                'A full sub-tree (chain) must start with a section at level 1',
-                '' + printObject(chainC),
-            )
-        }
-
-        const chain: TJSObject = chainC.chain
-        const targetLevel = chainC.originLevel
-
-        if (isDebug()) {
-            debugPrint('Target level = ' + targetLevel)
-            debugPrint(`The chain to mount: (onto level: ${targetLevel})`)
-            printObject(chain)
-            debugPrint('--- workingFullSubTree: -------')
-            debugPrint('Before mounting onto workingSubTree.chain:')
-            printObject(workingSubTree.chain)
-        }
-
-        debugPrint('Mount currentChain onto workingFullSubTree.')
-        workingSubTree.chain = mountObjectAtLevel(
-            workingSubTree.chain,
-            chain,
-            targetLevel,
-            this.errorHandler,
-        )
-
-        if (isDebug()) {
-            debugPrint('After mounting onto workingSubTree.chain:')
-            printObject(workingSubTree.chain)
-            debugPrint('----------')
-        }
-
-        debugPrint('<- Builder: mountChainOntoLevel(..)')
-        return workingSubTree
-    }
-
-    // Contruct the final JS object from the list of full sub-trees.
-    private buildObjectFromList(fullSubTreeList: IChainContainer[]): TJSObject {
-        debugPrint('-> Builder: buildObjectFromList(..)')
-        const jsObject = {}
-
-        for (const chainC of fullSubTreeList) {
-            if (chainC.originLevel === 1) {
-                if (isDebug()) {
-                    console.log('About to assign chainC.chain:')
-                    console.log(chainC.chain)
-                }
-
-                Object.assign(jsObject, chainC.chain)
-
-                if (isDebug()) {
-                    console.log('After, jsObject:')
-                    console.log(jsObject)
-                }
-            } else {
-                // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-                this.errorHandler.pushOrBail(
-                    null,
-                    'Fatal-Error',
-                    'Internal-Error: Detected incorrect full sub-tree in buildObjectFromList(..), start section has level: ' +
-                        chainC.originLevel,
-                    'A full sub-tree (chain) must start with a section at level 1',
-                    '' + printObject(chainC),
-                )
-            }
-        }
-
-        return jsObject
     }
 }
 
 /**
- * Mounts objectDest onto the first object at the given depth (level is
- * 1-based) in objectSrc.
- * @return Returns a new object without mutating input objects.
+ * Helper function, defines a property to preserve explicit insertion
+ * order and enumerability.
  */
-const mountObjectAtLevel = (
-    objectSrc: Record<string, any>,
-    objectDest: Record<string, any>,
-    level: number,
-    errorHandler: ErrorDataHandler,
-): Record<string, any> => {
-    // Deep copy to avoid mutating the input.
-    const result = JSON.parse(JSON.stringify(objectSrc))
-    let current = result
-    let currentLevel = 1
-
-    // Traverse down the first object path until the desired level.
-    while (currentLevel < level) {
-        // Get all keys in current object.
-        const keys = Object.keys(current)
-        // Find first key where value is a plain object (not array).
-        const nextKey = keys.find(
-            (key) =>
-                current[key] &&
-                typeof current[key] === 'object' &&
-                !Array.isArray(current[key]),
-        )
-        if (!nextKey) {
-            // Could not reach the specified depth.
-            return result
-        }
-        current = current[nextKey]
-        currentLevel++
-    }
-
-    debugPrint('--------')
-    debugPrint('   current = ' + toPrettyJSON(current))
-    const [firstKey] = Object.keys(objectDest)
-    debugPrint('objectDest = ' + firstKey)
-    if (Object.prototype.hasOwnProperty.call(current, firstKey)) {
-        //@todo Add metadata with line number, onto chainC, so can use line number in error reporting
-        debugPrint(`(!) sectionName already exist, name: "${firstKey}", in: `)
-        debugPrint(toPrettyJSON(current))
-        // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-        errorHandler!.pushOrBail(
-            null,
-            'Syntax-Error',
-            'Section name already exists',
-            'Cannot redefine section name: "' +
-                firstKey +
-                '" at level ' +
-                currentLevel +
-                '.',
-        )
-        return current
-    }
-
-    // Mount objectDest onto the object at the required level.
-    Object.assign(current, objectDest)
-
-    return result
+const define = <T extends object, K extends string>(
+    obj: T,
+    key: K,
+    value: unknown,
+): void => {
+    Object.defineProperty(obj, key, {
+        value,
+        enumerable: true,
+        configurable: true,
+        writable: true,
+    })
 }

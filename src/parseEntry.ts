@@ -8,7 +8,7 @@ import {
 } from 'antlr4'
 import { isDebug, isDev, localAppEnv, localNodeEnv } from './config/env'
 import { ErrorDataHandler } from './core/ErrorDataHandler'
-import { constructFinalObject } from './core/objectBuilder'
+import { astToObject } from './core/objectBuilder'
 import {
     IParseMainOptions,
     IParseMetaData,
@@ -211,10 +211,8 @@ export const parseMain = (
     // Construct.
     // const finalJSResult = constructFinalObject(syntaxTreeC, errorHandler)
     // const finalJSResult = builder.build(parseTree)
-
-    //@todo implement below so it takes the astTree
-    // const finalJSResult = constructFinalObject(astTree, errorHandler)
-    const finalJSResult = ast //NOTE: ONLY TEMP so code runs
+    // const finalJSResult = ast //NOTE: ONLY TEMP so code runs
+    const finalJSResult = astToObject(ast, errorHandler)
     debugPrint(
         '=== Ended phase 3 =============================================',
     )
