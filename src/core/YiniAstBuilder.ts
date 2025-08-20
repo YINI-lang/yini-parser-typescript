@@ -77,6 +77,11 @@ export interface BuildOptions {
 
 // Helpers -------------------------------------------------------------
 
+/**
+ * @param {string | undefined} [tag]
+ *        Debugging only. Its contents may change at any time and
+ *        must not be relied upon for any functional purpose.
+ */
 const makeScalarValue = (
     type: 'String' | 'Number' | 'Boolean' | 'Null',
     value: string | number | boolean | null = null,
@@ -102,6 +107,11 @@ const makeScalarValue = (
     return { type: 'Null', value: null, tag }
 }
 
+/**
+ * @param {string | undefined} [tag]
+ *        Debugging only. Its contents may change at any time and
+ *        must not be relied upon for any functional purpose.
+ */
 const makeListValue = (
     elems: TValueLiteral[] = [],
     tag: string | undefined = undefined,
@@ -109,6 +119,11 @@ const makeListValue = (
     return { type: 'List', elems, tag }
 }
 
+/**
+ * @param {string | undefined} [tag]
+ *        Debugging only. Its contents may change at any time and
+ *        must not be relied upon for any functional purpose.
+ */
 const makeObjectValue = (
     entries: Record<string, TValueLiteral> = {},
     tag: string | undefined = undefined,

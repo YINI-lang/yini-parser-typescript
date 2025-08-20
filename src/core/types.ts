@@ -59,6 +59,9 @@ sValue = 2
 /**
  * Scalar literal, a single, indivisible piece of data:
  * string, number, boolean, and null.
+ * @property {string | undefined} [tag]
+ *           Its contents may change at any time and should not
+ *           be relied upon for any significant purpose.
  */
 export type TScalarValue =
     | { type: 'String'; value: string; tag: string | undefined }
@@ -75,11 +78,22 @@ export type TValueLiteral =
     | TObjectValue
 
 // type TListValue = TValueLiteral[]
+/**
+ * @property {string | undefined} [tag]
+ *           Debugging only. Its contents may change at any time and
+ *           must not be relied upon for any functional purpose.
+ */
 export type TListValue = {
     type: 'List'
     elems: readonly TValueLiteral[]
     tag: string | undefined
 }
+
+/**
+ * @property {string | undefined} [tag]
+ *           Debugging only. Its contents may change at any time and
+ *           must not be relied upon for any functional purpose.
+ */
 export type TObjectValue = {
     type: 'Object'
     //value: { [key: string]: TValueLiteral }

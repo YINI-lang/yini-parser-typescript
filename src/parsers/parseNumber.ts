@@ -1,6 +1,12 @@
 import { isDebug } from '../config/env'
 import { debugPrint } from '../utils/print'
 
+/**
+ * @property {string | undefined} [tag]
+ *           This parameter is for debugging only. Its
+ *           contents may change at any time and should not
+ *           be relied upon for any significant purpose.
+ */
 const parseNumberLiteral = (
     txt: string,
 ): { tag: string | undefined; value: number } => {
@@ -10,7 +16,7 @@ const parseNumberLiteral = (
         // Exp. numbers
         debugPrint('* Identified as an exp number')
         return {
-            tag: 'Number-Float from exp number',
+            tag: 'From exp number, Number-Float',
             // value: parseInt(txt.replace('#', '0x'), 16),
             value: parseFloat(txt),
         }
@@ -21,7 +27,7 @@ const parseNumberLiteral = (
         debugPrint('* Identified as a hex number')
         debugPrint('parsed out HEX: ' + txt.replace(/0[xX]|#/, ''))
         return {
-            tag: 'Number-Integer from hex number',
+            tag: 'From hex number, Number-Integer',
             // value: parseInt(txt.replace('#', '0x'), 16),
             value: parseInt(txt.replace(/0[xX]|#/, ''), 16),
         }
@@ -32,7 +38,7 @@ const parseNumberLiteral = (
         debugPrint('* Identified as a bin number')
         debugPrint('parsed out BIN: ' + txt.replace(/0[bB]|%/, ''))
         return {
-            tag: 'Number-Integer from bin number',
+            tag: 'From bin number, Number-Integer',
             value: parseInt(txt.replace(/0[bB]|%/, ''), 2),
         }
     }
@@ -42,7 +48,7 @@ const parseNumberLiteral = (
         debugPrint('* Identified as a oct number')
         debugPrint('parsed out OCT: ' + txt.replace(/0[oO]/, ''))
         return {
-            tag: 'Number-Integer from oct number',
+            tag: 'From oct number, Number-Integer',
             value: parseInt(txt.replace(/0[oO]/, ''), 8),
         }
     }
@@ -55,7 +61,7 @@ const parseNumberLiteral = (
         txt = txt.replace(/[eE]/g, 'B')
         debugPrint('Converter to AB form: ' + txt.replace(/0[zZ]/, ''))
         return {
-            tag: 'Number-Integer from doz (duodecimal) number',
+            tag: 'From doz (duodecimal) number, Number-Integer',
             value: parseInt(txt.replace(/0[zZ]/, ''), 12),
         }
     }
@@ -63,14 +69,17 @@ const parseNumberLiteral = (
     // In a regex literal the dot must be escaped (\.) to match a literal '.'
     if (/\./.test(txt)) {
         debugPrint('* Identified as a float number')
-        return { tag: 'Number-Float from float number', value: parseFloat(txt) }
+        return {
+            tag: 'From float number, Number-Float',
+            value: parseFloat(txt),
+        }
     }
 
     // TODO: Depending, on mode, below continue or break on error
     //console.error('Error: Failed to parse number value: ' + txt)
 
     debugPrint('* Identified as a int number')
-    return { tag: 'Number-Integer from int number', value: parseInt(txt) }
+    return { tag: 'From int number, Number-Integer', value: parseInt(txt) }
 }
 
 export default parseNumberLiteral
