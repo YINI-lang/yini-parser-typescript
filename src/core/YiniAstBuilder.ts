@@ -53,15 +53,9 @@ import {
     TValueLiteral,
 } from './types'
 
-/**
- * @property {string | undefined} [tag]
- *           Its contents may change at any time and should not
- *           be relied upon for any significant purpose.
- */
 export interface YiniSection {
     sectionName: string
     level: number // 1..n
-    tag: string | undefined
     members: Map<string, TValueLiteral> // Members at this section.
     children: YiniSection[] // Children sections (on the next level) of the current section.
 }
@@ -155,17 +149,8 @@ function trimQuotes(text: string): string {
     return text
 }
 
-/**
- * @param {string | undefined} [tag]
- *        Debugging only. Its contents may change at any time and
- *        must not be relied upon for any functional purpose.
- */
-function makeSection(
-    name: string,
-    level: number,
-    tag: string | undefined = undefined,
-): YiniSection {
-    return { sectionName: name, level, tag, members: new Map(), children: [] }
+function makeSection(name: string, level: number): YiniSection {
+    return { sectionName: name, level, members: new Map(), children: [] }
 }
 
 /** Parse SECTION_HEAD token text → {level, name}.
