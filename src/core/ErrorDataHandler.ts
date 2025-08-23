@@ -118,11 +118,13 @@ export class ErrorDataHandler {
         const startCol = !ctx ? 0 : ++ctx.start.column // Column (0-based).
         const endCol = (ctx?.stop?.column || 0) + 1 // Column (0-based).
 
-        // Patch message with the offending line number.
-        msgWhat += ', at line: ' + lineNum
+        if (lineNum > 0) {
+            // Patch message with the offending line number.
+            msgWhat += ', at line: ' + lineNum
 
-        if (process.env.NODE_ENV === 'test') {
-            msgWhat += `\nAt line: ${lineNum}, column(s): ${startCol}-${endCol}`
+            if (process.env.NODE_ENV === 'test') {
+                msgWhat += `\nAt line: ${lineNum}, column(s): ${startCol}-${endCol}`
+            }
         }
 
         debugPrint('persistThreshold = ' + this.persistThreshold)

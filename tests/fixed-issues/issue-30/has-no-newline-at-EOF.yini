@@ -3,5 +3,6 @@
 ^ General
 outputDir = "./results"
 overwrite = false
+/End
 
 // (!) NOTE: This file should have no newline at EOF!

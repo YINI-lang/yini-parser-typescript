@@ -76,7 +76,8 @@ describe('Issue #30 Tests:', () => {
 
     test('2.b) Should not warn on valid file with final newline (in strict mode).', () => {
         // Arrange.
-        const fileName = '../../fixtures/valid/common/common-config-4.yini'
+        const fileName =
+            '../../fixtures/valid/strict/strict-common-config-4.yini'
         const fullPath = path.join(baseDir, fileName)
         const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {}) // Spy on console.warn
         warnSpy.mockClear()

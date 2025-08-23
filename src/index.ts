@@ -189,19 +189,31 @@ if (isProdEnv()) {
         // }
         //console.log(toPrettyJSON(YINI.parse(yini, false, 'auto', true)))
 
-        const goodYini = `^ Ints
-            value = 0
-            count = 42
-            maxItems = 1000
-            minScore = 7
-            threshold = 99999
-            uptimeSeconds = 86400
-            temperature = 25
-            users = 15
-            year = 2025
-            retryLimit = 3
-        `
-        console.log(toPrettyJSON(YINI.parse(goodYini, false, 'auto', false)))
+        const yini = `
+^ window
+title = 'Sample Window'  // Strings can be enclosed in either ' or ".
+id = 'window_main'
+
+^ image
+src = 'gfx/bg.png'
+id = 'bg1'
+isCentered = true
+
+^ text
+content = 'Click here!'
+id = 'text1'
+isCentered = true
+url = 'images/'
+
+// Following is a list with other lists as elements.
+// Following is a list with other lists as elements.
+styles = [
+    ['font-weight', 'bold'], ['size', 36], ['font', 'arial']
+]
+
+/end
+                `
+        console.log(toPrettyJSON(YINI.parse(yini, true, 'auto', false)))
 
         // console.log(
         //     toPrettyJSON(YINI.parseFile('comprehensive-example.yini', true)),

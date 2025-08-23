@@ -84,6 +84,8 @@ const sectionToObject = (node: YiniSection): Record<string, unknown> => {
  * @note All `tag` fields MUST be ignored.
  */
 const literalToJS = (v: TValueLiteral): unknown => {
+    const IS_LOCAL_DEBUG: boolean = false
+    debugPrint('In literalToJS(..)')
     // if (!v) {
     //     // NOTE: Only in lenient-mode, if parsing a
     //     // member (key = value), but the value is invalid
@@ -101,8 +103,32 @@ const literalToJS = (v: TValueLiteral): unknown => {
             return undefined
 
         case 'List':
-            return v.elems.map(literalToJS)
+            if (IS_LOCAL_DEBUG) {
+                debugPrint("case 'List':")
+                if (isDebug()) {
+                    console.log('input:')
+                    printObject(v)
+                }
+            }
 
+            const out = v.elems.map((elem) => {
+                const ret = literalToJS(elem)
+                if (IS_LOCAL_DEBUG) {
+                    if (isDebug()) {
+                        console.log(`elem:`)
+                        printObject(elem)
+                    }
+                }
+                return ret
+            })
+
+            if (IS_LOCAL_DEBUG) {
+                if (isDebug()) {
+                    console.log('Returning:')
+                    printObject(out)
+                }
+            }
+            return out
         case 'Object': {
             const out: Record<string, unknown> = {}
             // for (const key of Object.keys(v.entries)) {

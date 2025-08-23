@@ -214,6 +214,8 @@ function attachSection(
 
 /** Insert a key/value into current section (duplicate handling per options). */
 function putMember(
+    errorHandler: ErrorDataHandler,
+    ctx: any,
     sec: YiniSection,
     key: string,
     value: TValueLiteral,
@@ -227,13 +229,25 @@ function putMember(
     if (sec.members.has(key)) {
         switch (mode) {
             case 'error':
-                doc.errors.push(
-                    `Duplicate key '${key}' in section '${sec.sectionName}' (level ${sec.level}).`,
+                // doc.errors.push(
+                //     `Duplicate key '${key}' in section '${sec.sectionName}' on level ${sec.level}.`,
+                // )
+                errorHandler!.pushOrBail(
+                    ctx,
+                    'Syntax-Error',
+                    'Hit a duplicate key in this section and scope',
+                    `Key '${key}' already exists in section '${sec.sectionName}' on level ${sec.level}.`,
                 )
                 break
             case 'warn':
-                doc.warnings.push(
-                    `Duplicate key '${key}' in section '${sec.sectionName}' (keeping first).`,
+                // doc.warnings.push(
+                //     `Duplicate key '${key}' in section '${sec.sectionName}' on level ${sec.level} (keeping first).`,
+                // )
+                errorHandler!.pushOrBail(
+                    ctx,
+                    'Syntax-Warning',
+                    'Hit a duplicate key (keeping first) in this section and scope',
+                    `Key '${key}' already exists in section '${sec.sectionName}' on level ${sec.level}.`,
                 )
                 return // keep first
             case 'keep-first':
@@ -298,9 +312,14 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         this.visitYini?.(ctx)
         // Enforce strict-mode terminator rule (/END required) (Spec 12.3). :contentReference[oaicite:8]{index=8}
         if (this.isStrict && !this.doc.terminatorSeen) {
-            this.doc.errors.push(
-                "Strict mode: missing document terminator '/END'.",
-            )
+            // this.doc.errors.push(
+            //     "Strict mode: missing document terminator '/END'.",
+            // )
+            const msgWhat: string = `Missing '/END' at end of document (strict mode).`
+            const msgWhy: string = `The terminator '/END' (case insensitive) is required and must appear at the end of the document.`
+
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+            this.errorHandler!.pushOrBail(null, 'Syntax-Error', msgWhat, msgWhy)
         }
         return this.doc
     }
@@ -503,6 +522,8 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         const current = this.sectionStack[this.sectionStack.length - 1]
         if (valueNode !== undefined) {
             putMember(
+                this.errorHandler!,
+                ctx,
                 current,
                 resultKey,
                 valueNode,
@@ -721,7 +742,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             console.log('Mapped value_list of elements in a list:')
             printObject(elems)
         }
-        return makeListValue(elems)
+        return elems
     }
 
     /**
@@ -869,7 +890,15 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         const current = this.sectionStack[this.sectionStack.length - 1]
 
         // putMember(current, key, list, this.doc, this.onDuplicateKey)
-        putMember(current, key, value, this.doc, this.onDuplicateKey)
+        putMember(
+            this.errorHandler!,
+            ctx,
+            current,
+            key,
+            value,
+            this.doc,
+            this.onDuplicateKey,
+        )
         debugPrint('<- About to exit visitColon_list_decl(..)...')
         if (isDebug()) {
             console.log('List literal: (from a Colon-list)')

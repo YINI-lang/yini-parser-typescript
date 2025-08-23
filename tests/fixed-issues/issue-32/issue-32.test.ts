@@ -17,12 +17,12 @@ describe('Issue #32 Tests:', () => {
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const result = YINI.parseFile(fullPath, true)
+        const result = YINI.parseFile(fullPath, false)
         debugPrint('fullPath = ' + fullPath)
         debugPrint('result:')
         debugPrint(result)
 
-        // Assert.
+        // Assert all values in the file.
         expect(result.Section.float2).toEqual(-0.123)
         expect(result.Section.float3).toEqual(0.0)
         expect(result.Section.float4).toEqual(0.0)
@@ -122,6 +122,7 @@ describe('Additional issue #32 Tests:', () => {
         // Arrange.
         const validYini = `^ Section
             value = .33
+            /END
         `
         // Act.
         const result = YINI.parse(validYini, true)
@@ -136,6 +137,7 @@ describe('Additional issue #32 Tests:', () => {
         // Arrange.
         const validYini = `^ Section
             value = -.33
+            /End
         `
         // Act.
         const result = YINI.parse(validYini, true)
@@ -150,6 +152,7 @@ describe('Additional issue #32 Tests:', () => {
         // Arrange.
         const validYini = `^ Section
             value = .3e5
+            /end
         `
         // Act.
         const result = YINI.parse(validYini, true)
@@ -164,6 +167,7 @@ describe('Additional issue #32 Tests:', () => {
         // Arrange.
         const validYini = `^ Section
             value = -.3e5
+            /END
         `
         // Act.
         const result = YINI.parse(validYini, true)
@@ -187,6 +191,7 @@ describe('Additional issue #32 Tests:', () => {
             users = 15
             year = 2025
             retryLimit = 3
+            /END
         `
         // Act.
         const result = YINI.parse(validYini, true)
@@ -224,6 +229,8 @@ describe('Additional issue #32 Tests:', () => {
             users = -15
             year = -2025
             retryLimit = -3
+
+            /END
         `
         // Act.
         const result = YINI.parse(validYini, true)
@@ -261,6 +268,8 @@ describe('Additional issue #32 Tests:', () => {
             short = 5e1
             floaty = 7.77e2
             milli = 1e-3
+
+            /END
         `
 
         // Act.
@@ -299,6 +308,8 @@ describe('Additional issue #32 Tests:', () => {
             short = -5e1
             floaty = -7.77e2
             milli = -1e-3
+
+            /END
         `
 
         // Act.
