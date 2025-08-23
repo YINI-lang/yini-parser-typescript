@@ -119,6 +119,7 @@ if (isProdEnv()) {
         ` // End.
         */
 
+        /*
         const yini = `
     @yini    
     @YINI   ///dfsf
@@ -140,20 +141,18 @@ if (isProdEnv()) {
         \`d d\`: 3453
         }
 
-    /*
     listValueB: 3, 4, 5
     listValue2 = ["a", "b"]
     listValue3 = [434]
     listValue4 = []
     listValue5 = [1, ["a", "b", "c", [null, TRUE]], 3]
-    */
+    
     --listObject = { a: 1, b: 2}
-    /*
+    
     colonList:
         1,
         2,
         3,
-    */
 
         << Prefs
         theme = "light"
@@ -180,7 +179,7 @@ if (isProdEnv()) {
         <2 Special
         value = 123
         `
-
+*/
         // npm run start:dev
         // "timing": {
         //     "totalMs": 158.421,
@@ -188,7 +187,21 @@ if (isProdEnv()) {
         //     "phase2Ms": 6.92,
         //     "phase3Ms": 0.14
         // }
-        console.log(toPrettyJSON(YINI.parse(yini, false, 'auto', true)))
+        //console.log(toPrettyJSON(YINI.parse(yini, false, 'auto', true)))
+
+        const goodYini = `^ Ints
+            value = 0
+            count = 42
+            maxItems = 1000
+            minScore = 7
+            threshold = 99999
+            uptimeSeconds = 86400
+            temperature = 25
+            users = 15
+            year = 2025
+            retryLimit = 3
+        `
+        console.log(toPrettyJSON(YINI.parse(goodYini, false, 'auto', false)))
 
         // console.log(
         //     toPrettyJSON(YINI.parseFile('comprehensive-example.yini', true)),

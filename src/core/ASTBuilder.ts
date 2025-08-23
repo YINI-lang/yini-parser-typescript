@@ -30,12 +30,14 @@ import parseBooleanLiteral from '../parsers/parseBoolean'
 import parseBoolean from '../parsers/parseBoolean'
 import parseNullLiteral from '../parsers/parseNull'
 import parseNumberLiteral from '../parsers/parseNumber'
-import parseNumber from '../parsers/parseNumber'
+// import parseNumber from '../parsers/parseNumber'
 import parseSectionHeader from '../parsers/parseSectionHeader'
 import parseStringLiteral from '../parsers/parseString'
+import { isInfinityValue, isNaNValue } from '../utils/number'
 import { debugPrint, printObject } from '../utils/print'
 import { isEnclosedInBackticks, trimBackticks } from '../utils/string'
 import {
+    isScalar,
     isValidBacktickedIdent,
     isValidSimpleIdent,
     printLiteral,
@@ -63,7 +65,7 @@ export interface YiniSection {
 export interface YiniDocument {
     root: YiniSection // Implicit root per spec impl. notes.
     terminatorSeen: boolean // '/END' in strict mode
-    mode: 'lenient' | 'strict'
+    isStrict: boolean
     errors: string[]
     warnings: string[]
 }
@@ -83,8 +85,8 @@ export interface BuildOptions {
  *        must not be relied upon for any functional purpose.
  */
 const makeScalarValue = (
-    type: 'String' | 'Number' | 'Boolean' | 'Null',
-    value: string | number | boolean | null = null,
+    type: 'String' | 'Number' | 'Boolean' | 'Null' | 'Undefined',
+    value: string | number | boolean | null | undefined = null,
     tag: string | undefined = undefined,
 ): TScalarValue => {
     switch (type) {
@@ -96,6 +98,8 @@ const makeScalarValue = (
             return { type, value: !!value, tag }
         case 'Null':
             return { type: 'Null', value: null, tag }
+        case 'Undefined':
+            return { type: 'Undefined', value: undefined, tag }
         default:
             new ErrorDataHandler().pushOrBail(
                 null,
@@ -251,16 +255,27 @@ function putMember(
  * operations with no return type.
  */
 // export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
-export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
-    private readonly mode: 'lenient' | 'strict'
+export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
+    private errorHandler: ErrorDataHandler | null = null
+    private readonly isStrict: boolean
+
+    // private readonly mode: 'lenient' | 'strict'
     private readonly onDuplicateKey: BuildOptions['onDuplicateKey']
     private doc: YiniDocument
     private sectionStack: YiniSection[]
 
+    private meta_hasYiniMarker = false // For stats.
+    private meta_numOfSections = 0 // For stats.
+    private meta_numOfMembers = 0 // For stats.
+    // private meta_numOfChains = 0 // For stats.
+    private meta_maxLevelSection = 0 // For stats.
+
     // constructor(opts: BuildOptions = {}) {
-    constructor(options: IParseMainOptions) {
+    constructor(errorHandler: ErrorDataHandler, options: IParseMainOptions) {
         super()
-        this.mode = options.isStrict ? 'strict' : 'lenient'
+        this.errorHandler = errorHandler
+        this.isStrict = options.isStrict
+
         if (options.isStrict) {
             this.onDuplicateKey = 'error'
         } else {
@@ -271,7 +286,7 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
         this.doc = {
             root,
             terminatorSeen: false,
-            mode: this.mode,
+            isStrict: this.isStrict,
             errors: [],
             warnings: [],
         }
@@ -282,7 +297,7 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
     public buildAST(ctx: YiniContext): YiniDocument {
         this.visitYini?.(ctx)
         // Enforce strict-mode terminator rule (/END required) (Spec 12.3). :contentReference[oaicite:8]{index=8}
-        if (this.mode === 'strict' && !this.doc.terminatorSeen) {
+        if (this.isStrict && !this.doc.terminatorSeen) {
             this.doc.errors.push(
                 "Strict mode: missing document terminator '/END'.",
             )
@@ -412,30 +427,64 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
         debugPrint('-> Entered visitMember(..)')
 
         // member: KEY WS? EQ WS? value?
-        const key = ctx.getChild(0).getText()
-        debugPrint(`visitMember(..): key = '${key}'`)
+        const rawKey = ctx.getChild(0).getText()
+        const resultKey = trimBackticks(rawKey)
+        const rawValue = ctx.value?.()?.getText()
+        debugPrint(`visitMember(..):   rawKey = '${rawKey}'`)
+        debugPrint(`visitMember(..): rawValue = ` + ctx.value?.()?.getText())
 
-        let valueNode = ctx.value?.()
-        let value: TValueLiteral | undefined
+        let valueContext = ctx.value?.()
+        let valueNode: TValueLiteral | undefined
 
-        if (!valueNode) {
+        if (!rawValue) {
             // Empty value => Null in lenient mode, error in strict (Spec 12.3, 8.2). :contentReference[oaicite:10]{index=10}:contentReference[oaicite:11]{index=11}
-            if (this.mode === 'lenient')
-                value = makeScalarValue('Null', null, 'Implicit Null')
-            else
-                this.doc.errors.push(
-                    `Strict mode: missing value for key '${key}'.`,
-                )
+            if (!this.isStrict) {
+                debugPrint('HITTTTT!! - in visitMember(..)')
+                valueNode = makeScalarValue('Null', null, 'Implicit null')
+            }
+            // else {
+            //     this.doc.errors.push(
+            //         `Strict mode: missing value for key '${key}'.`,
+            //     )
+            // }
         } else {
-            value = this.visitValue?.(valueNode) as TValueLiteral
+            valueNode = this.visitValue?.(valueContext) as TValueLiteral
         }
-        debugPrint('visitMember(..): value = ' + value)
+        debugPrint('visitMember(..): valueNode:')
+        if (isDebug()) {
+            printObject(valueNode)
+        }
+        // const resultType = valueLiteral?.type
+        // const resultValue = valueLiteral?.type
+        if (!valueNode || valueNode.type === 'Undefined') {
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+            // this.errorHandler!.pushOrBail(
+            //     ctx,
+            //     'Syntax-Error',
+            //     'Invalid value',
+            //     `Invalid value '${rawValue}' for key '${resultKey}'.`,
+            //     'Expected a valid literal (string, number, boolean, null, list, or object).',
+            // )
+            this.errorHandler!.pushOrBail(
+                ctx,
+                'Syntax-Error',
+                'Invalid value',
+                `Invalid value for key '${resultKey}'.`,
+                `Got '${rawValue}', but expected a valid literal (string, number, boolean, null, list, or object).`,
+            )
+        }
 
         const current = this.sectionStack[this.sectionStack.length - 1]
-        if (value !== undefined) {
-            putMember(current, key, value, this.doc, this.onDuplicateKey)
+        if (valueNode !== undefined) {
+            putMember(
+                current,
+                resultKey,
+                valueNode,
+                this.doc,
+                this.onDuplicateKey,
+            )
         }
-        return value
+        return valueNode
     }
 
     /**
@@ -445,31 +494,52 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
      */
     // visitValue?: (ctx: ValueContext) => Result
     visitValue = (ctx: ValueContext): any => {
+        debugPrint('----------------------------')
         debugPrint('-> Entered visitValue(..)')
 
-        if (ctx.null_literal())
-            return this.visitNull_literal(ctx.null_literal()!) as TValueLiteral
-        if (ctx.string_literal())
-            return this.visitString_literal(
+        let valueNode: TValueLiteral | undefined = undefined
+        if (ctx.null_literal()) {
+            debugPrint('  visiting visitNull_literal(..)')
+            valueNode = this.visitNull_literal(
+                ctx.null_literal()!,
+            ) as TValueLiteral
+        } else if (ctx.string_literal()) {
+            debugPrint('  visiting visitString_literal(..)')
+            valueNode = this.visitString_literal(
                 ctx.string_literal()!,
             ) as TValueLiteral
-        if (ctx.number_literal())
-            return this.visitNumber_literal(
+        } else if (ctx.number_literal()) {
+            debugPrint('  visiting visitNumber_literal(..)')
+            valueNode = this.visitNumber_literal(
                 ctx.number_literal()!,
             ) as TValueLiteral
-        if (ctx.boolean_literal())
-            return this.visitBoolean_literal(
+        } else if (ctx.boolean_literal()) {
+            debugPrint('  visiting visitBoolean_literal(..)')
+            valueNode = this.visitBoolean_literal(
                 ctx.boolean_literal()!,
             ) as TValueLiteral
-        if (ctx.list_literal())
-            return this.visitList_literal(ctx.list_literal()!) as TValueLiteral
-        if (ctx.object_literal())
-            return this.visitObject_literal(
+        } else if (ctx.list_literal()) {
+            debugPrint('  visiting visitList_literal(..)')
+            valueNode = this.visitList_literal(
+                ctx.list_literal()!,
+            ) as TValueLiteral
+        } else if (ctx.object_literal()) {
+            debugPrint('  visiting visitObject_literal(..)')
+            valueNode = this.visitObject_literal(
                 ctx.object_literal()!,
             ) as TValueLiteral
+        } else {
+            debugPrint('  Entered else case in visitValue(..)')
+            valueNode = makeScalarValue('Undefined', undefined, 'Invalid value')
+        }
 
-        this.doc.errors.push('Unknown value node.')
-        return null
+        debugPrint('<- About to exit visitValue(..): returning:')
+        if (isDebug()) {
+            printObject(valueNode)
+        }
+        debugPrint('----------------------------\n')
+
+        return valueNode
     }
 
     /**
@@ -503,7 +573,26 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
         debugPrint('-> Entered visitNumber_literal(..)')
 
         const rawText = ctx.getText()
-        const parsedNum = parseNumber(rawText)
+        const parsedNum = parseNumberLiteral(rawText)
+
+        // Check if number is JS special type NaN, Infinity or -Infinity.
+        if (
+            !parsedNum?.value ||
+            isNaNValue(parsedNum.value) ||
+            isInfinityValue(parsedNum.value)
+        ) {
+            // **************************************************
+            // NOTE: (!) Currently a bit unsure if to return
+            // option 1 or 2..!?, 2025-08-23
+
+            // Option 1.
+            //return makeScalarValue('Undefined', undefined, parsedNum?.tag)
+
+            // Option 2.
+            return undefined
+            // **************************************************
+        }
+
         const value: TScalarValue = makeScalarValue(
             'Number',
             parsedNum.value,
@@ -580,7 +669,19 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
         const elems = !ctx?.value_list()
             ? []
             : ctx.value_list().map((elem) => {
-                  return this.visitValue(elem)
+                  const valueNode = this.visitValue(elem)
+                  if (!valueNode) {
+                      // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+                      this.errorHandler!.pushOrBail(
+                          ctx,
+                          'Syntax-Error',
+                          'Invalid list element',
+                          `Invalid list element: '${elem?.getText()}'`,
+                          'Expected a valid literal (string, number, boolean, null, list, or object).',
+                      )
+                  }
+
+                  return valueNode
               })
 
         debugPrint('<- About to exit visitElements(..)')
@@ -690,20 +791,32 @@ export default class YiniAstBuilder<Result> extends YiniParserVisitor<Result> {
          */
         const rawKey = ctx.KEY().getText()
         const key = trimBackticks(rawKey)
-        const value: TValueLiteral = ctx.value()
+        const rawValue = ctx.value().getText()
+        const valueNode: TValueLiteral = ctx.value()
             ? this.visitValue(ctx.value())
             : makeScalarValue('Null', 'Implicit Null')
 
-        debugPrint('rawKey = ' + rawKey)
-        debugPrint('   key = ' + key)
+        debugPrint('  rawKey = ' + rawKey)
+        debugPrint('     key = ' + key)
+        debugPrint('rawValue = ' + rawValue)
+        if (!valueNode) {
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+            this.errorHandler!.pushOrBail(
+                ctx,
+                'Syntax-Error',
+                'Invalid object entry',
+                `Invalid object entry for key '${key}'.`,
+                `Got '${rawValue}', but expected a valid literal (string, number, boolean, null, list, or object).`,
+            )
+        }
 
         debugPrint('<- About to exit visitObject_member(..)')
         if (isDebug()) {
             console.log('Returning:')
-            printObject({ key, value })
+            printObject({ key, value: valueNode })
         }
 
-        return { key, value }
+        return { key, value: valueNode }
     }
 
     /**

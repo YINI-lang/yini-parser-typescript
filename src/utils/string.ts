@@ -10,7 +10,7 @@ import { debugPrint } from './print'
  * @param content The input string.
  * @returns Array of lines (strings).
  */
-export function splitLines(content: string): string[] {
+export const splitLines = (content: string): string[] => {
     // Chould handle \n (LF), \r\n (CRLF), and even just \r (old Mac style).
     return content.split(/\r\n|\r|\n/)
 }

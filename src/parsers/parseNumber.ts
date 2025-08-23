@@ -1,4 +1,5 @@
 import { isDebug } from '../config/env'
+import { isValidJSNumber } from '../utils/number'
 import { debugPrint } from '../utils/print'
 
 /**
@@ -9,7 +10,7 @@ import { debugPrint } from '../utils/print'
  */
 const parseNumberLiteral = (
     txt: string,
-): { tag: string | undefined; value: number } => {
+): { tag: string | undefined; value: number | undefined } => {
     debugPrint('-> Entered parseNumberLiteral(..), txt: ' + txt)
 
     if (/^[+-]?(?:\d+\.\d*|\d*\.?\d+)e[+-]?\d+$/i.test(txt)) {
@@ -77,6 +78,11 @@ const parseNumberLiteral = (
 
     // TODO: Depending, on mode, below continue or break on error
     //console.error('Error: Failed to parse number value: ' + txt)
+
+    if (!isValidJSNumber(txt)) {
+        debugPrint('* Identified as invalid number')
+        return { tag: 'From invalid number/value', value: undefined }
+    }
 
     debugPrint('* Identified as a int number')
     return { tag: 'From int number, Number-Integer', value: parseInt(txt) }

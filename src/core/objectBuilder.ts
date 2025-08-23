@@ -1,8 +1,8 @@
 import { isDebug } from '../config/env'
 import { TValueLiteral } from '../core/types'
 import { debugPrint, printObject, toPrettyJSON } from '../utils/print'
+import { YiniDocument, YiniSection } from './ASTBuilder'
 import { ErrorDataHandler } from './ErrorDataHandler'
-import { YiniDocument, YiniSection } from './YiniAstBuilder'
 
 /**
  * Construct the final JavaScript Object.
@@ -84,12 +84,21 @@ const sectionToObject = (node: YiniSection): Record<string, unknown> => {
  * @note All `tag` fields MUST be ignored.
  */
 const literalToJS = (v: TValueLiteral): unknown => {
+    // if (!v) {
+    //     // NOTE: Only in lenient-mode, if parsing a
+    //     // member (key = value), but the value is invalid
+    //     // key will get undefined
+    //     return undefined
+    // }
+
     switch (v.type) {
         case 'String':
         case 'Number':
         case 'Boolean':
         case 'Null':
             return v.value
+        case 'Undefined':
+            return undefined
 
         case 'List':
             return v.elems.map(literalToJS)

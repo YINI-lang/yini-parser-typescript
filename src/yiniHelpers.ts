@@ -175,6 +175,9 @@ export const printLiteral = (value: TValueLiteral): void => {
         case 'Null':
             console.log('' + value.value)
             break
+        case 'Undefined':
+            console.log('' + value.value)
+            break
         case 'List':
             printObject((value as TListValue).elems)
             break

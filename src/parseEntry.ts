@@ -7,6 +7,7 @@ import {
     Recognizer,
 } from 'antlr4'
 import { isDebug, isDev, localAppEnv, localNodeEnv } from './config/env'
+import YiniAstBuilder from './core/ASTBuilder'
 import { ErrorDataHandler } from './core/ErrorDataHandler'
 import { astToObject } from './core/objectBuilder'
 import {
@@ -15,7 +16,6 @@ import {
     TPersistThreshold,
     TSyntaxTreeContainer,
 } from './core/types'
-import YiniAstBuilder from './core/YiniAstBuilder'
 import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
 import { debugPrint, printObject } from './utils/print'
@@ -176,7 +176,7 @@ export const parseMain = (
     }
 
     // const visitor = new YINIVisitor(errorHandler, options.isStrict)
-    const builder = new YiniAstBuilder(options)
+    const builder = new YiniAstBuilder(errorHandler, options)
     const ast = builder.buildAST(parseTree)
     // const syntaxTreeC: TSyntaxTreeContainer = visitor.visit(
     //     parseTree as any,

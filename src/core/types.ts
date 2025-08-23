@@ -68,6 +68,7 @@ export type TScalarValue =
     | { type: 'Number'; value: number; tag: string | undefined }
     | { type: 'Boolean'; value: boolean; tag: string | undefined }
     | { type: 'Null'; value: null; tag: string | undefined }
+    | { type: 'Undefined'; value: undefined; tag: string | undefined }
 
 /** Any literal value in YINI: scalar, list, or object. */
 export type TValueLiteral =
