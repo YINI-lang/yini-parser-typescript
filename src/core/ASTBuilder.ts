@@ -428,9 +428,35 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
 
         // member: KEY WS? EQ WS? value?
         const rawKey = ctx.getChild(0).getText()
+        debugPrint(`visitMember(..):   rawKey = '${rawKey}'`)
+        if (rawKey) {
+            debugPrint()
+            debugPrint(
+                'Has a key... Validate it either as a simple or a backticked ident...',
+            )
+            if (isEnclosedInBackticks(rawKey)) {
+                if (!isValidBacktickedIdent(rawKey)) {
+                    this.errorHandler!.pushOrBail(
+                        ctx,
+                        'Syntax-Error',
+                        `Invalid (backticked) key/identifier: '${rawKey}'`,
+                        'Backticked key/identifier should be like e.g. `My section name`.',
+                    )
+                }
+            } else {
+                if (!isValidSimpleIdent(rawKey)) {
+                    this.errorHandler!.pushOrBail(
+                        ctx,
+                        'Syntax-Error',
+                        `Invalid key/identifier name: '${rawKey}'`,
+                        `Key/identifier names must start with: A-Z, a-z, or _, unless enclosed in backticks e.g.: \`${rawKey}\` or \`My key name\`.`,
+                    )
+                }
+            }
+        }
+
         const resultKey = trimBackticks(rawKey)
         const rawValue = ctx.value?.()?.getText()
-        debugPrint(`visitMember(..):   rawKey = '${rawKey}'`)
         debugPrint(`visitMember(..): rawValue = ` + ctx.value?.()?.getText())
 
         let valueContext = ctx.value?.()
@@ -463,14 +489,14 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             //     'Syntax-Error',
             //     'Invalid value',
             //     `Invalid value '${rawValue}' for key '${resultKey}'.`,
-            //     'Expected a valid literal (string, number, boolean, null, list, or object).',
+            //     `Expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
             // )
             this.errorHandler!.pushOrBail(
                 ctx,
                 'Syntax-Error',
                 'Invalid value',
-                `Invalid value for key '${resultKey}'.`,
-                `Got '${rawValue}', but expected a valid literal (string, number, boolean, null, list, or object).`,
+                `Invalid value for key '${resultKey} in member (<key> = <value> pair)'.`,
+                `Got '${rawValue}', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
             )
         }
 
@@ -574,19 +600,25 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
 
         const rawText = ctx.getText()
         const parsedNum = parseNumberLiteral(rawText)
+        debugPrint('parseNumberLiteral(..) returned, parsedNum:')
+        if (isDebug()) {
+            printObject(parsedNum)
+        }
 
         // Check if number is JS special type NaN, Infinity or -Infinity.
+        // Note: Value with a zero (0) should pass OK!
         if (
-            !parsedNum?.value ||
-            isNaNValue(parsedNum.value) ||
-            isInfinityValue(parsedNum.value)
+            parsedNum?.value !== 0 &&
+            (!parsedNum?.value ||
+                isNaNValue(parsedNum.value) ||
+                isInfinityValue(parsedNum.value))
         ) {
             // **************************************************
             // NOTE: (!) Currently a bit unsure if to return
             // option 1 or 2..!?, 2025-08-23
 
             // Option 1.
-            //return makeScalarValue('Undefined', undefined, parsedNum?.tag)
+            // return makeScalarValue('Undefined', undefined, parsedNum?.tag)
 
             // Option 2.
             return undefined
@@ -677,7 +709,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                           'Syntax-Error',
                           'Invalid list element',
                           `Invalid list element: '${elem?.getText()}'`,
-                          'Expected a valid literal (string, number, boolean, null, list, or object).',
+                          `Expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
                       )
                   }
 
@@ -806,7 +838,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                 'Syntax-Error',
                 'Invalid object entry',
                 `Invalid object entry for key '${key}'.`,
-                `Got '${rawValue}', but expected a valid literal (string, number, boolean, null, list, or object).`,
+                `Got '${rawValue}', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
             )
         }
 
@@ -864,9 +896,12 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
      */
     // visitBad_member?: (ctx: Bad_memberContext) => Result
     visitBad_member = (ctx: Bad_memberContext): any => {
-        const t = ctx.getText()
-        this.doc.errors.push(
-            `Malformed member near: ${JSON.stringify(t.slice(0, 60))}…`,
+        this.errorHandler!.pushOrBail(
+            ctx,
+            'Syntax-Error',
+            'Invalid or malformed member (key-value pair) found.',
+            `Offending text: ${ctx?.getText()?.trim()}`,
+            'Members has the form: <key> = <value>, where <key> is a name/identifier and <value> is a value/literal.',
         )
         return null
     }
