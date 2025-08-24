@@ -699,6 +699,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     visitBoolean_literal = (ctx: Boolean_literalContext): any => {
         debugPrint('-> Entered visitBoolean_literal(..)')
         const raw = ctx.getText()
+        debugPrint('raw: "' + raw + '"')
         // Case-insensitive true/false/on/off/yes/no (Spec section, 8.1).
         return makeScalarValue('Boolean', parseBoolean(raw))
     }

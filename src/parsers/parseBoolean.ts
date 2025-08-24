@@ -4,8 +4,9 @@ import { debugPrint } from '../utils/print'
 /**
  * Extract boolean literal.
  */
-const parseBooleanLiteral = (txt: string): boolean => {
+const parseBooleanLiteral = (text: string): boolean => {
     debugPrint('-> Entered parseBooleanLiteral(..)')
+    const txt = text.trim().toLowerCase()
     const value: boolean = !!(txt === 'true' || txt === 'yes' || txt === 'on')
 
     return value
