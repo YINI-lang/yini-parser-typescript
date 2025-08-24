@@ -174,75 +174,6 @@ function parseSectionHeadToken(raw: string): { level: number; name: string } {
     return { level: 1, name: line.trim() }
 }
 
-/** Attach a section to the stack respecting up/down moves (Spec 5.3). :contentReference[oaicite:7]{index=7} */
-function attachSection(
-    stack: IYiniSection[],
-    section: IYiniSection,
-    doc: IYiniAST,
-) {
-    const targetLevel = section.level
-    if (targetLevel <= 0) {
-        doc.errors.push(`Invalid section level: ${targetLevel}`)
-        return
-    }
-
-    // Ensure stack top has level targetLevel-1 (implicit root is level 0).
-    while (stack.length > 0 && stack[stack.length - 1].level >= targetLevel) {
-        stack.pop()
-    }
-    const parent = stack[stack.length - 1] // root or higher-level section
-    parent.children.push(section)
-    stack.push(section)
-}
-
-/** Insert a key/value into current section (duplicate handling per options). */
-function putMember(
-    errorHandler: ErrorDataHandler,
-    ctx: any,
-    sec: IYiniSection,
-    key: string,
-    value: TValueLiteral,
-    doc: IYiniAST,
-    mode: IBuildOptions['onDuplicateKey'] = 'warn',
-) {
-    isDebug() && console.log()
-    debugPrint('-> Entered putMember(..)')
-    debugPrint(`putMember(..): key: '${key}', value: ${value}`)
-
-    if (sec.members.has(key)) {
-        switch (mode) {
-            case 'error':
-                // doc.errors.push(
-                //     `Duplicate key '${key}' in section '${sec.sectionName}' on level ${sec.level}.`,
-                // )
-                errorHandler!.pushOrBail(
-                    ctx,
-                    'Syntax-Error',
-                    'Hit a duplicate key in this section and scope',
-                    `Key '${key}' already exists in section '${sec.sectionName}' on level ${sec.level}.`,
-                )
-                break
-            case 'warn':
-                // doc.warnings.push(
-                //     `Duplicate key '${key}' in section '${sec.sectionName}' on level ${sec.level} (keeping first).`,
-                // )
-                errorHandler!.pushOrBail(
-                    ctx,
-                    'Syntax-Warning',
-                    'Hit a duplicate key (keeping first) in this section and scope',
-                    `Key '${key}' already exists in section '${sec.sectionName}' on level ${sec.level}.`,
-                )
-                return // keep first
-            case 'keep-first':
-                return
-            case 'overwrite':
-                // replace value
-                break
-        }
-    }
-    sec.members.set(key, value)
-}
-
 // Builder Visitor -----------------------------------------------------
 /**
  * This interface defines a complete generic visitor for a parse tree produced
@@ -258,18 +189,30 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
 
     // private readonly mode: 'lenient' | 'strict'
     private readonly onDuplicateKey: IBuildOptions['onDuplicateKey']
-    private doc: IYiniAST
+    private ast: IYiniAST
     private sectionStack: IYiniSection[]
 
     private meta_hasYiniMarker = false // For stats.
-    private meta_numOfSections = 0 // For stats.
+    // private meta_numOfSections = 0 // For stats.
     private meta_numOfMembers = 0 // For stats.
     // private meta_numOfChains = 0 // For stats.
     private meta_maxLevelSection = 0 // For stats.
 
+    private existingSectionTitlesAtLevels: Map<string, boolean>[] = []
+
     // constructor(opts: IBuildOptions = {}) {
     constructor(errorHandler: ErrorDataHandler, options: IParseMainOptions) {
         super()
+        if (!errorHandler) {
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+            new ErrorDataHandler().pushOrBail(
+                null,
+                'Fatal-Error',
+                'Has no ErrorDataHandler instance when calling visitYini(..)',
+                'Something in the code is done incorrectly in order for this to happen... :S',
+            )
+        }
+
         this.errorHandler = errorHandler
         this.isStrict = options.isStrict
 
@@ -280,23 +223,145 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         }
 
         const root = makeSection('(root)', 0)
-        this.doc = {
+        this.ast = {
             root,
             terminatorSeen: false,
             yiniMarkerSeen: false,
             isStrict: this.isStrict,
+            numOfSections: null,
+            numOfMembers: null,
             errors: [],
             warnings: [],
         }
         this.sectionStack = [root]
     }
 
+    // --- Private helper methods --------------------------------
+
+    private hasDefinedSectionTitle = (
+        sectionName: string,
+        level: number,
+    ): boolean => {
+        const mapAtCurrentLevel: Map<string, boolean> =
+            this.existingSectionTitlesAtLevels[level - 1]
+
+        return mapAtCurrentLevel?.has(trimBackticks(sectionName))
+    }
+
+    private setDefineSectionTitle = (sectionName: string, level: number) => {
+        let mapAtCurrentLevel: Map<string, boolean> =
+            this.existingSectionTitlesAtLevels[level - 1]
+
+        if (!mapAtCurrentLevel) {
+            mapAtCurrentLevel = new Map()
+            this.existingSectionTitlesAtLevels[level - 1] = mapAtCurrentLevel
+        }
+
+        mapAtCurrentLevel.set(trimBackticks(sectionName), true)
+    }
+
+    /** Attach a section to the stack respecting up/down moves (Spec 5.3). :contentReference[oaicite:7]{index=7} */
+    private attachSection(
+        ctx: any,
+        stack: IYiniSection[],
+        section: IYiniSection,
+        ast: IYiniAST,
+    ) {
+        const targetLevel = section.level
+        const sectionName = section.sectionName
+
+        if (targetLevel <= 0) {
+            ast.errors.push(`Invalid section level: ${targetLevel}`)
+            return
+        }
+
+        // ------------------------------
+        const key = targetLevel + '-' + sectionName
+        debugPrint('KKKKKK, key = ' + key)
+        // if (this.existingSectionTitles.has(key)) {
+        if (this.hasDefinedSectionTitle(key, targetLevel)) {
+            this.errorHandler!.pushOrBail(
+                ctx,
+                'Syntax-Error',
+                'Duplicate section name',
+                `Section name: '${sectionName}' at level ${targetLevel} is already defined and cannot be redefined.`,
+            )
+        } else {
+            if (section.members === undefined) {
+                debugPrint(
+                    'This sReslult does not hold any valid members (=undefined)',
+                )
+            } else {
+                // this.existingSectionTitles.set(key, true)
+                this.setDefineSectionTitle(key, targetLevel)
+                // printObject(this.existingSectionTitles)
+            }
+        }
+        // ------------------------------
+
+        // Ensure stack top has level targetLevel-1 (implicit root is level 0).
+        while (
+            stack.length > 0 &&
+            stack[stack.length - 1].level >= targetLevel
+        ) {
+            stack.pop()
+        }
+        const parent = stack[stack.length - 1] // root or higher-level section
+        parent.children.push(section)
+        stack.push(section)
+    }
+
+    /** Insert a key/value into current section (duplicate handling per options). */
+    private putMember(
+        errorHandler: ErrorDataHandler,
+        ctx: any,
+        sec: IYiniSection,
+        key: string,
+        value: TValueLiteral,
+        mode: IBuildOptions['onDuplicateKey'] = 'warn',
+    ) {
+        isDebug() && console.log()
+        debugPrint('-> Entered putMember(..)')
+        debugPrint(`putMember(..): key: '${key}', value: ${value}`)
+
+        if (sec.members.has(key)) {
+            switch (mode) {
+                case 'error':
+                    errorHandler!.pushOrBail(
+                        ctx,
+                        'Syntax-Error',
+                        'Hit a duplicate key in this section and scope',
+                        `Key '${key}' already exists in section '${sec.sectionName}' on level ${sec.level}.`,
+                    )
+                    break
+                case 'warn':
+                    errorHandler!.pushOrBail(
+                        ctx,
+                        'Syntax-Warning',
+                        'Hit a duplicate key (keeping first) in this section and scope',
+                        `Key '${key}' already exists in section '${sec.sectionName}' on level ${sec.level}.`,
+                    )
+                    return // keep first
+                case 'keep-first':
+                    return
+                case 'overwrite':
+                    // replace value
+                    break
+            }
+        }
+
+        sec.members.set(key, value)
+        this.meta_numOfMembers++
+    }
+
+    // --------------------------------
+
     // Public entry
     public buildAST(ctx: YiniContext): IYiniAST {
         this.visitYini?.(ctx)
         // Enforce strict-mode terminator rule (/END required) (Spec 12.3). :contentReference[oaicite:8]{index=8}
-        if (this.isStrict && !this.doc.terminatorSeen) {
-            // this.doc.errors.push(
+        if (this.isStrict && !this.ast.terminatorSeen) {
+            // this.ast.errors.push(
             //     "Strict mode: missing document terminator '/END'.",
             // )
             const msgWhat: string = `Missing '/END' at end of document (strict mode).`
@@ -305,7 +370,19 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(null, 'Syntax-Error', msgWhat, msgWhy)
         }
-        return this.doc
+
+        let numOfSections = 0
+        this.existingSectionTitlesAtLevels.forEach(
+            (map: Map<string, boolean>) => {
+                numOfSections += map.size
+            },
+        )
+
+        // Attach collected meta information.
+        this.ast.numOfSections = numOfSections
+        this.ast.numOfMembers = this.meta_numOfMembers
+
+        return this.ast
     }
 
     /**
@@ -318,7 +395,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     visitYini = (ctx: YiniContext): any => {
         // children: prolog?, stmt*, terminal?, EOF
         ctx.children?.forEach((c: any) => this.visit?.(c))
-        return this.doc
+        return this.ast
     }
 
     /**
@@ -351,7 +428,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                 `Got '${rawText}', but expected '/END' (case insensitive).`,
             )
         } else {
-            if (this.doc.terminatorSeen) {
+            if (this.ast.terminatorSeen) {
                 this.errorHandler!.pushOrBail(
                     ctx,
                     'Syntax-Warning',
@@ -361,7 +438,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             }
         }
 
-        this.doc.terminatorSeen = true
+        this.ast.terminatorSeen = true
         return null
     }
 
@@ -392,12 +469,12 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             const currentLevel =
                 this.sectionStack[this.sectionStack.length - 1].level
             if (level > currentLevel + 1) {
-                this.doc.errors.push(
+                this.ast.errors.push(
                     `Invalid section level transition: from ${currentLevel} to ${level} (cannot skip levels).`,
                 )
             }
             const section = makeSection(name, level)
-            attachSection(this.sectionStack, section, this.doc) // respects up/down nesting
+            this.attachSection(ctx, this.sectionStack, section, this.ast) // respects up/down nesting
             return null
         }
 
@@ -424,7 +501,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                 `Got '${rawText}', but expected '@YINI' (case insensitive).`,
             )
         } else {
-            if (this.doc.yiniMarkerSeen) {
+            if (this.ast.yiniMarkerSeen) {
                 this.errorHandler!.pushOrBail(
                     ctx,
                     'Syntax-Warning',
@@ -434,7 +511,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             }
         }
         // @yini marker is advisory (no semantic value) per spec. We ignore it. (Spec 2.4) :contentReference[oaicite:9]{index=9}
-        this.doc.yiniMarkerSeen = true
+        this.ast.yiniMarkerSeen = true
         return null
     }
 
@@ -516,7 +593,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                 valueNode = makeScalarValue('Null', null, 'Implicit null')
             }
             // else {
-            //     this.doc.errors.push(
+            //     this.ast.errors.push(
             //         `Strict mode: missing value for key '${key}'.`,
             //     )
             // }
@@ -549,13 +626,13 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
 
         const current = this.sectionStack[this.sectionStack.length - 1]
         if (valueNode !== undefined) {
-            putMember(
+            this.putMember(
                 this.errorHandler!,
                 ctx,
                 current,
                 resultKey,
                 valueNode,
-                this.doc,
+                // this.ast,
                 this.onDuplicateKey,
             )
         }
@@ -809,7 +886,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             for (const { k, v } of list) {
                 if (Object.prototype.hasOwnProperty.call(obj, k)) {
                     // duplicates inside an object literal: treat like duplicates in a section
-                    this.doc.warnings.push(
+                    this.ast.warnings.push(
                         `Duplicate object key '${k}' (keeping first).`,
                     )
                     continue
@@ -918,14 +995,14 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         const value = makeListValue(elems, 'From colon-list')
         const current = this.sectionStack[this.sectionStack.length - 1]
 
-        // putMember(current, key, list, this.doc, this.onDuplicateKey)
-        putMember(
+        // putMember(current, key, list, this.ast, this.onDuplicateKey)
+        this.putMember(
             this.errorHandler!,
             ctx,
             current,
             key,
             value,
-            this.doc,
+            // this.ast,
             this.onDuplicateKey,
         )
         debugPrint('<- About to exit visitColon_list_decl(..)...')

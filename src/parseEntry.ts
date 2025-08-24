@@ -245,8 +245,8 @@ export const parseMain = (
         strictMode: options.isStrict,
         hasTerminal: ast.terminatorSeen,
         hasYINIMarker: ast.yiniMarkerSeen,
-        sections: null, //syntaxTreeC._meta_numOfSections,
-        members: null, //syntaxTreeC._meta_numOfMembers,
+        sections: ast.numOfSections,
+        members: ast.numOfMembers,
         // sectionChains: null, //syntaxTreeC._meta_numOfChains,
         keysParsed: null,
         // timing: {

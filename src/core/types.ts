@@ -3,6 +3,8 @@ export interface IYiniAST {
     terminatorSeen: boolean // Required '/END' in strict mode.
     yiniMarkerSeen: boolean
     isStrict: boolean
+    numOfSections: number | null
+    numOfMembers: number | null
     errors: string[] // @deprecated
     warnings: string[] // @deprecated
 }
