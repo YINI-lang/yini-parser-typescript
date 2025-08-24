@@ -1,7 +1,6 @@
 import { isDebug } from '../config/env'
-import { TValueLiteral } from '../core/types'
+import { IYiniAST, IYiniSection, TValueLiteral } from '../core/types'
 import { debugPrint, printObject, toPrettyJSON } from '../utils/print'
-import { YiniDocument, YiniSection } from './ASTBuilder'
 import { ErrorDataHandler } from './ErrorDataHandler'
 
 /**
@@ -14,7 +13,7 @@ import { ErrorDataHandler } from './ErrorDataHandler'
  * @note All `tag` fields MUST be ignored.
  */
 export const astToObject = (
-    ast: YiniDocument,
+    ast: IYiniAST,
     errorHandler: ErrorDataHandler,
     // ): TJSObject => {
 ): Record<string, unknown> => {
@@ -59,7 +58,7 @@ export const astToObject = (
  * Convert a section (members + nested sections) to a plain
  * object, preserving order.
  */
-const sectionToObject = (node: YiniSection): Record<string, unknown> => {
+const sectionToObject = (node: IYiniSection): Record<string, unknown> => {
     const obj: Record<string, unknown> = {}
 
     // 1) Members (Map preserves insertion order).

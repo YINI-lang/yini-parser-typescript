@@ -45,35 +45,18 @@ import {
 } from '../yiniHelpers'
 import { ErrorDataHandler } from './ErrorDataHandler'
 import {
+    IBuildOptions,
     IChainContainer,
     IParseMainOptions,
     ISectionResult,
+    IYiniAST,
+    IYiniSection,
     TListValue,
     TScalarValue,
     TSyntaxTree,
     TSyntaxTreeContainer,
     TValueLiteral,
 } from './types'
-
-export interface YiniSection {
-    sectionName: string
-    level: number // 1..n
-    members: Map<string, TValueLiteral> // Members at this section.
-    children: YiniSection[] // Children sections (on the next level) of the current section.
-}
-
-export interface YiniDocument {
-    root: YiniSection // Implicit root per spec impl. notes.
-    terminatorSeen: boolean // '/END' in strict mode
-    isStrict: boolean
-    errors: string[]
-    warnings: string[]
-}
-
-export interface BuildOptions {
-    mode?: 'lenient' | 'strict' // default: lenient
-    onDuplicateKey?: 'error' | 'warn' | 'keep-first' | 'overwrite' // default: warn
-}
 
 // -----------------------
 
@@ -153,7 +136,7 @@ function trimQuotes(text: string): string {
     return text
 }
 
-function makeSection(name: string, level: number): YiniSection {
+function makeSection(name: string, level: number): IYiniSection {
     return { sectionName: name, level, members: new Map(), children: [] }
 }
 
@@ -193,9 +176,9 @@ function parseSectionHeadToken(raw: string): { level: number; name: string } {
 
 /** Attach a section to the stack respecting up/down moves (Spec 5.3). :contentReference[oaicite:7]{index=7} */
 function attachSection(
-    stack: YiniSection[],
-    section: YiniSection,
-    doc: YiniDocument,
+    stack: IYiniSection[],
+    section: IYiniSection,
+    doc: IYiniAST,
 ) {
     const targetLevel = section.level
     if (targetLevel <= 0) {
@@ -216,11 +199,11 @@ function attachSection(
 function putMember(
     errorHandler: ErrorDataHandler,
     ctx: any,
-    sec: YiniSection,
+    sec: IYiniSection,
     key: string,
     value: TValueLiteral,
-    doc: YiniDocument,
-    mode: BuildOptions['onDuplicateKey'] = 'warn',
+    doc: IYiniAST,
+    mode: IBuildOptions['onDuplicateKey'] = 'warn',
 ) {
     isDebug() && console.log()
     debugPrint('-> Entered putMember(..)')
@@ -274,9 +257,9 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     private readonly isStrict: boolean
 
     // private readonly mode: 'lenient' | 'strict'
-    private readonly onDuplicateKey: BuildOptions['onDuplicateKey']
-    private doc: YiniDocument
-    private sectionStack: YiniSection[]
+    private readonly onDuplicateKey: IBuildOptions['onDuplicateKey']
+    private doc: IYiniAST
+    private sectionStack: IYiniSection[]
 
     private meta_hasYiniMarker = false // For stats.
     private meta_numOfSections = 0 // For stats.
@@ -284,7 +267,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     // private meta_numOfChains = 0 // For stats.
     private meta_maxLevelSection = 0 // For stats.
 
-    // constructor(opts: BuildOptions = {}) {
+    // constructor(opts: IBuildOptions = {}) {
     constructor(errorHandler: ErrorDataHandler, options: IParseMainOptions) {
         super()
         this.errorHandler = errorHandler
@@ -300,6 +283,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         this.doc = {
             root,
             terminatorSeen: false,
+            yiniMarkerSeen: false,
             isStrict: this.isStrict,
             errors: [],
             warnings: [],
@@ -308,7 +292,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     }
 
     // Public entry
-    public buildAST(ctx: YiniContext): YiniDocument {
+    public buildAST(ctx: YiniContext): IYiniAST {
         this.visitYini?.(ctx)
         // Enforce strict-mode terminator rule (/END required) (Spec 12.3). :contentReference[oaicite:8]{index=8}
         if (this.isStrict && !this.doc.terminatorSeen) {
@@ -355,6 +339,28 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
      */
     // visitTerminal_stmt?: (ctx: Terminal_stmtContext) => Result;
     visitTerminal_stmt = (ctx: Terminal_stmtContext): any => {
+        debugPrint('-> Entered visitTerminal_stmt(..)')
+        const rawText: string = ctx.getText().trim()
+        debugPrint('rawText = "' + rawText + '"')
+
+        if (rawText.toLowerCase() !== '/end') {
+            this.errorHandler!.pushOrBail(
+                ctx,
+                'Syntax-Error',
+                'Encountered unknow syntax for terminator.',
+                `Got '${rawText}', but expected '/END' (case insensitive).`,
+            )
+        } else {
+            if (this.doc.terminatorSeen) {
+                this.errorHandler!.pushOrBail(
+                    ctx,
+                    'Syntax-Warning',
+                    'Hit a duplicate terminator in document',
+                    `'${rawText}' already exists in this file, there must only be one terminator at the end of file ('/END').`,
+                )
+            }
+        }
+
         this.doc.terminatorSeen = true
         return null
     }
@@ -406,7 +412,29 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
      */
     // visitMarker_stmt?: (ctx: Marker_stmtContext) => Result
     visitMarker_stmt = (ctx: Marker_stmtContext): any => {
+        debugPrint('-> Entered visitMarker_stmt(..)')
+        const rawText: string = ctx.getText().trim()
+        debugPrint('rawText = "' + rawText + '"')
+
+        if (rawText.toLowerCase() !== '@yini') {
+            this.errorHandler!.pushOrBail(
+                ctx,
+                'Syntax-Error',
+                'Encountered unknow syntax for YINI Marker.',
+                `Got '${rawText}', but expected '@YINI' (case insensitive).`,
+            )
+        } else {
+            if (this.doc.yiniMarkerSeen) {
+                this.errorHandler!.pushOrBail(
+                    ctx,
+                    'Syntax-Warning',
+                    'Hit a duplicate YINI Marker in document',
+                    `'${rawText}' already exists in this file, it's enough with only one YINI Marker ('@YINI').`,
+                )
+            }
+        }
         // @yini marker is advisory (no semantic value) per spec. We ignore it. (Spec 2.4) :contentReference[oaicite:9]{index=9}
+        this.doc.yiniMarkerSeen = true
         return null
     }
 

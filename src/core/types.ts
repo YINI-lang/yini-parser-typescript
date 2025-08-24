@@ -1,37 +1,23 @@
-/*
-    A Full Nested Linear Branch - (in tree data structures):
-    - A branch in a tree where each section has at most one nested section at each level (never more at each level).
-    - Forms a straight path: each section (node) has exactly one nested section, and this continues through multiple levels—like a linked chain.
-    - If a section has a nested section, the nesting must form a direct sequence. For example: Section level 3 → Section level 4 → Section level 5, and so on.
-    - Can be any branch within a tree (not just the root), or even the whole tree in some cases.
-    - Each section includes its own members at that level.
-    - Represents a single path from the starting section to the last (deepest) nested section.
-    - In other words, it’s a branch that forms a continuous, unbranched sequence of nested sections.
-    
-    Example:
-    "
-^ Section1
-sValue = 1
-    ^^ Section11
-    sValue = 11
-    bValue = OFF
-^ Section2
-sValue = 2
-        "
+export interface IYiniAST {
+    root: IYiniSection // Implicit root per spec.
+    terminatorSeen: boolean // Required '/END' in strict mode.
+    yiniMarkerSeen: boolean
+    isStrict: boolean
+    errors: string[] // @deprecated
+    warnings: string[] // @deprecated
+}
 
-    Has two Nested Linear Branches:
-    1:
-    ^ Section1
-    sValue = 1
-        ^^ Section11
-        sValue = 11
-        bValue = OFF
-    
-    2: 
-    ^ Section2
-    sValue = 2
-    
- */
+export interface IYiniSection {
+    sectionName: string
+    level: number // 1..n
+    members: Map<string, TValueLiteral> // Members at this section.
+    children: IYiniSection[] // Children sections (on the next level) of the current section.
+}
+
+export interface IBuildOptions {
+    mode?: 'lenient' | 'strict' // default: lenient
+    onDuplicateKey?: 'error' | 'warn' | 'keep-first' | 'overwrite' // default: warn
+}
 
 // interface YiniDocument {
 //     // sections: Record<string, any>
@@ -51,11 +37,6 @@ sValue = 2
 //     | 'Object' // Note: Object-literal.
 //     | 'List'
 
-// types.ts
-// export type YiniScalar = {
-//     type: TDataType
-//     value: string | number | boolean | null
-// }
 /**
  * Scalar literal, a single, indivisible piece of data:
  * string, number, boolean, and null.
@@ -161,11 +142,11 @@ export interface IParseMetaData {
     // fullPath?: string
     strictMode: boolean
     hasTerminal: boolean
-    hasYiniMarker: boolean
+    hasYINIMarker: boolean
     sections: null | number
     members: null | number
     keysParsed: null | number
-    sectionChains: null | number
+    // sectionChains: null | number
     diagnostics?: {
         // Includes warnings/errors info.
         bailSensitivityLevel: TBailSensitivityLevel

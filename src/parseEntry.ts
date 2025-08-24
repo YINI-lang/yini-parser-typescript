@@ -8,11 +8,13 @@ import {
 } from 'antlr4'
 import { isDebug, isDev, localAppEnv, localNodeEnv } from './config/env'
 import YiniAstBuilder from './core/ASTBuilder'
+import ASTBuilder from './core/ASTBuilder'
 import { ErrorDataHandler } from './core/ErrorDataHandler'
 import { astToObject } from './core/objectBuilder'
 import {
     IParseMainOptions,
     IParseMetaData,
+    IYiniAST,
     TPersistThreshold,
     TSyntaxTreeContainer,
 } from './core/types'
@@ -176,8 +178,8 @@ export const parseMain = (
     }
 
     // const visitor = new YINIVisitor(errorHandler, options.isStrict)
-    const builder = new YiniAstBuilder(errorHandler, options)
-    const ast = builder.buildAST(parseTree)
+    const builder = new ASTBuilder(errorHandler, options)
+    const ast: IYiniAST = builder.buildAST(parseTree)
     // const syntaxTreeC: TSyntaxTreeContainer = visitor.visit(
     //     parseTree as any,
     // ) as TSyntaxTreeContainer
@@ -241,11 +243,11 @@ export const parseMain = (
     // Construct meta data.
     const metaData: IParseMetaData = {
         strictMode: options.isStrict,
-        hasTerminal: false, //syntaxTreeC._hasTerminal,
-        hasYiniMarker: false, //syntaxTreeC._hasYiniMarker,
+        hasTerminal: ast.terminatorSeen,
+        hasYINIMarker: ast.yiniMarkerSeen,
         sections: null, //syntaxTreeC._meta_numOfSections,
         members: null, //syntaxTreeC._meta_numOfMembers,
-        sectionChains: null, //syntaxTreeC._meta_numOfChains,
+        // sectionChains: null, //syntaxTreeC._meta_numOfChains,
         keysParsed: null,
         // timing: {
         //     totalMs: !options.isWithTiming ? null : totalMs!.toFixed(3),
