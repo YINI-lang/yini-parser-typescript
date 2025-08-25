@@ -185,6 +185,7 @@ function makeSection(name: string, level: number): IYiniSection {
 // export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     private errorHandler: ErrorDataHandler | null = null
+    private readonly options: IParseMainOptions
     private readonly isStrict: boolean
 
     // private readonly mode: 'lenient' | 'strict'
@@ -198,7 +199,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     // private meta_numOfChains = 0 // For stats.
     private meta_maxLevelSection = 0 // For stats.
 
-    private existingSectionTitlesAtLevels: Map<string, boolean>[] = []
+    public mapKeyPath: Map<string, boolean> = new Map<string, boolean>()
 
     // constructor(opts: IBuildOptions = {}) {
     constructor(errorHandler: ErrorDataHandler, options: IParseMainOptions) {
@@ -212,6 +213,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                 'Something in the code is done incorrectly in order for this to happen... :S',
             )
         }
+        this.options = options
 
         this.errorHandler = errorHandler
         this.isStrict = options.isStrict
@@ -230,6 +232,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             isStrict: this.isStrict,
             numOfSections: null,
             numOfMembers: null,
+            memberKeyPaths: null,
             errors: [],
             warnings: [],
         }
@@ -238,26 +241,12 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
 
     // --- Private helper methods --------------------------------
 
-    private hasDefinedSectionTitle = (
-        sectionName: string,
-        level: number,
-    ): boolean => {
-        const mapAtCurrentLevel: Map<string, boolean> =
-            this.existingSectionTitlesAtLevels[level - 1]
-
-        return mapAtCurrentLevel?.has(trimBackticks(sectionName))
+    private hasDefinedSectionTitle = (keyPath: string): boolean => {
+        return this.mapKeyPath?.has(keyPath)
     }
 
-    private setDefineSectionTitle = (sectionName: string, level: number) => {
-        let mapAtCurrentLevel: Map<string, boolean> =
-            this.existingSectionTitlesAtLevels[level - 1]
-
-        if (!mapAtCurrentLevel) {
-            mapAtCurrentLevel = new Map()
-            this.existingSectionTitlesAtLevels[level - 1] = mapAtCurrentLevel
-        }
-
-        mapAtCurrentLevel.set(trimBackticks(sectionName), true)
+    private setDefineSectionTitle = (keyPath: string) => {
+        this.mapKeyPath.set(keyPath, true)
     }
 
     /** Attach a section to the stack respecting up/down moves (Spec 5.3). :contentReference[oaicite:7]{index=7} */
@@ -276,10 +265,15 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         }
 
         // ------------------------------
-        const key = targetLevel + '-' + sectionName
-        debugPrint('KKKKKK, key = ' + key)
+        // const key = targetLevel + '-' + sectionName
+        let keyPath = ''
+        stack.forEach((section) => {
+            keyPath += section.sectionName + '.'
+        })
+        keyPath += sectionName
+        debugPrint('section full path: keyPath = ' + keyPath)
         // if (this.existingSectionTitles.has(key)) {
-        if (this.hasDefinedSectionTitle(key, targetLevel)) {
+        if (this.hasDefinedSectionTitle(keyPath)) {
             this.errorHandler!.pushOrBail(
                 ctx,
                 'Syntax-Error',
@@ -293,7 +287,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                 )
             } else {
                 // this.existingSectionTitles.set(key, true)
-                this.setDefineSectionTitle(key, targetLevel)
+                this.setDefineSectionTitle(keyPath)
                 // printObject(this.existingSectionTitles)
             }
         }
@@ -371,16 +365,12 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             this.errorHandler!.pushOrBail(null, 'Syntax-Error', msgWhat, msgWhy)
         }
 
-        let numOfSections = 0
-        this.existingSectionTitlesAtLevels.forEach(
-            (map: Map<string, boolean>) => {
-                numOfSections += map.size
-            },
-        )
-
-        // Attach collected meta information.
-        this.ast.numOfSections = numOfSections
-        this.ast.numOfMembers = this.meta_numOfMembers
+        if (this.options.isIncludeMeta) {
+            // Attach collected meta information.
+            this.ast.numOfSections = this.mapKeyPath.size
+            this.ast.numOfMembers = this.meta_numOfMembers
+            this.ast.memberKeyPaths = [...this.mapKeyPath.keys()]
+        }
 
         return this.ast
     }

@@ -199,33 +199,32 @@ if (isProdEnv()) {
         //         `
         // Arrange.
         const yini = `
-        @YINI
+        < user
+        username = 'tester two'
+        isSysOp = YES
 
-        /*
+            << prefs
+            theme = "light"
+            notifications = OFF
 
-        Features:
-        - Alternative section marker
-        - Nested sections
-        - Objects
-        - Strings (double quotes)
-        - Numbers, booleans, nulls
+        ^1 user2
+        ^2 prefs
+        ^3 deepSection
+        ^4 deeperSection
+        key = "Level 4 section"
+        ^5 yetDeeperSection
+        key = "Level 5 section"
+        item = 77
 
-        */
+        <1 user3
+        username = 'tester three'
+        isSysOp = NO
 
-        < Database
-        type = "postgres"
-        host = "localhost"
-        port = 5432
-        username = "admin"
-        password = "s3cr3t"
-        db_name = "myapp"
-        pool = { max: 10, min: 2, idle: 10000 }
-
-            << Options
-            ssl = off
-            connection_timeout = 30
-            retry_attempts = 3
-        /enD
+            <2 prefs
+            theme = "special-dark"
+            notifications = ON
+        
+        /end
         `
         console.log(toPrettyJSON(YINI.parse(yini, true, 'auto', true)))
 

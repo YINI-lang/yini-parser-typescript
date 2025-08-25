@@ -249,6 +249,7 @@ export const parseMain = (
         members: ast.numOfMembers,
         // sectionChains: null, //syntaxTreeC._meta_numOfChains,
         keysParsed: null,
+        memberKeyPaths: ast.memberKeyPaths,
         // timing: {
         //     totalMs: !options.isWithTiming ? null : totalMs!.toFixed(3),
         //     phase1Ms: !options.isWithTiming ? null : phase1Ms!.toFixed(3),

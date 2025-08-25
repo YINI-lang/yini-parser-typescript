@@ -1,10 +1,11 @@
 export interface IYiniAST {
     root: IYiniSection // Implicit root per spec.
+    isStrict: boolean
     terminatorSeen: boolean // Required '/END' in strict mode.
     yiniMarkerSeen: boolean
-    isStrict: boolean
     numOfSections: number | null
     numOfMembers: number | null
+    memberKeyPaths: string[] | null
     errors: string[] // @deprecated
     warnings: string[] // @deprecated
 }
@@ -149,6 +150,7 @@ export interface IParseMetaData {
     members: null | number
     keysParsed: null | number
     // sectionChains: null | number
+    memberKeyPaths: string[] | null // All key/access paths to members.
     diagnostics?: {
         // Includes warnings/errors info.
         bailSensitivityLevel: TBailSensitivityLevel
