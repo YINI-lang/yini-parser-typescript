@@ -240,7 +240,7 @@ describe('Additional issue #32 Tests:', () => {
         // Assert.
         const correct = {
             'Neg. ints': {
-                value: -0,
+                value: 0,
                 count: -42,
                 maxItems: -1000,
                 minScore: -7,

@@ -189,14 +189,44 @@ if (isProdEnv()) {
         // }
         //console.log(toPrettyJSON(YINI.parse(yini, false, 'auto', true)))
 
-        const yini = `
-            < SubTitle
-            theme = "special-dark"
-            notifications = ON
+        // const yini = `
+        //     < SubTitle
+        //     theme = "special-dark"
+        //     notifications = ON
 
-            < SubTitle // NOT OK, SubTitle already exists
-            theme2 = "special-dark"
-                `
+        //     < SubTitle // NOT OK, SubTitle already exists
+        //     theme2 = "special-dark"
+        //         `
+        // Arrange.
+        const yini = `
+        @YINI
+
+        /*
+
+        Features:
+        - Alternative section marker
+        - Nested sections
+        - Objects
+        - Strings (double quotes)
+        - Numbers, booleans, nulls
+
+        */
+
+        < Database
+        type = "postgres"
+        host = "localhost"
+        port = 5432
+        username = "admin"
+        password = "s3cr3t"
+        db_name = "myapp"
+        pool = { max: 10, min: 2, idle: 10000 }
+
+            << Options
+            ssl = off
+            connection_timeout = 30
+            retry_attempts = 3
+        /enD
+        `
         console.log(toPrettyJSON(YINI.parse(yini, true, 'auto', true)))
 
         // console.log(

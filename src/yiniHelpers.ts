@@ -49,13 +49,14 @@ export const isMarkerCharacter = (character: string): boolean => {
  * @throws Will throw if consisting more than 1 lines.
  */
 export const stripCommentsAndAfter = (line: string): string => {
-    if (splitLines(line).length > 1) {
-        throw new Error(
-            'Internal error: Detected several row lines in line: >>>' +
-                line +
-                '<<<',
-        )
-    }
+    // if (splitLines(line).length > 1) {
+    //     throw new Error(
+    //         'Internal error: Detected several row lines in line: >>>' +
+    //             line +
+    //             '<<<',
+    //     )
+    // }
+    line = line.split('\n', 1)[0]
 
     let idx1 = line.indexOf('//')
     let idx2 = line.indexOf('# ') // NOTE: (!) Hash comments requires a WS after the hash!
@@ -82,7 +83,7 @@ export const stripCommentsAndAfter = (line: string): string => {
     debugPrint(
         'stripCommentsAndAfter(..), resultLine: >>>' + resultLine + '<<<',
     )
-    return resultLine
+    return resultLine.trim()
 }
 
 /**

@@ -417,17 +417,15 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     // visitTerminal_stmt?: (ctx: Terminal_stmtContext) => Result;
     visitTerminal_stmt = (ctx: Terminal_stmtContext): any => {
         debugPrint('-> Entered visitTerminal_stmt(..)')
-        const rawText: string = ctx.getText().trim()
+        let rawText: string = ctx.getText().trim()
         debugPrint('rawText = "' + rawText + '"')
 
-        if (rawText.toLowerCase() !== '/end') {
-            this.errorHandler!.pushOrBail(
-                ctx,
-                'Syntax-Error',
-                'Encountered unknow syntax for terminator.',
-                `Got '${rawText}', but expected '/END' (case insensitive).`,
-            )
-        } else {
+        // rawText = extractYiniLine(rawText) // Remove possible comments.
+        // rawText = stripCommentsAndAfter(rawText.split('\n', 1)[0]).trim() // Remove possible comments.
+        rawText = stripCommentsAndAfter(rawText) // Remove possible comments.
+        debugPrint('rawText2 = "' + rawText + '"')
+
+        if (rawText.toLowerCase() === '/end') {
             if (this.ast.terminatorSeen) {
                 this.errorHandler!.pushOrBail(
                     ctx,
@@ -436,6 +434,13 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                     `'${rawText}' already exists in this file, there must only be one terminator at the end of file ('/END').`,
                 )
             }
+        } else {
+            this.errorHandler!.pushOrBail(
+                ctx,
+                'Syntax-Error',
+                'Encountered unknow syntax for terminator',
+                `Got '${rawText}', but expected '/END' (case insensitive).`,
+            )
         }
 
         this.ast.terminatorSeen = true
@@ -502,7 +507,10 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                     `Invalid section level transition: from ${currentLevel} to ${sectionLevel} (cannot skip levels).`,
                 )
             }
-            const section = makeSection(sectionName, sectionLevel)
+            const section = makeSection(
+                trimBackticks(sectionName),
+                sectionLevel,
+            )
             this.attachSection(ctx, this.sectionStack, section, this.ast) // respects up/down nesting
             return null
         }
@@ -519,17 +527,14 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     // visitMarker_stmt?: (ctx: Marker_stmtContext) => Result
     visitMarker_stmt = (ctx: Marker_stmtContext): any => {
         debugPrint('-> Entered visitMarker_stmt(..)')
-        const rawText: string = ctx.getText().trim()
+        let rawText: string = ctx.getText().trim()
         debugPrint('rawText = "' + rawText + '"')
 
-        if (rawText.toLowerCase() !== '@yini') {
-            this.errorHandler!.pushOrBail(
-                ctx,
-                'Syntax-Error',
-                'Encountered unknow syntax for YINI Marker.',
-                `Got '${rawText}', but expected '@YINI' (case insensitive).`,
-            )
-        } else {
+        // rawText = stripCommentsAndAfter(rawText.split('\n', 1)[0]).trim() // Remove possible comments.
+        rawText = stripCommentsAndAfter(rawText) // Remove possible comments.
+        debugPrint('rawText2 = "' + rawText + '"')
+
+        if (rawText.toLowerCase() === '@yini') {
             if (this.ast.yiniMarkerSeen) {
                 this.errorHandler!.pushOrBail(
                     ctx,
@@ -538,6 +543,13 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                     `'${rawText}' already exists in this file, it's enough with only one YINI Marker ('@YINI').`,
                 )
             }
+        } else {
+            this.errorHandler!.pushOrBail(
+                ctx,
+                'Syntax-Error',
+                'Encountered unknow syntax for YINI Marker',
+                `Got '${rawText}', but expected '@YINI' (case insensitive).`,
+            )
         }
         // @yini marker is advisory (no semantic value) per spec. We ignore it. (Spec 2.4) :contentReference[oaicite:9]{index=9}
         this.ast.yiniMarkerSeen = true
