@@ -22,6 +22,8 @@ import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
 import { debugPrint, printObject } from './utils/print'
 
+const pkg = require('../package.json')
+
 class MyParserErrorListener implements ErrorListener<any> {
     public errors: string[] = []
     private errorHandler: ErrorDataHandler
@@ -242,14 +244,15 @@ export const parseMain = (
 
     // Construct meta data.
     const metaData: IParseMetaData = {
+        parserVersion: pkg.version,
         strictMode: options.isStrict,
-        hasTerminal: ast.terminatorSeen,
+        hasDocumentTerminator: ast.terminatorSeen,
         hasYINIMarker: ast.yiniMarkerSeen,
-        sections: ast.numOfSections,
-        members: ast.numOfMembers,
+        sectionCount: ast.numOfSections,
+        memberCount: ast.numOfMembers,
         // sectionChains: null, //syntaxTreeC._meta_numOfChains,
         keysParsed: null,
-        memberKeyPaths: ast.memberKeyPaths,
+        sectionNamePaths: ast.sectionNamePaths,
         // timing: {
         //     totalMs: !options.isWithTiming ? null : totalMs!.toFixed(3),
         //     phase1Ms: !options.isWithTiming ? null : phase1Ms!.toFixed(3),
@@ -261,34 +264,33 @@ export const parseMain = (
         // Attach optional diagnostics.
         metaData.diagnostics = {
             bailSensitivityLevel: options.bailSensitivityLevel,
-            errors: errorHandler.getNumOfErrors(),
-            warnings: errorHandler.getNumOfWarnings(),
-            infoAndNotices: errorHandler.getNumOfInfoAndNotices(),
-            envs: {
+            errorCount: errorHandler.getNumOfErrors(),
+            warningCount: errorHandler.getNumOfWarnings(),
+            infoAndNoticeCount: errorHandler.getNumOfInfoAndNotices(),
+            environment: {
                 NODE_ENV: process.env.NODE_ENV,
                 APP_ENV: process.env.APP_ENV,
-                libNodeEnv: localNodeEnv,
-                libAppEnv: localAppEnv,
-            },
-            libFlags: {
-                isDev: isDev(),
-                isDebug: isDebug(),
+                lib: {
+                    nodeEnv: localNodeEnv,
+                    appEnv: localAppEnv,
+                    flags: { isDev: isDev(), isDebug: isDebug() },
+                },
             },
         }
     }
     if (options.isWithTiming) {
-        // Attach optional timing data.
-        metaData.timing = {
-            totalMs: !options.isWithTiming
+        // Attach optional durations timing data.
+        metaData.timingMs = {
+            total: !options.isWithTiming
                 ? null
                 : Number.parseFloat((timeEnd3Ms - timeStartMs).toFixed(3) + ''),
-            phase1Ms: !options.isWithTiming
+            phase1: !options.isWithTiming
                 ? null
                 : Number.parseFloat((timeEnd1Ms - timeStartMs).toFixed(3) + ''),
-            phase2Ms: !options.isWithTiming
+            phase2: !options.isWithTiming
                 ? null
                 : Number.parseFloat((timeEnd2Ms - timeEnd1Ms).toFixed(3) + ''),
-            phase3Ms: !options.isWithTiming
+            phase3: !options.isWithTiming
                 ? null
                 : Number.parseFloat((timeEnd3Ms - timeEnd2Ms).toFixed(3) + ''),
         }

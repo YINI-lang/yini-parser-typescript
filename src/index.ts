@@ -199,32 +199,110 @@ if (isProdEnv()) {
         //         `
         // Arrange.
         const yini = `
-        < user
-        username = 'tester two'
-        isSysOp = YES
+        @yini
+        // Example: Strict-friendly YINI document (no trailing commas, explicit /END)
 
-            << prefs
-            theme = "light"
-            notifications = OFF
+        ^ App
+        name = 'YINI Demo Service'
+        version = '1.4.0'
+        description = 'Demo service for showcasing the YINI format'
+        owners = ['dev-team', 'ops-team']
 
-        ^1 user2
-        ^2 prefs
-        ^3 deepSection
-        ^4 deeperSection
-        key = "Level 4 section"
-        ^5 yetDeeperSection
-        key = "Level 5 section"
-        item = 77
+        // String concatenation (the '+' joins adjacent STRING tokens)
+--        longNote = 'This text is split across ' +
+--                    'two strings and then concatenated.'
 
-        <1 user3
-        username = 'tester three'
-        isSysOp = NO
+        // Case-insensitive booleans
+        enabled = YES
+        experimentalMode = off
 
-            <2 prefs
-            theme = "special-dark"
-            notifications = ON
-        
-        /end
+        // Numbers (ints, floats, scientific)
+        retries = 3
+        requestTimeoutMs = 2500
+        backoffFactor = 1.25
+        maxPayloadMB = 1.0e2
+
+        ^ Server
+        host = '127.0.0.1'
+        port = 8080
+        useTLS = false
+
+        ^^ CORS
+            allowedOrigins: 'https://example.com', 'https://admin.example.com'
+            allowCredentials = true
+
+        ^^ Headers
+            // Object literal with key:value pairs
+            defaults = {
+            \`X-Frame-Options\`: 'DENY',
+            \`X-Content-Type-Options\`: 'nosniff'
+            }
+
+        ^ Database
+        engine = 'postgres'
+        host = 'db.internal'
+        port = 5432
+        username = 'app_user'
+        password = 'change_me'
+        pool = {
+            min: 2,
+            max: 16
+        }
+
+        ^^ Replicas
+            // Colon-form list (values only)
+            endpoints: 'db-replica-1.internal', 'db-replica-2.internal'
+            readPreference = 'nearest'
+
+        ^ Features
+        // Mixed data types
+        betaFlags = ['new-ui', 'fast-path']
+        darkLaunch = NO
+        uploadLimitMB = 128
+
+        ^ Integrations
+        // List of objects
+        webhooks = [
+            { name: 'audit', url: 'https://hooks.example.com/audit',  active: true },
+            { name: 'metrics', url: 'https://hooks.example.com/metric', active: true }
+        ]
+
+        ^ Users
+        // Simple table-ish list using colon form
+        admins: 'alice', 'bob', 'carol'
+        reviewers: 'dave', 'erin'
+
+        ^^ Profiles
+            // Object-of-objects
+            alice = {
+            email: 'alice@example.com',
+            roles: ['admin', 'dev'],
+            mfa: true
+            }
+            bob = {
+            email: 'bob@example.com',
+            roles: ['admin'],
+            mfa: false
+            }
+
+        ^ Paths
+        logs = '/var/log/yini-demo/'
+        data = '/srv/yini-demo/data'
+
+        ^^ Backups
+            // Empty value -> null in lenient mode; in strict mode, supply explicit null:
+            lastFull = null
+            targets: '/mnt/backup1', '/mnt/backup2'
+
+        ^ Security
+        allowedIPs: '10.0.0.0/24', '10.1.0.0/24'
+
+        ^ Logging
+        level = 'info'
+        format = 'json'
+        sinks = ['stdout']
+
+        /END
         `
         console.log(toPrettyJSON(YINI.parse(yini, true, 'auto', true)))
 

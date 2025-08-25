@@ -5,7 +5,7 @@ export interface IYiniAST {
     yiniMarkerSeen: boolean
     numOfSections: number | null
     numOfMembers: number | null
-    memberKeyPaths: string[] | null
+    sectionNamePaths: string[] | null
     errors: string[] // @deprecated
     warnings: string[] // @deprecated
 }
@@ -143,36 +143,36 @@ export interface IParseMainOptions {
 
 export interface IParseMetaData {
     // fullPath?: string
+    parserVersion: string
     strictMode: boolean
-    hasTerminal: boolean
+    hasDocumentTerminator: boolean
     hasYINIMarker: boolean
-    sections: null | number
-    members: null | number
+    sectionCount: null | number // Section '(root)' not included.
+    memberCount: null | number
     keysParsed: null | number
     // sectionChains: null | number
-    memberKeyPaths: string[] | null // All key/access paths to members.
+    sectionNamePaths: string[] | null // All key/access paths to members.
     diagnostics?: {
         // Includes warnings/errors info.
         bailSensitivityLevel: TBailSensitivityLevel
-        errors: null | number
-        warnings: null | number
-        infoAndNotices: null | number
-        envs: {
+        errorCount: null | number
+        warningCount: null | number
+        infoAndNoticeCount: null | number
+        environment: {
             NODE_ENV: undefined | string
             APP_ENV: undefined | string
-            libNodeEnv: undefined | string
-            libAppEnv: undefined | string
-        }
-        libFlags: {
-            isDev: boolean
-            isDebug: boolean
+            lib: {
+                nodeEnv: undefined | string
+                appEnv: undefined | string
+                flags: { isDev: boolean; isDebug: boolean }
+            }
         }
     }
-    timing?: {
-        totalMs: null | number
-        phase1Ms: null | number
-        phase2Ms: null | number
-        phase3Ms: null | number
+    timingMs?: {
+        total: null | number
+        phase1: null | number
+        phase2: null | number
+        phase3: null | number
     }
 }
 

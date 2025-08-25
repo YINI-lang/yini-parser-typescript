@@ -199,7 +199,10 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     // private meta_numOfChains = 0 // For stats.
     private meta_maxLevelSection = 0 // For stats.
 
-    public mapKeyPath: Map<string, boolean> = new Map<string, boolean>()
+    public mapSectionNamePaths: Map<string, boolean> = new Map<
+        string,
+        boolean
+    >()
 
     // constructor(opts: IBuildOptions = {}) {
     constructor(errorHandler: ErrorDataHandler, options: IParseMainOptions) {
@@ -232,7 +235,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             isStrict: this.isStrict,
             numOfSections: null,
             numOfMembers: null,
-            memberKeyPaths: null,
+            sectionNamePaths: null,
             errors: [],
             warnings: [],
         }
@@ -242,11 +245,11 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     // --- Private helper methods --------------------------------
 
     private hasDefinedSectionTitle = (keyPath: string): boolean => {
-        return this.mapKeyPath?.has(keyPath)
+        return this.mapSectionNamePaths?.has(keyPath)
     }
 
     private setDefineSectionTitle = (keyPath: string) => {
-        this.mapKeyPath.set(keyPath, true)
+        this.mapSectionNamePaths.set(keyPath, true)
     }
 
     /** Attach a section to the stack respecting up/down moves (Spec 5.3). :contentReference[oaicite:7]{index=7} */
@@ -367,9 +370,9 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
 
         if (this.options.isIncludeMeta) {
             // Attach collected meta information.
-            this.ast.numOfSections = this.mapKeyPath.size
+            this.ast.numOfSections = this.mapSectionNamePaths.size
             this.ast.numOfMembers = this.meta_numOfMembers
-            this.ast.memberKeyPaths = [...this.mapKeyPath.keys()]
+            this.ast.sectionNamePaths = [...this.mapSectionNamePaths.keys()]
         }
 
         return this.ast
