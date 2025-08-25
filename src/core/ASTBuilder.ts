@@ -863,7 +863,10 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         // debugPrint('entries.length = ' + ctx?.object_members())
         // printObject(ctx)
 
-        const entries = this.visitObject_members(ctx?.object_members())
+        // const entries = this.visitObject_members(ctx?.object_members())
+        const entries = ctx.object_members()
+            ? this.visitObject_members(ctx.object_members())
+            : {}
         const value = makeObjectValue(entries)
 
         debugPrint('<- About to exit visitObject_literal(..)...')
