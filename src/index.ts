@@ -289,10 +289,12 @@ if (isProdEnv()) {
         logs = '/var/log/yini-demo/'
         data = '/srv/yini-demo/data'
 
-        ^^ Backups
+        ^^ \`Backups\`
             // Empty value -> null in lenient mode; in strict mode, supply explicit null:
             lastFull = null
             targets: '/mnt/backup1', '/mnt/backup2'
+        ^^^ Backups2
+            value = 23
 
         ^ Security
         allowedIPs: '10.0.0.0/24', '10.1.0.0/24'

@@ -199,10 +199,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     // private meta_numOfChains = 0 // For stats.
     private meta_maxLevelSection = 0 // For stats.
 
-    public mapSectionNamePaths: Map<string, boolean> = new Map<
-        string,
-        boolean
-    >()
+    public mapSectionNamePaths: Map<string, number> = new Map<string, number>()
 
     // constructor(opts: IBuildOptions = {}) {
     constructor(errorHandler: ErrorDataHandler, options: IParseMainOptions) {
@@ -228,6 +225,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         }
 
         const root = makeSection('(root)', 0)
+        // this.mapSectionNamePaths.set('(root)', 0)
         this.ast = {
             root,
             terminatorSeen: false,
@@ -248,8 +246,8 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         return this.mapSectionNamePaths?.has(keyPath)
     }
 
-    private setDefineSectionTitle = (keyPath: string) => {
-        this.mapSectionNamePaths.set(keyPath, true)
+    private setDefineSectionTitle = (keyPath: string, level: number) => {
+        this.mapSectionNamePaths.set(keyPath, level)
     }
 
     /** Attach a section to the stack respecting up/down moves (Spec 5.3). :contentReference[oaicite:7]{index=7} */
@@ -268,14 +266,21 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         }
 
         // ------------------------------
-        // const key = targetLevel + '-' + sectionName
+        // Construct section name path.
         let keyPath = ''
-        stack.forEach((section) => {
-            keyPath += section.sectionName + '.'
-        })
-        keyPath += sectionName
+        let i = targetLevel - 1
+        for (const [key, value] of Array.from(
+            this.mapSectionNamePaths.entries(),
+        ).reverse()) {
+            if (value === i) {
+                keyPath += key + '.'
+                break
+            }
+        }
+        keyPath += sectionName // Append current section name last.
         debugPrint('section full path: keyPath = ' + keyPath)
-        // if (this.existingSectionTitles.has(key)) {
+        // ------------------------------
+
         if (this.hasDefinedSectionTitle(keyPath)) {
             this.errorHandler!.pushOrBail(
                 ctx,
@@ -290,7 +295,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                 )
             } else {
                 // this.existingSectionTitles.set(key, true)
-                this.setDefineSectionTitle(keyPath)
+                this.setDefineSectionTitle(keyPath, targetLevel)
                 // printObject(this.existingSectionTitles)
             }
         }
