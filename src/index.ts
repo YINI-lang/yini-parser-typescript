@@ -197,24 +197,20 @@ if (isProdEnv()) {
             < SubTitle // NOT OK, SubTitle already exists
             theme2 = "special-dark"
                 `
-        console.log(toPrettyJSON(YINI.parse(yini, false, 'auto', true)))
+        console.log(toPrettyJSON(YINI.parse(yini, true, 'auto', true)))
 
         // console.log(
-        //     toPrettyJSON(YINI.parseFile('comprehensive-example.yini', true)),
+        //     toPrettyJSON(
+        //         YINI.parseFile(
+        //             'comprehensive-example.yini',
+        //             false,
+        //             'auto',
+        //             true,
+        //         ),
+        //     ),
         // )
 
         // const fileName = './tests/fixtures/valid/common/common-config-2.yini'
         // YINI.parseFile(fileName, false)
-
-        //         parseUntilError(`
-        // ^ Section1
-        //             ^^ Section2
-        //             ^^^ Section3
-        //             ^^^^ Section4  // Level 4.
-        //             ^^^^^ Section5
-        //             ^^^^^^ Section6
-        //             ^^^^^^^ Section7
-        //             strVar = "These section header are valid!"
-        //     `)
     }
 }

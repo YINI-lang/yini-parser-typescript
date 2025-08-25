@@ -1,7 +1,7 @@
 import { isDebug } from '../config/env'
 import { ErrorDataHandler } from '../core/ErrorDataHandler'
 import { TSectionHeaderType } from '../core/types'
-import { SectionContext } from '../grammar/YiniParser'
+import { StmtContext } from '../grammar/YiniParser'
 import { debugPrint } from '../utils/print'
 import { trimBackticks } from '../utils/string'
 import { isMarkerCharacter } from '../yiniHelpers'
@@ -26,13 +26,14 @@ import { extractYiniLine } from './extractSignificantYiniLine'
  * - Backticked identifiers must be on a single line and must not contain tabs or new lines unless using escaping codes, except for ordinary spaces.
  * - Special control characters (U+0000–U+001F) must be escaped.
  *
+ * @note Implemented without regexp to keep it less cryptic, etc.
  * @note Returns the parts as strings; each part needs to be analyzed separately against the contraints in the specifications.
  * @returns An object with the identified header parts: marker characters, parsed name, and parsed level string.
  */
 const extractHeaderParts = (
     rawLine: string,
     errorHandler: ErrorDataHandler | null = null,
-    ctx: SectionContext | null = null, // For error reporting.
+    ctx: StmtContext | null = null, // For error reporting.
     // ): TSectionHeaderType | TErrorDetectMarkerType => {
 ): {
     strMarkerChars: string

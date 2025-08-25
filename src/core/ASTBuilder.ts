@@ -143,36 +143,36 @@ function makeSection(name: string, level: number): IYiniSection {
 /** Parse SECTION_HEAD token text → {level, name}.
  * Supports repeated markers (^^^^) and shorthand (^7) (Spec 5.2–5.3.1). :contentReference[oaicite:5]{index=5}:contentReference[oaicite:6]{index=6}
  */
-function parseSectionHeadToken(raw: string): { level: number; name: string } {
-    // SECTION_HEAD token text includes: optional WS, marker(s) or shorthand, WS, IDENT (possibly backticked), NL+
-    // We only need the visible line content up to NL.
-    const line = raw.split(/\r?\n/)[0]
+// function parseSectionHeadToken(raw: string): { level: number; name: string } {
+//     // SECTION_HEAD token text includes: optional WS, marker(s) or shorthand, WS, IDENT (possibly backticked), NL+
+//     // We only need the visible line content up to NL.
+//     const line = raw.split(/\r?\n/)[0]
 
-    // Extract marker block and name
-    // Examples: "^^ Section", "^7 `Section name`", "< MySection"
-    const m = line.match(/^\s*([\^<§€]+|\^|\<|§|€)(\d+)?[ \t]+(.+?)\s*$/)
-    if (m) {
-        const markerRun = m[1]
-        const numeric = m[2]
-        let level: number
-        if (numeric) {
-            level = parseInt(numeric, 10)
-        } else {
-            // count repeated marker chars (^^^^)
-            level = markerRun.length
-        }
+//     // Extract marker block and name
+//     // Examples: "^^ Section", "^7 `Section name`", "< MySection"
+//     const m = line.match(/^\s*([\^<§€]+|\^|\<|§|€)(\d+)?[ \t]+(.+?)\s*$/)
+//     if (m) {
+//         const markerRun = m[1]
+//         const numeric = m[2]
+//         let level: number
+//         if (numeric) {
+//             level = parseInt(numeric, 10)
+//         } else {
+//             // count repeated marker chars (^^^^)
+//             level = markerRun.length
+//         }
 
-        // Section name may be backticked: `Name with spaces`
-        let name = m[3]
-        if (name.startsWith('`') && name.endsWith('`')) {
-            name = name.slice(1, -1)
-        }
-        return { level, name }
-    }
+//         // Section name may be backticked: `Name with spaces`
+//         let name = m[3]
+//         if (name.startsWith('`') && name.endsWith('`')) {
+//             name = name.slice(1, -1)
+//         }
+//         return { level, name }
+//     }
 
-    // Fallback: be defensive
-    return { level: 1, name: line.trim() }
-}
+//     // Fallback: be defensive
+//     return { level: 1, name: line.trim() }
+// }
 
 // Builder Visitor -----------------------------------------------------
 /**
@@ -462,18 +462,47 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             return this.visitMarker_stmt?.(child)
 
         // SECTION_HEAD is a token (no sub-rule class)
-        const text = child.getText?.() ?? ''
-        if (text && /\^|<|§|€/.test(text)) {
-            const { level, name } = parseSectionHeadToken(text)
+        // const text = child.getText?.() ?? ''
+        // if (text && /\^|<|§|€/.test(text)) {
+        //     const { level, name } = parseSectionHeadToken(text)
+        //     // Validate level sequencing per spec 5.3 (no skipping upward)
+        //     const currentLevel =
+        //         this.sectionStack[this.sectionStack.length - 1].level
+        //     if (level > currentLevel + 1) {
+        //         this.ast.errors.push(
+        //             `Invalid section level transition: from ${currentLevel} to ${level} (cannot skip levels).`,
+        //         )
+        //     }
+        //     const section = makeSection(name, level)
+        //     this.attachSection(ctx, this.sectionStack, section, this.ast) // respects up/down nesting
+        //     return null
+        // }
+        debugPrint('S1')
+        // let headerAlt = child.getText?.() ?? ''
+        // let header = ctx.SECTION_HEAD()?.getText().trim() || ''
+        let header = ctx.SECTION_HEAD()?.getText().trim() || ''
+        // debugPrint('S2, lineAlt: >>>' + lineAlt + '<<<')
+        debugPrint('S2, header: >>>' + header + '<<<')
+        header = extractYiniLine(header)
+        debugPrint('S3, header: >>>' + header + '<<<')
+
+        // if (header && /\^|<|§|€/.test(header)) {
+        if (!!header) {
+            // const { level, name } = parseSectionHeadToken(line)
+            const { sectionName, sectionLevel } = parseSectionHeader(
+                header,
+                this.errorHandler!,
+                ctx,
+            )
             // Validate level sequencing per spec 5.3 (no skipping upward)
             const currentLevel =
                 this.sectionStack[this.sectionStack.length - 1].level
-            if (level > currentLevel + 1) {
+            if (sectionLevel > currentLevel + 1) {
                 this.ast.errors.push(
-                    `Invalid section level transition: from ${currentLevel} to ${level} (cannot skip levels).`,
+                    `Invalid section level transition: from ${currentLevel} to ${sectionLevel} (cannot skip levels).`,
                 )
             }
-            const section = makeSection(name, level)
+            const section = makeSection(sectionName, sectionLevel)
             this.attachSection(ctx, this.sectionStack, section, this.ast) // respects up/down nesting
             return null
         }

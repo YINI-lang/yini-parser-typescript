@@ -395,38 +395,6 @@ export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
             debugPrint('Section content: ' + ctx.getText())
 
             line = extractYiniLine(sectionContent)
-            //     const contentLines = splitLines(sectionContent)
-            //     if (isDebug()) {
-            //         console.log('contentLines:')
-            //         printObject(contentLines)
-            //     }
-
-            //     // contentLines.forEach((row: string) => {
-            //     for (let row of contentLines) {
-            //         debugPrint('---')
-            //         debugPrint('row (a): >>>' + row + '<<<')
-            //         row = stripNLAndAfter(row)
-            //         debugPrint('row (b): >>>' + row + '<<<')
-            //         row = stripCommentsAndAfter(row)
-            //         debugPrint('row (c): >>>' + row + '<<<')
-            //         row = row.trim()
-            //         debugPrint('row (d): >>>' + row + '<<<')
-            //         if (row) {
-            //             debugPrint(
-            //                 'Found some content in split row (non-comments).',
-            //             )
-            //             debugPrint('Split row: >>>' + row + '<<<')
-
-            //             // Use this as input in line.
-            //             line = row
-            //             debugPrint('Will use row as line input')
-            //             break
-            //         }
-            //     }
-            //     debugPrint(
-            //         '--- End: parse line from section content-----------------',
-            //     )
-            //     debugPrint()
         }
         debugPrint('S4, line: >>>' + line + '<<<')
 

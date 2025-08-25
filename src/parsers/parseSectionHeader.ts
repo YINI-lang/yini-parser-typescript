@@ -1,7 +1,7 @@
 import { isDebug } from '../config/env'
 import { ErrorDataHandler } from '../core/ErrorDataHandler'
 import { TSectionHeaderType } from '../core/types'
-import { SectionContext } from '../grammar/YiniParser'
+import { StmtContext } from '../grammar/YiniParser'
 import extractHeaderParts from '../parsers/extractHeaderParts'
 import { extractYiniLine } from '../parsers/extractSignificantYiniLine'
 import { debugPrint } from '../utils/print'
@@ -11,11 +11,12 @@ import { isValidBacktickedIdent, isValidSimpleIdent } from '../yiniHelpers'
 /**
  * Extract ...
  * @param rawLine Raw line with the section header.
+ * @note Implemented without regexp to keep it less cryptic, etc.
  */
 const parseSectionHeader = (
     rawLine: string,
     errorHandler: ErrorDataHandler,
-    ctx: null | SectionContext, // For error reporting.
+    ctx: null | StmtContext, // For error reporting.
 ): {
     markerType: TSectionHeaderType // Header marker type.
     sectionName: string
