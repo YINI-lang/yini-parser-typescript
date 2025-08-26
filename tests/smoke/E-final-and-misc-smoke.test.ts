@@ -45,7 +45,6 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
     test('2. Parsing inline, and returning with meta data, with correct object.', () => {
         // Arrange.
         const validYini = `
-            @yini
 
             ^ General
             title = 'My Prog Title'
@@ -74,7 +73,10 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         }
         expect(toPrettyJSON(metaResult.result)).toEqual(toPrettyJSON(answer))
         expect(metaResult.meta.strictMode).toEqual(false)
-        expect(metaResult.meta.hasTerminal).toEqual(false)
+        expect(metaResult.meta.hasDocumentTerminator).toEqual(false)
+        expect(metaResult.meta.hasYINIMarker).toEqual(false)
+        expect(metaResult.meta.sectionHeaderCount).toEqual(2)
+        expect(metaResult.meta.sectionMemberCount).toEqual(5)
     })
 
     test('3. Parsing inline in strict mode + has all commenting styles, returning with meta data, should return correct object.', () => {
@@ -95,6 +97,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                 ^^ Database
                 host = "db.example.com"
                 port = 3306
+                root = { user: 'admin', password: ''}
                 user = "appuser"
                 --password = "dbpassword"  # Old, save for now.
                 //password = "dbpassword"  # Not sure yet about this pw.
@@ -127,6 +130,10 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                 Database: {
                     host: 'db.example.com',
                     port: 3306,
+                    root: {
+                        user: 'admin',
+                        password: '',
+                    },
                     user: 'appuser',
                     password: 'dbpassword',
                     Pool: {
@@ -144,7 +151,10 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         }
         expect(toPrettyJSON(metaResult.result)).toEqual(toPrettyJSON(answer))
         expect(metaResult.meta.strictMode).toEqual(true)
-        expect(metaResult.meta.hasTerminal).toEqual(true)
+        expect(metaResult.meta.hasDocumentTerminator).toEqual(true)
+        expect(metaResult.meta.hasYINIMarker).toEqual(true)
+        expect(metaResult.meta.sectionHeaderCount).toEqual(4)
+        expect(metaResult.meta.sectionMemberCount).toEqual(14)
     })
 
     test('4. Parsing inline, but should throw error due to bad use of #.', () => {

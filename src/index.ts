@@ -198,6 +198,7 @@ if (isProdEnv()) {
         //     theme2 = "special-dark"
         //         `
         // Arrange.
+        /*
         const yini = `
         @yini
         // Example: Strict-friendly YINI document (no trailing commas, explicit /END)
@@ -304,9 +305,46 @@ if (isProdEnv()) {
         format = 'json'
         sinks = ['stdout']
 
-        /END
+        /END      
+        `*/
+        const yini = `
+            /*
+                This is a multi-line block comment.
+            */
+
+            @YINI
+
+            ^ App
+            name = "Nested Example"
+            version = "1.0.0"
+            debug = OFF  // This is a comment.
+
+                # Database setttings.
+                ^^ Database
+                host = "db.example.com"
+                port = 3306
+                root = { user: 'admin', password: ''}
+                user = "appuser"
+                --password = "dbpassword"  # Old, save for now.
+                //password = "dbpassword"  # Not sure yet about this pw.
+                password = "dbpassword"  # Keep this secret.
+
+                    // Commenting with slashes works too.
+                    ^^^ Pool
+                    min = 2
+                    max = 10
+                    idleTimeout = 300
+
+                /* Block comment on a single line. */
+                ^^ Logging
+                level = "info"
+                logToFile = ON # This is a comment.
+                filePath = "./logs/app.log"
+            
+            /END
         `
-        console.log(toPrettyJSON(YINI.parse(yini, true, 'auto', true)))
+
+        console.log(toPrettyJSON(YINI.parse(yini, false, 'auto', true)))
 
         // console.log(
         //     toPrettyJSON(

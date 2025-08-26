@@ -9,6 +9,9 @@ import { parseMain } from './parseEntry'
 import { getFileNameExtension } from './utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from './utils/print'
 
+// let g_filename: undefined | string = undefined
+let g_filename: undefined | string = '<no file, inline parsing>'
+
 /**
  * This class is the public API, which exposes only parse(..) and
  * parseFile(..), rest of the implementation details are hidden.
@@ -69,7 +72,7 @@ export default class YINI {
 
         debugPrint()
         debugPrint('==== Call parse ==========================')
-        const result = parseMain(yiniContent, options)
+        const result = parseMain(yiniContent, options, g_filename)
         debugPrint('==== End call parse ==========================\n')
 
         if (isDev()) {
@@ -119,6 +122,7 @@ export default class YINI {
 
         let content = fs.readFileSync(filePath, 'utf8')
         let hasNoNewlineAtEOF = false
+        g_filename = filePath
 
         if (!content.endsWith('\n')) {
             content += '\n'

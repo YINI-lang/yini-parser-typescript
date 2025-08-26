@@ -1,6 +1,7 @@
 export interface IYiniAST {
     root: IYiniSection // Implicit root per spec.
     isStrict: boolean
+    // filename: undefined|string
     terminatorSeen: boolean // Required '/END' in strict mode.
     yiniMarkerSeen: boolean
     numOfSections: number | null
@@ -142,22 +143,44 @@ export interface IParseMainOptions {
 }
 
 export interface IParseMetaData {
-    // fullPath?: string
     parserVersion: string
-    strictMode: boolean
-    hasDocumentTerminator: boolean
-    hasYINIMarker: boolean
-    sectionCount: null | number // Section '(root)' not included.
-    memberCount: null | number
-    keysParsed: null | number
-    // sectionChains: null | number
-    sectionNamePaths: string[] | null // All key/access paths to members.
+    mode: 'lenient' | 'strict'
+    orderPreserved: boolean
+    runAt: string // Possible updates to "runFinishedAt" and "runStartedAt".
+    metaSchemaVersion: string
+    source: {
+        filename: undefined | string
+        hasDocumentTerminator: boolean
+        hasYiniMarker: boolean
+        byteSize: null | number
+        lineCount: null | number
+        sha256: null | string
+    }
+    structure: {
+        maxDepth: null | number
+        sectionCount: null | number // Section (header) count, Section '(root)' not included.
+        memberCount: null | number // Section (member) count.
+        keysParsedCount: null | number // Incl. keys in inline object in section members.
+        objectCount: null | number // Incl. sections (objects) + inline objects.
+        listCount: null | number
+        // sectionChains: null | number
+        sectionNamePaths: string[] | null // All key/access paths to section Headers.
+    }
     diagnostics?: {
         // Includes warnings/errors info.
-        bailSensitivityLevel: TBailSensitivityLevel
-        errorCount: null | number
-        warningCount: null | number
-        infoAndNoticeCount: null | number
+        bailSensitivity: {
+            preferredLevel: null | 'auto' | 0 | 1 | 2 // Input level into function.
+            levelUsed: TBailSensitivityLevel
+            levelMeaning:
+                | null
+                | 'Ignore-Errors'
+                | 'Abort-on-Errors'
+                | 'Abort-Even-on-Warnings'
+        }
+        errors: string[]
+        warnings: string[]
+        notices: string[]
+        infos: string[]
         environment: {
             NODE_ENV: undefined | string
             APP_ENV: undefined | string

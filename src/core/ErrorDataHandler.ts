@@ -271,7 +271,11 @@ export class ErrorDataHandler {
         return this.numSyntaxWarnings
     }
 
-    public getNumOfInfoAndNotices() {
-        return this.numNotices + this.numInfos
+    public getNumOfNotices() {
+        return this.numNotices
+    }
+
+    public getNumOfInfos() {
+        return this.numInfos
     }
 }

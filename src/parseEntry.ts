@@ -91,6 +91,7 @@ export const parseMain = (
         isWithDiagnostics: false,
         isWithTiming: false,
     },
+    metaFilename: undefined | string,
 ) => {
     debugPrint()
     debugPrint('-> Entered parseMain(..) in parseEntry')
@@ -245,28 +246,41 @@ export const parseMain = (
     // Construct meta data.
     const metaData: IParseMetaData = {
         parserVersion: pkg.version,
-        strictMode: options.isStrict,
-        hasDocumentTerminator: ast.terminatorSeen,
-        hasYINIMarker: ast.yiniMarkerSeen,
-        sectionCount: ast.numOfSections,
-        memberCount: ast.numOfMembers,
-        // sectionChains: null, //syntaxTreeC._meta_numOfChains,
-        keysParsed: null,
-        sectionNamePaths: ast.sectionNamePaths,
-        // timing: {
-        //     totalMs: !options.isWithTiming ? null : totalMs!.toFixed(3),
-        //     phase1Ms: !options.isWithTiming ? null : phase1Ms!.toFixed(3),
-        //     phase2Ms: !options.isWithTiming ? null : phase2Ms!.toFixed(3),
-        //     phase3Ms: !options.isWithTiming ? null : phase3Ms!.toFixed(3),
-        // },
+        mode: options.isStrict ? 'strict' : 'lenient',
+        orderPreserved: true,
+        runAt: new Date().toISOString(),
+        metaSchemaVersion: '1',
+        source: {
+            filename: metaFilename,
+            hasDocumentTerminator: ast.terminatorSeen,
+            hasYiniMarker: ast.yiniMarkerSeen,
+            byteSize: null,
+            lineCount: null,
+            sha256: null,
+        },
+        structure: {
+            maxDepth: null,
+            sectionCount: ast.numOfSections,
+            memberCount: ast.numOfMembers,
+            // sectionChains: null, //syntaxTreeC._meta_numOfChains,
+            keysParsedCount: null,
+            objectCount: null,
+            listCount: null,
+            sectionNamePaths: ast.sectionNamePaths,
+        },
     }
     if (options.isWithDiagnostics) {
         // Attach optional diagnostics.
         metaData.diagnostics = {
-            bailSensitivityLevel: options.bailSensitivityLevel,
-            errorCount: errorHandler.getNumOfErrors(),
-            warningCount: errorHandler.getNumOfWarnings(),
-            infoAndNoticeCount: errorHandler.getNumOfInfoAndNotices(),
+            bailSensitivity: {
+                preferredLevel: null,
+                levelUsed: options.bailSensitivityLevel,
+                levelMeaning: null,
+            },
+            errors: [],
+            warnings: [],
+            notices: [],
+            infos: [],
             environment: {
                 NODE_ENV: process.env.NODE_ENV,
                 APP_ENV: process.env.APP_ENV,
