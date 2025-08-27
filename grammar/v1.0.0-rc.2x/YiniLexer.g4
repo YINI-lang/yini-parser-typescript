@@ -22,12 +22,18 @@
 lexer grammar YiniLexer;
 
 @members {
+  // Below is TypeScript code:
   public atLineStart(): boolean { return this.column === 0; }
 }
 
-YINI_MARKER options {
+YINI_TOKEN options {
 	caseInsensitive = true;
 }: '@yini';
+
+// Experimental / for future.
+INCLUDE_TOKEN options {
+	caseInsensitive = true;
+}: '@include';
 
 fragment EBD: ('0' | '1') ('0' | '1') ('0' | '1');
 
@@ -86,7 +92,7 @@ DOLLAR: '$';
 // ASTERIX: '*';
 PC: '%'; // PerCent sign.
 AT: '@';
-//SEMICOLON: ';';
+SEMICOLON: ';';
 
 BOOLEAN_FALSE options {
 	caseInsensitive = true;
@@ -232,7 +238,7 @@ fragment DISABLE_LINE_MARKER: '--';
  */
 //LINE_COMMENT: ((DISABLE_LINE|';') ~[\r\n]*) -> skip;
 LINE_COMMENT
-  : {this.atLineStart()}? [ \t]* (DISABLE_LINE_MARKER | ';') ~[\r\n]* -> skip
+  : {this.atLineStart()}? [ \t]* (DISABLE_LINE_MARKER | SEMICOLON) ~[\r\n]* -> skip
   ;
 
 /*
@@ -247,8 +253,10 @@ IDENT_INVALID
 
 // For matching bad character.
 fragment REST_CHAR:
-    ~([ \t\r\n'"`=,0123456789/-] | '[' | ']' | '{' | '}' | ':')
+    ~([@ \t\r\n'"`=,0123456789/-] | '[' | ']' | '{' | '}' | ':')
     ;
 
 // For catching bad content.
-REST: REST_CHAR REST_CHAR*;
+REST: REST_CHAR (REST_CHAR)*;
+
+META_INVALID: AT WS? REST REST*;

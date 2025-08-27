@@ -4,18 +4,21 @@ import { isDebug } from '../config/env'
 import {
     AssignmentContext,
     Bad_memberContext,
+    Bad_meta_textContext,
     Boolean_literalContext,
     Colon_list_declContext,
+    DirectiveContext,
     ElementsContext,
     EolContext,
     List_literalContext,
-    Marker_stmtContext,
     MemberContext,
+    Meta_stmtContext,
     Null_literalContext,
     Number_literalContext,
     Object_literalContext,
     Object_memberContext,
     Object_membersContext,
+    Pre_processing_commandContext,
     PrologContext,
     StmtContext,
     String_concatContext,
@@ -461,8 +464,8 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             return this.visitAssignment?.(child)
         if (ruleName.includes('Colon_list_declContext'))
             return this.visitColon_list_decl?.(child)
-        if (ruleName.includes('Marker_stmtContext'))
-            return this.visitMarker_stmt?.(child)
+        if (ruleName.includes('Meta_stmtContext'))
+            return this.visitMeta_stmt?.(child)
 
         // SECTION_HEAD is a token (no sub-rule class)
         // const text = child.getText?.() ?? ''
@@ -518,26 +521,56 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     }
 
     /**
-     * Visit a parse tree produced by `YiniParser.marker_stmt`.
+     * Visit a parse tree produced by `YiniParser.meta_stmt`.
      * @param ctx the parse tree
-     * @return the visitor result
      */
-    // visitMarker_stmt?: (ctx: Marker_stmtContext) => Result
-    visitMarker_stmt = (ctx: Marker_stmtContext): any => {
-        debugPrint('-> Entered visitMarker_stmt(..)')
+    visitMeta_stmt = (ctx: Meta_stmtContext): any => {
+        debugPrint('-> Entered visitMeta_stmt(..)')
         let rawText: string = ctx.getText().trim()
         debugPrint('rawText = "' + rawText + '"')
 
-        // rawText = stripCommentsAndAfter(rawText.split('\n', 1)[0]).trim() // Remove possible comments.
+        ctx.children?.forEach((c: any) => {
+            let rawText: string = c?.getText().trim()
+            debugPrint('visitMeta_stmt:child = "' + rawText + '"')
+
+            this.visit?.(c)
+        })
+
+        return null
+    }
+
+    /**
+     * Visit a parse tree produced by `YiniParser.directive`.
+     * @param ctx the parse tree
+     * @note Directive statements in YINI are special top-level commands that
+     *       appear only at the beginning of a document, before any sections
+     *       or members. Each directive may occur at most once per file.
+     */
+    visitDirective = (ctx: DirectiveContext): any => {
+        debugPrint('-> Entered visitDirective(..)')
+        let rawText: string = ctx.getText().trim()
+        debugPrint('rawText = "' + rawText + '"')
+
+        // NOTE: Important to strip any possible comments on the same line.
         rawText = stripCommentsAndAfter(rawText) // Remove possible comments.
         debugPrint('rawText2 = "' + rawText + '"')
+
+        if (this.mapSectionNamePaths.size || this.meta_numOfMembers) {
+            this.errorHandler!.pushOrBail(
+                ctx,
+                this.isStrict ? 'Syntax-Error' : 'Syntax-Warning',
+                `Found a directive statement in the wrong place ${this.isStrict ? '(strict mode)' : '(lenient mode)'}`,
+                `Directive '${rawText}' must appear only at the beginning of the document, before any sections or members.`,
+                `Tip: Move the line with '${rawText}' to the very top of the file (but after a possible #! line or comments).`,
+            )
+        }
 
         if (rawText.toLowerCase() === '@yini') {
             if (this.ast.yiniMarkerSeen) {
                 this.errorHandler!.pushOrBail(
                     ctx,
-                    'Syntax-Warning',
-                    'Hit a duplicate YINI Marker in document',
+                    this.isStrict ? 'Syntax-Error' : 'Syntax-Warning',
+                    `Hit a duplicate YINI Marker in document ${this.isStrict ? '(strict mode)' : '(lenient mode)'}`,
                     `'${rawText}' already exists in this file, it's enough with only one YINI Marker ('@YINI').`,
                 )
             }
@@ -551,6 +584,30 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         }
         // @yini marker is advisory (no semantic value) per spec. We ignore it. (Spec 2.4) :contentReference[oaicite:9]{index=9}
         this.ast.yiniMarkerSeen = true
+        return null
+    }
+
+    /**
+     * Visit a parse tree produced by `YiniParser.pre_processing_command`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitPre_processing_command = (ctx: Pre_processing_commandContext): any => {
+        /*
+        
+        Experimental / for future.
+        
+        */
+
+        debugPrint('-> Entered visitPre_processing_command(..)')
+        let rawText: string = ctx.getText().trim()
+        debugPrint('rawText = "' + rawText + '"')
+
+        // NOTE: Important to strip any possible comments on the same line.
+        rawText = stripCommentsAndAfter(rawText) // Remove possible comments.
+        debugPrint('rawText2 = "' + rawText + '"')
+
+        // NOTE: Don't implement! Only experimental / testing for future.
         return null
     }
 
@@ -1073,12 +1130,29 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
      */
     // visitBad_member?: (ctx: Bad_memberContext) => Result
     visitBad_member = (ctx: Bad_memberContext): any => {
+        debugPrint('-> Entered visitBad_member(..)')
         this.errorHandler!.pushOrBail(
             ctx,
             'Syntax-Error',
             'Invalid or malformed member (key-value pair) found.',
             `Offending text: ${ctx?.getText()?.trim()}`,
             'Members has the form: <key> = <value>, where <key> is a name/identifier and <value> is a value/literal.',
+        )
+        return null
+    }
+
+    /**
+     * Visit a parse tree produced by `YiniParser.bad_meta_text`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitBad_meta_text = (ctx: Bad_meta_textContext): any => {
+        debugPrint('-> Entered visitBad_meta_text(..)')
+        this.errorHandler!.pushOrBail(
+            ctx,
+            'Syntax-Error',
+            'Invalid or malformed directive/pre-processing/annotation statement',
+            `Offending statement: ${ctx?.getText()?.trim()}`,
         )
         return null
     }

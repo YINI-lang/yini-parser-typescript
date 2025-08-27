@@ -7,7 +7,9 @@ import { YiniContext } from "./YiniParser.js";
 import { PrologContext } from "./YiniParser.js";
 import { Terminal_stmtContext } from "./YiniParser.js";
 import { StmtContext } from "./YiniParser.js";
-import { Marker_stmtContext } from "./YiniParser.js";
+import { Meta_stmtContext } from "./YiniParser.js";
+import { DirectiveContext } from "./YiniParser.js";
+import { Pre_processing_commandContext } from "./YiniParser.js";
 import { EolContext } from "./YiniParser.js";
 import { AssignmentContext } from "./YiniParser.js";
 import { MemberContext } from "./YiniParser.js";
@@ -23,6 +25,7 @@ import { Null_literalContext } from "./YiniParser.js";
 import { String_literalContext } from "./YiniParser.js";
 import { String_concatContext } from "./YiniParser.js";
 import { Boolean_literalContext } from "./YiniParser.js";
+import { Bad_meta_textContext } from "./YiniParser.js";
 import { Bad_memberContext } from "./YiniParser.js";
 
 
@@ -59,11 +62,23 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 */
 	visitStmt?: (ctx: StmtContext) => Result;
 	/**
-	 * Visit a parse tree produced by `YiniParser.marker_stmt`.
+	 * Visit a parse tree produced by `YiniParser.meta_stmt`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitMarker_stmt?: (ctx: Marker_stmtContext) => Result;
+	visitMeta_stmt?: (ctx: Meta_stmtContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.directive`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitDirective?: (ctx: DirectiveContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.pre_processing_command`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitPre_processing_command?: (ctx: Pre_processing_commandContext) => Result;
 	/**
 	 * Visit a parse tree produced by `YiniParser.eol`.
 	 * @param ctx the parse tree
@@ -154,6 +169,12 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 * @return the visitor result
 	 */
 	visitBoolean_literal?: (ctx: Boolean_literalContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.bad_meta_text`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitBad_meta_text?: (ctx: Bad_meta_textContext) => Result;
 	/**
 	 * Visit a parse tree produced by `YiniParser.bad_member`.
 	 * @param ctx the parse tree

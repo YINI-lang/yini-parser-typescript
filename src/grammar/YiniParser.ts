@@ -18,77 +18,83 @@ import YiniParserVisitor from "./YiniParserVisitor.js";
 type int = number;
 
 export default class YiniParser extends Parser {
-	public static readonly YINI_MARKER = 1;
-	public static readonly SECTION_HEAD = 2;
-	public static readonly TERMINAL_TOKEN = 3;
-	public static readonly SS = 4;
-	public static readonly EUR = 5;
-	public static readonly CARET = 6;
-	public static readonly GT = 7;
-	public static readonly LT = 8;
-	public static readonly EQ = 9;
-	public static readonly HASH = 10;
-	public static readonly COMMA = 11;
-	public static readonly COLON = 12;
-	public static readonly OB = 13;
-	public static readonly CB = 14;
-	public static readonly OC = 15;
-	public static readonly CC = 16;
-	public static readonly PLUS = 17;
-	public static readonly DOLLAR = 18;
-	public static readonly PC = 19;
-	public static readonly AT = 20;
-	public static readonly BOOLEAN_FALSE = 21;
-	public static readonly BOOLEAN_TRUE = 22;
-	public static readonly NULL = 23;
-	public static readonly EMPTY_OBJECT = 24;
-	public static readonly EMPTY_LIST = 25;
-	public static readonly SHEBANG = 26;
-	public static readonly NUMBER = 27;
-	public static readonly KEY = 28;
-	public static readonly IDENT = 29;
-	public static readonly IDENT_BACKTICKED = 30;
-	public static readonly STRING = 31;
-	public static readonly TRIPLE_QUOTED_STRING = 32;
-	public static readonly SINGLE_OR_DOUBLE = 33;
-	public static readonly R_AND_C_STRING = 34;
-	public static readonly HYPER_STRING = 35;
-	public static readonly ESC_SEQ = 36;
-	public static readonly ESC_SEQ_BASE = 37;
-	public static readonly NL = 38;
-	public static readonly SINGLE_NL = 39;
-	public static readonly WS = 40;
-	public static readonly BLOCK_COMMENT = 41;
-	public static readonly COMMENT = 42;
-	public static readonly LINE_COMMENT = 43;
-	public static readonly INLINE_COMMENT = 44;
-	public static readonly IDENT_INVALID = 45;
-	public static readonly REST = 46;
+	public static readonly YINI_TOKEN = 1;
+	public static readonly INCLUDE_TOKEN = 2;
+	public static readonly SECTION_HEAD = 3;
+	public static readonly TERMINAL_TOKEN = 4;
+	public static readonly SS = 5;
+	public static readonly EUR = 6;
+	public static readonly CARET = 7;
+	public static readonly GT = 8;
+	public static readonly LT = 9;
+	public static readonly EQ = 10;
+	public static readonly HASH = 11;
+	public static readonly COMMA = 12;
+	public static readonly COLON = 13;
+	public static readonly OB = 14;
+	public static readonly CB = 15;
+	public static readonly OC = 16;
+	public static readonly CC = 17;
+	public static readonly PLUS = 18;
+	public static readonly DOLLAR = 19;
+	public static readonly PC = 20;
+	public static readonly AT = 21;
+	public static readonly SEMICOLON = 22;
+	public static readonly BOOLEAN_FALSE = 23;
+	public static readonly BOOLEAN_TRUE = 24;
+	public static readonly NULL = 25;
+	public static readonly EMPTY_OBJECT = 26;
+	public static readonly EMPTY_LIST = 27;
+	public static readonly SHEBANG = 28;
+	public static readonly NUMBER = 29;
+	public static readonly KEY = 30;
+	public static readonly IDENT = 31;
+	public static readonly IDENT_BACKTICKED = 32;
+	public static readonly STRING = 33;
+	public static readonly TRIPLE_QUOTED_STRING = 34;
+	public static readonly SINGLE_OR_DOUBLE = 35;
+	public static readonly R_AND_C_STRING = 36;
+	public static readonly HYPER_STRING = 37;
+	public static readonly ESC_SEQ = 38;
+	public static readonly ESC_SEQ_BASE = 39;
+	public static readonly NL = 40;
+	public static readonly SINGLE_NL = 41;
+	public static readonly WS = 42;
+	public static readonly BLOCK_COMMENT = 43;
+	public static readonly COMMENT = 44;
+	public static readonly LINE_COMMENT = 45;
+	public static readonly INLINE_COMMENT = 46;
+	public static readonly IDENT_INVALID = 47;
+	public static readonly REST = 48;
+	public static readonly META_INVALID = 49;
 	public static override readonly EOF = Token.EOF;
 	public static readonly RULE_yini = 0;
 	public static readonly RULE_prolog = 1;
 	public static readonly RULE_terminal_stmt = 2;
 	public static readonly RULE_stmt = 3;
-	public static readonly RULE_marker_stmt = 4;
-	public static readonly RULE_eol = 5;
-	public static readonly RULE_assignment = 6;
-	public static readonly RULE_member = 7;
-	public static readonly RULE_colon_list_decl = 8;
-	public static readonly RULE_value = 9;
-	public static readonly RULE_object_literal = 10;
-	public static readonly RULE_object_members = 11;
-	public static readonly RULE_object_member = 12;
-	public static readonly RULE_list_literal = 13;
-	public static readonly RULE_elements = 14;
-	public static readonly RULE_number_literal = 15;
-	public static readonly RULE_null_literal = 16;
-	public static readonly RULE_string_literal = 17;
-	public static readonly RULE_string_concat = 18;
-	public static readonly RULE_boolean_literal = 19;
-	public static readonly RULE_bad_member = 20;
+	public static readonly RULE_meta_stmt = 4;
+	public static readonly RULE_directive = 5;
+	public static readonly RULE_pre_processing_command = 6;
+	public static readonly RULE_eol = 7;
+	public static readonly RULE_assignment = 8;
+	public static readonly RULE_member = 9;
+	public static readonly RULE_colon_list_decl = 10;
+	public static readonly RULE_value = 11;
+	public static readonly RULE_object_literal = 12;
+	public static readonly RULE_object_members = 13;
+	public static readonly RULE_object_member = 14;
+	public static readonly RULE_list_literal = 15;
+	public static readonly RULE_elements = 16;
+	public static readonly RULE_number_literal = 17;
+	public static readonly RULE_null_literal = 18;
+	public static readonly RULE_string_literal = 19;
+	public static readonly RULE_string_concat = 20;
+	public static readonly RULE_boolean_literal = 21;
+	public static readonly RULE_bad_meta_text = 22;
+	public static readonly RULE_bad_member = 23;
 	public static readonly literalNames: (string | null)[] = [ null, null, 
                                                             null, null, 
-                                                            "'\\u00A7'", 
+                                                            null, "'\\u00A7'", 
                                                             "'\\u20AC'", 
                                                             "'^'", "'>'", 
                                                             "'<'", "'='", 
@@ -97,10 +103,12 @@ export default class YiniParser extends Parser {
                                                             "']'", "'{'", 
                                                             "'}'", "'+'", 
                                                             "'$'", "'%'", 
-                                                            "'@'", null, 
+                                                            "'@'", "';'", 
                                                             null, null, 
-                                                            "'{}'", "'[]'" ];
-	public static readonly symbolicNames: (string | null)[] = [ null, "YINI_MARKER", 
+                                                            null, "'{}'", 
+                                                            "'[]'" ];
+	public static readonly symbolicNames: (string | null)[] = [ null, "YINI_TOKEN", 
+                                                             "INCLUDE_TOKEN", 
                                                              "SECTION_HEAD", 
                                                              "TERMINAL_TOKEN", 
                                                              "SS", "EUR", 
@@ -111,7 +119,8 @@ export default class YiniParser extends Parser {
                                                              "CB", "OC", 
                                                              "CC", "PLUS", 
                                                              "DOLLAR", "PC", 
-                                                             "AT", "BOOLEAN_FALSE", 
+                                                             "AT", "SEMICOLON", 
+                                                             "BOOLEAN_FALSE", 
                                                              "BOOLEAN_TRUE", 
                                                              "NULL", "EMPTY_OBJECT", 
                                                              "EMPTY_LIST", 
@@ -130,13 +139,14 @@ export default class YiniParser extends Parser {
                                                              "LINE_COMMENT", 
                                                              "INLINE_COMMENT", 
                                                              "IDENT_INVALID", 
-                                                             "REST" ];
+                                                             "REST", "META_INVALID" ];
 	// tslint:disable:no-trailing-whitespace
 	public static readonly ruleNames: string[] = [
-		"yini", "prolog", "terminal_stmt", "stmt", "marker_stmt", "eol", "assignment", 
-		"member", "colon_list_decl", "value", "object_literal", "object_members", 
-		"object_member", "list_literal", "elements", "number_literal", "null_literal", 
-		"string_literal", "string_concat", "boolean_literal", "bad_member",
+		"yini", "prolog", "terminal_stmt", "stmt", "meta_stmt", "directive", "pre_processing_command", 
+		"eol", "assignment", "member", "colon_list_decl", "value", "object_literal", 
+		"object_members", "object_member", "list_literal", "elements", "number_literal", 
+		"null_literal", "string_literal", "string_concat", "boolean_literal", 
+		"bad_meta_text", "bad_member",
 	];
 	public get grammarFileName(): string { return "YiniParser.g4"; }
 	public get literalNames(): (string | null)[] { return YiniParser.literalNames; }
@@ -160,41 +170,41 @@ export default class YiniParser extends Parser {
 		try {
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 43;
+			this.state = 49;
 			this._errHandler.sync(this);
 			switch ( this._interp.adaptivePredict(this._input, 0, this._ctx) ) {
 			case 1:
 				{
-				this.state = 42;
+				this.state = 48;
 				this.prolog();
 				}
 				break;
 			}
-			this.state = 48;
+			this.state = 54;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			while ((((_la) & ~0x1F) === 0 && ((1 << _la) & 2615190022) !== 0) || ((((_la - 38)) & ~0x1F) === 0 && ((1 << (_la - 38)) & 325) !== 0)) {
+			while ((((_la) & ~0x1F) === 0 && ((1 << _la) & 1870742542) !== 0) || ((((_la - 33)) & ~0x1F) === 0 && ((1 << (_la - 33)) & 107137) !== 0)) {
 				{
 				{
-				this.state = 45;
+				this.state = 51;
 				this.stmt();
 				}
 				}
-				this.state = 50;
+				this.state = 56;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
-			this.state = 52;
+			this.state = 58;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (_la===3) {
+			if (_la===4) {
 				{
-				this.state = 51;
+				this.state = 57;
 				this.terminal_stmt();
 				}
 			}
 
-			this.state = 54;
+			this.state = 60;
 			this.match(YiniParser.EOF);
 			}
 		}
@@ -218,37 +228,37 @@ export default class YiniParser extends Parser {
 		this.enterRule(localctx, 2, YiniParser.RULE_prolog);
 		try {
 			let _alt: number;
-			this.state = 68;
+			this.state = 74;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 26:
+			case 28:
 				this.enterOuterAlt(localctx, 1);
 				{
-				this.state = 56;
+				this.state = 62;
 				this.match(YiniParser.SHEBANG);
-				this.state = 60;
+				this.state = 66;
 				this._errHandler.sync(this);
 				_alt = this._interp.adaptivePredict(this._input, 3, this._ctx);
 				while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
 					if (_alt === 1) {
 						{
 						{
-						this.state = 57;
+						this.state = 63;
 						this.eol();
 						}
 						}
 					}
-					this.state = 62;
+					this.state = 68;
 					this._errHandler.sync(this);
 					_alt = this._interp.adaptivePredict(this._input, 3, this._ctx);
 				}
 				}
 				break;
-			case 38:
-			case 44:
+			case 40:
+			case 46:
 				this.enterOuterAlt(localctx, 2);
 				{
-				this.state = 64;
+				this.state = 70;
 				this._errHandler.sync(this);
 				_alt = 1;
 				do {
@@ -256,7 +266,7 @@ export default class YiniParser extends Parser {
 					case 1:
 						{
 						{
-						this.state = 63;
+						this.state = 69;
 						this.eol();
 						}
 						}
@@ -264,7 +274,7 @@ export default class YiniParser extends Parser {
 					default:
 						throw new NoViableAltException(this);
 					}
-					this.state = 66;
+					this.state = 72;
 					this._errHandler.sync(this);
 					_alt = this._interp.adaptivePredict(this._input, 4, this._ctx);
 				} while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER);
@@ -296,35 +306,35 @@ export default class YiniParser extends Parser {
 		try {
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 70;
+			this.state = 76;
 			this.match(YiniParser.TERMINAL_TOKEN);
-			this.state = 73;
+			this.state = 79;
 			this._errHandler.sync(this);
 			switch ( this._interp.adaptivePredict(this._input, 6, this._ctx) ) {
 			case 1:
 				{
-				this.state = 71;
+				this.state = 77;
 				this.eol();
 				}
 				break;
 			case 2:
 				{
-				this.state = 72;
+				this.state = 78;
 				this.match(YiniParser.INLINE_COMMENT);
 				}
 				break;
 			}
-			this.state = 78;
+			this.state = 84;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			while (_la===38) {
+			while (_la===40) {
 				{
 				{
-				this.state = 75;
+				this.state = 81;
 				this.match(YiniParser.NL);
 				}
 				}
-				this.state = 80;
+				this.state = 86;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
@@ -349,48 +359,48 @@ export default class YiniParser extends Parser {
 		let localctx: StmtContext = new StmtContext(this, this._ctx, this.state);
 		this.enterRule(localctx, 6, YiniParser.RULE_stmt);
 		try {
-			this.state = 87;
+			this.state = 93;
 			this._errHandler.sync(this);
 			switch ( this._interp.adaptivePredict(this._input, 8, this._ctx) ) {
 			case 1:
 				this.enterOuterAlt(localctx, 1);
 				{
-				this.state = 81;
+				this.state = 87;
 				this.eol();
 				}
 				break;
 			case 2:
 				this.enterOuterAlt(localctx, 2);
 				{
-				this.state = 82;
+				this.state = 88;
 				this.match(YiniParser.SECTION_HEAD);
 				}
 				break;
 			case 3:
 				this.enterOuterAlt(localctx, 3);
 				{
-				this.state = 83;
+				this.state = 89;
 				this.assignment();
 				}
 				break;
 			case 4:
 				this.enterOuterAlt(localctx, 4);
 				{
-				this.state = 84;
+				this.state = 90;
 				this.colon_list_decl();
 				}
 				break;
 			case 5:
 				this.enterOuterAlt(localctx, 5);
 				{
-				this.state = 85;
-				this.marker_stmt();
+				this.state = 91;
+				this.meta_stmt();
 				}
 				break;
 			case 6:
 				this.enterOuterAlt(localctx, 6);
 				{
-				this.state = 86;
+				this.state = 92;
 				this.bad_member();
 				}
 				break;
@@ -411,15 +421,116 @@ export default class YiniParser extends Parser {
 		return localctx;
 	}
 	// @RuleVersion(0)
-	public marker_stmt(): Marker_stmtContext {
-		let localctx: Marker_stmtContext = new Marker_stmtContext(this, this._ctx, this.state);
-		this.enterRule(localctx, 8, YiniParser.RULE_marker_stmt);
+	public meta_stmt(): Meta_stmtContext {
+		let localctx: Meta_stmtContext = new Meta_stmtContext(this, this._ctx, this.state);
+		this.enterRule(localctx, 8, YiniParser.RULE_meta_stmt);
+		try {
+			this.state = 100;
+			this._errHandler.sync(this);
+			switch (this._input.LA(1)) {
+			case 1:
+				this.enterOuterAlt(localctx, 1);
+				{
+				this.state = 95;
+				this.directive();
+				}
+				break;
+			case 2:
+				this.enterOuterAlt(localctx, 2);
+				{
+				this.state = 96;
+				this.pre_processing_command();
+				}
+				break;
+			case 49:
+				this.enterOuterAlt(localctx, 3);
+				{
+				this.state = 97;
+				this.bad_meta_text();
+				this.state = 98;
+				this.eol();
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return localctx;
+	}
+	// @RuleVersion(0)
+	public directive(): DirectiveContext {
+		let localctx: DirectiveContext = new DirectiveContext(this, this._ctx, this.state);
+		this.enterRule(localctx, 10, YiniParser.RULE_directive);
 		try {
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 89;
-			this.match(YiniParser.YINI_MARKER);
-			this.state = 90;
+			this.state = 102;
+			this.match(YiniParser.YINI_TOKEN);
+			this.state = 103;
+			this.eol();
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return localctx;
+	}
+	// @RuleVersion(0)
+	public pre_processing_command(): Pre_processing_commandContext {
+		let localctx: Pre_processing_commandContext = new Pre_processing_commandContext(this, this._ctx, this.state);
+		this.enterRule(localctx, 12, YiniParser.RULE_pre_processing_command);
+		let _la: number;
+		try {
+			this.enterOuterAlt(localctx, 1);
+			{
+			this.state = 105;
+			this.match(YiniParser.INCLUDE_TOKEN);
+			this.state = 109;
+			this._errHandler.sync(this);
+			_la = this._input.LA(1);
+			while (_la===42) {
+				{
+				{
+				this.state = 106;
+				this.match(YiniParser.WS);
+				}
+				}
+				this.state = 111;
+				this._errHandler.sync(this);
+				_la = this._input.LA(1);
+			}
+			this.state = 113;
+			this._errHandler.sync(this);
+			_la = this._input.LA(1);
+			if (_la===33) {
+				{
+				this.state = 112;
+				this.string_literal();
+				}
+			}
+
+			this.state = 115;
 			this.eol();
 			}
 		}
@@ -440,23 +551,23 @@ export default class YiniParser extends Parser {
 	// @RuleVersion(0)
 	public eol(): EolContext {
 		let localctx: EolContext = new EolContext(this, this._ctx, this.state);
-		this.enterRule(localctx, 10, YiniParser.RULE_eol);
+		this.enterRule(localctx, 14, YiniParser.RULE_eol);
 		let _la: number;
 		try {
 			let _alt: number;
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 93;
+			this.state = 118;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (_la===44) {
+			if (_la===46) {
 				{
-				this.state = 92;
+				this.state = 117;
 				this.match(YiniParser.INLINE_COMMENT);
 				}
 			}
 
-			this.state = 96;
+			this.state = 121;
 			this._errHandler.sync(this);
 			_alt = 1;
 			do {
@@ -464,7 +575,7 @@ export default class YiniParser extends Parser {
 				case 1:
 					{
 					{
-					this.state = 95;
+					this.state = 120;
 					this.match(YiniParser.NL);
 					}
 					}
@@ -472,9 +583,9 @@ export default class YiniParser extends Parser {
 				default:
 					throw new NoViableAltException(this);
 				}
-				this.state = 98;
+				this.state = 123;
 				this._errHandler.sync(this);
-				_alt = this._interp.adaptivePredict(this._input, 10, this._ctx);
+				_alt = this._interp.adaptivePredict(this._input, 13, this._ctx);
 			} while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER);
 			}
 		}
@@ -495,13 +606,13 @@ export default class YiniParser extends Parser {
 	// @RuleVersion(0)
 	public assignment(): AssignmentContext {
 		let localctx: AssignmentContext = new AssignmentContext(this, this._ctx, this.state);
-		this.enterRule(localctx, 12, YiniParser.RULE_assignment);
+		this.enterRule(localctx, 16, YiniParser.RULE_assignment);
 		try {
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 100;
+			this.state = 125;
 			this.member();
-			this.state = 101;
+			this.state = 126;
 			this.eol();
 			}
 		}
@@ -522,41 +633,41 @@ export default class YiniParser extends Parser {
 	// @RuleVersion(0)
 	public member(): MemberContext {
 		let localctx: MemberContext = new MemberContext(this, this._ctx, this.state);
-		this.enterRule(localctx, 14, YiniParser.RULE_member);
+		this.enterRule(localctx, 18, YiniParser.RULE_member);
 		let _la: number;
 		try {
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 103;
+			this.state = 128;
 			this.match(YiniParser.KEY);
-			this.state = 105;
+			this.state = 130;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (_la===40) {
+			if (_la===42) {
 				{
-				this.state = 104;
+				this.state = 129;
 				this.match(YiniParser.WS);
 				}
 			}
 
-			this.state = 107;
+			this.state = 132;
 			this.match(YiniParser.EQ);
-			this.state = 109;
+			this.state = 134;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (_la===40) {
+			if (_la===42) {
 				{
-				this.state = 108;
+				this.state = 133;
 				this.match(YiniParser.WS);
 				}
 			}
 
-			this.state = 112;
+			this.state = 137;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 2346754048) !== 0)) {
+			if (((((_la - 14)) & ~0x1F) === 0 && ((1 << (_la - 14)) & 572933) !== 0)) {
 				{
-				this.state = 111;
+				this.state = 136;
 				this.value();
 				}
 			}
@@ -580,44 +691,44 @@ export default class YiniParser extends Parser {
 	// @RuleVersion(0)
 	public colon_list_decl(): Colon_list_declContext {
 		let localctx: Colon_list_declContext = new Colon_list_declContext(this, this._ctx, this.state);
-		this.enterRule(localctx, 16, YiniParser.RULE_colon_list_decl);
+		this.enterRule(localctx, 20, YiniParser.RULE_colon_list_decl);
 		let _la: number;
 		try {
 			let _alt: number;
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 114;
+			this.state = 139;
 			this.match(YiniParser.KEY);
-			this.state = 116;
+			this.state = 141;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (_la===40) {
+			if (_la===42) {
 				{
-				this.state = 115;
+				this.state = 140;
 				this.match(YiniParser.WS);
 				}
 			}
 
-			this.state = 118;
+			this.state = 143;
 			this.match(YiniParser.COLON);
-			this.state = 127;
+			this.state = 152;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			while (((((_la - 38)) & ~0x1F) === 0 && ((1 << (_la - 38)) & 69) !== 0)) {
+			while (((((_la - 40)) & ~0x1F) === 0 && ((1 << (_la - 40)) & 69) !== 0)) {
 				{
-				this.state = 125;
+				this.state = 150;
 				this._errHandler.sync(this);
 				switch (this._input.LA(1)) {
-				case 38:
-				case 44:
+				case 40:
+				case 46:
 					{
-					this.state = 119;
+					this.state = 144;
 					this.eol();
 					}
 					break;
-				case 40:
+				case 42:
 					{
-					this.state = 121;
+					this.state = 146;
 					this._errHandler.sync(this);
 					_alt = 1;
 					do {
@@ -625,7 +736,7 @@ export default class YiniParser extends Parser {
 						case 1:
 							{
 							{
-							this.state = 120;
+							this.state = 145;
 							this.match(YiniParser.WS);
 							}
 							}
@@ -633,9 +744,9 @@ export default class YiniParser extends Parser {
 						default:
 							throw new NoViableAltException(this);
 						}
-						this.state = 123;
+						this.state = 148;
 						this._errHandler.sync(this);
-						_alt = this._interp.adaptivePredict(this._input, 15, this._ctx);
+						_alt = this._interp.adaptivePredict(this._input, 18, this._ctx);
 					} while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER);
 					}
 					break;
@@ -643,31 +754,31 @@ export default class YiniParser extends Parser {
 					throw new NoViableAltException(this);
 				}
 				}
-				this.state = 129;
+				this.state = 154;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
-			this.state = 130;
+			this.state = 155;
 			this.elements();
-			this.state = 139;
+			this.state = 164;
 			this._errHandler.sync(this);
-			_alt = this._interp.adaptivePredict(this._input, 20, this._ctx);
+			_alt = this._interp.adaptivePredict(this._input, 23, this._ctx);
 			while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
 				if (_alt === 1) {
 					{
-					this.state = 137;
+					this.state = 162;
 					this._errHandler.sync(this);
 					switch (this._input.LA(1)) {
-					case 38:
-					case 44:
+					case 40:
+					case 46:
 						{
-						this.state = 131;
+						this.state = 156;
 						this.eol();
 						}
 						break;
-					case 40:
+					case 42:
 						{
-						this.state = 133;
+						this.state = 158;
 						this._errHandler.sync(this);
 						_alt = 1;
 						do {
@@ -675,7 +786,7 @@ export default class YiniParser extends Parser {
 							case 1:
 								{
 								{
-								this.state = 132;
+								this.state = 157;
 								this.match(YiniParser.WS);
 								}
 								}
@@ -683,9 +794,9 @@ export default class YiniParser extends Parser {
 							default:
 								throw new NoViableAltException(this);
 							}
-							this.state = 135;
+							this.state = 160;
 							this._errHandler.sync(this);
-							_alt = this._interp.adaptivePredict(this._input, 18, this._ctx);
+							_alt = this._interp.adaptivePredict(this._input, 21, this._ctx);
 						} while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER);
 						}
 						break;
@@ -694,11 +805,11 @@ export default class YiniParser extends Parser {
 					}
 					}
 				}
-				this.state = 141;
+				this.state = 166;
 				this._errHandler.sync(this);
-				_alt = this._interp.adaptivePredict(this._input, 20, this._ctx);
+				_alt = this._interp.adaptivePredict(this._input, 23, this._ctx);
 			}
-			this.state = 142;
+			this.state = 167;
 			this.eol();
 			}
 		}
@@ -719,53 +830,53 @@ export default class YiniParser extends Parser {
 	// @RuleVersion(0)
 	public value(): ValueContext {
 		let localctx: ValueContext = new ValueContext(this, this._ctx, this.state);
-		this.enterRule(localctx, 18, YiniParser.RULE_value);
+		this.enterRule(localctx, 22, YiniParser.RULE_value);
 		try {
-			this.state = 150;
+			this.state = 175;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 23:
+			case 25:
 				this.enterOuterAlt(localctx, 1);
 				{
-				this.state = 144;
+				this.state = 169;
 				this.null_literal();
 				}
 				break;
-			case 31:
+			case 33:
 				this.enterOuterAlt(localctx, 2);
 				{
-				this.state = 145;
+				this.state = 170;
 				this.string_literal();
 				}
 				break;
-			case 27:
+			case 29:
 				this.enterOuterAlt(localctx, 3);
 				{
-				this.state = 146;
+				this.state = 171;
 				this.number_literal();
 				}
 				break;
-			case 21:
-			case 22:
+			case 23:
+			case 24:
 				this.enterOuterAlt(localctx, 4);
 				{
-				this.state = 147;
+				this.state = 172;
 				this.boolean_literal();
 				}
 				break;
-			case 13:
-			case 25:
+			case 14:
+			case 27:
 				this.enterOuterAlt(localctx, 5);
 				{
-				this.state = 148;
+				this.state = 173;
 				this.list_literal();
 				}
 				break;
-			case 15:
-			case 24:
+			case 16:
+			case 26:
 				this.enterOuterAlt(localctx, 6);
 				{
-				this.state = 149;
+				this.state = 174;
 				this.object_literal();
 				}
 				break;
@@ -790,98 +901,98 @@ export default class YiniParser extends Parser {
 	// @RuleVersion(0)
 	public object_literal(): Object_literalContext {
 		let localctx: Object_literalContext = new Object_literalContext(this, this._ctx, this.state);
-		this.enterRule(localctx, 20, YiniParser.RULE_object_literal);
+		this.enterRule(localctx, 24, YiniParser.RULE_object_literal);
 		let _la: number;
 		try {
 			let _alt: number;
-			this.state = 182;
+			this.state = 207;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 15:
+			case 16:
 				this.enterOuterAlt(localctx, 1);
 				{
-				this.state = 152;
+				this.state = 177;
 				this.match(YiniParser.OC);
-				this.state = 156;
-				this._errHandler.sync(this);
-				_alt = this._interp.adaptivePredict(this._input, 22, this._ctx);
-				while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
-					if (_alt === 1) {
-						{
-						{
-						this.state = 153;
-						this.match(YiniParser.NL);
-						}
-						}
-					}
-					this.state = 158;
-					this._errHandler.sync(this);
-					_alt = this._interp.adaptivePredict(this._input, 22, this._ctx);
-				}
-				this.state = 160;
-				this._errHandler.sync(this);
-				_la = this._input.LA(1);
-				if (_la===28) {
-					{
-					this.state = 159;
-					this.object_members();
-					}
-				}
-
-				this.state = 165;
-				this._errHandler.sync(this);
-				_la = this._input.LA(1);
-				while (_la===38) {
-					{
-					{
-					this.state = 162;
-					this.match(YiniParser.NL);
-					}
-					}
-					this.state = 167;
-					this._errHandler.sync(this);
-					_la = this._input.LA(1);
-				}
-				this.state = 168;
-				this.match(YiniParser.CC);
-				this.state = 172;
+				this.state = 181;
 				this._errHandler.sync(this);
 				_alt = this._interp.adaptivePredict(this._input, 25, this._ctx);
 				while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
 					if (_alt === 1) {
 						{
 						{
-						this.state = 169;
+						this.state = 178;
 						this.match(YiniParser.NL);
 						}
 						}
 					}
-					this.state = 174;
+					this.state = 183;
 					this._errHandler.sync(this);
 					_alt = this._interp.adaptivePredict(this._input, 25, this._ctx);
 				}
-				}
-				break;
-			case 24:
-				this.enterOuterAlt(localctx, 2);
-				{
-				this.state = 175;
-				this.match(YiniParser.EMPTY_OBJECT);
-				this.state = 179;
+				this.state = 185;
 				this._errHandler.sync(this);
-				_alt = this._interp.adaptivePredict(this._input, 26, this._ctx);
+				_la = this._input.LA(1);
+				if (_la===30) {
+					{
+					this.state = 184;
+					this.object_members();
+					}
+				}
+
+				this.state = 190;
+				this._errHandler.sync(this);
+				_la = this._input.LA(1);
+				while (_la===40) {
+					{
+					{
+					this.state = 187;
+					this.match(YiniParser.NL);
+					}
+					}
+					this.state = 192;
+					this._errHandler.sync(this);
+					_la = this._input.LA(1);
+				}
+				this.state = 193;
+				this.match(YiniParser.CC);
+				this.state = 197;
+				this._errHandler.sync(this);
+				_alt = this._interp.adaptivePredict(this._input, 28, this._ctx);
 				while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
 					if (_alt === 1) {
 						{
 						{
-						this.state = 176;
+						this.state = 194;
 						this.match(YiniParser.NL);
 						}
 						}
 					}
-					this.state = 181;
+					this.state = 199;
 					this._errHandler.sync(this);
-					_alt = this._interp.adaptivePredict(this._input, 26, this._ctx);
+					_alt = this._interp.adaptivePredict(this._input, 28, this._ctx);
+				}
+				}
+				break;
+			case 26:
+				this.enterOuterAlt(localctx, 2);
+				{
+				this.state = 200;
+				this.match(YiniParser.EMPTY_OBJECT);
+				this.state = 204;
+				this._errHandler.sync(this);
+				_alt = this._interp.adaptivePredict(this._input, 29, this._ctx);
+				while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
+					if (_alt === 1) {
+						{
+						{
+						this.state = 201;
+						this.match(YiniParser.NL);
+						}
+						}
+					}
+					this.state = 206;
+					this._errHandler.sync(this);
+					_alt = this._interp.adaptivePredict(this._input, 29, this._ctx);
 				}
 				}
 				break;
@@ -906,52 +1017,52 @@ export default class YiniParser extends Parser {
 	// @RuleVersion(0)
 	public object_members(): Object_membersContext {
 		let localctx: Object_membersContext = new Object_membersContext(this, this._ctx, this.state);
-		this.enterRule(localctx, 22, YiniParser.RULE_object_members);
+		this.enterRule(localctx, 26, YiniParser.RULE_object_members);
 		let _la: number;
 		try {
 			let _alt: number;
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 184;
+			this.state = 209;
 			this.object_member();
-			this.state = 195;
+			this.state = 220;
 			this._errHandler.sync(this);
-			_alt = this._interp.adaptivePredict(this._input, 29, this._ctx);
+			_alt = this._interp.adaptivePredict(this._input, 32, this._ctx);
 			while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
 				if (_alt === 1) {
 					{
 					{
-					this.state = 185;
+					this.state = 210;
 					this.match(YiniParser.COMMA);
-					this.state = 189;
+					this.state = 214;
 					this._errHandler.sync(this);
 					_la = this._input.LA(1);
-					while (_la===38) {
+					while (_la===40) {
 						{
 						{
-						this.state = 186;
+						this.state = 211;
 						this.match(YiniParser.NL);
 						}
 						}
-						this.state = 191;
+						this.state = 216;
 						this._errHandler.sync(this);
 						_la = this._input.LA(1);
 					}
-					this.state = 192;
+					this.state = 217;
 					this.object_member();
 					}
 					}
 				}
-				this.state = 197;
+				this.state = 222;
 				this._errHandler.sync(this);
-				_alt = this._interp.adaptivePredict(this._input, 29, this._ctx);
+				_alt = this._interp.adaptivePredict(this._input, 32, this._ctx);
 			}
-			this.state = 199;
+			this.state = 224;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (_la===11) {
+			if (_la===12) {
 				{
-				this.state = 198;
+				this.state = 223;
 				this.match(YiniParser.COMMA);
 				}
 			}
@@ -975,40 +1086,40 @@ export default class YiniParser extends Parser {
 	// @RuleVersion(0)
 	public object_member(): Object_memberContext {
 		let localctx: Object_memberContext = new Object_memberContext(this, this._ctx, this.state);
-		this.enterRule(localctx, 24, YiniParser.RULE_object_member);
+		this.enterRule(localctx, 28, YiniParser.RULE_object_member);
 		let _la: number;
 		try {
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 201;
+			this.state = 226;
 			this.match(YiniParser.KEY);
-			this.state = 203;
+			this.state = 228;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (_la===40) {
+			if (_la===42) {
 				{
-				this.state = 202;
+				this.state = 227;
 				this.match(YiniParser.WS);
 				}
 			}
 
-			this.state = 205;
+			this.state = 230;
 			this.match(YiniParser.COLON);
-			this.state = 209;
+			this.state = 234;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			while (_la===38) {
+			while (_la===40) {
 				{
 				{
-				this.state = 206;
+				this.state = 231;
 				this.match(YiniParser.NL);
 				}
 				}
-				this.state = 211;
+				this.state = 236;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
-			this.state = 212;
+			this.state = 237;
 			this.value();
 			}
 		}
@@ -1029,98 +1140,98 @@ export default class YiniParser extends Parser {
 	// @RuleVersion(0)
 	public list_literal(): List_literalContext {
 		let localctx: List_literalContext = new List_literalContext(this, this._ctx, this.state);
-		this.enterRule(localctx, 26, YiniParser.RULE_list_literal);
+		this.enterRule(localctx, 30, YiniParser.RULE_list_literal);
 		let _la: number;
 		try {
 			let _alt: number;
-			this.state = 244;
+			this.state = 269;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 13:
+			case 14:
 				this.enterOuterAlt(localctx, 1);
 				{
-				this.state = 214;
+				this.state = 239;
 				this.match(YiniParser.OB);
-				this.state = 218;
-				this._errHandler.sync(this);
-				_alt = this._interp.adaptivePredict(this._input, 33, this._ctx);
-				while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
-					if (_alt === 1) {
-						{
-						{
-						this.state = 215;
-						this.match(YiniParser.NL);
-						}
-						}
-					}
-					this.state = 220;
-					this._errHandler.sync(this);
-					_alt = this._interp.adaptivePredict(this._input, 33, this._ctx);
-				}
-				this.state = 222;
-				this._errHandler.sync(this);
-				_la = this._input.LA(1);
-				if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 2346754048) !== 0)) {
-					{
-					this.state = 221;
-					this.elements();
-					}
-				}
-
-				this.state = 227;
-				this._errHandler.sync(this);
-				_la = this._input.LA(1);
-				while (_la===38) {
-					{
-					{
-					this.state = 224;
-					this.match(YiniParser.NL);
-					}
-					}
-					this.state = 229;
-					this._errHandler.sync(this);
-					_la = this._input.LA(1);
-				}
-				this.state = 230;
-				this.match(YiniParser.CB);
-				this.state = 234;
+				this.state = 243;
 				this._errHandler.sync(this);
 				_alt = this._interp.adaptivePredict(this._input, 36, this._ctx);
 				while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
 					if (_alt === 1) {
 						{
 						{
-						this.state = 231;
+						this.state = 240;
 						this.match(YiniParser.NL);
 						}
 						}
 					}
-					this.state = 236;
+					this.state = 245;
 					this._errHandler.sync(this);
 					_alt = this._interp.adaptivePredict(this._input, 36, this._ctx);
 				}
-				}
-				break;
-			case 25:
-				this.enterOuterAlt(localctx, 2);
-				{
-				this.state = 237;
-				this.match(YiniParser.EMPTY_LIST);
-				this.state = 241;
+				this.state = 247;
 				this._errHandler.sync(this);
-				_alt = this._interp.adaptivePredict(this._input, 37, this._ctx);
+				_la = this._input.LA(1);
+				if (((((_la - 14)) & ~0x1F) === 0 && ((1 << (_la - 14)) & 572933) !== 0)) {
+					{
+					this.state = 246;
+					this.elements();
+					}
+				}
+
+				this.state = 252;
+				this._errHandler.sync(this);
+				_la = this._input.LA(1);
+				while (_la===40) {
+					{
+					{
+					this.state = 249;
+					this.match(YiniParser.NL);
+					}
+					}
+					this.state = 254;
+					this._errHandler.sync(this);
+					_la = this._input.LA(1);
+				}
+				this.state = 255;
+				this.match(YiniParser.CB);
+				this.state = 259;
+				this._errHandler.sync(this);
+				_alt = this._interp.adaptivePredict(this._input, 39, this._ctx);
 				while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
 					if (_alt === 1) {
 						{
 						{
-						this.state = 238;
+						this.state = 256;
 						this.match(YiniParser.NL);
 						}
 						}
 					}
-					this.state = 243;
+					this.state = 261;
 					this._errHandler.sync(this);
-					_alt = this._interp.adaptivePredict(this._input, 37, this._ctx);
+					_alt = this._interp.adaptivePredict(this._input, 39, this._ctx);
+				}
+				}
+				break;
+			case 27:
+				this.enterOuterAlt(localctx, 2);
+				{
+				this.state = 262;
+				this.match(YiniParser.EMPTY_LIST);
+				this.state = 266;
+				this._errHandler.sync(this);
+				_alt = this._interp.adaptivePredict(this._input, 40, this._ctx);
+				while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
+					if (_alt === 1) {
+						{
+						{
+						this.state = 263;
+						this.match(YiniParser.NL);
+						}
+						}
+					}
+					this.state = 268;
+					this._errHandler.sync(this);
+					_alt = this._interp.adaptivePredict(this._input, 40, this._ctx);
 				}
 				}
 				break;
@@ -1145,66 +1256,66 @@ export default class YiniParser extends Parser {
 	// @RuleVersion(0)
 	public elements(): ElementsContext {
 		let localctx: ElementsContext = new ElementsContext(this, this._ctx, this.state);
-		this.enterRule(localctx, 28, YiniParser.RULE_elements);
+		this.enterRule(localctx, 32, YiniParser.RULE_elements);
 		let _la: number;
 		try {
 			let _alt: number;
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 246;
+			this.state = 271;
 			this.value();
-			this.state = 263;
+			this.state = 288;
 			this._errHandler.sync(this);
-			_alt = this._interp.adaptivePredict(this._input, 41, this._ctx);
+			_alt = this._interp.adaptivePredict(this._input, 44, this._ctx);
 			while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
 				if (_alt === 1) {
 					{
 					{
-					this.state = 250;
+					this.state = 275;
 					this._errHandler.sync(this);
 					_la = this._input.LA(1);
-					while (_la===38) {
+					while (_la===40) {
 						{
 						{
-						this.state = 247;
+						this.state = 272;
 						this.match(YiniParser.NL);
 						}
 						}
-						this.state = 252;
+						this.state = 277;
 						this._errHandler.sync(this);
 						_la = this._input.LA(1);
 					}
-					this.state = 253;
+					this.state = 278;
 					this.match(YiniParser.COMMA);
-					this.state = 257;
+					this.state = 282;
 					this._errHandler.sync(this);
 					_la = this._input.LA(1);
-					while (_la===38) {
+					while (_la===40) {
 						{
 						{
-						this.state = 254;
+						this.state = 279;
 						this.match(YiniParser.NL);
 						}
 						}
-						this.state = 259;
+						this.state = 284;
 						this._errHandler.sync(this);
 						_la = this._input.LA(1);
 					}
-					this.state = 260;
+					this.state = 285;
 					this.value();
 					}
 					}
 				}
-				this.state = 265;
+				this.state = 290;
 				this._errHandler.sync(this);
-				_alt = this._interp.adaptivePredict(this._input, 41, this._ctx);
+				_alt = this._interp.adaptivePredict(this._input, 44, this._ctx);
 			}
-			this.state = 267;
+			this.state = 292;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (_la===11) {
+			if (_la===12) {
 				{
-				this.state = 266;
+				this.state = 291;
 				this.match(YiniParser.COMMA);
 				}
 			}
@@ -1228,11 +1339,11 @@ export default class YiniParser extends Parser {
 	// @RuleVersion(0)
 	public number_literal(): Number_literalContext {
 		let localctx: Number_literalContext = new Number_literalContext(this, this._ctx, this.state);
-		this.enterRule(localctx, 30, YiniParser.RULE_number_literal);
+		this.enterRule(localctx, 34, YiniParser.RULE_number_literal);
 		try {
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 269;
+			this.state = 294;
 			this.match(YiniParser.NUMBER);
 			}
 		}
@@ -1253,11 +1364,11 @@ export default class YiniParser extends Parser {
 	// @RuleVersion(0)
 	public null_literal(): Null_literalContext {
 		let localctx: Null_literalContext = new Null_literalContext(this, this._ctx, this.state);
-		this.enterRule(localctx, 32, YiniParser.RULE_null_literal);
+		this.enterRule(localctx, 36, YiniParser.RULE_null_literal);
 		try {
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 271;
+			this.state = 296;
 			this.match(YiniParser.NULL);
 			}
 		}
@@ -1278,28 +1389,28 @@ export default class YiniParser extends Parser {
 	// @RuleVersion(0)
 	public string_literal(): String_literalContext {
 		let localctx: String_literalContext = new String_literalContext(this, this._ctx, this.state);
-		this.enterRule(localctx, 34, YiniParser.RULE_string_literal);
+		this.enterRule(localctx, 38, YiniParser.RULE_string_literal);
 		try {
 			let _alt: number;
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 273;
+			this.state = 298;
 			this.match(YiniParser.STRING);
-			this.state = 277;
+			this.state = 302;
 			this._errHandler.sync(this);
-			_alt = this._interp.adaptivePredict(this._input, 43, this._ctx);
+			_alt = this._interp.adaptivePredict(this._input, 46, this._ctx);
 			while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
 				if (_alt === 1) {
 					{
 					{
-					this.state = 274;
+					this.state = 299;
 					this.string_concat();
 					}
 					}
 				}
-				this.state = 279;
+				this.state = 304;
 				this._errHandler.sync(this);
-				_alt = this._interp.adaptivePredict(this._input, 43, this._ctx);
+				_alt = this._interp.adaptivePredict(this._input, 46, this._ctx);
 			}
 			}
 		}
@@ -1320,42 +1431,42 @@ export default class YiniParser extends Parser {
 	// @RuleVersion(0)
 	public string_concat(): String_concatContext {
 		let localctx: String_concatContext = new String_concatContext(this, this._ctx, this.state);
-		this.enterRule(localctx, 36, YiniParser.RULE_string_concat);
+		this.enterRule(localctx, 40, YiniParser.RULE_string_concat);
 		let _la: number;
 		try {
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 283;
+			this.state = 308;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			while (_la===38) {
+			while (_la===40) {
 				{
 				{
-				this.state = 280;
+				this.state = 305;
 				this.match(YiniParser.NL);
 				}
 				}
-				this.state = 285;
+				this.state = 310;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
-			this.state = 286;
+			this.state = 311;
 			this.match(YiniParser.PLUS);
-			this.state = 290;
+			this.state = 315;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			while (_la===38) {
+			while (_la===40) {
 				{
 				{
-				this.state = 287;
+				this.state = 312;
 				this.match(YiniParser.NL);
 				}
 				}
-				this.state = 292;
+				this.state = 317;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
-			this.state = 293;
+			this.state = 318;
 			this.match(YiniParser.STRING);
 			}
 		}
@@ -1376,14 +1487,14 @@ export default class YiniParser extends Parser {
 	// @RuleVersion(0)
 	public boolean_literal(): Boolean_literalContext {
 		let localctx: Boolean_literalContext = new Boolean_literalContext(this, this._ctx, this.state);
-		this.enterRule(localctx, 38, YiniParser.RULE_boolean_literal);
+		this.enterRule(localctx, 42, YiniParser.RULE_boolean_literal);
 		let _la: number;
 		try {
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 295;
+			this.state = 320;
 			_la = this._input.LA(1);
-			if(!(_la===21 || _la===22)) {
+			if(!(_la===23 || _la===24)) {
 			this._errHandler.recoverInline(this);
 			}
 			else {
@@ -1407,96 +1518,121 @@ export default class YiniParser extends Parser {
 		return localctx;
 	}
 	// @RuleVersion(0)
+	public bad_meta_text(): Bad_meta_textContext {
+		let localctx: Bad_meta_textContext = new Bad_meta_textContext(this, this._ctx, this.state);
+		this.enterRule(localctx, 44, YiniParser.RULE_bad_meta_text);
+		try {
+			this.enterOuterAlt(localctx, 1);
+			{
+			this.state = 322;
+			this.match(YiniParser.META_INVALID);
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return localctx;
+	}
+	// @RuleVersion(0)
 	public bad_member(): Bad_memberContext {
 		let localctx: Bad_memberContext = new Bad_memberContext(this, this._ctx, this.state);
-		this.enterRule(localctx, 40, YiniParser.RULE_bad_member);
+		this.enterRule(localctx, 46, YiniParser.RULE_bad_member);
 		let _la: number;
 		try {
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 298;
+			this.state = 325;
 			this._errHandler.sync(this);
-			switch ( this._interp.adaptivePredict(this._input, 46, this._ctx) ) {
+			switch ( this._interp.adaptivePredict(this._input, 49, this._ctx) ) {
 			case 1:
 				{
-				this.state = 297;
+				this.state = 324;
 				this.match(YiniParser.WS);
 				}
 				break;
 			}
-			this.state = 302;
+			this.state = 329;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 46:
+			case 48:
 				{
-				this.state = 300;
+				this.state = 327;
 				this.match(YiniParser.REST);
 				}
 				break;
-			case 13:
-			case 15:
-			case 21:
-			case 22:
+			case 14:
+			case 16:
 			case 23:
 			case 24:
 			case 25:
+			case 26:
 			case 27:
-			case 31:
+			case 29:
+			case 33:
 				{
-				this.state = 301;
+				this.state = 328;
 				this.value();
 				}
 				break;
-			case 9:
-			case 40:
+			case 10:
+			case 42:
 				break;
 			default:
 				break;
 			}
-			this.state = 305;
+			this.state = 332;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (_la===40) {
+			if (_la===42) {
 				{
-				this.state = 304;
+				this.state = 331;
 				this.match(YiniParser.WS);
 				}
 			}
 
-			this.state = 307;
+			this.state = 334;
 			this.match(YiniParser.EQ);
-			this.state = 310;
+			this.state = 337;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 13:
-			case 15:
-			case 21:
-			case 22:
+			case 14:
+			case 16:
 			case 23:
 			case 24:
 			case 25:
+			case 26:
 			case 27:
-			case 31:
+			case 29:
+			case 33:
 				{
-				this.state = 308;
+				this.state = 335;
 				this.value();
 				}
 				break;
-			case 46:
+			case 48:
 				{
-				this.state = 309;
+				this.state = 336;
 				this.match(YiniParser.REST);
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
-			this.state = 313;
+			this.state = 340;
 			this._errHandler.sync(this);
-			switch ( this._interp.adaptivePredict(this._input, 50, this._ctx) ) {
+			switch ( this._interp.adaptivePredict(this._input, 53, this._ctx) ) {
 			case 1:
 				{
-				this.state = 312;
+				this.state = 339;
 				this.eol();
 				}
 				break;
@@ -1518,114 +1654,123 @@ export default class YiniParser extends Parser {
 		return localctx;
 	}
 
-	public static readonly _serializedATN: number[] = [4,1,46,316,2,0,7,0,2,
+	public static readonly _serializedATN: number[] = [4,1,49,343,2,0,7,0,2,
 	1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,7,7,7,2,8,7,8,2,9,7,9,2,
 	10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,2,14,7,14,2,15,7,15,2,16,7,16,2,17,
-	7,17,2,18,7,18,2,19,7,19,2,20,7,20,1,0,3,0,44,8,0,1,0,5,0,47,8,0,10,0,12,
-	0,50,9,0,1,0,3,0,53,8,0,1,0,1,0,1,1,1,1,5,1,59,8,1,10,1,12,1,62,9,1,1,1,
-	4,1,65,8,1,11,1,12,1,66,3,1,69,8,1,1,2,1,2,1,2,3,2,74,8,2,1,2,5,2,77,8,
-	2,10,2,12,2,80,9,2,1,3,1,3,1,3,1,3,1,3,1,3,3,3,88,8,3,1,4,1,4,1,4,1,5,3,
-	5,94,8,5,1,5,4,5,97,8,5,11,5,12,5,98,1,6,1,6,1,6,1,7,1,7,3,7,106,8,7,1,
-	7,1,7,3,7,110,8,7,1,7,3,7,113,8,7,1,8,1,8,3,8,117,8,8,1,8,1,8,1,8,4,8,122,
-	8,8,11,8,12,8,123,5,8,126,8,8,10,8,12,8,129,9,8,1,8,1,8,1,8,4,8,134,8,8,
-	11,8,12,8,135,5,8,138,8,8,10,8,12,8,141,9,8,1,8,1,8,1,9,1,9,1,9,1,9,1,9,
-	1,9,3,9,151,8,9,1,10,1,10,5,10,155,8,10,10,10,12,10,158,9,10,1,10,3,10,
-	161,8,10,1,10,5,10,164,8,10,10,10,12,10,167,9,10,1,10,1,10,5,10,171,8,10,
-	10,10,12,10,174,9,10,1,10,1,10,5,10,178,8,10,10,10,12,10,181,9,10,3,10,
-	183,8,10,1,11,1,11,1,11,5,11,188,8,11,10,11,12,11,191,9,11,1,11,5,11,194,
-	8,11,10,11,12,11,197,9,11,1,11,3,11,200,8,11,1,12,1,12,3,12,204,8,12,1,
-	12,1,12,5,12,208,8,12,10,12,12,12,211,9,12,1,12,1,12,1,13,1,13,5,13,217,
-	8,13,10,13,12,13,220,9,13,1,13,3,13,223,8,13,1,13,5,13,226,8,13,10,13,12,
-	13,229,9,13,1,13,1,13,5,13,233,8,13,10,13,12,13,236,9,13,1,13,1,13,5,13,
-	240,8,13,10,13,12,13,243,9,13,3,13,245,8,13,1,14,1,14,5,14,249,8,14,10,
-	14,12,14,252,9,14,1,14,1,14,5,14,256,8,14,10,14,12,14,259,9,14,1,14,5,14,
-	262,8,14,10,14,12,14,265,9,14,1,14,3,14,268,8,14,1,15,1,15,1,16,1,16,1,
-	17,1,17,5,17,276,8,17,10,17,12,17,279,9,17,1,18,5,18,282,8,18,10,18,12,
-	18,285,9,18,1,18,1,18,5,18,289,8,18,10,18,12,18,292,9,18,1,18,1,18,1,19,
-	1,19,1,20,3,20,299,8,20,1,20,1,20,3,20,303,8,20,1,20,3,20,306,8,20,1,20,
-	1,20,1,20,3,20,311,8,20,1,20,3,20,314,8,20,1,20,0,0,21,0,2,4,6,8,10,12,
-	14,16,18,20,22,24,26,28,30,32,34,36,38,40,0,1,1,0,21,22,355,0,43,1,0,0,
-	0,2,68,1,0,0,0,4,70,1,0,0,0,6,87,1,0,0,0,8,89,1,0,0,0,10,93,1,0,0,0,12,
-	100,1,0,0,0,14,103,1,0,0,0,16,114,1,0,0,0,18,150,1,0,0,0,20,182,1,0,0,0,
-	22,184,1,0,0,0,24,201,1,0,0,0,26,244,1,0,0,0,28,246,1,0,0,0,30,269,1,0,
-	0,0,32,271,1,0,0,0,34,273,1,0,0,0,36,283,1,0,0,0,38,295,1,0,0,0,40,298,
-	1,0,0,0,42,44,3,2,1,0,43,42,1,0,0,0,43,44,1,0,0,0,44,48,1,0,0,0,45,47,3,
-	6,3,0,46,45,1,0,0,0,47,50,1,0,0,0,48,46,1,0,0,0,48,49,1,0,0,0,49,52,1,0,
-	0,0,50,48,1,0,0,0,51,53,3,4,2,0,52,51,1,0,0,0,52,53,1,0,0,0,53,54,1,0,0,
-	0,54,55,5,0,0,1,55,1,1,0,0,0,56,60,5,26,0,0,57,59,3,10,5,0,58,57,1,0,0,
-	0,59,62,1,0,0,0,60,58,1,0,0,0,60,61,1,0,0,0,61,69,1,0,0,0,62,60,1,0,0,0,
-	63,65,3,10,5,0,64,63,1,0,0,0,65,66,1,0,0,0,66,64,1,0,0,0,66,67,1,0,0,0,
-	67,69,1,0,0,0,68,56,1,0,0,0,68,64,1,0,0,0,69,3,1,0,0,0,70,73,5,3,0,0,71,
-	74,3,10,5,0,72,74,5,44,0,0,73,71,1,0,0,0,73,72,1,0,0,0,73,74,1,0,0,0,74,
-	78,1,0,0,0,75,77,5,38,0,0,76,75,1,0,0,0,77,80,1,0,0,0,78,76,1,0,0,0,78,
-	79,1,0,0,0,79,5,1,0,0,0,80,78,1,0,0,0,81,88,3,10,5,0,82,88,5,2,0,0,83,88,
-	3,12,6,0,84,88,3,16,8,0,85,88,3,8,4,0,86,88,3,40,20,0,87,81,1,0,0,0,87,
-	82,1,0,0,0,87,83,1,0,0,0,87,84,1,0,0,0,87,85,1,0,0,0,87,86,1,0,0,0,88,7,
-	1,0,0,0,89,90,5,1,0,0,90,91,3,10,5,0,91,9,1,0,0,0,92,94,5,44,0,0,93,92,
-	1,0,0,0,93,94,1,0,0,0,94,96,1,0,0,0,95,97,5,38,0,0,96,95,1,0,0,0,97,98,
-	1,0,0,0,98,96,1,0,0,0,98,99,1,0,0,0,99,11,1,0,0,0,100,101,3,14,7,0,101,
-	102,3,10,5,0,102,13,1,0,0,0,103,105,5,28,0,0,104,106,5,40,0,0,105,104,1,
-	0,0,0,105,106,1,0,0,0,106,107,1,0,0,0,107,109,5,9,0,0,108,110,5,40,0,0,
-	109,108,1,0,0,0,109,110,1,0,0,0,110,112,1,0,0,0,111,113,3,18,9,0,112,111,
-	1,0,0,0,112,113,1,0,0,0,113,15,1,0,0,0,114,116,5,28,0,0,115,117,5,40,0,
-	0,116,115,1,0,0,0,116,117,1,0,0,0,117,118,1,0,0,0,118,127,5,12,0,0,119,
-	126,3,10,5,0,120,122,5,40,0,0,121,120,1,0,0,0,122,123,1,0,0,0,123,121,1,
-	0,0,0,123,124,1,0,0,0,124,126,1,0,0,0,125,119,1,0,0,0,125,121,1,0,0,0,126,
-	129,1,0,0,0,127,125,1,0,0,0,127,128,1,0,0,0,128,130,1,0,0,0,129,127,1,0,
-	0,0,130,139,3,28,14,0,131,138,3,10,5,0,132,134,5,40,0,0,133,132,1,0,0,0,
-	134,135,1,0,0,0,135,133,1,0,0,0,135,136,1,0,0,0,136,138,1,0,0,0,137,131,
-	1,0,0,0,137,133,1,0,0,0,138,141,1,0,0,0,139,137,1,0,0,0,139,140,1,0,0,0,
-	140,142,1,0,0,0,141,139,1,0,0,0,142,143,3,10,5,0,143,17,1,0,0,0,144,151,
-	3,32,16,0,145,151,3,34,17,0,146,151,3,30,15,0,147,151,3,38,19,0,148,151,
-	3,26,13,0,149,151,3,20,10,0,150,144,1,0,0,0,150,145,1,0,0,0,150,146,1,0,
-	0,0,150,147,1,0,0,0,150,148,1,0,0,0,150,149,1,0,0,0,151,19,1,0,0,0,152,
-	156,5,15,0,0,153,155,5,38,0,0,154,153,1,0,0,0,155,158,1,0,0,0,156,154,1,
-	0,0,0,156,157,1,0,0,0,157,160,1,0,0,0,158,156,1,0,0,0,159,161,3,22,11,0,
-	160,159,1,0,0,0,160,161,1,0,0,0,161,165,1,0,0,0,162,164,5,38,0,0,163,162,
-	1,0,0,0,164,167,1,0,0,0,165,163,1,0,0,0,165,166,1,0,0,0,166,168,1,0,0,0,
-	167,165,1,0,0,0,168,172,5,16,0,0,169,171,5,38,0,0,170,169,1,0,0,0,171,174,
-	1,0,0,0,172,170,1,0,0,0,172,173,1,0,0,0,173,183,1,0,0,0,174,172,1,0,0,0,
-	175,179,5,24,0,0,176,178,5,38,0,0,177,176,1,0,0,0,178,181,1,0,0,0,179,177,
-	1,0,0,0,179,180,1,0,0,0,180,183,1,0,0,0,181,179,1,0,0,0,182,152,1,0,0,0,
-	182,175,1,0,0,0,183,21,1,0,0,0,184,195,3,24,12,0,185,189,5,11,0,0,186,188,
-	5,38,0,0,187,186,1,0,0,0,188,191,1,0,0,0,189,187,1,0,0,0,189,190,1,0,0,
-	0,190,192,1,0,0,0,191,189,1,0,0,0,192,194,3,24,12,0,193,185,1,0,0,0,194,
-	197,1,0,0,0,195,193,1,0,0,0,195,196,1,0,0,0,196,199,1,0,0,0,197,195,1,0,
-	0,0,198,200,5,11,0,0,199,198,1,0,0,0,199,200,1,0,0,0,200,23,1,0,0,0,201,
-	203,5,28,0,0,202,204,5,40,0,0,203,202,1,0,0,0,203,204,1,0,0,0,204,205,1,
-	0,0,0,205,209,5,12,0,0,206,208,5,38,0,0,207,206,1,0,0,0,208,211,1,0,0,0,
-	209,207,1,0,0,0,209,210,1,0,0,0,210,212,1,0,0,0,211,209,1,0,0,0,212,213,
-	3,18,9,0,213,25,1,0,0,0,214,218,5,13,0,0,215,217,5,38,0,0,216,215,1,0,0,
-	0,217,220,1,0,0,0,218,216,1,0,0,0,218,219,1,0,0,0,219,222,1,0,0,0,220,218,
-	1,0,0,0,221,223,3,28,14,0,222,221,1,0,0,0,222,223,1,0,0,0,223,227,1,0,0,
-	0,224,226,5,38,0,0,225,224,1,0,0,0,226,229,1,0,0,0,227,225,1,0,0,0,227,
-	228,1,0,0,0,228,230,1,0,0,0,229,227,1,0,0,0,230,234,5,14,0,0,231,233,5,
-	38,0,0,232,231,1,0,0,0,233,236,1,0,0,0,234,232,1,0,0,0,234,235,1,0,0,0,
-	235,245,1,0,0,0,236,234,1,0,0,0,237,241,5,25,0,0,238,240,5,38,0,0,239,238,
-	1,0,0,0,240,243,1,0,0,0,241,239,1,0,0,0,241,242,1,0,0,0,242,245,1,0,0,0,
-	243,241,1,0,0,0,244,214,1,0,0,0,244,237,1,0,0,0,245,27,1,0,0,0,246,263,
-	3,18,9,0,247,249,5,38,0,0,248,247,1,0,0,0,249,252,1,0,0,0,250,248,1,0,0,
-	0,250,251,1,0,0,0,251,253,1,0,0,0,252,250,1,0,0,0,253,257,5,11,0,0,254,
-	256,5,38,0,0,255,254,1,0,0,0,256,259,1,0,0,0,257,255,1,0,0,0,257,258,1,
-	0,0,0,258,260,1,0,0,0,259,257,1,0,0,0,260,262,3,18,9,0,261,250,1,0,0,0,
-	262,265,1,0,0,0,263,261,1,0,0,0,263,264,1,0,0,0,264,267,1,0,0,0,265,263,
-	1,0,0,0,266,268,5,11,0,0,267,266,1,0,0,0,267,268,1,0,0,0,268,29,1,0,0,0,
-	269,270,5,27,0,0,270,31,1,0,0,0,271,272,5,23,0,0,272,33,1,0,0,0,273,277,
-	5,31,0,0,274,276,3,36,18,0,275,274,1,0,0,0,276,279,1,0,0,0,277,275,1,0,
-	0,0,277,278,1,0,0,0,278,35,1,0,0,0,279,277,1,0,0,0,280,282,5,38,0,0,281,
-	280,1,0,0,0,282,285,1,0,0,0,283,281,1,0,0,0,283,284,1,0,0,0,284,286,1,0,
-	0,0,285,283,1,0,0,0,286,290,5,17,0,0,287,289,5,38,0,0,288,287,1,0,0,0,289,
-	292,1,0,0,0,290,288,1,0,0,0,290,291,1,0,0,0,291,293,1,0,0,0,292,290,1,0,
-	0,0,293,294,5,31,0,0,294,37,1,0,0,0,295,296,7,0,0,0,296,39,1,0,0,0,297,
-	299,5,40,0,0,298,297,1,0,0,0,298,299,1,0,0,0,299,302,1,0,0,0,300,303,5,
-	46,0,0,301,303,3,18,9,0,302,300,1,0,0,0,302,301,1,0,0,0,302,303,1,0,0,0,
-	303,305,1,0,0,0,304,306,5,40,0,0,305,304,1,0,0,0,305,306,1,0,0,0,306,307,
-	1,0,0,0,307,310,5,9,0,0,308,311,3,18,9,0,309,311,5,46,0,0,310,308,1,0,0,
-	0,310,309,1,0,0,0,311,313,1,0,0,0,312,314,3,10,5,0,313,312,1,0,0,0,313,
-	314,1,0,0,0,314,41,1,0,0,0,51,43,48,52,60,66,68,73,78,87,93,98,105,109,
-	112,116,123,125,127,135,137,139,150,156,160,165,172,179,182,189,195,199,
-	203,209,218,222,227,234,241,244,250,257,263,267,277,283,290,298,302,305,
-	310,313];
+	7,17,2,18,7,18,2,19,7,19,2,20,7,20,2,21,7,21,2,22,7,22,2,23,7,23,1,0,3,
+	0,50,8,0,1,0,5,0,53,8,0,10,0,12,0,56,9,0,1,0,3,0,59,8,0,1,0,1,0,1,1,1,1,
+	5,1,65,8,1,10,1,12,1,68,9,1,1,1,4,1,71,8,1,11,1,12,1,72,3,1,75,8,1,1,2,
+	1,2,1,2,3,2,80,8,2,1,2,5,2,83,8,2,10,2,12,2,86,9,2,1,3,1,3,1,3,1,3,1,3,
+	1,3,3,3,94,8,3,1,4,1,4,1,4,1,4,1,4,3,4,101,8,4,1,5,1,5,1,5,1,6,1,6,5,6,
+	108,8,6,10,6,12,6,111,9,6,1,6,3,6,114,8,6,1,6,1,6,1,7,3,7,119,8,7,1,7,4,
+	7,122,8,7,11,7,12,7,123,1,8,1,8,1,8,1,9,1,9,3,9,131,8,9,1,9,1,9,3,9,135,
+	8,9,1,9,3,9,138,8,9,1,10,1,10,3,10,142,8,10,1,10,1,10,1,10,4,10,147,8,10,
+	11,10,12,10,148,5,10,151,8,10,10,10,12,10,154,9,10,1,10,1,10,1,10,4,10,
+	159,8,10,11,10,12,10,160,5,10,163,8,10,10,10,12,10,166,9,10,1,10,1,10,1,
+	11,1,11,1,11,1,11,1,11,1,11,3,11,176,8,11,1,12,1,12,5,12,180,8,12,10,12,
+	12,12,183,9,12,1,12,3,12,186,8,12,1,12,5,12,189,8,12,10,12,12,12,192,9,
+	12,1,12,1,12,5,12,196,8,12,10,12,12,12,199,9,12,1,12,1,12,5,12,203,8,12,
+	10,12,12,12,206,9,12,3,12,208,8,12,1,13,1,13,1,13,5,13,213,8,13,10,13,12,
+	13,216,9,13,1,13,5,13,219,8,13,10,13,12,13,222,9,13,1,13,3,13,225,8,13,
+	1,14,1,14,3,14,229,8,14,1,14,1,14,5,14,233,8,14,10,14,12,14,236,9,14,1,
+	14,1,14,1,15,1,15,5,15,242,8,15,10,15,12,15,245,9,15,1,15,3,15,248,8,15,
+	1,15,5,15,251,8,15,10,15,12,15,254,9,15,1,15,1,15,5,15,258,8,15,10,15,12,
+	15,261,9,15,1,15,1,15,5,15,265,8,15,10,15,12,15,268,9,15,3,15,270,8,15,
+	1,16,1,16,5,16,274,8,16,10,16,12,16,277,9,16,1,16,1,16,5,16,281,8,16,10,
+	16,12,16,284,9,16,1,16,5,16,287,8,16,10,16,12,16,290,9,16,1,16,3,16,293,
+	8,16,1,17,1,17,1,18,1,18,1,19,1,19,5,19,301,8,19,10,19,12,19,304,9,19,1,
+	20,5,20,307,8,20,10,20,12,20,310,9,20,1,20,1,20,5,20,314,8,20,10,20,12,
+	20,317,9,20,1,20,1,20,1,21,1,21,1,22,1,22,1,23,3,23,326,8,23,1,23,1,23,
+	3,23,330,8,23,1,23,3,23,333,8,23,1,23,1,23,1,23,3,23,338,8,23,1,23,3,23,
+	341,8,23,1,23,0,0,24,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,
+	38,40,42,44,46,0,1,1,0,23,24,383,0,49,1,0,0,0,2,74,1,0,0,0,4,76,1,0,0,0,
+	6,93,1,0,0,0,8,100,1,0,0,0,10,102,1,0,0,0,12,105,1,0,0,0,14,118,1,0,0,0,
+	16,125,1,0,0,0,18,128,1,0,0,0,20,139,1,0,0,0,22,175,1,0,0,0,24,207,1,0,
+	0,0,26,209,1,0,0,0,28,226,1,0,0,0,30,269,1,0,0,0,32,271,1,0,0,0,34,294,
+	1,0,0,0,36,296,1,0,0,0,38,298,1,0,0,0,40,308,1,0,0,0,42,320,1,0,0,0,44,
+	322,1,0,0,0,46,325,1,0,0,0,48,50,3,2,1,0,49,48,1,0,0,0,49,50,1,0,0,0,50,
+	54,1,0,0,0,51,53,3,6,3,0,52,51,1,0,0,0,53,56,1,0,0,0,54,52,1,0,0,0,54,55,
+	1,0,0,0,55,58,1,0,0,0,56,54,1,0,0,0,57,59,3,4,2,0,58,57,1,0,0,0,58,59,1,
+	0,0,0,59,60,1,0,0,0,60,61,5,0,0,1,61,1,1,0,0,0,62,66,5,28,0,0,63,65,3,14,
+	7,0,64,63,1,0,0,0,65,68,1,0,0,0,66,64,1,0,0,0,66,67,1,0,0,0,67,75,1,0,0,
+	0,68,66,1,0,0,0,69,71,3,14,7,0,70,69,1,0,0,0,71,72,1,0,0,0,72,70,1,0,0,
+	0,72,73,1,0,0,0,73,75,1,0,0,0,74,62,1,0,0,0,74,70,1,0,0,0,75,3,1,0,0,0,
+	76,79,5,4,0,0,77,80,3,14,7,0,78,80,5,46,0,0,79,77,1,0,0,0,79,78,1,0,0,0,
+	79,80,1,0,0,0,80,84,1,0,0,0,81,83,5,40,0,0,82,81,1,0,0,0,83,86,1,0,0,0,
+	84,82,1,0,0,0,84,85,1,0,0,0,85,5,1,0,0,0,86,84,1,0,0,0,87,94,3,14,7,0,88,
+	94,5,3,0,0,89,94,3,16,8,0,90,94,3,20,10,0,91,94,3,8,4,0,92,94,3,46,23,0,
+	93,87,1,0,0,0,93,88,1,0,0,0,93,89,1,0,0,0,93,90,1,0,0,0,93,91,1,0,0,0,93,
+	92,1,0,0,0,94,7,1,0,0,0,95,101,3,10,5,0,96,101,3,12,6,0,97,98,3,44,22,0,
+	98,99,3,14,7,0,99,101,1,0,0,0,100,95,1,0,0,0,100,96,1,0,0,0,100,97,1,0,
+	0,0,101,9,1,0,0,0,102,103,5,1,0,0,103,104,3,14,7,0,104,11,1,0,0,0,105,109,
+	5,2,0,0,106,108,5,42,0,0,107,106,1,0,0,0,108,111,1,0,0,0,109,107,1,0,0,
+	0,109,110,1,0,0,0,110,113,1,0,0,0,111,109,1,0,0,0,112,114,3,38,19,0,113,
+	112,1,0,0,0,113,114,1,0,0,0,114,115,1,0,0,0,115,116,3,14,7,0,116,13,1,0,
+	0,0,117,119,5,46,0,0,118,117,1,0,0,0,118,119,1,0,0,0,119,121,1,0,0,0,120,
+	122,5,40,0,0,121,120,1,0,0,0,122,123,1,0,0,0,123,121,1,0,0,0,123,124,1,
+	0,0,0,124,15,1,0,0,0,125,126,3,18,9,0,126,127,3,14,7,0,127,17,1,0,0,0,128,
+	130,5,30,0,0,129,131,5,42,0,0,130,129,1,0,0,0,130,131,1,0,0,0,131,132,1,
+	0,0,0,132,134,5,10,0,0,133,135,5,42,0,0,134,133,1,0,0,0,134,135,1,0,0,0,
+	135,137,1,0,0,0,136,138,3,22,11,0,137,136,1,0,0,0,137,138,1,0,0,0,138,19,
+	1,0,0,0,139,141,5,30,0,0,140,142,5,42,0,0,141,140,1,0,0,0,141,142,1,0,0,
+	0,142,143,1,0,0,0,143,152,5,13,0,0,144,151,3,14,7,0,145,147,5,42,0,0,146,
+	145,1,0,0,0,147,148,1,0,0,0,148,146,1,0,0,0,148,149,1,0,0,0,149,151,1,0,
+	0,0,150,144,1,0,0,0,150,146,1,0,0,0,151,154,1,0,0,0,152,150,1,0,0,0,152,
+	153,1,0,0,0,153,155,1,0,0,0,154,152,1,0,0,0,155,164,3,32,16,0,156,163,3,
+	14,7,0,157,159,5,42,0,0,158,157,1,0,0,0,159,160,1,0,0,0,160,158,1,0,0,0,
+	160,161,1,0,0,0,161,163,1,0,0,0,162,156,1,0,0,0,162,158,1,0,0,0,163,166,
+	1,0,0,0,164,162,1,0,0,0,164,165,1,0,0,0,165,167,1,0,0,0,166,164,1,0,0,0,
+	167,168,3,14,7,0,168,21,1,0,0,0,169,176,3,36,18,0,170,176,3,38,19,0,171,
+	176,3,34,17,0,172,176,3,42,21,0,173,176,3,30,15,0,174,176,3,24,12,0,175,
+	169,1,0,0,0,175,170,1,0,0,0,175,171,1,0,0,0,175,172,1,0,0,0,175,173,1,0,
+	0,0,175,174,1,0,0,0,176,23,1,0,0,0,177,181,5,16,0,0,178,180,5,40,0,0,179,
+	178,1,0,0,0,180,183,1,0,0,0,181,179,1,0,0,0,181,182,1,0,0,0,182,185,1,0,
+	0,0,183,181,1,0,0,0,184,186,3,26,13,0,185,184,1,0,0,0,185,186,1,0,0,0,186,
+	190,1,0,0,0,187,189,5,40,0,0,188,187,1,0,0,0,189,192,1,0,0,0,190,188,1,
+	0,0,0,190,191,1,0,0,0,191,193,1,0,0,0,192,190,1,0,0,0,193,197,5,17,0,0,
+	194,196,5,40,0,0,195,194,1,0,0,0,196,199,1,0,0,0,197,195,1,0,0,0,197,198,
+	1,0,0,0,198,208,1,0,0,0,199,197,1,0,0,0,200,204,5,26,0,0,201,203,5,40,0,
+	0,202,201,1,0,0,0,203,206,1,0,0,0,204,202,1,0,0,0,204,205,1,0,0,0,205,208,
+	1,0,0,0,206,204,1,0,0,0,207,177,1,0,0,0,207,200,1,0,0,0,208,25,1,0,0,0,
+	209,220,3,28,14,0,210,214,5,12,0,0,211,213,5,40,0,0,212,211,1,0,0,0,213,
+	216,1,0,0,0,214,212,1,0,0,0,214,215,1,0,0,0,215,217,1,0,0,0,216,214,1,0,
+	0,0,217,219,3,28,14,0,218,210,1,0,0,0,219,222,1,0,0,0,220,218,1,0,0,0,220,
+	221,1,0,0,0,221,224,1,0,0,0,222,220,1,0,0,0,223,225,5,12,0,0,224,223,1,
+	0,0,0,224,225,1,0,0,0,225,27,1,0,0,0,226,228,5,30,0,0,227,229,5,42,0,0,
+	228,227,1,0,0,0,228,229,1,0,0,0,229,230,1,0,0,0,230,234,5,13,0,0,231,233,
+	5,40,0,0,232,231,1,0,0,0,233,236,1,0,0,0,234,232,1,0,0,0,234,235,1,0,0,
+	0,235,237,1,0,0,0,236,234,1,0,0,0,237,238,3,22,11,0,238,29,1,0,0,0,239,
+	243,5,14,0,0,240,242,5,40,0,0,241,240,1,0,0,0,242,245,1,0,0,0,243,241,1,
+	0,0,0,243,244,1,0,0,0,244,247,1,0,0,0,245,243,1,0,0,0,246,248,3,32,16,0,
+	247,246,1,0,0,0,247,248,1,0,0,0,248,252,1,0,0,0,249,251,5,40,0,0,250,249,
+	1,0,0,0,251,254,1,0,0,0,252,250,1,0,0,0,252,253,1,0,0,0,253,255,1,0,0,0,
+	254,252,1,0,0,0,255,259,5,15,0,0,256,258,5,40,0,0,257,256,1,0,0,0,258,261,
+	1,0,0,0,259,257,1,0,0,0,259,260,1,0,0,0,260,270,1,0,0,0,261,259,1,0,0,0,
+	262,266,5,27,0,0,263,265,5,40,0,0,264,263,1,0,0,0,265,268,1,0,0,0,266,264,
+	1,0,0,0,266,267,1,0,0,0,267,270,1,0,0,0,268,266,1,0,0,0,269,239,1,0,0,0,
+	269,262,1,0,0,0,270,31,1,0,0,0,271,288,3,22,11,0,272,274,5,40,0,0,273,272,
+	1,0,0,0,274,277,1,0,0,0,275,273,1,0,0,0,275,276,1,0,0,0,276,278,1,0,0,0,
+	277,275,1,0,0,0,278,282,5,12,0,0,279,281,5,40,0,0,280,279,1,0,0,0,281,284,
+	1,0,0,0,282,280,1,0,0,0,282,283,1,0,0,0,283,285,1,0,0,0,284,282,1,0,0,0,
+	285,287,3,22,11,0,286,275,1,0,0,0,287,290,1,0,0,0,288,286,1,0,0,0,288,289,
+	1,0,0,0,289,292,1,0,0,0,290,288,1,0,0,0,291,293,5,12,0,0,292,291,1,0,0,
+	0,292,293,1,0,0,0,293,33,1,0,0,0,294,295,5,29,0,0,295,35,1,0,0,0,296,297,
+	5,25,0,0,297,37,1,0,0,0,298,302,5,33,0,0,299,301,3,40,20,0,300,299,1,0,
+	0,0,301,304,1,0,0,0,302,300,1,0,0,0,302,303,1,0,0,0,303,39,1,0,0,0,304,
+	302,1,0,0,0,305,307,5,40,0,0,306,305,1,0,0,0,307,310,1,0,0,0,308,306,1,
+	0,0,0,308,309,1,0,0,0,309,311,1,0,0,0,310,308,1,0,0,0,311,315,5,18,0,0,
+	312,314,5,40,0,0,313,312,1,0,0,0,314,317,1,0,0,0,315,313,1,0,0,0,315,316,
+	1,0,0,0,316,318,1,0,0,0,317,315,1,0,0,0,318,319,5,33,0,0,319,41,1,0,0,0,
+	320,321,7,0,0,0,321,43,1,0,0,0,322,323,5,49,0,0,323,45,1,0,0,0,324,326,
+	5,42,0,0,325,324,1,0,0,0,325,326,1,0,0,0,326,329,1,0,0,0,327,330,5,48,0,
+	0,328,330,3,22,11,0,329,327,1,0,0,0,329,328,1,0,0,0,329,330,1,0,0,0,330,
+	332,1,0,0,0,331,333,5,42,0,0,332,331,1,0,0,0,332,333,1,0,0,0,333,334,1,
+	0,0,0,334,337,5,10,0,0,335,338,3,22,11,0,336,338,5,48,0,0,337,335,1,0,0,
+	0,337,336,1,0,0,0,338,340,1,0,0,0,339,341,3,14,7,0,340,339,1,0,0,0,340,
+	341,1,0,0,0,341,47,1,0,0,0,54,49,54,58,66,72,74,79,84,93,100,109,113,118,
+	123,130,134,137,141,148,150,152,160,162,164,175,181,185,190,197,204,207,
+	214,220,224,228,234,243,247,252,259,266,269,275,282,288,292,302,308,315,
+	325,329,332,337,340];
 
 	private static __ATN: ATN;
 	public static get _ATN(): ATN {
@@ -1754,8 +1899,8 @@ export class StmtContext extends ParserRuleContext {
 	public colon_list_decl(): Colon_list_declContext {
 		return this.getTypedRuleContext(Colon_list_declContext, 0) as Colon_list_declContext;
 	}
-	public marker_stmt(): Marker_stmtContext {
-		return this.getTypedRuleContext(Marker_stmtContext, 0) as Marker_stmtContext;
+	public meta_stmt(): Meta_stmtContext {
+		return this.getTypedRuleContext(Meta_stmtContext, 0) as Meta_stmtContext;
 	}
 	public bad_member(): Bad_memberContext {
 		return this.getTypedRuleContext(Bad_memberContext, 0) as Bad_memberContext;
@@ -1774,24 +1919,89 @@ export class StmtContext extends ParserRuleContext {
 }
 
 
-export class Marker_stmtContext extends ParserRuleContext {
+export class Meta_stmtContext extends ParserRuleContext {
 	constructor(parser?: YiniParser, parent?: ParserRuleContext, invokingState?: number) {
 		super(parent, invokingState);
     	this.parser = parser;
 	}
-	public YINI_MARKER(): TerminalNode {
-		return this.getToken(YiniParser.YINI_MARKER, 0);
+	public directive(): DirectiveContext {
+		return this.getTypedRuleContext(DirectiveContext, 0) as DirectiveContext;
+	}
+	public pre_processing_command(): Pre_processing_commandContext {
+		return this.getTypedRuleContext(Pre_processing_commandContext, 0) as Pre_processing_commandContext;
+	}
+	public bad_meta_text(): Bad_meta_textContext {
+		return this.getTypedRuleContext(Bad_meta_textContext, 0) as Bad_meta_textContext;
 	}
 	public eol(): EolContext {
 		return this.getTypedRuleContext(EolContext, 0) as EolContext;
 	}
     public get ruleIndex(): number {
-    	return YiniParser.RULE_marker_stmt;
+    	return YiniParser.RULE_meta_stmt;
 	}
 	// @Override
 	public accept<Result>(visitor: YiniParserVisitor<Result>): Result {
-		if (visitor.visitMarker_stmt) {
-			return visitor.visitMarker_stmt(this);
+		if (visitor.visitMeta_stmt) {
+			return visitor.visitMeta_stmt(this);
+		} else {
+			return visitor.visitChildren(this);
+		}
+	}
+}
+
+
+export class DirectiveContext extends ParserRuleContext {
+	constructor(parser?: YiniParser, parent?: ParserRuleContext, invokingState?: number) {
+		super(parent, invokingState);
+    	this.parser = parser;
+	}
+	public YINI_TOKEN(): TerminalNode {
+		return this.getToken(YiniParser.YINI_TOKEN, 0);
+	}
+	public eol(): EolContext {
+		return this.getTypedRuleContext(EolContext, 0) as EolContext;
+	}
+    public get ruleIndex(): number {
+    	return YiniParser.RULE_directive;
+	}
+	// @Override
+	public accept<Result>(visitor: YiniParserVisitor<Result>): Result {
+		if (visitor.visitDirective) {
+			return visitor.visitDirective(this);
+		} else {
+			return visitor.visitChildren(this);
+		}
+	}
+}
+
+
+export class Pre_processing_commandContext extends ParserRuleContext {
+	constructor(parser?: YiniParser, parent?: ParserRuleContext, invokingState?: number) {
+		super(parent, invokingState);
+    	this.parser = parser;
+	}
+	public INCLUDE_TOKEN(): TerminalNode {
+		return this.getToken(YiniParser.INCLUDE_TOKEN, 0);
+	}
+	public eol(): EolContext {
+		return this.getTypedRuleContext(EolContext, 0) as EolContext;
+	}
+	public WS_list(): TerminalNode[] {
+	    	return this.getTokens(YiniParser.WS);
+	}
+	public WS(i: number): TerminalNode {
+		return this.getToken(YiniParser.WS, i);
+	}
+	public string_literal(): String_literalContext {
+		return this.getTypedRuleContext(String_literalContext, 0) as String_literalContext;
+	}
+    public get ruleIndex(): number {
+    	return YiniParser.RULE_pre_processing_command;
+	}
+	// @Override
+	public accept<Result>(visitor: YiniParserVisitor<Result>): Result {
+		if (visitor.visitPre_processing_command) {
+			return visitor.visitPre_processing_command(this);
 		} else {
 			return visitor.visitChildren(this);
 		}
@@ -2269,6 +2479,28 @@ export class Boolean_literalContext extends ParserRuleContext {
 	public accept<Result>(visitor: YiniParserVisitor<Result>): Result {
 		if (visitor.visitBoolean_literal) {
 			return visitor.visitBoolean_literal(this);
+		} else {
+			return visitor.visitChildren(this);
+		}
+	}
+}
+
+
+export class Bad_meta_textContext extends ParserRuleContext {
+	constructor(parser?: YiniParser, parent?: ParserRuleContext, invokingState?: number) {
+		super(parent, invokingState);
+    	this.parser = parser;
+	}
+	public META_INVALID(): TerminalNode {
+		return this.getToken(YiniParser.META_INVALID, 0);
+	}
+    public get ruleIndex(): number {
+    	return YiniParser.RULE_bad_meta_text;
+	}
+	// @Override
+	public accept<Result>(visitor: YiniParserVisitor<Result>): Result {
+		if (visitor.visitBad_meta_text) {
+			return visitor.visitBad_meta_text(this);
 		} else {
 			return visitor.visitChildren(this);
 		}
