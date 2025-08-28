@@ -105,6 +105,7 @@ export const parseMain = (
     let timeEnd1Ms: number = 0
     let timeEnd2Ms: number = 0
     let timeEnd3Ms: number = 0
+    let timeEnd4Ms: number = 0
     let runStartedAt = ''
     let runFinishedAt = ''
 
@@ -120,9 +121,11 @@ export const parseMain = (
             persistThreshold = '2-Abort-Even-on-Warnings'
     }
 
+    const errorHandler = new ErrorDataHandler(persistThreshold)
+
     isDebug() && console.log()
     debugPrint(
-        '=== Phase 1 - Lexing+Parsing ===================================================',
+        '=== Phase 1 - Lexing ===================================================',
     )
     if (options.isWithTiming) {
         timeStartMs = performance.now()
@@ -130,24 +133,37 @@ export const parseMain = (
     }
     const inputStream = CharStreams.fromString(yiniContent)
     const lexer = new YiniLexer(inputStream)
-    const tokenStream = new CommonTokenStream(lexer)
-    const parser = new YiniParser(tokenStream)
-
-    const errorHandler = new ErrorDataHandler(persistThreshold)
 
     // Remove the default ConsoleErrorListener
     lexer.removeErrorListeners() // Removes the default lexer console error output.
     const lexerErrorListener = new MyLexerErrorListener(errorHandler)
     lexer.addErrorListener(lexerErrorListener)
 
+    const tokenStream = new CommonTokenStream(lexer)
+
+    // Important: force tokenization here so lexing is measured separately.
+    tokenStream.fill()
+
+    debugPrint('--- Parsing done. ---')
+    debugPrint(
+        '=== Ended phase 1 =============================================',
+    )
+    isDebug() && console.log()
+
+    debugPrint(
+        '=== Phase 2 - Parsing ===================================================',
+    )
+    if (options.isWithTiming) {
+        timeEnd1Ms = performance.now()
+    }
+
+    const parser = new YiniParser(tokenStream)
+
     // const errorListener = new MyParserErrorListener(errorHandler)
 
     parser.removeErrorListeners() // Removes the default parser console error output.
     const parserErrorListener = new MyParserErrorListener(errorHandler)
     parser.addErrorListener(parserErrorListener)
-
-    debugPrint()
-    debugPrint('--- Starting grammar parsing... ---')
 
     const parseTree: YiniContext = parser.yini() // The function yini() is the start rule.
     if (
@@ -166,17 +182,16 @@ export const parseMain = (
         }
     }
 
-    debugPrint('--- Parsing done. ---')
     debugPrint(
-        '=== Ended phase 1 =============================================',
+        '=== Ended phase 2 =============================================',
     )
     isDebug() && console.log()
 
     debugPrint(
-        '=== Phase 2 - AST Model build & validation ===================================================',
+        '=== Phase 3 - AST Model build & validation ===================================================',
     )
     if (options.isWithTiming) {
-        timeEnd1Ms = performance.now()
+        timeEnd2Ms = performance.now()
     }
 
     // const visitor = new YINIVisitor(errorHandler, options.isStrict)
@@ -201,15 +216,15 @@ export const parseMain = (
         console.log()
     }
     debugPrint(
-        '=== Ended phase 2 =============================================',
+        '=== Ended phase 3 =============================================',
     )
     isDebug() && console.log()
 
     debugPrint(
-        '=== Phase 3 - Building (construction / binding / evaluation) ===================================================',
+        '=== Phase 4 - Object Building Construction / Binding / Evaluation) ===================================================',
     )
     if (options.isWithTiming) {
-        timeEnd2Ms = performance.now()
+        timeEnd3Ms = performance.now()
     }
 
     // Construct.
@@ -218,10 +233,10 @@ export const parseMain = (
     // const finalJSResult = ast //NOTE: ONLY TEMP so code runs
     const finalJSResult = astToObject(ast, errorHandler)
     debugPrint(
-        '=== Ended phase 3 =============================================',
+        '=== Ended phase 4 =============================================',
     )
     if (options.isWithTiming) {
-        timeEnd3Ms = performance.now()
+        timeEnd4Ms = performance.now()
         runFinishedAt = new Date().toISOString()
     }
 
@@ -304,19 +319,47 @@ export const parseMain = (
     }
     if (options.isWithTiming) {
         // Attach optional durations timing data.
-        metaData.timingMs = {
+        metaData.timing = {
             total: !options.isWithTiming
                 ? null
-                : Number.parseFloat((timeEnd3Ms - timeStartMs).toFixed(3) + ''),
+                : {
+                      timeMs: Number.parseFloat(
+                          (timeEnd4Ms - timeStartMs).toFixed(3) + '',
+                      ),
+                      name: 'Total',
+                  },
             phase1: !options.isWithTiming
                 ? null
-                : Number.parseFloat((timeEnd1Ms - timeStartMs).toFixed(3) + ''),
+                : {
+                      timeMs: Number.parseFloat(
+                          (timeEnd1Ms - timeStartMs).toFixed(3) + '',
+                      ),
+                      name: 'Lexing',
+                  },
             phase2: !options.isWithTiming
                 ? null
-                : Number.parseFloat((timeEnd2Ms - timeEnd1Ms).toFixed(3) + ''),
+                : {
+                      timeMs: Number.parseFloat(
+                          (timeEnd2Ms - timeEnd1Ms).toFixed(3) + '',
+                      ),
+                      name: 'Parsing',
+                  },
             phase3: !options.isWithTiming
                 ? null
-                : Number.parseFloat((timeEnd3Ms - timeEnd2Ms).toFixed(3) + ''),
+                : {
+                      timeMs: Number.parseFloat(
+                          (timeEnd3Ms - timeEnd2Ms).toFixed(3) + '',
+                      ),
+                      name: 'AST Building',
+                  },
+            phase4: !options.isWithTiming
+                ? null
+                : {
+                      timeMs: Number.parseFloat(
+                          (timeEnd4Ms - timeEnd3Ms).toFixed(3) + '',
+                      ),
+                      name: 'Object Building',
+                  },
         }
     }
 

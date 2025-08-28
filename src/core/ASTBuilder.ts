@@ -1,3 +1,6 @@
+/**
+ * Here is where we walk the parse tree (CST) and build/validate the AST.
+ */
 import assert from 'assert'
 import { ParseTreeVisitor, TokenStream } from 'antlr4'
 import { isDebug } from '../config/env'

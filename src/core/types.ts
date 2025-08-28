@@ -195,11 +195,12 @@ export interface IParseMetaData {
             }
         }
     }
-    timingMs?: {
-        total: null | number
-        phase1: null | number
-        phase2: null | number
-        phase3: null | number
+    timing?: {
+        total: null | { timeMs: number; name: string }
+        phase1: null | { timeMs: number; name: string }
+        phase2: null | { timeMs: number; name: string }
+        phase3: null | { timeMs: number; name: string }
+        phase4: null | { timeMs: number; name: string }
     }
 }
 
