@@ -1,7 +1,8 @@
 export interface IYiniAST {
     root: IYiniSection // Implicit root per spec.
     isStrict: boolean
-    // filename: undefined|string
+    sourceType: 'File' | 'Inline'
+    filename: undefined | string
     terminatorSeen: boolean // Required '/END' in strict mode.
     yiniMarkerSeen: boolean
     numOfSections: number | null
@@ -146,9 +147,11 @@ export interface IParseMetaData {
     parserVersion: string
     mode: 'lenient' | 'strict'
     orderPreserved: boolean
-    runAt: string // Possible updates to "runFinishedAt" and "runStartedAt".
-    metaSchemaVersion: string
+    // runAt: string
+    runStartedAt: string
+    runFinishedAt: string
     source: {
+        sourceType: 'File' | 'Inline'
         filename: undefined | string
         hasDocumentTerminator: boolean
         hasYiniMarker: boolean
@@ -166,6 +169,7 @@ export interface IParseMetaData {
         // sectionChains: null | number
         sectionNamePaths: string[] | null // All key/access paths to section Headers.
     }
+    metaSchemaVersion: string
     diagnostics?: {
         // Includes warnings/errors info.
         bailSensitivity: {
@@ -177,10 +181,10 @@ export interface IParseMetaData {
                 | 'Abort-on-Errors'
                 | 'Abort-Even-on-Warnings'
         }
-        errors: string[]
-        warnings: string[]
-        notices: string[]
-        infos: string[]
+        errors: { errorCount: number; payload: string[] }
+        warnings: { warningCount: number; payload: string[] }
+        notices: { noticeCount: number; payload: string[] }
+        infos: { infoCount: number; payload: string[] }
         environment: {
             NODE_ENV: undefined | string
             APP_ENV: undefined | string

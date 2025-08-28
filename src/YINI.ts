@@ -10,7 +10,7 @@ import { getFileNameExtension } from './utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from './utils/print'
 
 // let g_filename: undefined | string = undefined
-let g_filename: undefined | string = '<no file, inline parsing>'
+let g_filename: undefined | string = undefined
 
 /**
  * This class is the public API, which exposes only parse(..) and

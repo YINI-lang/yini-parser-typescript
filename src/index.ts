@@ -308,17 +308,21 @@ if (isProdEnv()) {
         /END      
         `*/
         const yini = `
-        /*sdfsdf*/
-            @yini //
+            /*sdfsdf*/
+            @yini
 
             @include 'sdf'
 
             --@invalid
 
+            @deprecated
             ^ window
             title = 'Sample Window'  // Strings can be enclosed in either ' or ".
+            @deprecated
             id = 'window_main'
---            @yini   // This is an error should be catched in the parser.
+            // @bla
+            --@include 'wrongplace'
+            --@yini   // This is an error should be catched in the parser.
             /end
         `
 
@@ -336,6 +340,6 @@ if (isProdEnv()) {
         // )
 
         // const fileName = './tests/fixtures/valid/common/common-config-2.yini'
-        // YINI.parseFile(fileName, false)
+        // YINI.parseFile(fileName, false, 'auto', true)
     }
 }

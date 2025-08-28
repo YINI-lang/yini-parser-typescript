@@ -9,7 +9,7 @@ import { Terminal_stmtContext } from "./YiniParser.js";
 import { StmtContext } from "./YiniParser.js";
 import { Meta_stmtContext } from "./YiniParser.js";
 import { DirectiveContext } from "./YiniParser.js";
-import { Pre_processing_commandContext } from "./YiniParser.js";
+import { AnnotationContext } from "./YiniParser.js";
 import { EolContext } from "./YiniParser.js";
 import { AssignmentContext } from "./YiniParser.js";
 import { MemberContext } from "./YiniParser.js";
@@ -74,11 +74,11 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 */
 	visitDirective?: (ctx: DirectiveContext) => Result;
 	/**
-	 * Visit a parse tree produced by `YiniParser.pre_processing_command`.
+	 * Visit a parse tree produced by `YiniParser.annotation`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitPre_processing_command?: (ctx: Pre_processing_commandContext) => Result;
+	visitAnnotation?: (ctx: AnnotationContext) => Result;
 	/**
 	 * Visit a parse tree produced by `YiniParser.eol`.
 	 * @param ctx the parse tree

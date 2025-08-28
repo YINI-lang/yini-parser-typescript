@@ -105,10 +105,8 @@ export const parseMain = (
     let timeEnd1Ms: number = 0
     let timeEnd2Ms: number = 0
     let timeEnd3Ms: number = 0
-    // let totalMs: null | number = null
-    // let phase1Ms: null | number = null
-    // let phase2Ms: null | number = null
-    // let phase3Ms: null | number = null
+    let runStartedAt = ''
+    let runFinishedAt = ''
 
     let persistThreshold: TPersistThreshold
     switch (options.bailSensitivityLevel) {
@@ -124,10 +122,11 @@ export const parseMain = (
 
     isDebug() && console.log()
     debugPrint(
-        '=== Phase 1 ===================================================',
+        '=== Phase 1 - Lexing+Parsing ===================================================',
     )
     if (options.isWithTiming) {
         timeStartMs = performance.now()
+        runStartedAt = new Date().toISOString()
     }
     const inputStream = CharStreams.fromString(yiniContent)
     const lexer = new YiniLexer(inputStream)
@@ -148,7 +147,7 @@ export const parseMain = (
     parser.addErrorListener(parserErrorListener)
 
     debugPrint()
-    debugPrint('--- Starting parsing... ---')
+    debugPrint('--- Starting grammar parsing... ---')
 
     const parseTree: YiniContext = parser.yini() // The function yini() is the start rule.
     if (
@@ -174,14 +173,14 @@ export const parseMain = (
     isDebug() && console.log()
 
     debugPrint(
-        '=== Phase 2 ===================================================',
+        '=== Phase 2 - AST Model build & validation ===================================================',
     )
     if (options.isWithTiming) {
         timeEnd1Ms = performance.now()
     }
 
     // const visitor = new YINIVisitor(errorHandler, options.isStrict)
-    const builder = new ASTBuilder(errorHandler, options)
+    const builder = new ASTBuilder(errorHandler, options, metaFilename)
     const ast: IYiniAST = builder.buildAST(parseTree)
     // const syntaxTreeC: TSyntaxTreeContainer = visitor.visit(
     //     parseTree as any,
@@ -207,7 +206,7 @@ export const parseMain = (
     isDebug() && console.log()
 
     debugPrint(
-        '=== Phase 3 ===================================================',
+        '=== Phase 3 - Building (construction / binding / evaluation) ===================================================',
     )
     if (options.isWithTiming) {
         timeEnd2Ms = performance.now()
@@ -223,6 +222,7 @@ export const parseMain = (
     )
     if (options.isWithTiming) {
         timeEnd3Ms = performance.now()
+        runFinishedAt = new Date().toISOString()
     }
 
     debugPrint('visitor.visit(..): finalJSResult:')
@@ -248,10 +248,12 @@ export const parseMain = (
         parserVersion: pkg.version,
         mode: options.isStrict ? 'strict' : 'lenient',
         orderPreserved: true,
-        runAt: new Date().toISOString(),
-        metaSchemaVersion: '1',
+        // runAt: new Date().toISOString(),
+        runStartedAt,
+        runFinishedAt,
         source: {
-            filename: metaFilename,
+            sourceType: ast.sourceType,
+            filename: ast.filename,
             hasDocumentTerminator: ast.terminatorSeen,
             hasYiniMarker: ast.yiniMarkerSeen,
             byteSize: null,
@@ -268,7 +270,9 @@ export const parseMain = (
             listCount: null,
             sectionNamePaths: ast.sectionNamePaths,
         },
+        metaSchemaVersion: '1',
     }
+
     if (options.isWithDiagnostics) {
         // Attach optional diagnostics.
         metaData.diagnostics = {
@@ -277,10 +281,16 @@ export const parseMain = (
                 levelUsed: options.bailSensitivityLevel,
                 levelMeaning: null,
             },
-            errors: [],
-            warnings: [],
-            notices: [],
-            infos: [],
+            errors: { errorCount: errorHandler.getNumOfErrors(), payload: [] },
+            warnings: {
+                warningCount: errorHandler.getNumOfWarnings(),
+                payload: [],
+            },
+            notices: {
+                noticeCount: errorHandler.getNumOfNotices(),
+                payload: [],
+            },
+            infos: { infoCount: errorHandler.getNumOfInfos(), payload: [] },
             environment: {
                 NODE_ENV: process.env.NODE_ENV,
                 APP_ENV: process.env.APP_ENV,

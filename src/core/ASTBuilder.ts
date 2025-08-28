@@ -2,6 +2,7 @@ import assert from 'assert'
 import { ParseTreeVisitor, TokenStream } from 'antlr4'
 import { isDebug } from '../config/env'
 import {
+    AnnotationContext,
     AssignmentContext,
     Bad_memberContext,
     Bad_meta_textContext,
@@ -18,7 +19,6 @@ import {
     Object_literalContext,
     Object_memberContext,
     Object_membersContext,
-    Pre_processing_commandContext,
     PrologContext,
     StmtContext,
     String_concatContext,
@@ -204,8 +204,14 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
 
     public mapSectionNamePaths: Map<string, number> = new Map<string, number>()
 
-    // constructor(opts: IBuildOptions = {}) {
-    constructor(errorHandler: ErrorDataHandler, options: IParseMainOptions) {
+    /**
+     * @param metaFilename If parsing from a file, provide the filename here so the meta information can be updated accordingly.
+     */
+    constructor(
+        errorHandler: ErrorDataHandler,
+        options: IParseMainOptions,
+        metaFilename: string | undefined = undefined,
+    ) {
         super()
         if (!errorHandler) {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
@@ -231,9 +237,11 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         // this.mapSectionNamePaths.set('(root)', 0)
         this.ast = {
             root,
+            isStrict: this.isStrict,
+            sourceType: metaFilename ? 'File' : 'Inline',
+            filename: !!metaFilename ? metaFilename : undefined,
             terminatorSeen: false,
             yiniMarkerSeen: false,
-            isStrict: this.isStrict,
             numOfSections: null,
             numOfMembers: null,
             sectionNamePaths: null,
@@ -565,7 +573,14 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             )
         }
 
-        if (rawText.toLowerCase() === '@yini') {
+        if (rawText.toLowerCase().startsWith('@include')) {
+            this.errorHandler!.pushOrBail(
+                ctx,
+                'Notice',
+                `Detected unsupported directive '@include'`,
+                `This directive is not currently supported by the parser.`,
+            )
+        } else if (rawText.toLowerCase() === '@yini') {
             if (this.ast.yiniMarkerSeen) {
                 this.errorHandler!.pushOrBail(
                     ctx,
@@ -578,34 +593,44 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             this.errorHandler!.pushOrBail(
                 ctx,
                 'Syntax-Error',
-                'Encountered unknow syntax for YINI Marker',
+                'Encountered unknow directive statement',
                 `Got '${rawText}', but expected '@YINI' (case insensitive).`,
             )
         }
+
         // @yini marker is advisory (no semantic value) per spec. We ignore it. (Spec 2.4) :contentReference[oaicite:9]{index=9}
         this.ast.yiniMarkerSeen = true
         return null
     }
 
     /**
-     * Visit a parse tree produced by `YiniParser.pre_processing_command`.
+     * Visit a parse tree produced by `YiniParser.annotation`.
      * @param ctx the parse tree
      * @return the visitor result
      */
-    visitPre_processing_command = (ctx: Pre_processing_commandContext): any => {
+    visitAnnotation = (ctx: AnnotationContext): any => {
         /*
         
         Experimental / for future.
         
         */
 
-        debugPrint('-> Entered visitPre_processing_command(..)')
+        debugPrint('-> Entered visitAnnotation(..)')
         let rawText: string = ctx.getText().trim()
         debugPrint('rawText = "' + rawText + '"')
 
         // NOTE: Important to strip any possible comments on the same line.
         rawText = stripCommentsAndAfter(rawText) // Remove possible comments.
         debugPrint('rawText2 = "' + rawText + '"')
+
+        if (rawText.toLowerCase().startsWith('@deprecated')) {
+            this.errorHandler!.pushOrBail(
+                ctx,
+                'Notice',
+                `Detected unsupported annotation '@deprecated'`,
+                `This annotation is not currently supported by the parser.`,
+            )
+        }
 
         // NOTE: Don't implement! Only experimental / testing for future.
         return null
@@ -1151,7 +1176,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         this.errorHandler!.pushOrBail(
             ctx,
             'Syntax-Error',
-            'Invalid or malformed directive/pre-processing/annotation statement',
+            'Invalid or malformed directive or annotation statement',
             `Offending statement: ${ctx?.getText()?.trim()}`,
         )
         return null
