@@ -1,7 +1,9 @@
+export type TSourceType = 'file' | 'inline' // Keep it lowercase since it's shown in meta, easier for tooling.
+
 export interface IYiniAST {
     root: IYiniSection // Implicit root per spec.
     isStrict: boolean
-    sourceType: 'File' | 'Inline'
+    sourceType: TSourceType
     filename: undefined | string
     terminatorSeen: boolean // Required '/END' in strict mode.
     yiniMarkerSeen: boolean
@@ -132,6 +134,23 @@ export type TIssueType =
 
 export type TJSObject = any
 
+// @deprecated
+// export interface IParseFileBodyReturn {
+//     result: TJSObject
+//     filename: string
+//     contentByteSize: number
+//     lineCount: number
+//     timeIoMs: number
+// }
+
+export interface IFileLoadMetaPayload {
+    sourceType: TSourceType
+    filename: string | undefined
+    contentByteSize: number | null
+    lineCount: number | null
+    timeIoMs: number | null
+}
+
 export type TBailSensitivityLevel = 0 | 1 | 2
 
 // For use in internal functions.
@@ -151,7 +170,7 @@ export interface IParseMetaData {
     runStartedAt: string
     runFinishedAt: string
     source: {
-        sourceType: 'File' | 'Inline'
+        sourceType: TSourceType
         filename: undefined | string
         hasDocumentTerminator: boolean
         hasYiniMarker: boolean
@@ -197,6 +216,7 @@ export interface IParseMetaData {
     }
     timing?: {
         total: null | { timeMs: number; name: string }
+        phase0: undefined | { timeMs: number; name: string }
         phase1: null | { timeMs: number; name: string }
         phase2: null | { timeMs: number; name: string }
         phase3: null | { timeMs: number; name: string }
@@ -204,25 +224,20 @@ export interface IParseMetaData {
     }
 }
 
-export type TSyntaxTreeContainer = {
-    _syntaxTree: TSyntaxTree
-    _hasTerminal: boolean
-    _hasYiniMarker: boolean
-    _meta_numOfSections: number
-    _meta_numOfMembers: number
-    _meta_numOfChains: number
-}
+// export type TSyntaxTreeContainer = {
+//     _syntaxTree: TSyntaxTree
+//     _hasTerminal: boolean
+//     _hasYiniMarker: boolean
+//     _meta_numOfSections: number
+//     _meta_numOfMembers: number
+//     _meta_numOfChains: number
+// }
 
-export type TSyntaxTree = IChainContainer[]
+// export type TSyntaxTree = IChainContainer[]
 export type TSectionHeaderType =
     | undefined
     | 'Classic-Header-Marker' // Classic/repeating marker section headers (e.g. ^^ SectionName).
     | 'Numeric-Header-Marker' // Numeric shorthand section headers (e.g. ^7 SectionName.
-// export type TErrorDetectMarkerType = 'ERROR-Blank-Section-Header'
-// | 'ERROR-Unknown-Section-Header-Type'
-// | 'ERROR-Illegal-Section-Header-Name'
-// | 'ERROR-Too-Many-Marker-Chars-In-Classic'
-// | 'ERROR-Too-Many-Marker-Chars-In-Numeric'
 
 export interface IChainContainer {
     originLevel: number

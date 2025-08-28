@@ -1,6 +1,9 @@
 import fs from 'fs'
+import { performance } from 'perf_hooks'
 import { isDebug, isDev } from './config/env'
 import {
+    // IParseFileBodyReturn,
+    IFileLoadMetaPayload,
     IParseMainOptions,
     TBailSensitivityLevel,
     TJSObject,
@@ -10,7 +13,14 @@ import { getFileNameExtension } from './utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from './utils/print'
 
 // let g_filename: undefined | string = undefined
-let g_filename: undefined | string = undefined
+let _filename: undefined | string = undefined
+let _fileLoadMetaPayload: IFileLoadMetaPayload = {
+    sourceType: 'inline',
+    filename: undefined,
+    contentByteSize: null,
+    lineCount: null,
+    timeIoMs: null,
+}
 
 /**
  * This class is the public API, which exposes only parse(..) and
@@ -18,7 +28,7 @@ let g_filename: undefined | string = undefined
  * @note Only parse and parseFile are public.
  */
 export default class YINI {
-    public static filePath: string = '' // Used in error reporting.
+    // public static filePath: string = '' // Used in error reporting.
 
     /**
      * Parse YINI content into a JavaScript object.
@@ -43,6 +53,11 @@ export default class YINI {
         includeMetaData = false,
     ): TJSObject => {
         debugPrint('-> Entered static parse(..) in class YINI\n')
+
+        if (_fileLoadMetaPayload.sourceType === 'inline') {
+            const lineCount = yiniContent.split(/\r?\n/).length // Counts the lines.
+            _fileLoadMetaPayload.lineCount = lineCount
+        }
 
         // Important: First, before anything, trim beginning and trailing whitespaces!
         yiniContent = yiniContent.trim()
@@ -72,7 +87,8 @@ export default class YINI {
 
         debugPrint()
         debugPrint('==== Call parse ==========================')
-        const result = parseMain(yiniContent, options, g_filename)
+        //const result = parseMain(yiniContent, options, _filename)
+        const result = parseMain(yiniContent, options, _fileLoadMetaPayload)
         debugPrint('==== End call parse ==========================\n')
 
         if (isDev()) {
@@ -104,6 +120,23 @@ export default class YINI {
      * @returns A JavaScript object representing the parsed YINI content.
      */
     public static parseFile = (
+        //     filePath: string,
+        //     strictMode = false,
+        //     bailSensitivity: 'auto' | 0 | 1 | 2 = 'auto',
+        //     includeMetaData = false,
+        // ): TJSObject => {
+        //     const ret = this._parseFileBody(
+        //         filePath,
+        //         strictMode,
+        //         bailSensitivity,
+        //         includeMetaData,
+        //     )
+
+        //     _filename = ret.filename
+        //     return ret.result
+        // }
+
+        // private static _parseFileBody = (
         filePath: string,
         strictMode = false,
         bailSensitivity: 'auto' | 0 | 1 | 2 = 'auto',
@@ -120,16 +153,36 @@ export default class YINI {
             throw new Error('Error: Unexpected file extension for YINI file')
         }
 
-        let content = fs.readFileSync(filePath, 'utf8')
-        let hasNoNewlineAtEOF = false
-        g_filename = filePath
+        // ---- Phase 0: I/O ----
+        const timeStartMs = performance.now()
 
+        // let content = fs.readFileSync(filePath, 'utf8')
+        const rawBuffer = fs.readFileSync(filePath) // Raw buffer for size.
+        const contentByteSize = rawBuffer.byteLength // Byte size in UTF-8.
+
+        let content = rawBuffer.toString('utf8')
+        const lineCount = content.split(/\r?\n/).length // Counts the lines.
+
+        const timeEndMs = performance.now()
+        const timeIoMs = +(timeEndMs - timeStartMs)
+
+        let hasNoNewlineAtEOF = false
         if (!content.endsWith('\n')) {
             content += '\n'
             hasNoNewlineAtEOF = true
         }
 
-        YINI.filePath = filePath
+        // g_filename = filePath
+        // YINI.filePath = filePath
+        const fileLoadMeta: IFileLoadMetaPayload = {
+            sourceType: 'file',
+            filename: filePath,
+            contentByteSize,
+            lineCount,
+            timeIoMs,
+        }
+        _fileLoadMetaPayload = fileLoadMeta
+
         const result = this.parse(
             content,
             strictMode,
@@ -141,6 +194,15 @@ export default class YINI {
                 `No newline at end of file, it's recommended to end a file with a newline. File:\n"${filePath}"`,
             )
         }
+
+        // const ret: IParseFileBodyReturn = {
+        //     result,
+        //     filename: filePath,
+        //     contentByteSize,
+        //     lineCount,
+        //     timeIoMs,
+        // }
+        // return ret
         return result
     }
 }

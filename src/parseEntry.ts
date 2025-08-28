@@ -12,11 +12,11 @@ import ASTBuilder from './core/ASTBuilder'
 import { ErrorDataHandler } from './core/ErrorDataHandler'
 import { astToObject } from './core/objectBuilder'
 import {
+    IFileLoadMetaPayload,
     IParseMainOptions,
     IParseMetaData,
     IYiniAST,
     TPersistThreshold,
-    TSyntaxTreeContainer,
 } from './core/types'
 import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
@@ -91,7 +91,8 @@ export const parseMain = (
         isWithDiagnostics: false,
         isWithTiming: false,
     },
-    metaFilename: undefined | string,
+    // metaFilename: undefined | string,
+    fileLoadMetaPayload: IFileLoadMetaPayload,
 ) => {
     debugPrint()
     debugPrint('-> Entered parseMain(..) in parseEntry')
@@ -195,7 +196,11 @@ export const parseMain = (
     }
 
     // const visitor = new YINIVisitor(errorHandler, options.isStrict)
-    const builder = new ASTBuilder(errorHandler, options, metaFilename)
+    const builder = new ASTBuilder(
+        errorHandler,
+        options,
+        fileLoadMetaPayload.filename,
+    )
     const ast: IYiniAST = builder.buildAST(parseTree)
     // const syntaxTreeC: TSyntaxTreeContainer = visitor.visit(
     //     parseTree as any,
@@ -271,8 +276,8 @@ export const parseMain = (
             filename: ast.filename,
             hasDocumentTerminator: ast.terminatorSeen,
             hasYiniMarker: ast.yiniMarkerSeen,
-            byteSize: null,
-            lineCount: null,
+            byteSize: fileLoadMetaPayload.contentByteSize,
+            lineCount: fileLoadMetaPayload.lineCount,
             sha256: null,
         },
         structure: {
@@ -318,46 +323,51 @@ export const parseMain = (
         }
     }
     if (options.isWithTiming) {
+        const to3 = (n: number) => Number.parseFloat(n.toFixed(3))
+
         // Attach optional durations timing data.
         metaData.timing = {
             total: !options.isWithTiming
                 ? null
                 : {
-                      timeMs: Number.parseFloat(
-                          (timeEnd4Ms - timeStartMs).toFixed(3) + '',
-                      ),
-                      name: 'Total',
+                      timeMs: to3(timeEnd4Ms - timeStartMs),
+                      name:
+                          fileLoadMetaPayload.sourceType === 'inline'
+                              ? 'Total'
+                              : 'Total, excluding phase0 (I/O)',
                   },
+            phase0:
+                !options.isWithTiming ||
+                fileLoadMetaPayload.sourceType === 'inline'
+                    ? undefined
+                    : {
+                          timeMs: to3(fileLoadMetaPayload.timeIoMs!),
+
+                          name: 'I/O',
+                      },
             phase1: !options.isWithTiming
                 ? null
                 : {
-                      timeMs: Number.parseFloat(
-                          (timeEnd1Ms - timeStartMs).toFixed(3) + '',
-                      ),
+                      timeMs: to3(timeEnd1Ms - timeStartMs),
+
                       name: 'Lexing',
                   },
             phase2: !options.isWithTiming
                 ? null
                 : {
-                      timeMs: Number.parseFloat(
-                          (timeEnd2Ms - timeEnd1Ms).toFixed(3) + '',
-                      ),
+                      timeMs: to3(timeEnd2Ms - timeEnd1Ms),
                       name: 'Parsing',
                   },
             phase3: !options.isWithTiming
                 ? null
                 : {
-                      timeMs: Number.parseFloat(
-                          (timeEnd3Ms - timeEnd2Ms).toFixed(3) + '',
-                      ),
+                      timeMs: to3(timeEnd3Ms - timeEnd2Ms),
                       name: 'AST Building',
                   },
             phase4: !options.isWithTiming
                 ? null
                 : {
-                      timeMs: Number.parseFloat(
-                          (timeEnd4Ms - timeEnd3Ms).toFixed(3) + '',
-                      ),
+                      timeMs: to3(timeEnd4Ms - timeEnd3Ms),
                       name: 'Object Building',
                   },
         }

@@ -1,6 +1,6 @@
 import { isDebug } from '../config/env'
 import { ErrorDataHandler } from '../core/ErrorDataHandler'
-import { TSectionHeaderType } from '../core/types'
+// import { TSectionHeaderType } from '../core/types'
 import { StmtContext } from '../grammar/YiniParser'
 import { debugPrint } from '../utils/print'
 import { trimBackticks } from '../utils/string'

@@ -59,8 +59,6 @@ import {
     IYiniSection,
     TListValue,
     TScalarValue,
-    TSyntaxTree,
-    TSyntaxTreeContainer,
     TValueLiteral,
 } from './types'
 
@@ -241,7 +239,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         this.ast = {
             root,
             isStrict: this.isStrict,
-            sourceType: metaFilename ? 'File' : 'Inline',
+            sourceType: metaFilename ? 'file' : 'inline',
             filename: !!metaFilename ? metaFilename : undefined,
             terminatorSeen: false,
             yiniMarkerSeen: false,

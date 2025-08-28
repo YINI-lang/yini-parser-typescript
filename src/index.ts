@@ -339,7 +339,7 @@ if (isProdEnv()) {
         //     ),
         // )
 
-        // const fileName = './tests/fixtures/valid/common/common-config-2.yini'
-        // YINI.parseFile(fileName, false, 'auto', true)
+        const fileName = './tests/fixtures/valid/common/common-config-2.yini'
+        YINI.parseFile(fileName, false, 'auto', true)
     }
 }
