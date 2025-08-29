@@ -17,9 +17,10 @@ let _filename: undefined | string = undefined
 let _fileLoadMetaPayload: IFileLoadMetaPayload = {
     sourceType: 'inline',
     filename: undefined,
-    contentByteSize: null,
+    fileByteSize: null,
     lineCount: null,
     timeIoMs: null,
+    preferredBailSensitivity: null,
 }
 
 /**
@@ -158,7 +159,7 @@ export default class YINI {
 
         // let content = fs.readFileSync(filePath, 'utf8')
         const rawBuffer = fs.readFileSync(filePath) // Raw buffer for size.
-        const contentByteSize = rawBuffer.byteLength // Byte size in UTF-8.
+        const fileByteSize = rawBuffer.byteLength // Byte size in UTF-8.
 
         let content = rawBuffer.toString('utf8')
         const lineCount = content.split(/\r?\n/).length // Counts the lines.
@@ -177,9 +178,10 @@ export default class YINI {
         const fileLoadMeta: IFileLoadMetaPayload = {
             sourceType: 'file',
             filename: filePath,
-            contentByteSize,
+            fileByteSize,
             lineCount,
             timeIoMs,
+            preferredBailSensitivity: bailSensitivity,
         }
         _fileLoadMetaPayload = fileLoadMeta
 
@@ -198,7 +200,7 @@ export default class YINI {
         // const ret: IParseFileBodyReturn = {
         //     result,
         //     filename: filePath,
-        //     contentByteSize,
+        //     fileByteSize,
         //     lineCount,
         //     timeIoMs,
         // }

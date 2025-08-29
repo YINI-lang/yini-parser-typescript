@@ -1,10 +1,25 @@
 export type TSourceType = 'file' | 'inline' // Keep it lowercase since it's shown in meta, easier for tooling.
 
-export interface IYiniAST {
+interface IMetaBaseInfo {
+    sourceType: TSourceType
+    filename: string | undefined
+    lineCount: number | null
+}
+
+export interface IFileLoadMetaPayload extends IMetaBaseInfo {
+    // sourceType: TSourceType
+    // filename: string | undefined
+    // lineCount: number | null
+    fileByteSize: number | null
+    timeIoMs: number | null
+    preferredBailSensitivity: null | TPreferredBailSensitivityLevel
+}
+
+export interface IYiniAST extends IMetaBaseInfo {
     root: IYiniSection // Implicit root per spec.
     isStrict: boolean
-    sourceType: TSourceType
-    filename: undefined | string
+    // sourceType: TSourceType
+    // filename: undefined | string
     terminatorSeen: boolean // Required '/END' in strict mode.
     yiniMarkerSeen: boolean
     numOfSections: number | null
@@ -134,24 +149,8 @@ export type TIssueType =
 
 export type TJSObject = any
 
-// @deprecated
-// export interface IParseFileBodyReturn {
-//     result: TJSObject
-//     filename: string
-//     contentByteSize: number
-//     lineCount: number
-//     timeIoMs: number
-// }
-
-export interface IFileLoadMetaPayload {
-    sourceType: TSourceType
-    filename: string | undefined
-    contentByteSize: number | null
-    lineCount: number | null
-    timeIoMs: number | null
-}
-
 export type TBailSensitivityLevel = 0 | 1 | 2
+export type TPreferredBailSensitivityLevel = 'auto' | 0 | 1 | 2
 
 // For use in internal functions.
 export interface IParseMainOptions {
@@ -162,7 +161,7 @@ export interface IParseMainOptions {
     isWithTiming: boolean // Include timing data..
 }
 
-export interface IParseMetaData {
+export interface IResultMetaData {
     parserVersion: string
     mode: 'lenient' | 'strict'
     orderPreserved: boolean
@@ -188,7 +187,7 @@ export interface IParseMetaData {
         // sectionChains: null | number
         sectionNamePaths: string[] | null // All key/access paths to section Headers.
     }
-    metaSchemaVersion: string
+    metaSchemaVersion: 1
     diagnostics?: {
         // Includes warnings/errors info.
         bailSensitivity: {

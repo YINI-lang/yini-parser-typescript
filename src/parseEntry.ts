@@ -14,8 +14,9 @@ import { astToObject } from './core/objectBuilder'
 import {
     IFileLoadMetaPayload,
     IParseMainOptions,
-    IParseMetaData,
+    IResultMetaData,
     IYiniAST,
+    TBailSensitivityLevel,
     TPersistThreshold,
 } from './core/types'
 import YiniLexer from './grammar/YiniLexer'
@@ -199,7 +200,8 @@ export const parseMain = (
     const builder = new ASTBuilder(
         errorHandler,
         options,
-        fileLoadMetaPayload.filename,
+        fileLoadMetaPayload.filename || null,
+        fileLoadMetaPayload.lineCount,
     )
     const ast: IYiniAST = builder.buildAST(parseTree)
     // const syntaxTreeC: TSyntaxTreeContainer = visitor.visit(
@@ -264,7 +266,7 @@ export const parseMain = (
     }
 
     // Construct meta data.
-    const metaData: IParseMetaData = {
+    const metaData: IResultMetaData = {
         parserVersion: pkg.version,
         mode: options.isStrict ? 'strict' : 'lenient',
         orderPreserved: true,
@@ -276,7 +278,7 @@ export const parseMain = (
             filename: ast.filename,
             hasDocumentTerminator: ast.terminatorSeen,
             hasYiniMarker: ast.yiniMarkerSeen,
-            byteSize: fileLoadMetaPayload.contentByteSize,
+            byteSize: fileLoadMetaPayload.fileByteSize,
             lineCount: fileLoadMetaPayload.lineCount,
             sha256: null,
         },
@@ -290,16 +292,30 @@ export const parseMain = (
             listCount: null,
             sectionNamePaths: ast.sectionNamePaths,
         },
-        metaSchemaVersion: '1',
+        metaSchemaVersion: 1,
     }
 
     if (options.isWithDiagnostics) {
+        const mapLevelMeaning = (level: TBailSensitivityLevel) => {
+            switch (level) {
+                case 0:
+                    return 'Continue despite errors'
+                case 1:
+                    return 'Abort when errors occur'
+                case 2:
+                    return 'Abort when errors or warnings occur'
+            }
+            return null
+        }
+
         // Attach optional diagnostics.
         metaData.diagnostics = {
             bailSensitivity: {
-                preferredLevel: null,
+                preferredLevel: fileLoadMetaPayload.preferredBailSensitivity,
                 levelUsed: options.bailSensitivityLevel,
-                levelMeaning: null,
+                levelMeaning: <any>(
+                    mapLevelMeaning(options.bailSensitivityLevel)
+                ),
             },
             errors: { errorCount: errorHandler.getNumOfErrors(), payload: [] },
             warnings: {

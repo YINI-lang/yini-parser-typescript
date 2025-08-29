@@ -207,11 +207,13 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
 
     /**
      * @param metaFilename If parsing from a file, provide the filename here so the meta information can be updated accordingly.
+     * @param metaLineCount Provide the line-count here so the meta information can be updated accordingly.
      */
     constructor(
         errorHandler: ErrorDataHandler,
         options: IParseMainOptions,
-        metaFilename: string | undefined = undefined,
+        metaFilename: string | null,
+        metaLineCount: number | null,
     ) {
         super()
         if (!errorHandler) {
@@ -243,6 +245,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             filename: !!metaFilename ? metaFilename : undefined,
             terminatorSeen: false,
             yiniMarkerSeen: false,
+            lineCount: metaLineCount,
             numOfSections: null,
             numOfMembers: null,
             sectionNamePaths: null,
