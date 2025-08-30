@@ -307,27 +307,37 @@ if (isProdEnv()) {
 
         /END      
         `*/
+        // const yini = `
+        //     /*sdfsdf*/
+        //     @yini
+
+        //     @include 'sdf'
+
+        //     --@invalid
+
+        //     @deprecated
+        //     ^ window
+        //     --^^ window2
+        //     title = 'Sample Window'  // Strings can be enclosed in either ' or ".
+        //     @deprecated
+        //     id = 'window_main'
+        //     // @bla
+        //     --@include 'wrongplace'
+        //     --@yini   // This is an error should be catched in the parser.
+        //     /end
+        // `
+
         const yini = `
-            /*sdfsdf*/
-            @yini
+            ^ General
+            title = 'My Prog Title'
+            items = 25
+            isDarkTheme = OFF
 
-            @include 'sdf'
-
-            --@invalid
-
-            @deprecated
-            ^ window
-            --^^ window2
-            title = 'Sample Window'  // Strings can be enclosed in either ' or ".
-            @deprecated
-            id = 'window_main'
-            // @bla
-            --@include 'wrongplace'
-            --@yini   // This is an error should be catched in the parser.
-            /end
+            ^ Database
+            host = 'localhost'
+            port = 5432    
         `
-
-        console.log(toPrettyJSON(YINI.parse(yini, true, 'auto', true)))
+        console.log(toPrettyJSON(YINI.parse(yini, false, 'auto', true)))
 
         // console.log(
         //     toPrettyJSON(
