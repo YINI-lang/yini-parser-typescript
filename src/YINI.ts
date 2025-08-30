@@ -12,11 +12,11 @@ import { parseMain } from './parseEntry'
 import { getFileNameExtension } from './utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from './utils/print'
 
-// let g_filename: undefined | string = undefined
-let _filename: undefined | string = undefined
+// let g_fileName: undefined | string = undefined
+let _fileName: undefined | string = undefined
 let _fileLoadMetaPayload: IFileLoadMetaPayload = {
     sourceType: 'inline',
-    filename: undefined,
+    fileName: undefined,
     fileByteSize: null,
     lineCount: null,
     timeIoMs: null,
@@ -88,7 +88,7 @@ export default class YINI {
 
         debugPrint()
         debugPrint('==== Call parse ==========================')
-        //const result = parseMain(yiniContent, options, _filename)
+        //const result = parseMain(yiniContent, options, _fileName)
         const result = parseMain(yiniContent, options, _fileLoadMetaPayload)
         debugPrint('==== End call parse ==========================\n')
 
@@ -133,7 +133,7 @@ export default class YINI {
         //         includeMetaData,
         //     )
 
-        //     _filename = ret.filename
+        //     _fileName = ret.fileName
         //     return ret.result
         // }
 
@@ -173,11 +173,11 @@ export default class YINI {
             hasNoNewlineAtEOF = true
         }
 
-        // g_filename = filePath
+        // g_fileName = filePath
         // YINI.filePath = filePath
         const fileLoadMeta: IFileLoadMetaPayload = {
             sourceType: 'file',
-            filename: filePath,
+            fileName: filePath,
             fileByteSize,
             lineCount,
             timeIoMs,
@@ -199,7 +199,7 @@ export default class YINI {
 
         // const ret: IParseFileBodyReturn = {
         //     result,
-        //     filename: filePath,
+        //     fileName: filePath,
         //     fileByteSize,
         //     lineCount,
         //     timeIoMs,

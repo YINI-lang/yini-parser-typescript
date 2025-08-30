@@ -317,6 +317,7 @@ if (isProdEnv()) {
 
             @deprecated
             ^ window
+            --^^ window2
             title = 'Sample Window'  // Strings can be enclosed in either ' or ".
             @deprecated
             id = 'window_main'
@@ -339,7 +340,7 @@ if (isProdEnv()) {
         //     ),
         // )
 
-        const fileName = './tests/fixtures/valid/common/common-config-2.yini'
-        YINI.parseFile(fileName, false, 'auto', true)
+        // const fileName = './tests/fixtures/valid/common/common-config-2.yini'
+        // YINI.parseFile(fileName, false, 'auto', true)
     }
 }

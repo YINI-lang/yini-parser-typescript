@@ -7,7 +7,6 @@ import {
     Recognizer,
 } from 'antlr4'
 import { isDebug, isDev, localAppEnv, localNodeEnv } from './config/env'
-import YiniAstBuilder from './core/ASTBuilder'
 import ASTBuilder from './core/ASTBuilder'
 import { ErrorDataHandler } from './core/ErrorDataHandler'
 import { astToObject } from './core/objectBuilder'
@@ -103,13 +102,21 @@ export const parseMain = (
     debugPrint('isWithDiagnostics = ' + options.isWithDiagnostics)
     debugPrint('isWithTiming = ' + options.isWithTiming)
 
+    //---------------------------------------------
+    // Note: Only computed when isWithTiming.
     let timeStartMs: number = 0
     let timeEnd1Ms: number = 0
     let timeEnd2Ms: number = 0
     let timeEnd3Ms: number = 0
     let timeEnd4Ms: number = 0
+    //---------------------------------------------
+
+    //---------------------------------------------
+    // Note: Should ALWAYS be computed.
     let runStartedAt = ''
     let runFinishedAt = ''
+    let durationMs: number = 0
+    //---------------------------------------------
 
     let persistThreshold: TPersistThreshold
     switch (options.bailSensitivityLevel) {
@@ -129,10 +136,15 @@ export const parseMain = (
     debugPrint(
         '=== Phase 1 - Lexing ===================================================',
     )
-    if (options.isWithTiming) {
+    // -----------------------------
+    // Below block should always be done despite isWithTiming to compute
+    // total time and runStartedAt that should always be computed.
+    {
         timeStartMs = performance.now()
         runStartedAt = new Date().toISOString()
     }
+    // -----------------------------
+
     const inputStream = CharStreams.fromString(yiniContent)
     const lexer = new YiniLexer(inputStream)
 
@@ -200,7 +212,7 @@ export const parseMain = (
     const builder = new ASTBuilder(
         errorHandler,
         options,
-        fileLoadMetaPayload.filename || null,
+        fileLoadMetaPayload.fileName || null,
         fileLoadMetaPayload.lineCount,
     )
     const ast: IYiniAST = builder.buildAST(parseTree)
@@ -242,10 +254,15 @@ export const parseMain = (
     debugPrint(
         '=== Ended phase 4 =============================================',
     )
-    if (options.isWithTiming) {
+    // -----------------------------
+    // Below block should always be done despite isWithTiming to compute
+    // total time and runStartedAt that should always be computed.
+    {
         timeEnd4Ms = performance.now()
+        durationMs = timeEnd4Ms - timeStartMs
         runFinishedAt = new Date().toISOString()
     }
+    // -----------------------------
 
     debugPrint('visitor.visit(..): finalJSResult:')
     isDebug() && console.debug(finalJSResult)
@@ -265,6 +282,9 @@ export const parseMain = (
         isDebug() && console.debug(finalJSResult)
     }
 
+    // --- Construct meta information -------------------------------------
+    const to3 = (n: number): number => Number.parseFloat(n.toFixed(3))
+
     // Construct meta data.
     const metaData: IResultMetaData = {
         parserVersion: pkg.version,
@@ -273,9 +293,10 @@ export const parseMain = (
         // runAt: new Date().toISOString(),
         runStartedAt,
         runFinishedAt,
+        durationMs: to3(durationMs),
         source: {
             sourceType: ast.sourceType,
-            filename: ast.filename,
+            fileName: ast.fileName,
             hasDocumentTerminator: ast.terminatorSeen,
             hasYiniMarker: ast.yiniMarkerSeen,
             byteSize: fileLoadMetaPayload.fileByteSize,
@@ -283,7 +304,7 @@ export const parseMain = (
             sha256: null,
         },
         structure: {
-            maxDepth: null,
+            maxDepth: ast.maxDepth,
             sectionCount: ast.numOfSections,
             memberCount: ast.numOfMembers,
             // sectionChains: null, //syntaxTreeC._meta_numOfChains,
@@ -295,38 +316,59 @@ export const parseMain = (
         metaSchemaVersion: 1,
     }
 
+    // Attach optional diagnostics.
     if (options.isWithDiagnostics) {
-        const mapLevelMeaning = (level: TBailSensitivityLevel) => {
+        const mapLevelLabel = (
+            level: TBailSensitivityLevel,
+        ): TPersistThreshold => {
             switch (level) {
                 case 0:
-                    return 'Continue despite errors'
+                    return '0-Ignore-Errors'
                 case 1:
-                    return 'Abort when errors occur'
+                    return '1-Abort-on-Errors'
                 case 2:
-                    return 'Abort when errors or warnings occur'
+                    return '2-Abort-Even-on-Warnings'
+            }
+        }
+        const mapLevelDescription = (
+            level: TBailSensitivityLevel,
+        ): string | null => {
+            switch (level) {
+                case 0:
+                    return 'Continue despite errors.'
+                case 1:
+                    return 'Abort when errors occur.'
+                case 2:
+                    return 'Abort when errors or warnings occur.'
             }
             return null
         }
 
-        // Attach optional diagnostics.
         metaData.diagnostics = {
             bailSensitivity: {
                 preferredLevel: fileLoadMetaPayload.preferredBailSensitivity,
                 levelUsed: options.bailSensitivityLevel,
-                levelMeaning: <any>(
-                    mapLevelMeaning(options.bailSensitivityLevel)
+                levelLabel: mapLevelLabel(options.bailSensitivityLevel),
+                levelDescription: <any>(
+                    mapLevelDescription(options.bailSensitivityLevel)
                 ),
             },
-            errors: { errorCount: errorHandler.getNumOfErrors(), payload: [] },
+            errors: {
+                errorCount: errorHandler.getNumOfErrors(),
+                payload: errorHandler.getErrors(),
+            },
             warnings: {
                 warningCount: errorHandler.getNumOfWarnings(),
-                payload: [],
+                payload: errorHandler.getWarnings(),
             },
             notices: {
                 noticeCount: errorHandler.getNumOfNotices(),
-                payload: [],
+                payload: errorHandler.getNotices(),
             },
-            infos: { infoCount: errorHandler.getNumOfInfos(), payload: [] },
+            infos: {
+                infoCount: errorHandler.getNumOfInfos(),
+                payload: errorHandler.getInfos(),
+            },
             environment: {
                 NODE_ENV: process.env.NODE_ENV,
                 APP_ENV: process.env.APP_ENV,
@@ -338,15 +380,14 @@ export const parseMain = (
             },
         }
     }
-    if (options.isWithTiming) {
-        const to3 = (n: number) => Number.parseFloat(n.toFixed(3))
 
-        // Attach optional durations timing data.
+    // Attach optional durations timing data.
+    if (options.isWithTiming) {
         metaData.timing = {
             total: !options.isWithTiming
                 ? null
                 : {
-                      timeMs: to3(timeEnd4Ms - timeStartMs),
+                      timeMs: to3(durationMs), // durationMs = timeEnd4Ms - timeStartMs
                       name:
                           fileLoadMetaPayload.sourceType === 'inline'
                               ? 'Total'

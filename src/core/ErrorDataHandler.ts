@@ -1,7 +1,8 @@
 import { isDebug, isTestEnv } from '../config/env'
 import { debugPrint } from '../utils/print'
-import { TIssueType, TPersistThreshold } from './types'
+import { IIssuePayload, TIssueType, TPersistThreshold } from './types'
 
+/*
 interface IIssuePayload {
     type: TIssueType
     msgWhat: string
@@ -15,6 +16,7 @@ interface IIssuePayload {
         column?: number
     }
 }
+*/
 
 // All the issue titles are defined here to get a quick overview of all
 // titles, and to easier check that all titles match with relation to
@@ -33,6 +35,11 @@ const issueTitle: string[] = [
  */
 export class ErrorDataHandler {
     private persistThreshold: TPersistThreshold
+
+    private errors: IIssuePayload[] = []
+    private warnings: IIssuePayload[] = []
+    private notices: IIssuePayload[] = []
+    private infos: IIssuePayload[] = []
 
     private numFatalErrors = 0
     private numInternalErrors = 0
@@ -54,6 +61,7 @@ export class ErrorDataHandler {
         this.persistThreshold = threshold
     }
 
+    /*
     makeIssuePayload = (
         type: TIssueType,
         msgWhat: string,
@@ -74,6 +82,28 @@ export class ErrorDataHandler {
                 line: lineNum,
                 column: endCol,
             },
+        }
+
+        debugPrint('issue:')
+        isDebug() && console.log(issue)
+        return issue
+    }
+    */
+    makeIssue = (
+        line: number | undefined,
+        column: number | undefined,
+        type: TIssueType,
+        message: string,
+        advice: string | undefined = undefined,
+        hint: string | undefined = undefined,
+    ): IIssuePayload => {
+        const issue: IIssuePayload = {
+            line,
+            column: !column ? undefined : column,
+            type,
+            message,
+            advice: advice || undefined, // Note, this will render ''-values as undfined and omit these in console outputs.
+            hint: hint || undefined, // Note, this will render ''-values as undfined and omit these in console outputs.
         }
 
         debugPrint('issue:')
@@ -114,16 +144,28 @@ export class ErrorDataHandler {
         debugPrint('ctx.stop?.line   = ' + ctx?.stop?.line)
         debugPrint('ctx.stop?.column = ' + ctx?.stop?.column)
 
-        const lineNum: number = ctx?.start.line || 0 // Column (1-based).
-        const startCol = !ctx ? 0 : ++ctx.start.column // Column (0-based).
-        const endCol = (ctx?.stop?.column || 0) + 1 // Column (0-based).
+        const lineNum: number | undefined = ctx?.start.line || undefined // Line (1-based).
+        // const startCol = !ctx ? 0 : ++ctx.start.column // Column (0-based).
+        const startCol: number | undefined = !ctx
+            ? undefined
+            : ++ctx.start.column // Column (0-based).
+        // const endCol = (ctx?.stop?.column || 0) + 1 // Column (0-based).
+        const endCol: number | undefined = !!ctx?.stop?.column
+            ? ++ctx.stop.column
+            : undefined // Column (0-based).
 
-        if (lineNum > 0) {
+        let colNum: number | undefined = startCol || endCol
+        // if (colNum === 0) {
+        //     colNum = undefined
+        // }
+        let msgWhatWithLineNum = msgWhat
+
+        if (lineNum && lineNum > 0) {
             // Patch message with the offending line number.
-            msgWhat += ', at line: ' + lineNum
+            msgWhatWithLineNum += ', at line: ' + lineNum
 
             if (process.env.NODE_ENV === 'test') {
-                msgWhat += `\nAt line: ${lineNum}, column(s): ${startCol}-${endCol}`
+                msgWhatWithLineNum += `\nAt line: ${lineNum}, column(s): ${startCol}-${endCol}`
             }
         }
 
@@ -131,18 +173,28 @@ export class ErrorDataHandler {
         debugPrint('lineNum = ' + lineNum)
         debugPrint()
 
-        const issue: IIssuePayload = this.makeIssuePayload(
-            type,
-            msgWhat,
-            lineNum,
-            startCol,
-            endCol,
-        )
+        // const issue: IIssuePayload = this.makeIssuePayload(
+        //     type,
+        //     msgWhat,
+        //     lineNum,
+        //     startCol,
+        //     endCol,
+        // )
 
         switch (type) {
             case 'Internal-Error':
                 this.numInternalErrors++
-                this.emitInternalError(msgWhat, msgWhy, msgHint)
+                this.errors.push(
+                    this.makeIssue(
+                        lineNum,
+                        colNum,
+                        type,
+                        msgWhat,
+                        msgWhy,
+                        msgHint,
+                    ),
+                )
+                this.emitInternalError(msgWhatWithLineNum, msgWhy, msgHint)
                 if (
                     this.persistThreshold === '1-Abort-on-Errors' ||
                     this.persistThreshold === '2-Abort-Even-on-Warnings'
@@ -157,7 +209,17 @@ export class ErrorDataHandler {
                 break
             case 'Syntax-Error':
                 this.numSyntaxErrors++
-                this.emitSyntaxError(msgWhat, msgWhy, msgHint)
+                this.errors.push(
+                    this.makeIssue(
+                        lineNum,
+                        colNum,
+                        type,
+                        msgWhat,
+                        msgWhy,
+                        msgHint,
+                    ),
+                )
+                this.emitSyntaxError(msgWhatWithLineNum, msgWhy, msgHint)
                 if (
                     this.persistThreshold === '1-Abort-on-Errors' ||
                     this.persistThreshold === '2-Abort-Even-on-Warnings'
@@ -172,7 +234,17 @@ export class ErrorDataHandler {
                 break
             case 'Syntax-Warning':
                 this.numSyntaxWarnings++
-                this.emitSyntaxWarning(msgWhat, msgWhy, msgHint)
+                this.warnings.push(
+                    this.makeIssue(
+                        lineNum,
+                        colNum,
+                        type,
+                        msgWhat,
+                        msgWhy,
+                        msgHint,
+                    ),
+                )
+                this.emitSyntaxWarning(msgWhatWithLineNum, msgWhy, msgHint)
                 if (this.persistThreshold === '2-Abort-Even-on-Warnings') {
                     // if (process.env.NODE_ENV === 'test') {
                     // In test, throw an error instead of exiting.
@@ -184,15 +256,45 @@ export class ErrorDataHandler {
                 break
             case 'Notice':
                 this.numNotices++
-                this.emitNotice(msgWhat, msgWhy, msgHint)
+                this.notices.push(
+                    this.makeIssue(
+                        lineNum,
+                        colNum,
+                        type,
+                        msgWhat,
+                        msgWhy,
+                        msgHint,
+                    ),
+                )
+                this.emitNotice(msgWhatWithLineNum, msgWhy, msgHint)
                 break
             case 'Info':
                 this.numInfos++
-                this.emitInfo(msgWhat, msgWhy, msgHint)
+                this.infos.push(
+                    this.makeIssue(
+                        lineNum,
+                        colNum,
+                        type,
+                        msgWhat,
+                        msgWhy,
+                        msgHint,
+                    ),
+                )
+                this.emitInfo(msgWhatWithLineNum, msgWhy, msgHint)
                 break
             default: // Including 'Internal-Error'.
                 this.numFatalErrors++
-                this.emitFatalError(msgWhat, msgWhy, msgHint)
+                this.errors.push(
+                    this.makeIssue(
+                        lineNum,
+                        colNum,
+                        type,
+                        msgWhat,
+                        msgWhy,
+                        msgHint,
+                    ),
+                )
+                this.emitFatalError(msgWhatWithLineNum, msgWhy, msgHint)
                 // CANNOT recover fatal errors, will lead to an exit!
                 // if (process.env.NODE_ENV === 'test') {
                 // In test, throw an error instead of exiting.
@@ -277,5 +379,21 @@ export class ErrorDataHandler {
 
     public getNumOfInfos() {
         return this.numInfos
+    }
+
+    public getErrors(): IIssuePayload[] {
+        return this.errors
+    }
+
+    public getWarnings(): IIssuePayload[] {
+        return this.warnings
+    }
+
+    public getNotices(): IIssuePayload[] {
+        return this.notices
+    }
+
+    public getInfos(): IIssuePayload[] {
+        return this.infos
     }
 }

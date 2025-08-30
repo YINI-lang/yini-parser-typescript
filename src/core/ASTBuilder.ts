@@ -52,9 +52,9 @@ import {
 import { ErrorDataHandler } from './ErrorDataHandler'
 import {
     IBuildOptions,
-    IChainContainer,
+    // IChainContainer,
     IParseMainOptions,
-    ISectionResult,
+    // ISectionResult,
     IYiniAST,
     IYiniSection,
     TListValue,
@@ -64,7 +64,7 @@ import {
 
 // -----------------------
 
-// Helpers -------------------------------------------------------------
+// --- Helpers -------------------------------------------------------------
 
 /**
  * @param {string | undefined} [tag]
@@ -178,7 +178,8 @@ function makeSection(name: string, level: number): IYiniSection {
 //     return { level: 1, name: line.trim() }
 // }
 
-// Builder Visitor -----------------------------------------------------
+// --- Builder Visitor -----------------------------------------------------
+
 /**
  * This interface defines a complete generic visitor for a parse tree produced
  * by `YiniParser`.
@@ -201,18 +202,18 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     // private meta_numOfSections = 0 // For stats.
     private meta_numOfMembers = 0 // For stats.
     // private meta_numOfChains = 0 // For stats.
-    private meta_maxLevelSection = 0 // For stats.
+    private meta_maxLevel = 0 // For stats.
 
     public mapSectionNamePaths: Map<string, number> = new Map<string, number>()
 
     /**
-     * @param metaFilename If parsing from a file, provide the filename here so the meta information can be updated accordingly.
+     * @param metaFileName If parsing from a file, provide the file name here so the meta information can be updated accordingly.
      * @param metaLineCount Provide the line-count here so the meta information can be updated accordingly.
      */
     constructor(
         errorHandler: ErrorDataHandler,
         options: IParseMainOptions,
-        metaFilename: string | null,
+        metaFileName: string | null,
         metaLineCount: number | null,
     ) {
         super()
@@ -241,11 +242,12 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         this.ast = {
             root,
             isStrict: this.isStrict,
-            sourceType: metaFilename ? 'file' : 'inline',
-            filename: !!metaFilename ? metaFilename : undefined,
+            sourceType: metaFileName ? 'file' : 'inline',
+            fileName: !!metaFileName ? metaFileName : undefined,
             terminatorSeen: false,
             yiniMarkerSeen: false,
             lineCount: metaLineCount,
+            maxDepth: null,
             numOfSections: null,
             numOfMembers: null,
             sectionNamePaths: null,
@@ -326,6 +328,10 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         const parent = stack[stack.length - 1] // root or higher-level section
         parent.children.push(section)
         stack.push(section)
+
+        if (targetLevel > this.meta_maxLevel) {
+            this.meta_maxLevel = targetLevel
+        }
     }
 
     /** Insert a key/value into current section (duplicate handling per options). */
@@ -390,6 +396,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
 
         if (this.options.isIncludeMeta) {
             // Attach collected meta information.
+            this.ast.maxDepth = this.meta_maxLevel
             this.ast.numOfSections = this.mapSectionNamePaths.size
             this.ast.numOfMembers = this.meta_numOfMembers
             this.ast.sectionNamePaths = [...this.mapSectionNamePaths.keys()]
