@@ -11,16 +11,19 @@ import {
 import { parseMain } from './parseEntry'
 import { getFileNameExtension } from './utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from './utils/print'
+import { computeSha256, toLowerSnakeCase } from './utils/string'
 
 // let g_fileName: undefined | string = undefined
 let _fileName: undefined | string = undefined
 let _fileLoadMetaPayload: IFileLoadMetaPayload = {
-    sourceType: 'inline',
+    sourceType: 'Inline',
+    // sourceTypeKey: toLowerSnakeCase('Inline'),
     fileName: undefined,
     fileByteSize: null,
     lineCount: null,
     timeIoMs: null,
     preferredBailSensitivity: null,
+    sha256: null,
 }
 
 /**
@@ -37,7 +40,7 @@ export default class YINI {
      * @param yiniContent      YINI code as a string (multi‑line content supported).
      * @param strictMode       If `true`, enforce strict parsing rules (e.g. require `/END`, disallow trailing commas).
      * @param bailSensitivity  Controls how errors and warnings are handled:
-     *   - `'auto'`               : Auto‑select level (strict→1, lenient→0)
+     *   - `'auto'` or              : Auto‑select level (strict→1, lenient→0)
      *   - `0` / `'Ignore-Errors'`    : Continue parsing despite errors; log them and attempt recovery.
      *   - `1` / `'Abort-on-Errors'`  : Stop parsing on the first error.
      *   - `2` / `'Abort-Even-on-Warnings'`: Stop parsing on the first warning **or** error.
@@ -55,9 +58,13 @@ export default class YINI {
     ): TJSObject => {
         debugPrint('-> Entered static parse(..) in class YINI\n')
 
-        if (_fileLoadMetaPayload.sourceType === 'inline') {
+        if (includeMetaData && _fileLoadMetaPayload.sourceType === 'Inline') {
             const lineCount = yiniContent.split(/\r?\n/).length // Counts the lines.
+            const sha256 = computeSha256(yiniContent) // NOTE: Compute BEFORE any possible tampering of content.
+
             _fileLoadMetaPayload.lineCount = lineCount
+            _fileLoadMetaPayload.preferredBailSensitivity = bailSensitivity
+            _fileLoadMetaPayload.sha256 = sha256
         }
 
         // Important: First, before anything, trim beginning and trailing whitespaces!
@@ -84,6 +91,7 @@ export default class YINI {
             isIncludeMeta: includeMetaData,
             isWithDiagnostics: isDev() || isDebug(),
             isWithTiming: isDev() || isDebug(),
+            isKeepUndefinedInMeta: isDebug(),
         }
 
         debugPrint()
@@ -162,28 +170,39 @@ export default class YINI {
         const fileByteSize = rawBuffer.byteLength // Byte size in UTF-8.
 
         let content = rawBuffer.toString('utf8')
-        const lineCount = content.split(/\r?\n/).length // Counts the lines.
-
         const timeEndMs = performance.now()
-        const timeIoMs = +(timeEndMs - timeStartMs)
+
+        _fileLoadMetaPayload.sourceType = 'File'
+        // sourceTypeKey: toLowerSnakeCase('File'),
+        _fileLoadMetaPayload.fileName = filePath
+
+        if (includeMetaData) {
+            _fileLoadMetaPayload.lineCount = content.split(/\r?\n/).length // Counts the lines.
+            _fileLoadMetaPayload.fileByteSize = fileByteSize
+            _fileLoadMetaPayload.timeIoMs = +(timeEndMs - timeStartMs)
+            _fileLoadMetaPayload.preferredBailSensitivity = bailSensitivity
+            _fileLoadMetaPayload.sha256 = computeSha256(content) // NOTE: Compute BEFORE any possible tampering of content.
+        }
+
+        // // g_fileName = filePath
+        // // YINI.filePath = filePath
+        // const fileLoadMeta: IFileLoadMetaPayload = {
+        //     sourceType: 'File',
+        //     // sourceTypeKey: toLowerSnakeCase('File'),
+        //     fileName: filePath,
+        //     fileByteSize,
+        //     lineCount,
+        //     timeIoMs,
+        //     preferredBailSensitivity: bailSensitivity,
+        //     sha256,
+        // }
+        // _fileLoadMetaPayload = fileLoadMeta
 
         let hasNoNewlineAtEOF = false
         if (!content.endsWith('\n')) {
             content += '\n'
             hasNoNewlineAtEOF = true
         }
-
-        // g_fileName = filePath
-        // YINI.filePath = filePath
-        const fileLoadMeta: IFileLoadMetaPayload = {
-            sourceType: 'file',
-            fileName: filePath,
-            fileByteSize,
-            lineCount,
-            timeIoMs,
-            preferredBailSensitivity: bailSensitivity,
-        }
-        _fileLoadMetaPayload = fileLoadMeta
 
         const result = this.parse(
             content,

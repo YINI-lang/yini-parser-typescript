@@ -41,7 +41,11 @@ import parseSectionHeader from '../parsers/parseSectionHeader'
 import parseStringLiteral from '../parsers/parseString'
 import { isInfinityValue, isNaNValue } from '../utils/number'
 import { debugPrint, printObject } from '../utils/print'
-import { isEnclosedInBackticks, trimBackticks } from '../utils/string'
+import {
+    isEnclosedInBackticks,
+    toLowerSnakeCase,
+    trimBackticks,
+} from '../utils/string'
 import {
     isScalar,
     isValidBacktickedIdent,
@@ -242,11 +246,11 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         this.ast = {
             root,
             isStrict: this.isStrict,
-            sourceType: metaFileName ? 'file' : 'inline',
+            sourceType: metaFileName ? 'File' : 'Inline',
             fileName: !!metaFileName ? metaFileName : undefined,
             terminatorSeen: false,
             yiniMarkerSeen: false,
-            lineCount: metaLineCount,
+            // lineCount: metaLineCount,
             maxDepth: null,
             numOfSections: null,
             numOfMembers: null,

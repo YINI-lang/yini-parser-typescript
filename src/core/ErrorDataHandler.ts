@@ -1,5 +1,6 @@
 import { isDebug, isTestEnv } from '../config/env'
 import { debugPrint } from '../utils/print'
+import { toLowerSnakeCase } from '../utils/string'
 import { IIssuePayload, TIssueType, TPersistThreshold } from './types'
 
 /*
@@ -100,7 +101,7 @@ export class ErrorDataHandler {
         const issue: IIssuePayload = {
             line,
             column: !column ? undefined : column,
-            type,
+            typeKey: toLowerSnakeCase(type),
             message,
             advice: advice || undefined, // Note, this will render ''-values as undfined and omit these in console outputs.
             hint: hint || undefined, // Note, this will render ''-values as undfined and omit these in console outputs.
@@ -161,6 +162,9 @@ export class ErrorDataHandler {
         let msgWhatWithLineNum = msgWhat
 
         if (lineNum && lineNum > 0) {
+            //@todo func that removes possible . at end
+            //msgWhatWithLineNum =
+
             // Patch message with the offending line number.
             msgWhatWithLineNum += ', at line: ' + lineNum
 

@@ -16,11 +16,14 @@ import {
     IResultMetaData,
     IYiniAST,
     TBailSensitivityLevel,
+    TBailSensitivityLevelKey,
     TPersistThreshold,
 } from './core/types'
 import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
+import { removeUndefinedDeep } from './utils/object'
 import { debugPrint, printObject } from './utils/print'
+import { toLowerSnakeCase } from './utils/string'
 
 const pkg = require('../package.json')
 
@@ -90,6 +93,7 @@ export const parseMain = (
         isIncludeMeta: false,
         isWithDiagnostics: false,
         isWithTiming: false,
+        isKeepUndefinedInMeta: false,
     },
     // metaFilename: undefined | string,
     fileLoadMetaPayload: IFileLoadMetaPayload,
@@ -282,152 +286,179 @@ export const parseMain = (
         isDebug() && console.debug(finalJSResult)
     }
 
-    // --- Construct meta information -------------------------------------
-    const to3 = (n: number): number => Number.parseFloat(n.toFixed(3))
+    const constructResultMetaData = (): IResultMetaData => {
+        // --- Construct meta information -------------------------------------
+        const to3 = (n: number): number => Number.parseFloat(n.toFixed(3))
 
-    // Construct meta data.
-    const metaData: IResultMetaData = {
-        parserVersion: pkg.version,
-        mode: options.isStrict ? 'strict' : 'lenient',
-        orderPreserved: true,
-        // runAt: new Date().toISOString(),
-        runStartedAt,
-        runFinishedAt,
-        durationMs: to3(durationMs),
-        source: {
-            sourceType: ast.sourceType,
-            fileName: ast.fileName,
-            hasDocumentTerminator: ast.terminatorSeen,
-            hasYiniMarker: ast.yiniMarkerSeen,
-            byteSize: fileLoadMetaPayload.fileByteSize,
-            lineCount: fileLoadMetaPayload.lineCount,
-            sha256: null,
-        },
-        structure: {
-            maxDepth: ast.maxDepth,
-            sectionCount: ast.numOfSections,
-            memberCount: ast.numOfMembers,
-            // sectionChains: null, //syntaxTreeC._meta_numOfChains,
-            keysParsedCount: null,
-            objectCount: null,
-            listCount: null,
-            sectionNamePaths: ast.sectionNamePaths,
-        },
-        metaSchemaVersion: 1,
-    }
-
-    // Attach optional diagnostics.
-    if (options.isWithDiagnostics) {
-        const mapLevelLabel = (
-            level: TBailSensitivityLevel,
-        ): TPersistThreshold => {
-            switch (level) {
-                case 0:
-                    return '0-Ignore-Errors'
-                case 1:
-                    return '1-Abort-on-Errors'
-                case 2:
-                    return '2-Abort-Even-on-Warnings'
-            }
-        }
-        const mapLevelDescription = (
-            level: TBailSensitivityLevel,
-        ): string | null => {
-            switch (level) {
-                case 0:
-                    return 'Continue despite errors.'
-                case 1:
-                    return 'Abort when errors occur.'
-                case 2:
-                    return 'Abort when errors or warnings occur.'
-            }
-            return null
+        // Construct meta data.
+        const metaData: IResultMetaData = {
+            parserVersion: pkg.version,
+            mode: options.isStrict ? 'strict' : 'lenient',
+            orderPreserved: true,
+            // runAt: new Date().toISOString(),
+            runStartedAt,
+            runFinishedAt,
+            durationMs: to3(durationMs),
+            source: {
+                // sourceType: ast.sourceType,
+                sourceType: toLowerSnakeCase(ast.sourceType),
+                fileName: ast.fileName,
+                hasDocumentTerminator: ast.terminatorSeen,
+                hasYiniMarker: ast.yiniMarkerSeen,
+                lineCount: fileLoadMetaPayload.lineCount,
+                byteSize: fileLoadMetaPayload.fileByteSize,
+                sha256: fileLoadMetaPayload.sha256,
+            },
+            structure: {
+                maxDepth: ast.maxDepth,
+                sectionCount: ast.numOfSections,
+                memberCount: ast.numOfMembers,
+                // sectionChains: null, //syntaxTreeC._meta_numOfChains,
+                keysParsedCount: null,
+                objectCount: null,
+                listCount: null,
+                sectionNamePaths: ast.sectionNamePaths,
+            },
+            metaSchemaVersion: '1.0.0',
         }
 
-        metaData.diagnostics = {
-            bailSensitivity: {
-                preferredLevel: fileLoadMetaPayload.preferredBailSensitivity,
-                levelUsed: options.bailSensitivityLevel,
-                levelLabel: mapLevelLabel(options.bailSensitivityLevel),
-                levelDescription: <any>(
-                    mapLevelDescription(options.bailSensitivityLevel)
-                ),
-            },
-            errors: {
-                errorCount: errorHandler.getNumOfErrors(),
-                payload: errorHandler.getErrors(),
-            },
-            warnings: {
-                warningCount: errorHandler.getNumOfWarnings(),
-                payload: errorHandler.getWarnings(),
-            },
-            notices: {
-                noticeCount: errorHandler.getNumOfNotices(),
-                payload: errorHandler.getNotices(),
-            },
-            infos: {
-                infoCount: errorHandler.getNumOfInfos(),
-                payload: errorHandler.getInfos(),
-            },
-            environment: {
-                NODE_ENV: process.env.NODE_ENV,
-                APP_ENV: process.env.APP_ENV,
-                lib: {
-                    nodeEnv: localNodeEnv,
-                    appEnv: localAppEnv,
-                    flags: { isDev: isDev(), isDebug: isDebug() },
+        // Attach optional diagnostics.
+        if (options.isWithDiagnostics) {
+            const mapLevelKey = (
+                level: TBailSensitivityLevel,
+            ): TBailSensitivityLevelKey => {
+                switch (level) {
+                    case 0:
+                        return 'ignore_errors'
+                    case 1:
+                        return 'abort_on_errors'
+                    case 2:
+                        return 'abort_on_warnings'
+                }
+            }
+            const mapLevelLabel = (
+                level: TBailSensitivityLevel,
+            ): TPersistThreshold => {
+                switch (level) {
+                    case 0:
+                        return '0-Ignore-Errors'
+                    case 1:
+                        return '1-Abort-on-Errors'
+                    case 2:
+                        return '2-Abort-Even-on-Warnings'
+                }
+            }
+            const mapLevelDescription = (
+                level: TBailSensitivityLevel,
+            ): string | null => {
+                switch (level) {
+                    case 0:
+                        return 'Continue despite errors.'
+                    case 1:
+                        return 'Abort when errors occur.'
+                    case 2:
+                        return 'Abort when errors or warnings occur.'
+                }
+                return null
+            }
+
+            metaData.diagnostics = {
+                bailSensitivity: {
+                    preferredLevel:
+                        fileLoadMetaPayload.preferredBailSensitivity,
+                    levelUsed: options.bailSensitivityLevel,
+                    levelKey: mapLevelKey(options.bailSensitivityLevel),
+                    levelLabel: mapLevelLabel(options.bailSensitivityLevel),
+                    levelDescription: <any>(
+                        mapLevelDescription(options.bailSensitivityLevel)
+                    ),
                 },
-            },
+                errors: {
+                    errorCount: errorHandler.getNumOfErrors(),
+                    payload: errorHandler.getErrors(),
+                },
+                warnings: {
+                    warningCount: errorHandler.getNumOfWarnings(),
+                    payload: errorHandler.getWarnings(),
+                },
+                notices: {
+                    noticeCount: errorHandler.getNumOfNotices(),
+                    payload: errorHandler.getNotices(),
+                },
+                infos: {
+                    infoCount: errorHandler.getNumOfInfos(),
+                    payload: errorHandler.getInfos(),
+                },
+                environment: {
+                    NODE_ENV: process.env.NODE_ENV,
+                    APP_ENV: process.env.APP_ENV,
+                    lib: {
+                        nodeEnv: localNodeEnv,
+                        appEnv: localAppEnv,
+                        flags: { isDev: isDev(), isDebug: isDebug() },
+                    },
+                },
+                inputOptions: {
+                    isStrict: options.isStrict,
+                    bailSensitivityLevel: options.bailSensitivityLevel,
+                    isIncludeMeta: options.isIncludeMeta,
+                    isWithDiagnostics: options.isWithDiagnostics,
+                    isWithTiming: options.isWithTiming,
+                    isKeepUndefinedInMeta: options.isKeepUndefinedInMeta,
+                },
+            }
         }
-    }
 
-    // Attach optional durations timing data.
-    if (options.isWithTiming) {
-        metaData.timing = {
-            total: !options.isWithTiming
-                ? null
-                : {
-                      timeMs: to3(durationMs), // durationMs = timeEnd4Ms - timeStartMs
-                      name:
-                          fileLoadMetaPayload.sourceType === 'inline'
-                              ? 'Total'
-                              : 'Total, excluding phase0 (I/O)',
-                  },
-            phase0:
-                !options.isWithTiming ||
-                fileLoadMetaPayload.sourceType === 'inline'
-                    ? undefined
+        // Attach optional durations timing data.
+        if (options.isWithTiming) {
+            metaData.timing = {
+                total: !options.isWithTiming
+                    ? null
                     : {
-                          timeMs: to3(fileLoadMetaPayload.timeIoMs!),
-
-                          name: 'I/O',
+                          timeMs: to3(durationMs), // durationMs = timeEnd4Ms - timeStartMs
+                          name:
+                              fileLoadMetaPayload.sourceType === 'Inline'
+                                  ? 'Total'
+                                  : 'Total, excluding phase0 (I/O)',
                       },
-            phase1: !options.isWithTiming
-                ? null
-                : {
-                      timeMs: to3(timeEnd1Ms - timeStartMs),
+                phase0:
+                    !options.isWithTiming ||
+                    fileLoadMetaPayload.sourceType === 'Inline'
+                        ? undefined
+                        : {
+                              timeMs: to3(fileLoadMetaPayload.timeIoMs!),
 
-                      name: 'Lexing',
-                  },
-            phase2: !options.isWithTiming
-                ? null
-                : {
-                      timeMs: to3(timeEnd2Ms - timeEnd1Ms),
-                      name: 'Parsing',
-                  },
-            phase3: !options.isWithTiming
-                ? null
-                : {
-                      timeMs: to3(timeEnd3Ms - timeEnd2Ms),
-                      name: 'AST Building',
-                  },
-            phase4: !options.isWithTiming
-                ? null
-                : {
-                      timeMs: to3(timeEnd4Ms - timeEnd3Ms),
-                      name: 'Object Building',
-                  },
+                              name: 'I/O',
+                          },
+                phase1: !options.isWithTiming
+                    ? null
+                    : {
+                          timeMs: to3(timeEnd1Ms - timeStartMs),
+
+                          name: 'Lexing',
+                      },
+                phase2: !options.isWithTiming
+                    ? null
+                    : {
+                          timeMs: to3(timeEnd2Ms - timeEnd1Ms),
+                          name: 'Parsing',
+                      },
+                phase3: !options.isWithTiming
+                    ? null
+                    : {
+                          timeMs: to3(timeEnd3Ms - timeEnd2Ms),
+                          name: 'AST Building',
+                      },
+                phase4: !options.isWithTiming
+                    ? null
+                    : {
+                          timeMs: to3(timeEnd4Ms - timeEnd3Ms),
+                          name: 'Object Building',
+                      },
+            }
         }
+
+        return metaData
     }
 
     debugPrint('getNumOfErrors(): ' + errorHandler.getNumOfErrors())
@@ -442,7 +473,9 @@ export const parseMain = (
     if (options.isIncludeMeta) {
         return {
             result: finalJSResult as any,
-            meta: metaData,
+            meta: !options.isKeepUndefinedInMeta
+                ? removeUndefinedDeep(constructResultMetaData())
+                : constructResultMetaData(),
         }
     }
 
