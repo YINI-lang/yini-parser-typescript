@@ -249,13 +249,10 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             fileName: !!metaFileName ? metaFileName : undefined,
             terminatorSeen: false,
             yiniMarkerSeen: false,
-            // lineCount: metaLineCount,
             maxDepth: null,
             numOfSections: null,
             numOfMembers: null,
             sectionNamePaths: null,
-            errors: [],
-            warnings: [],
         }
         this.sectionStack = [root]
     }
@@ -281,7 +278,13 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         const sectionName = section.sectionName
 
         if (targetLevel <= 0) {
-            ast.errors.push(`Invalid section level: ${targetLevel}`)
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+            this.errorHandler!.pushOrBail(
+                ctx,
+                'Syntax-Warning',
+                `Invalid section level: ${targetLevel}`,
+            )
+
             return
         }
 
@@ -1017,19 +1020,6 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         debugPrint('entries.length = ' + ctx?.object_member_list().length)
 
         const entries: Array<{ k: string; v: TValueLiteral }> = []
-        // for (const m of ctx.object_member()) {
-        /*
-        for (const m of ctx.object_member_list()) {
-            const rawKey = '' + m.KEY()
-            const key = trimBackticks(rawKey)
-
-            //@todo fortsättt här
-            debugPrint('rawKey = ' + rawKey)
-            debugPrint('   key = ' + key)
-            // m.debugPrint('m of ctx.object_member_list():')
-            // isDebug() && printObject(m)
-            // entries.push(this.visitObject_member?.(m) as any)
-        }*/
         ctx.object_member_list().forEach((member) => {
             const { key, value }: any = this.visitObject_member(member)
             debugPrint('   key = ' + key)
@@ -1050,12 +1040,6 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     visitObject_member = (ctx: Object_memberContext): any => {
         debugPrint('-> Entered visitObject_member(..)')
 
-        /*
-        const key: string = ctx.getChild(0).getText()
-        const value: TValueLiteral = this.visitValue?.(
-            ctx.value()!,
-        ) as TValueLiteral
-         */
         const rawKey = ctx.KEY().getText()
         const key = trimBackticks(rawKey)
         const rawValue = ctx.value().getText()

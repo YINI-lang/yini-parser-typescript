@@ -92,14 +92,10 @@ export type TIssueType =
 
 interface IMetaBaseInfo {
     sourceType: TSourceType
-    // sourceTypeKey: string // Transformed from the corresponding type, keep it lowercase since it's shown in meta, easier for tooling.
     fileName: string | undefined
-    // lineCount: number | null
 }
 
 export interface IFileLoadMetaPayload extends IMetaBaseInfo {
-    // sourceType: TSourceType
-    // fileName: string | undefined
     lineCount: number | null
     fileByteSize: number | null // Only when source type is 'File'.
     timeIoMs: number | null // Only when source type is 'File'.
@@ -110,16 +106,14 @@ export interface IFileLoadMetaPayload extends IMetaBaseInfo {
 export interface IYiniAST extends IMetaBaseInfo {
     root: IYiniSection // Implicit root per spec.
     isStrict: boolean
-    // sourceType: TSourceType
-    // fileName: undefined | string
     terminatorSeen: boolean // Required '/END' in strict mode.
     yiniMarkerSeen: boolean
     maxDepth: number | null
     numOfSections: number | null
     numOfMembers: number | null
     sectionNamePaths: string[] | null
-    errors: string[] // @deprecated Will soon get deleted
-    warnings: string[] // @deprecated Will soon get deleted
+    // errors: string[] // @deprecated Will soon get deleted
+    // warnings: string[] // @deprecated Will soon get deleted
 }
 
 export interface IYiniSection {
@@ -173,9 +167,7 @@ export interface IParseMainOptions {
 export interface IIssuePayload {
     line: number | undefined // NOTE: 1-based, so line 0 does not exist, set to undefined instead.
     column: number | undefined // NOTE: 1-based, so column 0 does not exist, set to undefined instead.
-    //type: TIssueType
     typeKey: string // Transformed from the corresponding type, keep it lowercase since it's shown in meta, easier for tooling.
-    // code:string // Maybe in future to be added.
     message: string
     advice: string | undefined
     hint: string | undefined
@@ -196,11 +188,13 @@ export interface IResultMetaData {
     parserVersion: string
     mode: 'lenient' | 'strict'
     orderPreserved: boolean
+    errorCount: number
+    warningCount: number
+    anyMessageCount: number
     runStartedAt: string
     runFinishedAt: string
     durationMs: number
     source: {
-        // sourceType: TSourceType
         sourceType: string // Transformed from the type, keep it lowercase since it's shown in resulted meta, easier for tooling.
         fileName: undefined | string // Path and file name if from file.
         hasDocumentTerminator: boolean
@@ -214,13 +208,12 @@ export interface IResultMetaData {
         sectionCount: null | number // Section (header) count, section '(root)' NOT included.
         memberCount: null | number // Section (member) count.
         keysParsedCount: null | number // Including keys inside inline objects, and in section members.
-        objectCount: null | number // (?) Incl. sections (objects) + inline objects.
-        listCount: null | number
+        // objectCount: null | number // (?) Incl. sections (objects) + inline objects.
+        // listCount: null | number
         sectionNamePaths: string[] | null // All key/access paths to section Headers.
     }
     metaSchemaVersion: '1.0.0'
     diagnostics?: {
-        // Includes warnings/errors info.
         bailSensitivity: {
             preferredLevel: null | 'auto' | 0 | 1 | 2 // Input level into function.
             levelUsed: TBailSensitivityLevel
@@ -228,10 +221,10 @@ export interface IResultMetaData {
             levelLabel: TPersistThreshold
             levelDescription: string | null
         }
-        errors: { errorCount: number; payload: IIssuePayload[] }
-        warnings: { warningCount: number; payload: IIssuePayload[] }
-        notices: { noticeCount: number; payload: IIssuePayload[] }
-        infos: { infoCount: number; payload: IIssuePayload[] }
+        errors: { count: number; payload: IIssuePayload[] }
+        warnings: { count: number; payload: IIssuePayload[] }
+        notices: { count: number; payload: IIssuePayload[] }
+        infos: { count: number; payload: IIssuePayload[] }
         environment: {
             NODE_ENV: undefined | string
             APP_ENV: undefined | string

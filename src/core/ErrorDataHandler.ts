@@ -367,6 +367,15 @@ export class ErrorDataHandler {
         msgHint && console.log(msgHint)
     }
 
+    public getNumOfAllMessages() {
+        return (
+            this.getNumOfErrors() +
+            this.getNumOfWarnings() +
+            this.getNumOfNotices() +
+            this.getNumOfNotices()
+        )
+    }
+
     public getNumOfErrors() {
         return (
             this.numFatalErrors + this.numInternalErrors + this.numSyntaxErrors
