@@ -218,7 +218,6 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         errorHandler: ErrorDataHandler,
         options: IParseMainOptions,
         metaFileName: string | null,
-        metaLineCount: number | null,
     ) {
         super()
         if (!errorHandler) {
@@ -303,6 +302,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         // ------------------------------
 
         if (this.hasDefinedSectionTitle(keyPath)) {
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
                 ctx,
                 'Syntax-Error',
@@ -386,11 +386,10 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     // Public entry
     public buildAST(ctx: YiniContext): IYiniAST {
         this.visitYini?.(ctx)
-        // Enforce strict-mode terminator rule (/END required) (Spec 12.3). :contentReference[oaicite:8]{index=8}
-        if (this.isStrict && !this.ast.terminatorSeen) {
-            // this.ast.errors.push(
-            //     "Strict mode: missing document terminator '/END'.",
-            // )
+        // If option isRequireDocTerminator, then the document
+        // terminator '/END' at the end of the document is required,
+        // otherwise it's optional.
+        if (this.options.isRequireDocTerminator && !this.ast.terminatorSeen) {
             const msgWhat: string = `Missing '/END' at end of document (strict mode).`
             const msgWhy: string = `The terminator '/END' (case insensitive) is required and must appear at the end of the document.`
 
@@ -451,6 +450,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
 
         if (rawText.toLowerCase() === '/end') {
             if (this.ast.terminatorSeen) {
+                // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                 this.errorHandler!.pushOrBail(
                     ctx,
                     'Syntax-Warning',
@@ -459,6 +459,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                 )
             }
         } else {
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
                 ctx,
                 'Syntax-Error',
@@ -490,22 +491,6 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         if (ruleName.includes('Meta_stmtContext'))
             return this.visitMeta_stmt?.(child)
 
-        // SECTION_HEAD is a token (no sub-rule class)
-        // const text = child.getText?.() ?? ''
-        // if (text && /\^|<|§|€/.test(text)) {
-        //     const { level, name } = parseSectionHeadToken(text)
-        //     // Validate level sequencing per spec 5.3 (no skipping upward)
-        //     const currentLevel =
-        //         this.sectionStack[this.sectionStack.length - 1].level
-        //     if (level > currentLevel + 1) {
-        //         this.ast.errors.push(
-        //             `Invalid section level transition: from ${currentLevel} to ${level} (cannot skip levels).`,
-        //         )
-        //     }
-        //     const section = makeSection(name, level)
-        //     this.attachSection(ctx, this.sectionStack, section, this.ast) // respects up/down nesting
-        //     return null
-        // }
         debugPrint('S1')
         // let headerAlt = child.getText?.() ?? ''
         // let header = ctx.SECTION_HEAD()?.getText().trim() || ''
@@ -515,9 +500,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         header = extractYiniLine(header)
         debugPrint('S3, header: >>>' + header + '<<<')
 
-        // if (header && /\^|<|§|€/.test(header)) {
         if (!!header) {
-            // const { level, name } = parseSectionHeadToken(line)
             const { sectionName, sectionLevel } = parseSectionHeader(
                 header,
                 this.errorHandler!,
@@ -527,8 +510,13 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             const currentLevel =
                 this.sectionStack[this.sectionStack.length - 1].level
             if (sectionLevel > currentLevel + 1) {
-                this.ast.errors.push(
-                    `Invalid section level transition: from ${currentLevel} to ${sectionLevel} (cannot skip levels).`,
+                // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+                this.errorHandler!.pushOrBail(
+                    ctx,
+                    'Syntax-Error',
+                    'Invalid section level transition',
+                    `Cannot skip levels: from ${currentLevel} to ${sectionLevel}.`,
+                    `A section header may not start directly at level ${sectionLevel}, skipping previous section levels. Please start with one level further down.`,
                 )
             }
             const section = makeSection(
@@ -579,6 +567,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         debugPrint('rawText2 = "' + rawText + '"')
 
         if (this.mapSectionNamePaths.size || this.meta_numOfMembers) {
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
                 ctx,
                 this.isStrict ? 'Syntax-Error' : 'Syntax-Warning',
@@ -589,6 +578,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         }
 
         if (rawText.toLowerCase().startsWith('@include')) {
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
                 ctx,
                 'Notice',
@@ -597,6 +587,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             )
         } else if (rawText.toLowerCase() === '@yini') {
             if (this.ast.yiniMarkerSeen) {
+                // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                 this.errorHandler!.pushOrBail(
                     ctx,
                     this.isStrict ? 'Syntax-Error' : 'Syntax-Warning',
@@ -605,6 +596,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                 )
             }
         } else {
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
                 ctx,
                 'Syntax-Error',
@@ -639,6 +631,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         debugPrint('rawText2 = "' + rawText + '"')
 
         if (rawText.toLowerCase().startsWith('@deprecated')) {
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
                 ctx,
                 'Notice',
@@ -696,6 +689,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             )
             if (isEnclosedInBackticks(rawKey)) {
                 if (!isValidBacktickedIdent(rawKey)) {
+                    // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                     this.errorHandler!.pushOrBail(
                         ctx,
                         'Syntax-Error',
@@ -705,6 +699,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                 }
             } else {
                 if (!isValidSimpleIdent(rawKey)) {
+                    // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                     this.errorHandler!.pushOrBail(
                         ctx,
                         'Syntax-Error',
@@ -727,12 +722,16 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             if (!this.isStrict) {
                 debugPrint('HITTTTT!! - in visitMember(..)')
                 valueNode = makeScalarValue('Null', null, 'Implicit null')
+            } else {
+                // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+                this.errorHandler!.pushOrBail(
+                    ctx,
+                    'Syntax-Error',
+                    `Strict mode: missing value for key '${resultKey}'`,
+                    'Expected a value but found nothing, strict mode does not allow implicit null.',
+                    "If you intend to have a null value, please specify 'null' explicitly as the value.",
+                )
             }
-            // else {
-            //     this.ast.errors.push(
-            //         `Strict mode: missing value for key '${key}'.`,
-            //     )
-            // }
         } else {
             valueNode = this.visitValue?.(valueContext) as TValueLiteral
         }
@@ -744,13 +743,6 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         // const resultValue = valueLiteral?.type
         if (!valueNode || valueNode.type === 'Undefined') {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-            // this.errorHandler!.pushOrBail(
-            //     ctx,
-            //     'Syntax-Error',
-            //     'Invalid value',
-            //     `Invalid value '${rawValue}' for key '${resultKey}'.`,
-            //     `Expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
-            // )
             this.errorHandler!.pushOrBail(
                 ctx,
                 'Syntax-Error',
@@ -1011,30 +1003,6 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             printObject(value)
         }
         return value
-
-        // const entries = this.visitObject_members(ctx.object_members())
-
-        /*
-        const obj: Record<string, TValueLiteral> = {}
-        const members = ctx.object_members?.()
-        if (members) {
-            const list = this.visitObject_members?.(members) as Array<{
-                k: string
-                v: TValueLiteral
-            }>
-            for (const { k, v } of list) {
-                if (Object.prototype.hasOwnProperty.call(obj, k)) {
-                    // duplicates inside an object literal: treat like duplicates in a section
-                    this.ast.warnings.push(
-                        `Duplicate object key '${k}' (keeping first).`,
-                    )
-                    continue
-                }
-                obj[k] = v
-            }
-        }
-        return obj
-        */
     }
 
     /**
@@ -1171,6 +1139,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     // visitBad_member?: (ctx: Bad_memberContext) => Result
     visitBad_member = (ctx: Bad_memberContext): any => {
         debugPrint('-> Entered visitBad_member(..)')
+        // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
         this.errorHandler!.pushOrBail(
             ctx,
             'Syntax-Error',
@@ -1188,6 +1157,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
      */
     visitBad_meta_text = (ctx: Bad_meta_textContext): any => {
         debugPrint('-> Entered visitBad_meta_text(..)')
+        // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
         this.errorHandler!.pushOrBail(
             ctx,
             'Syntax-Error',

@@ -18,6 +18,7 @@ describe('Exp num literal tests:', () => {
             exp = 0.99e3    // This line works!
             exp2 = -0.30e2
             zero_exp = 0e0  // Edge-case = 0.0
+            /end
         `
 
         // Act.
@@ -54,6 +55,7 @@ describe('Exp num literal tests:', () => {
             one_pos = 1.0e0         // Edge-case!
             just_below_one = +.999e0 // Edge-case!
             leading_dot_pos = .5e2  // Edge-case!
+            /END
         `
 
         // Act.
@@ -102,6 +104,7 @@ describe('Exp num literal tests:', () => {
             negative_one = -1e0             // Edge-case!
             just_above_neg_one = -.999e0    // Edge-case!
             leading_dot_neg = -.25e5        // Edge-case!
+            /END
         `
 
         // Act.
@@ -136,6 +139,7 @@ describe('Exp num literal tests:', () => {
         // Arrange.
         const badYini = `^ Section
             value = 3e.1415
+            /END
         `
 
         // Act & Assert.
@@ -150,6 +154,7 @@ describe('Exp num literal tests:', () => {
         // Arrange.
         const badYini = `^ Section
             value = e10 // INVALID: no number before e
+            /END
         `
 
         // Act & Assert.
@@ -164,6 +169,7 @@ describe('Exp num literal tests:', () => {
         // Arrange.
         const badYini = `^ Section
             value = 1e // INVALID: no digits after e
+            /END
         `
 
         // Act & Assert.
@@ -178,6 +184,7 @@ describe('Exp num literal tests:', () => {
         // Arrange.
         const badYini = `^ Section
             value = 1e- // INVALID: no digits after e-
+            /END
         `
 
         // Act & Assert.

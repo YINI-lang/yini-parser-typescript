@@ -92,6 +92,7 @@ export default class YINI {
             isWithDiagnostics: isDev() || isDebug(),
             isWithTiming: isDev() || isDebug(),
             isKeepUndefinedInMeta: isDebug(),
+            isRequireDocTerminator: false,
         }
 
         debugPrint()

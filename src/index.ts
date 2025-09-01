@@ -328,16 +328,10 @@ if (isProdEnv()) {
         // `
 
         const yini = `
-            ^ General
-            title = 'My Prog Title'
-            items = 25
-            isDarkTheme = OFF
-
-            ^ Database
-            host = 'localhost'
-            port = 5432    
+        ^ InvalidHeader // INVALID: Must start with atleast one 1-level section.
+        --/END
         `
-        console.log(toPrettyJSON(YINI.parse(yini, false, 'auto', true)))
+        console.log(toPrettyJSON(YINI.parse(yini, true, 1, true)))
 
         // console.log(
         //     toPrettyJSON(

@@ -2,3 +2,4 @@
 val1 = 300
 val2 =	// (!) Missing null in strict mode.
 val3 = "My name"
+/END

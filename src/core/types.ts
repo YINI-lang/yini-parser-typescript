@@ -135,6 +135,30 @@ export interface IBuildOptions {
 }
 
 // For use in internal functions.
+/*
+    // Maybe in the future, suggestions:
+    // allowTrailingCommas
+    // allowEmptySections
+    // keyCaseSensitivity
+    // sectionCaseSensitivity
+    // normalizeNegativeZero
+    // allowMultilineStrings
+    // onDuplicateKey
+    // allowUnknownMetaCommands
+    // resolveIncludes
+    // includeBaseDir
+    // maxIncludeDepth
+    // materializeObjectsAs
+    // materializeListsAs
+    // maxDepth
+    // maxSectionMembers
+    // maxIssues
+    // timeoutMs
+    // shortCircuitOnFirstError
+    // warningPolicy
+    // collectSectionNamePaths
+    // collectMemberKeyPaths
+*/
 export interface IParseMainOptions {
     isStrict: boolean
     bailSensitivityLevel: TBailSensitivityLevel
@@ -142,6 +166,7 @@ export interface IParseMainOptions {
     isWithDiagnostics: boolean // Include diagnostics in meta data.
     isWithTiming: boolean // Include timing data of the different phases in meta data.
     isKeepUndefinedInMeta: boolean // If true, keeps properties with undefined values in the returned meta data.
+    isRequireDocTerminator: boolean // // If true, the document terminator '/END' at the end of the document is required, otherwise it's optional.
 }
 
 //{ line: 12, column: 8, type: 'Syntax-Error', message1: 'Invalid number' }
@@ -216,7 +241,7 @@ export interface IResultMetaData {
                 flags: { isDev: boolean; isDebug: boolean }
             }
         }
-        inputOptions: IParseMainOptions
+        options: IParseMainOptions
     }
     timing?: {
         total: null | { timeMs: number; name: string }

@@ -85,6 +85,27 @@ class MyLexerErrorListener implements ErrorListener<any> {
     }
 }
 
+// public and exposed parse with advanced options
+//@todo in future maybe
+// export const parseWithOptions = (
+// export const parseFileWithOptions = (
+//     filePath: string,
+//     options: IParseMainOptions = {
+//         isStrict: false,
+//         bailSensitivityLevel: 0,
+//         isIncludeMeta: false,
+//         isWithDiagnostics: false,
+//         isWithTiming: false,
+//         isKeepUndefinedInMeta: false,
+//     },
+// ) => {
+//     //find the below
+//         fileLoadMetaPayload.fileName || null,
+//         fileLoadMetaPayload.lineCount,
+
+//     // parseMain
+// }
+
 export const parseMain = (
     yiniContent: string,
     options: IParseMainOptions = {
@@ -94,17 +115,19 @@ export const parseMain = (
         isWithDiagnostics: false,
         isWithTiming: false,
         isKeepUndefinedInMeta: false,
+        isRequireDocTerminator: false,
     },
     // metaFilename: undefined | string,
     fileLoadMetaPayload: IFileLoadMetaPayload,
 ) => {
     debugPrint()
     debugPrint('-> Entered parseMain(..) in parseEntry')
-    debugPrint('     isStrict mode = ' + options.isStrict)
-    debugPrint('bailSensitivityLevel = ' + options.bailSensitivityLevel)
-    debugPrint('isIncludeMeta = ' + options.isIncludeMeta)
-    debugPrint('isWithDiagnostics = ' + options.isWithDiagnostics)
-    debugPrint('isWithTiming = ' + options.isWithTiming)
+    debugPrint('         isStrict mode = ' + options.isStrict)
+    debugPrint('  bailSensitivityLevel = ' + options.bailSensitivityLevel)
+    debugPrint('         isIncludeMeta = ' + options.isIncludeMeta)
+    debugPrint('     isWithDiagnostics = ' + options.isWithDiagnostics)
+    debugPrint('          isWithTiming = ' + options.isWithTiming)
+    debugPrint('isRequireDocTerminator = ' + options.isRequireDocTerminator)
 
     //---------------------------------------------
     // Note: Only computed when isWithTiming.
@@ -217,7 +240,6 @@ export const parseMain = (
         errorHandler,
         options,
         fileLoadMetaPayload.fileName || null,
-        fileLoadMetaPayload.lineCount,
     )
     const ast: IYiniAST = builder.buildAST(parseTree)
     // const syntaxTreeC: TSyntaxTreeContainer = visitor.visit(
@@ -398,13 +420,14 @@ export const parseMain = (
                         flags: { isDev: isDev(), isDebug: isDebug() },
                     },
                 },
-                inputOptions: {
+                options: {
                     isStrict: options.isStrict,
                     bailSensitivityLevel: options.bailSensitivityLevel,
                     isIncludeMeta: options.isIncludeMeta,
                     isWithDiagnostics: options.isWithDiagnostics,
                     isWithTiming: options.isWithTiming,
                     isKeepUndefinedInMeta: options.isKeepUndefinedInMeta,
+                    isRequireDocTerminator: options.isRequireDocTerminator,
                 },
             }
         }
