@@ -19,7 +19,6 @@ describe('Float number literal tests:', () => {
             value7 = -2.5
             value8 = 0.75
             value9 = -1234.567
-            /END
         `
 
         // Act.
@@ -53,7 +52,6 @@ describe('Float number literal tests:', () => {
             leading_dot = .25
             single_digit = 9.0
             large_decimal = 9999999999.99999
-            /END
         `
 
         // Act.
@@ -94,7 +92,6 @@ describe('Float number literal tests:', () => {
             leading_dot = -.25
             single_digit = -9.0
             large_decimal = -9999999999.99999
-            /END
         `
 
         // Act.
@@ -125,7 +122,6 @@ describe('Float number literal tests:', () => {
         // Arrange.
         const badYini = `^ Section
             value = 3e.1415
-            /END
         `
 
         // Act & Assert.
@@ -140,7 +136,6 @@ describe('Float number literal tests:', () => {
         // Arrange.
         const badYini = `^ Section
             value = e10 // INVALID: no number before e
-            /END
         `
 
         // Act & Assert.
@@ -155,7 +150,6 @@ describe('Float number literal tests:', () => {
         // Arrange.
         const badYini = `^ Section
             value = 1e // INVALID: no digits after e
-            /END
         `
 
         // Act & Assert.
@@ -170,7 +164,6 @@ describe('Float number literal tests:', () => {
         // Arrange.
         const badYini = `^ Section
             value = 1e- // INVALID: no digits after e-
-            /END
         `
 
         // Act & Assert.

@@ -14,7 +14,6 @@ describe('Binary number literal tests:', () => {
             bin4 = %1010   // Decimal 10
             bin5 = %1111   // Decimal 15
             bin6 = %010110 // Decimal 22
-            /END
         `
 
         // Act.
@@ -45,7 +44,6 @@ describe('Binary number literal tests:', () => {
             bin4 = 0b1010   // Decimal 10
             bin5 = 0b1111   // Decimal 15
             bin6 = 0b010110 // Decimal 22
-            /END
         `
 
         // Act.
@@ -76,7 +74,6 @@ describe('Binary number literal tests:', () => {
             bin4 = 0B1010   // Decimal 10
             bin5 = 0B1111   // Decimal 15
             bin6 = 0B010110 // Decimal 22
-            /END
         `
 
         // Act.
@@ -107,7 +104,6 @@ describe('Binary number literal tests:', () => {
             bin4 = %11111111                           // Decimal 255 (max unsigned 8-bit)
             bin5 = %1111111111111111111111111111111    // Decimal 2,147,483,647 (max signed 32-bit)
             bin6 = %1111111111111111111111111111111111111111111111111111111111111111 
-            /END
         `
 
         // Act.
@@ -138,7 +134,6 @@ describe('Binary number literal tests:', () => {
             bin4 = 0b11111111                           // Decimal 255 (max unsigned 8-bit)
             bin5 = 0b1111111111111111111111111111111    // Decimal 2,147,483,647 (max signed 32-bit)
             bin6 = 0b1111111111111111111111111111111111111111111111111111111111111111 
-            /END
         `
 
         // Act.
@@ -169,7 +164,6 @@ describe('Binary number literal tests:', () => {
             bin4 = 0B11111111                           // Decimal 255 (max unsigned 8-bit)
             bin5 = 0B1111111111111111111111111111111    // Decimal 2,147,483,647 (max signed 32-bit)
             bin6 = 0B1111111111111111111111111111111111111111111111111111111111111111 
-            /END
         `
 
         // Act.
@@ -200,7 +194,6 @@ describe('Binary number literal tests:', () => {
             bin4 = +%1010   // Decimal 10
             bin5 = -%1111   // Decimal -15
             bin6 = +%010110 // Decimal 22
-            /END
         `
 
         // Act.
@@ -231,7 +224,6 @@ describe('Binary number literal tests:', () => {
             bin4 = +0b1010   // Decimal 10
             bin5 = -0b1111   // Decimal -15
             bin6 = +0b010110 // Decimal 22
-            /END
         `
 
         // Act.
@@ -262,7 +254,6 @@ describe('Binary number literal tests:', () => {
             bin4 = +0B1010   // Decimal 10
             bin5 = -0B1111   // Decimal -15
             bin6 = +0B010110 // Decimal 22
-            /END
         `
 
         // Act.
@@ -302,7 +293,6 @@ describe('Binary number literal tests:', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badBin = %
-            /END
         `
 
         // Act & Assert.
@@ -331,7 +321,6 @@ describe('Binary number literal tests:', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badBin = 0b
-            /END
         `
 
         // Act & Assert.
@@ -360,7 +349,6 @@ describe('Binary number literal tests:', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badBin = 0B
-            /END
         `
 
         // Act & Assert.
@@ -389,7 +377,6 @@ describe('Binary number literal tests:', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badBin = %21    // Invalid BIN digit "2"
-            /END
         `
 
         // Act & Assert.
@@ -418,7 +405,6 @@ describe('Binary number literal tests:', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badBin = 0b21    // Invalid BIN digit "2"
-            /END
         `
 
         // Act & Assert.
@@ -447,7 +433,6 @@ describe('Binary number literal tests:', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badBin = 0B21    // Invalid BIN digit "2"
-            /END
         `
 
         // Act & Assert.
@@ -479,7 +464,6 @@ describe('Binary number literal tests:', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badBin = -%     // Minus sign with no digits
-            /END
         `
 
         // Act & Assert.
@@ -508,7 +492,6 @@ describe('Binary number literal tests:', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badBin = -0b     // Minus sign with no digits
-            /END
         `
 
         // Act & Assert.
@@ -537,7 +520,6 @@ describe('Binary number literal tests:', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badBin = -0B     // Minus sign with no digits
-            /END
         `
 
         // Act & Assert.

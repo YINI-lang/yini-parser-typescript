@@ -14,7 +14,6 @@ describe('Octal number literal tests:', () => {
             oct4 = 0o10    // Decimal 8
             oct5 = 0o77    // Decimal 63
             oct6 = 0o755   // Common Unix file permission value (decimal 493)
-            /END
         `
 
         // Act.
@@ -45,7 +44,6 @@ describe('Octal number literal tests:', () => {
             oct4 = 0O10    // Decimal 8
             oct5 = 0O77    // Decimal 63
             oct6 = 0O755   // Common Unix file permission value (decimal 493)
-            /END
         `
 
         // Act.
@@ -76,7 +74,6 @@ describe('Octal number literal tests:', () => {
             oct4 = 0o377                    // Max unsigned 8-bit)
             oct5 = 0o17777777777            // Max signed 32-bit)
             oct6 = 0o1777777777777777777777 // Max unsigned 64-bit)
-            /END
         `
 
         // Act.
@@ -107,7 +104,6 @@ describe('Octal number literal tests:', () => {
             oct4 = 0O377                    // Max unsigned 8-bit)
             oct5 = 0O17777777777            // Max signed 32-bit)
             oct6 = 0O1777777777777777777777 // Max unsigned 64-bit)
-            /END
         `
 
         // Act.
@@ -138,7 +134,6 @@ describe('Octal number literal tests:', () => {
             oct4 = +0o377                    // Max unsigned 8-bit)
             oct5 = -0o17777777777            // Max signed 32-bit)
             oct6 = +0o1777777777777777777777 // Max unsigned 64-bit)
-            /END
         `
 
         // Act.
@@ -169,7 +164,6 @@ describe('Octal number literal tests:', () => {
             oct4 = +0O377                    // Max unsigned 8-bit)
             oct5 = -0O17777777777            // Max signed 32-bit)
             oct6 = +0O1777777777777777777777 // Max unsigned 64-bit)
-            /END
         `
 
         // Act.
@@ -209,7 +203,6 @@ describe('Octal number literal tests:', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = 0o
-            /END
         `
 
         // Act & Assert.
@@ -238,7 +231,6 @@ describe('Octal number literal tests:', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = 0O
-            /END
         `
 
         // Act & Assert.
@@ -267,7 +259,6 @@ describe('Octal number literal tests:', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = 0o81    // Invalid OCT digit "8"
-            /END
         `
 
         // Act & Assert.
@@ -296,7 +287,6 @@ describe('Octal number literal tests:', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = 0O81    // Invalid OCT digit "8"
-            /END
         `
 
         // Act & Assert.
@@ -325,7 +315,6 @@ describe('Octal number literal tests:', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = -0o     // Minus sign with no digits
-            /END
         `
 
         // Act & Assert.
@@ -354,7 +343,6 @@ describe('Octal number literal tests:', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = -0O     // Minus sign with no digits
-            /END
         `
 
         // Act & Assert.

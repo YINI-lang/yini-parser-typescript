@@ -21,7 +21,6 @@ describe('Duodecimal (doz) number literal tests:', () => {
             doz2 = 0zB     // Decimal 11 (E/B is digit for 11 in base-12)
             doz3 = 0z10    // Decimal 12
             doz4 = 0z1B    // Decimal 23 (E/B is digit for 11 in base-12)
-            /END
         `
 
         // Act.
@@ -65,7 +64,6 @@ describe('Duodecimal (doz) number literal tests:', () => {
             doz2 = 0ZB     // Decimal 11 (E/B is digit for 11 in base-12)
             doz3 = 0Z10    // Decimal 12
             doz4 = 0Z1B    // Decimal 23 (E/B is digit for 11 in base-12)
-            /END
         `
 
         // Act.
@@ -107,7 +105,6 @@ describe('Duodecimal (doz) number literal tests:', () => {
             ^^ WithAB
             doz6 = 0z7BB   // Decimal 1151
             doz7 = 0zA00   // Decimal 1440 (E/B is digit for 11 in base-12)
-            /END
         `
 
         // Act.
@@ -147,7 +144,6 @@ describe('Duodecimal (doz) number literal tests:', () => {
             ^^ WithAB
             doz6 = 0Z7BB   // Decimal 1151
             doz7 = 0ZA00   // Decimal 1440 (E/B is digit for 11 in base-12)
-            /END
         `
 
         // Act.
@@ -188,7 +184,6 @@ describe('Duodecimal (doz) number literal tests:', () => {
             ^^ WithAB
             doz7 = -0z7BB   // Decimal 1151
             doz8 = +0zA00   // Decimal 1440 (E/B is digit for 11 in base-12)
-            /END
         `
 
         // Act.
@@ -230,7 +225,6 @@ describe('Duodecimal (doz) number literal tests:', () => {
             ^^ WithAB
             doz7 = -0Z7BB   // Decimal 1151
             doz8 = +0ZA00   // Decimal 1440 (E/B is digit for 11 in base-12)
-            /END
         `
 
         // Act.
@@ -276,7 +270,6 @@ describe('Duodecimal (doz) number literal tests:', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = 0z
-            /END
         `
 
         // Act & Assert.
@@ -305,7 +298,6 @@ describe('Duodecimal (doz) number literal tests:', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = 0Z
-            /END
         `
 
         // Act & Assert.
@@ -334,7 +326,6 @@ describe('Duodecimal (doz) number literal tests:', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = 0zF1    // Invalid DOZ digit "f"
-            /END
         `
 
         // Act & Assert.
@@ -363,7 +354,6 @@ describe('Duodecimal (doz) number literal tests:', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = 0ZF1    // Invalid DOZ digit "f"
-            /END
         `
 
         // Act & Assert.
@@ -392,7 +382,6 @@ describe('Duodecimal (doz) number literal tests:', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = -0z     // Minus sign with no digits
-            /END
         `
 
         // Act & Assert.
@@ -421,7 +410,6 @@ describe('Duodecimal (doz) number literal tests:', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = -0Z     // Minus sign with no digits
-            /END
         `
 
         // Act & Assert.

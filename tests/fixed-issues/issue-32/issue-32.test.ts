@@ -122,7 +122,6 @@ describe('Additional issue #32 Tests:', () => {
         // Arrange.
         const validYini = `^ Section
             value = .33
-            /END
         `
         // Act.
         const result = YINI.parse(validYini, true)
@@ -137,7 +136,6 @@ describe('Additional issue #32 Tests:', () => {
         // Arrange.
         const validYini = `^ Section
             value = -.33
-            /End
         `
         // Act.
         const result = YINI.parse(validYini, true)
@@ -152,7 +150,6 @@ describe('Additional issue #32 Tests:', () => {
         // Arrange.
         const validYini = `^ Section
             value = .3e5
-            /end
         `
         // Act.
         const result = YINI.parse(validYini, true)
@@ -167,7 +164,6 @@ describe('Additional issue #32 Tests:', () => {
         // Arrange.
         const validYini = `^ Section
             value = -.3e5
-            /END
         `
         // Act.
         const result = YINI.parse(validYini, true)
@@ -191,7 +187,6 @@ describe('Additional issue #32 Tests:', () => {
             users = 15
             year = 2025
             retryLimit = 3
-            /END
         `
         // Act.
         const result = YINI.parse(validYini, true)
@@ -229,8 +224,6 @@ describe('Additional issue #32 Tests:', () => {
             users = -15
             year = -2025
             retryLimit = -3
-
-            /END
         `
         // Act.
         const result = YINI.parse(validYini, true)
@@ -268,8 +261,6 @@ describe('Additional issue #32 Tests:', () => {
             short = 5e1
             floaty = 7.77e2
             milli = 1e-3
-
-            /END
         `
 
         // Act.
@@ -308,8 +299,6 @@ describe('Additional issue #32 Tests:', () => {
             short = -5e1
             floaty = -7.77e2
             milli = -1e-3
-
-            /END
         `
 
         // Act.
