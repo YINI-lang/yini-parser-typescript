@@ -392,7 +392,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         // If the option `isRequireDocTerminator` is set to true,
         // the '/END' terminator at the end of the document becomes required.
         if (this.options.isRequireDocTerminator && !this.ast.terminatorSeen) {
-            const msgWhat: string = `Missing '/END' at end of document (strict mode).`
+            const msgWhat: string = `Missing '/END' at end of document (option 'isRequireDocTerminator' is enabled).`
             const msgWhy: string = `The terminator '/END' (case insensitive) is required and must appear at the end of the document.`
 
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.

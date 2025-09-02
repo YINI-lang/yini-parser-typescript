@@ -422,7 +422,8 @@ export const _parseMain = (
                         flags: { isDev: isDev(), isDebug: isDebug() },
                     },
                 },
-                options: {
+                optionsUsed: {
+                    // NOTE: (!) These MUST user options.
                     strictMode: options.isStrict,
                     bailSensitivity: options.bailSensitivityLevel,
                     includeMetaData: options.isIncludeMeta,

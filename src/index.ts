@@ -25,6 +25,8 @@ import YINI from './YINI'
 
 export const parse = YINI.parse
 export const parseFile = YINI.parseFile
+export const parseWithOptions = YINI.parse
+export const parseFileWithOptions = YINI.parseFile
 export default YINI
 
 debugPrint()
@@ -329,11 +331,20 @@ if (isProdEnv()) {
 
         const yini = `
         @yini
-        @yini
+        --@yini
         ^ InvalidHeader // INVALID: Must start with atleast one 1-level section.
         --/END
         `
-        console.log(toPrettyJSON(YINI.parse(yini, false, 0, true)))
+        console.log(
+            toPrettyJSON(
+                YINI.parseWithOptions(yini, {
+                    strictMode: false,
+                    bailSensitivity: 1,
+                    includeMetaData: true,
+                    isRequireDocTerminator: true,
+                }),
+            ),
+        )
 
         // console.log(
         //     toPrettyJSON(
@@ -345,8 +356,21 @@ if (isProdEnv()) {
         //         ),
         //     ),
         // )
+        // console.log(
+        //     toPrettyJSON(
+        //         YINI.parseFileWithOptions('comprehensive-example.yini', {
+        //             strictMode: false,
+        //             bailSensitivity: 'auto',
+        //             includeMetaData: true,
+        //         }),
+        //     ),
+        // )
 
         // const fileName = './tests/fixtures/valid/common/common-config-2.yini'
-        // YINI.parseFile(fileName, false, 'auto', true)
+        // YINI.parseFileWithOptions(fileName, {
+        //     strictMode: false,
+        //     bailSensitivity: 'auto',
+        //     includeMetaData: true,
+        // })
     }
 }

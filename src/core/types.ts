@@ -148,18 +148,20 @@ export interface IParseCoreOptions {
  * @note These are the same as in the "simple positional API" function in
  *       the YINI class.
  */
+// NOTE: (!) All props MUST be optional.
 interface IPrimaryUserParams {
-    strictMode: boolean
-    bailSensitivity: TPreferredBailSensitivityLevel // 0 | "auto" | 1 | 2
-    includeMetaData: boolean // Include meta data along the returned result.
+    strictMode?: boolean
+    bailSensitivity?: TPreferredBailSensitivityLevel // 0 | "auto" | 1 | 2
+    includeMetaData?: boolean // Include meta data along the returned result.
 }
 
 // External and more user friendly parameter names.
+// NOTE: (!) All props MUST be optional.
 export interface IAllUserOptions extends IPrimaryUserParams {
-    isWithDiagnostics: boolean // (Requires isIncludeMeta) Include diagnostics in meta data, when isIncludeMeta.
-    isWithTiming: boolean // (Requires isIncludeMeta) Include timing data of the different phases in meta data, when isIncludeMeta.
-    isKeepUndefinedInMeta: boolean // (Requires isIncludeMeta) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
-    isRequireDocTerminator: boolean // // If true, the document terminator '/END' at the end of the document is required, otherwise it's optional.
+    isWithDiagnostics?: boolean // (Requires isIncludeMeta) Include diagnostics in meta data, when isIncludeMeta.
+    isWithTiming?: boolean // (Requires isIncludeMeta) Include timing data of the different phases in meta data, when isIncludeMeta.
+    isKeepUndefinedInMeta?: boolean // (Requires isIncludeMeta) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
+    isRequireDocTerminator?: boolean // // If true, the document terminator '/END' at the end of the document is required, otherwise it's optional.
 }
 
 // export interface IParseOptionsAdditional {
@@ -278,7 +280,7 @@ export interface IResultMetaData {
                 flags: { isDev: boolean; isDebug: boolean }
             }
         }
-        options: IAllUserOptions
+        optionsUsed: IAllUserOptions
     }
     timing?: {
         total: null | { timeMs: number; name: string }

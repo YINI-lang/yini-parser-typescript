@@ -146,7 +146,7 @@ export default class YINI {
                 isDev() || isDebug() || userOpts.isWithDiagnostics,
             isWithTiming: isDev() || isDebug() || userOpts.isWithTiming,
             isKeepUndefinedInMeta: isDebug() || userOpts.isKeepUndefinedInMeta,
-            isRequireDocTerminator: false || userOpts.isRequireDocTerminator,
+            isRequireDocTerminator: userOpts.isRequireDocTerminator,
         }
 
         debugPrint()
