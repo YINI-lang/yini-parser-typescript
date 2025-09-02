@@ -12,7 +12,7 @@ import { ErrorDataHandler } from './core/ErrorDataHandler'
 import { astToObject } from './core/objectBuilder'
 import {
     IFileLoadMetaPayload,
-    IParseMainOptions,
+    IParseCoreOptions,
     IResultMetaData,
     IYiniAST,
     TBailSensitivityLevel,
@@ -106,9 +106,11 @@ class MyLexerErrorListener implements ErrorListener<any> {
 //     // parseMain
 // }
 
-export const parseMain = (
+/** Single source of truth. */
+export const _parseMain = (
     yiniContent: string,
-    options: IParseMainOptions = {
+    // options: IParseMainOptions = {
+    options: IParseCoreOptions = {
         isStrict: false,
         bailSensitivityLevel: 0,
         isIncludeMeta: false,
@@ -421,9 +423,9 @@ export const parseMain = (
                     },
                 },
                 options: {
-                    isStrict: options.isStrict,
-                    bailSensitivityLevel: options.bailSensitivityLevel,
-                    isIncludeMeta: options.isIncludeMeta,
+                    strictMode: options.isStrict,
+                    bailSensitivity: options.bailSensitivityLevel,
+                    includeMetaData: options.isIncludeMeta,
                     isWithDiagnostics: options.isWithDiagnostics,
                     isWithTiming: options.isWithTiming,
                     isKeepUndefinedInMeta: options.isKeepUndefinedInMeta,

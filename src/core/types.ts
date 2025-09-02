@@ -103,31 +103,6 @@ export interface IFileLoadMetaPayload extends IMetaBaseInfo {
     sha256: string | null
 }
 
-export interface IYiniAST extends IMetaBaseInfo {
-    root: IYiniSection // Implicit root per spec.
-    isStrict: boolean
-    terminatorSeen: boolean // Required '/END' in strict mode.
-    yiniMarkerSeen: boolean
-    maxDepth: number | null
-    numOfSections: number | null
-    numOfMembers: number | null
-    sectionNamePaths: string[] | null
-    // errors: string[] // @deprecated Will soon get deleted
-    // warnings: string[] // @deprecated Will soon get deleted
-}
-
-export interface IYiniSection {
-    sectionName: string
-    level: number // 1..n
-    members: Map<string, TValueLiteral> // Map used since ORDER MATTERS. Members at this section.
-    children: IYiniSection[] // Children sections (on the next level) of the current section.
-}
-
-export interface IBuildOptions {
-    mode?: 'lenient' | 'strict' // default: lenient
-    onDuplicateKey?: 'error' | 'warn' | 'keep-first' | 'overwrite' // default: warn
-}
-
 // For use in internal functions.
 /*
     // Maybe in the future, suggestions:
@@ -153,14 +128,83 @@ export interface IBuildOptions {
     // collectSectionNamePaths
     // collectMemberKeyPaths
 */
-export interface IParseMainOptions {
+// Internal option names.
+export interface IParseCoreOptions {
     isStrict: boolean
-    bailSensitivityLevel: TBailSensitivityLevel
+    bailSensitivityLevel: TBailSensitivityLevel // 0 | 1 | 2
     isIncludeMeta: boolean // Include meta data along the returned result.
     isWithDiagnostics: boolean // (Requires isIncludeMeta) Include diagnostics in meta data, when isIncludeMeta.
     isWithTiming: boolean // (Requires isIncludeMeta) Include timing data of the different phases in meta data, when isIncludeMeta.
     isKeepUndefinedInMeta: boolean // (Requires isIncludeMeta) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
     isRequireDocTerminator: boolean // // If true, the document terminator '/END' at the end of the document is required, otherwise it's optional.
+}
+
+/**
+ * These are more user friendly, and shorter, parameter names than the (more
+ * descriptive) internal options names.
+ *
+ * @note These parameters are emphasizes a bit more than the other options,
+ *       therefor these are kept a bit shorter for usability-purposes.
+ * @note These are the same as in the "simple positional API" function in
+ *       the YINI class.
+ */
+interface IPrimaryUserParams {
+    strictMode: boolean
+    bailSensitivity: TPreferredBailSensitivityLevel // 0 | "auto" | 1 | 2
+    includeMetaData: boolean // Include meta data along the returned result.
+}
+
+// External and more user friendly parameter names.
+export interface IAllUserOptions extends IPrimaryUserParams {
+    isWithDiagnostics: boolean // (Requires isIncludeMeta) Include diagnostics in meta data, when isIncludeMeta.
+    isWithTiming: boolean // (Requires isIncludeMeta) Include timing data of the different phases in meta data, when isIncludeMeta.
+    isKeepUndefinedInMeta: boolean // (Requires isIncludeMeta) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
+    isRequireDocTerminator: boolean // // If true, the document terminator '/END' at the end of the document is required, otherwise it's optional.
+}
+
+// export interface IParseOptionsAdditional {
+//     isWithDiagnostics: boolean // (Requires isIncludeMeta) Include diagnostics in meta data, when isIncludeMeta.
+//     isWithTiming: boolean // (Requires isIncludeMeta) Include timing data of the different phases in meta data, when isIncludeMeta.
+//     isKeepUndefinedInMeta: boolean // (Requires isIncludeMeta) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
+//     isRequireDocTerminator: boolean // // If true, the document terminator '/END' at the end of the document is required, otherwise it's optional.
+// }
+
+// export interface IParseOptionsAll extends IParseOptionsAdditional {
+//     isStrict: boolean
+//     bailSensitivityLevel: TBailSensitivityLevel
+//     isIncludeMeta: boolean // Include meta data along the returned result.
+// }
+
+// With internal parameter names.
+// export interface IParseMainOptions extends IParseOptionsAdditional {
+//     isStrict: boolean
+//     bailSensitivityLevel: TBailSensitivityLevel
+//     isIncludeMeta: boolean // Include meta data along the returned result.
+// }
+
+export interface IYiniAST extends IMetaBaseInfo {
+    root: IYiniSection // Implicit root per spec.
+    isStrict: boolean
+    terminatorSeen: boolean // Required '/END' in strict mode.
+    yiniMarkerSeen: boolean
+    maxDepth: number | null
+    numOfSections: number | null
+    numOfMembers: number | null
+    sectionNamePaths: string[] | null
+    // errors: string[] // @deprecated Will soon get deleted
+    // warnings: string[] // @deprecated Will soon get deleted
+}
+
+export interface IYiniSection {
+    sectionName: string
+    level: number // 1..n
+    members: Map<string, TValueLiteral> // Map used since ORDER MATTERS. Members at this section.
+    children: IYiniSection[] // Children sections (on the next level) of the current section.
+}
+
+export interface IBuildOptions {
+    mode?: 'lenient' | 'strict' // default: lenient
+    onDuplicateKey?: 'error' | 'warn' | 'keep-first' | 'overwrite' // default: warn
 }
 
 //{ line: 12, column: 8, type: 'Syntax-Error', message1: 'Invalid number' }
@@ -234,7 +278,7 @@ export interface IResultMetaData {
                 flags: { isDev: boolean; isDebug: boolean }
             }
         }
-        options: IParseMainOptions
+        options: IAllUserOptions
     }
     timing?: {
         total: null | { timeMs: number; name: string }

@@ -56,9 +56,7 @@ import {
 import { ErrorDataHandler } from './ErrorDataHandler'
 import {
     IBuildOptions,
-    // IChainContainer,
-    IParseMainOptions,
-    // ISectionResult,
+    IParseCoreOptions,
     IYiniAST,
     IYiniSection,
     TListValue,
@@ -194,7 +192,7 @@ function makeSection(name: string, level: number): IYiniSection {
 // export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
 export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     private errorHandler: ErrorDataHandler | null = null
-    private readonly options: IParseMainOptions
+    private readonly options: IParseCoreOptions
     private readonly isStrict: boolean
 
     // private readonly mode: 'lenient' | 'strict'
@@ -216,7 +214,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
      */
     constructor(
         errorHandler: ErrorDataHandler,
-        options: IParseMainOptions,
+        options: IParseCoreOptions,
         metaFileName: string | null,
     ) {
         super()
