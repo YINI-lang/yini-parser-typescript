@@ -317,9 +317,9 @@ export const parseMain = (
             parserVersion: pkg.version,
             mode: options.isStrict ? 'strict' : 'lenient',
             orderPreserved: true,
-            errorCount: errorHandler.getNumOfErrors(),
-            warningCount: errorHandler.getNumOfWarnings(),
-            anyMessageCount: errorHandler.getNumOfAllMessages(),
+            totalErrors: errorHandler.getNumOfErrors(),
+            totalWarnings: errorHandler.getNumOfWarnings(),
+            totalMessages: errorHandler.getNumOfAllMessages(),
             runStartedAt,
             runFinishedAt,
             durationMs: to3(durationMs),
@@ -396,19 +396,19 @@ export const parseMain = (
                     ),
                 },
                 errors: {
-                    count: errorHandler.getNumOfErrors(),
+                    errorCount: errorHandler.getNumOfErrors(),
                     payload: errorHandler.getErrors(),
                 },
                 warnings: {
-                    count: errorHandler.getNumOfWarnings(),
+                    warningCount: errorHandler.getNumOfWarnings(),
                     payload: errorHandler.getWarnings(),
                 },
                 notices: {
-                    count: errorHandler.getNumOfNotices(),
+                    noticeCount: errorHandler.getNumOfNotices(),
                     payload: errorHandler.getNotices(),
                 },
                 infos: {
-                    count: errorHandler.getNumOfInfos(),
+                    infoCount: errorHandler.getNumOfInfos(),
                     payload: errorHandler.getInfos(),
                 },
                 environment: {
@@ -442,7 +442,7 @@ export const parseMain = (
                           name:
                               fileLoadMetaPayload.sourceType === 'Inline'
                                   ? 'Total'
-                                  : 'Total, excluding phase0 (I/O)',
+                                  : 'Total (excluding phase0 (I/O))',
                       },
                 phase0:
                     !options.isWithTiming ||

@@ -327,22 +327,24 @@ if (isProdEnv()) {
         //     /end
         // `
 
-        // const yini = `
-        // ^ InvalidHeader // INVALID: Must start with atleast one 1-level section.
-        // --/END
-        // `
-        // console.log(toPrettyJSON(YINI.parse(yini, true, 1, true)))
+        const yini = `
+        @yini
+        @yini
+        ^ InvalidHeader // INVALID: Must start with atleast one 1-level section.
+        --/END
+        `
+        console.log(toPrettyJSON(YINI.parse(yini, false, 0, true)))
 
-        console.log(
-            toPrettyJSON(
-                YINI.parseFile(
-                    'comprehensive-example.yini',
-                    false,
-                    'auto',
-                    true,
-                ),
-            ),
-        )
+        // console.log(
+        //     toPrettyJSON(
+        //         YINI.parseFile(
+        //             'comprehensive-example.yini',
+        //             false,
+        //             'auto',
+        //             true,
+        //         ),
+        //     ),
+        // )
 
         // const fileName = './tests/fixtures/valid/common/common-config-2.yini'
         // YINI.parseFile(fileName, false, 'auto', true)

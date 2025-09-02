@@ -188,9 +188,9 @@ export interface IResultMetaData {
     parserVersion: string
     mode: 'lenient' | 'strict'
     orderPreserved: boolean
-    errorCount: number
-    warningCount: number
-    anyMessageCount: number
+    totalErrors: number
+    totalWarnings: number
+    totalMessages: number
     runStartedAt: string
     runFinishedAt: string
     durationMs: number
@@ -221,10 +221,10 @@ export interface IResultMetaData {
             levelLabel: TPersistThreshold
             levelDescription: string | null
         }
-        errors: { count: number; payload: IIssuePayload[] }
-        warnings: { count: number; payload: IIssuePayload[] }
-        notices: { count: number; payload: IIssuePayload[] }
-        infos: { count: number; payload: IIssuePayload[] }
+        errors: { errorCount: number; payload: IIssuePayload[] }
+        warnings: { warningCount: number; payload: IIssuePayload[] }
+        notices: { noticeCount: number; payload: IIssuePayload[] }
+        infos: { infoCount: number; payload: IIssuePayload[] }
         environment: {
             NODE_ENV: undefined | string
             APP_ENV: undefined | string
