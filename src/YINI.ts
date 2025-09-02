@@ -14,7 +14,7 @@ import { getFileNameExtension } from './utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from './utils/print'
 import { computeSha256, toLowerSnakeCase } from './utils/string'
 
-let _fileName: undefined | string = undefined
+// let _fileName: undefined | string = undefined
 let _fileLoadMetaPayload: IFileLoadMetaPayload = {
     sourceType: 'Inline',
     fileName: undefined,
@@ -25,6 +25,7 @@ let _fileLoadMetaPayload: IFileLoadMetaPayload = {
     sha256: null,
 }
 
+// Initial default values.
 const DEFAULT_OPTS: Required<
     Pick<
         IAllUserOptions,
@@ -89,7 +90,7 @@ export default class YINI {
      * Parse inline YINI content into a JavaScript object.
      *
      * @param yiniContent      YINI code as a string (multi‑line content supported).
-     * @param options
+     * @param options Optional settings to customize parsing and/or results, useful if you need more control.
      *
      * @returns A JavaScript object representing the parsed YINI content.
      */
@@ -188,7 +189,39 @@ export default class YINI {
         bailSensitivity: TPreferredBailSensitivityLevel = 'auto',
         includeMetaData = false,
     ): TJSObject => {
+        debugPrint('-> Entered static parseFile(..) in class YINI\n')
+
+        // Required, makes all properties in T required, no undefined.
+        const userOpts: Required<IAllUserOptions> = {
+            ...DEFAULT_OPTS, // Sets the default options.
+            strictMode,
+            bailSensitivity,
+            includeMetaData,
+        }
+        return YINI.parseFileWithOptions(filePath, userOpts)
+    }
+
+    /**
+     * Parse a YINI file into a JavaScript object.
+     *
+     * @param yiniFile Path to the YINI file.
+     * @param options Optional settings to customize parsing and/or results, useful if you need more control.
+     *
+     * @returns A JavaScript object representing the parsed YINI content.
+     */
+    // Advanced, named options for power/expert users (more future-proof).
+    public static parseFileWithOptions = (
+        filePath: string,
+        options: IAllUserOptions,
+    ): TJSObject => {
+        debugPrint('-> Entered static parseFileWithOptions(..) in class YINI\n')
         debugPrint('Current directory = ' + process.cwd())
+
+        // Required, makes all properties in T required, no undefined.
+        const userOpts: Required<IAllUserOptions> = {
+            ...DEFAULT_OPTS, // Sets the default options.
+            ...options, // Overrides any options provided by the user.
+        }
 
         if (getFileNameExtension(filePath).toLowerCase() !== '.yini') {
             console.error('Invalid file extension for YINI file:')
@@ -212,11 +245,12 @@ export default class YINI {
         _fileLoadMetaPayload.sourceType = 'File'
         _fileLoadMetaPayload.fileName = filePath
 
-        if (includeMetaData) {
+        if (userOpts.includeMetaData) {
             _fileLoadMetaPayload.lineCount = content.split(/\r?\n/).length // Counts the lines.
             _fileLoadMetaPayload.fileByteSize = fileByteSize
             _fileLoadMetaPayload.timeIoMs = +(timeEndMs - timeStartMs)
-            _fileLoadMetaPayload.preferredBailSensitivity = bailSensitivity
+            _fileLoadMetaPayload.preferredBailSensitivity =
+                userOpts.bailSensitivity
             _fileLoadMetaPayload.sha256 = computeSha256(content) // NOTE: Compute BEFORE any possible tampering of content.
         }
 
@@ -228,9 +262,9 @@ export default class YINI {
 
         const result = this.parse(
             content,
-            strictMode,
-            bailSensitivity,
-            includeMetaData,
+            userOpts.strictMode,
+            userOpts.bailSensitivity,
+            userOpts.includeMetaData,
         )
         if (hasNoNewlineAtEOF) {
             console.warn(
