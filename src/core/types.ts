@@ -157,9 +157,9 @@ export interface IParseMainOptions {
     isStrict: boolean
     bailSensitivityLevel: TBailSensitivityLevel
     isIncludeMeta: boolean // Include meta data along the returned result.
-    isWithDiagnostics: boolean // Include diagnostics in meta data.
-    isWithTiming: boolean // Include timing data of the different phases in meta data.
-    isKeepUndefinedInMeta: boolean // If true, keeps properties with undefined values in the returned meta data.
+    isWithDiagnostics: boolean // (Requires isIncludeMeta) Include diagnostics in meta data, when isIncludeMeta.
+    isWithTiming: boolean // (Requires isIncludeMeta) Include timing data of the different phases in meta data, when isIncludeMeta.
+    isKeepUndefinedInMeta: boolean // (Requires isIncludeMeta) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
     isRequireDocTerminator: boolean // // If true, the document terminator '/END' at the end of the document is required, otherwise it's optional.
 }
 
