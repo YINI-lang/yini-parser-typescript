@@ -128,7 +128,7 @@ export interface IFileLoadMetaPayload extends IMetaBaseInfo {
     // collectSectionNamePaths
     // collectMemberKeyPaths
 */
-// Internal option names.
+// Internal option names, most if not all SHOULD be prefixed with 'is' or 'has'.
 export interface IParseCoreOptions {
     isStrict: boolean
     bailSensitivityLevel: TBailSensitivityLevel // 0 | 1 | 2

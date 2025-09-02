@@ -2,6 +2,7 @@ import fs from 'fs'
 import { performance } from 'perf_hooks'
 import { isDebug, isDev } from './config/env'
 import {
+    IAllUserOptions,
     IFileLoadMetaPayload,
     IParseCoreOptions,
     TBailSensitivityLevel,
@@ -24,14 +25,33 @@ let _fileLoadMetaPayload: IFileLoadMetaPayload = {
     sha256: null,
 }
 
+const DEFAULT_OPTS: Required<
+    Pick<
+        IAllUserOptions,
+        | 'strictMode'
+        | 'bailSensitivity'
+        | 'includeMetaData'
+        | 'isWithDiagnostics'
+        | 'isWithTiming'
+        | 'isKeepUndefinedInMeta'
+        | 'isRequireDocTerminator'
+    >
+> = {
+    strictMode: false,
+    bailSensitivity: 'auto',
+    includeMetaData: false,
+    isWithDiagnostics: false,
+    isWithTiming: false,
+    isKeepUndefinedInMeta: false,
+    isRequireDocTerminator: false,
+}
+
 /**
  * This class is the public API, which exposes only parse(..) and
  * parseFile(..), rest of the implementation details are hidden.
  * @note Only parse and parseFile are public.
  */
 export default class YINI {
-    // public static filePath: string = '' // Used in error reporting.
-
     /**
      * Parse inline YINI content into a JavaScript object.
      *
@@ -55,12 +75,47 @@ export default class YINI {
     ): TJSObject => {
         debugPrint('-> Entered static parse(..) in class YINI\n')
 
-        if (includeMetaData && _fileLoadMetaPayload.sourceType === 'Inline') {
+        // Required, makes all properties in T required, no undefined.
+        const userOpts: Required<IAllUserOptions> = {
+            ...DEFAULT_OPTS, // Sets the default options.
+            strictMode,
+            bailSensitivity,
+            includeMetaData,
+        }
+        return YINI.parseWithOptions(yiniContent, userOpts)
+    }
+
+    /**
+     * Parse inline YINI content into a JavaScript object.
+     *
+     * @param yiniContent      YINI code as a string (multi‑line content supported).
+     * @param options
+     *
+     * @returns A JavaScript object representing the parsed YINI content.
+     */
+    // Advanced, named options for power/expert users (more future-proof).
+    public static parseWithOptions = (
+        yiniContent: string,
+        options: IAllUserOptions,
+    ): TJSObject => {
+        debugPrint('-> Entered static parseWithOptions(..) in class YINI\n')
+
+        // Required, makes all properties in T required, no undefined.
+        const userOpts: Required<IAllUserOptions> = {
+            ...DEFAULT_OPTS, // Sets the default options.
+            ...options, // Overrides any options provided by the user.
+        }
+
+        if (
+            userOpts.includeMetaData &&
+            _fileLoadMetaPayload.sourceType === 'Inline'
+        ) {
             const lineCount = yiniContent.split(/\r?\n/).length // Counts the lines.
             const sha256 = computeSha256(yiniContent) // NOTE: Compute BEFORE any possible tampering of content.
 
             _fileLoadMetaPayload.lineCount = lineCount
-            _fileLoadMetaPayload.preferredBailSensitivity = bailSensitivity
+            _fileLoadMetaPayload.preferredBailSensitivity =
+                userOpts.bailSensitivity
             _fileLoadMetaPayload.sha256 = sha256
         }
 
@@ -75,26 +130,27 @@ export default class YINI {
         }
 
         let level: TBailSensitivityLevel = 0
-        if (bailSensitivity === 'auto') {
-            if (!strictMode) level = 0
-            if (strictMode) level = 1
+        if (userOpts.bailSensitivity === 'auto') {
+            if (!userOpts.strictMode) level = 0
+            if (userOpts.strictMode) level = 1
         } else {
-            level = bailSensitivity
+            level = userOpts.bailSensitivity
         }
 
-        const options: IParseCoreOptions = {
-            isStrict: strictMode,
+        const coreOpts: IParseCoreOptions = {
+            isStrict: userOpts.strictMode,
             bailSensitivityLevel: level,
-            isIncludeMeta: includeMetaData,
-            isWithDiagnostics: isDev() || isDebug(),
-            isWithTiming: isDev() || isDebug(),
-            isKeepUndefinedInMeta: isDebug(),
-            isRequireDocTerminator: false,
+            isIncludeMeta: userOpts.includeMetaData,
+            isWithDiagnostics:
+                isDev() || isDebug() || userOpts.isWithDiagnostics,
+            isWithTiming: isDev() || isDebug() || userOpts.isWithTiming,
+            isKeepUndefinedInMeta: isDebug() || userOpts.isKeepUndefinedInMeta,
+            isRequireDocTerminator: false || userOpts.isRequireDocTerminator,
         }
 
         debugPrint()
         debugPrint('==== Call parse ==========================')
-        const result = _parseMain(yiniContent, options, _fileLoadMetaPayload)
+        const result = _parseMain(yiniContent, coreOpts, _fileLoadMetaPayload)
         debugPrint('==== End call parse ==========================\n')
 
         if (isDev()) {
@@ -108,6 +164,8 @@ export default class YINI {
 
         return result
     }
+
+    // === parseFile / parseFileWithOptions ================================
 
     /**
      * Parse a YINI file into a JavaScript object.
