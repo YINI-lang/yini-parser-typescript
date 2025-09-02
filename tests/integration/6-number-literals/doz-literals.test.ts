@@ -252,7 +252,7 @@ describe('Duodecimal (doz) number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('4.a) Should throw error parsing a bad DOZ number with 0z (lenient-mode).', () => {
+    test('4.a) Should throw error parsing a bad DOZ number with 0z (lenient-mode, bail on error).', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = 0z
@@ -260,7 +260,7 @@ describe('Duodecimal (doz) number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false)
+            const result = YINI.parse(badYini, false, 1)
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -280,7 +280,7 @@ describe('Duodecimal (doz) number literal tests:', () => {
         }).toThrow()
     })
 
-    test('4.c) Should throw error parsing a bad DOZ number with 0Z (lenient-mode).', () => {
+    test('4.c) Should throw error parsing a bad DOZ number with 0Z (lenient-mode, bail on error).', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = 0Z
@@ -288,7 +288,7 @@ describe('Duodecimal (doz) number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false)
+            const result = YINI.parse(badYini, false, 1)
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -308,7 +308,7 @@ describe('Duodecimal (doz) number literal tests:', () => {
         }).toThrow()
     })
 
-    test('5.a) Should throw error parsing a bad DOZ number with 0z (lenient-mode).', () => {
+    test('5.a) Should throw error parsing a bad DOZ number with 0z (lenient-mode, bail on error).', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = 0zF1    // Invalid DOZ digit "f"
@@ -316,7 +316,7 @@ describe('Duodecimal (doz) number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false)
+            const result = YINI.parse(badYini, false, 1)
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -336,7 +336,7 @@ describe('Duodecimal (doz) number literal tests:', () => {
         }).toThrow()
     })
 
-    test('5.c) Should throw error parsing a bad DOZ number with 0Z (lenient-mode).', () => {
+    test('5.c) Should throw error parsing a bad DOZ number with 0Z (lenient-mode, bail on error).', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = 0ZF1    // Invalid DOZ digit "f"
@@ -344,7 +344,7 @@ describe('Duodecimal (doz) number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false)
+            const result = YINI.parse(badYini, false, 1)
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -364,7 +364,7 @@ describe('Duodecimal (doz) number literal tests:', () => {
         }).toThrow()
     })
 
-    test('6.a) Should throw error parsing a bad DOZ number with 0z (lenient-mode).', () => {
+    test('6.a) Should throw error parsing a bad DOZ number with 0z (lenient-mode, bail on error).', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = -0z     // Minus sign with no digits
@@ -372,7 +372,7 @@ describe('Duodecimal (doz) number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false)
+            const result = YINI.parse(badYini, false, 1)
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -392,7 +392,7 @@ describe('Duodecimal (doz) number literal tests:', () => {
         }).toThrow()
     })
 
-    test('6.c) Should throw error parsing a bad DOZ number with 0Z (lenient-mode).', () => {
+    test('6.c) Should throw error parsing a bad DOZ number with 0Z (lenient-mode, bail on error).', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = -0Z     // Minus sign with no digits
@@ -400,7 +400,7 @@ describe('Duodecimal (doz) number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false)
+            const result = YINI.parse(badYini, false, 1)
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()

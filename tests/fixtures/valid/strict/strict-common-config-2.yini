@@ -1,0 +1,6 @@
+    ^ App
+    name = "My App Title"
+    version = "1.2.3"
+    pageSize = 25
+    darkTheme = off
+    /END

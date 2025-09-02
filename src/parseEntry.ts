@@ -1,3 +1,4 @@
+import { performance } from 'perf_hooks'
 import {
     CharStreams,
     CommonTokenStream,
@@ -6,18 +7,25 @@ import {
     Recognizer,
 } from 'antlr4'
 import { isDebug, isDev, localAppEnv, localNodeEnv } from './config/env'
+import ASTBuilder from './core/ASTBuilder'
 import { ErrorDataHandler } from './core/ErrorDataHandler'
-import { constructFinalObject } from './core/objectBuilder'
+import { astToObject } from './core/objectBuilder'
 import {
+    IFileLoadMetaPayload,
     IParseMainOptions,
-    IParseMetaData,
+    IResultMetaData,
+    IYiniAST,
+    TBailSensitivityLevel,
+    TBailSensitivityLevelKey,
     TPersistThreshold,
-    TSyntaxTreeContainer,
 } from './core/types'
-import YINIVisitor from './core/YINIVisitor'
 import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
+import { removeUndefinedDeep } from './utils/object'
 import { debugPrint, printObject } from './utils/print'
+import { toLowerSnakeCase } from './utils/string'
+
+const pkg = require('../package.json')
 
 class MyParserErrorListener implements ErrorListener<any> {
     public errors: string[] = []
@@ -77,6 +85,27 @@ class MyLexerErrorListener implements ErrorListener<any> {
     }
 }
 
+// public and exposed parse with advanced options
+//@todo in future maybe
+// export const parseWithOptions = (
+// export const parseFileWithOptions = (
+//     filePath: string,
+//     options: IParseMainOptions = {
+//         isStrict: false,
+//         bailSensitivityLevel: 0,
+//         isIncludeMeta: false,
+//         isWithDiagnostics: false,
+//         isWithTiming: false,
+//         isKeepUndefinedInMeta: false,
+//     },
+// ) => {
+//     //find the below
+//         fileLoadMetaPayload.fileName || null,
+//         fileLoadMetaPayload.lineCount,
+
+//     // parseMain
+// }
+
 export const parseMain = (
     yiniContent: string,
     options: IParseMainOptions = {
@@ -85,12 +114,36 @@ export const parseMain = (
         isIncludeMeta: false,
         isWithDiagnostics: false,
         isWithTiming: false,
+        isKeepUndefinedInMeta: false,
+        isRequireDocTerminator: false,
     },
+    // metaFilename: undefined | string,
+    fileLoadMetaPayload: IFileLoadMetaPayload,
 ) => {
     debugPrint()
     debugPrint('-> Entered parseMain(..) in parseEntry')
-    debugPrint('     isStrict mode = ' + options.isStrict)
-    debugPrint('bailSensitivityLevel = ' + options.bailSensitivityLevel)
+    debugPrint('         isStrict mode = ' + options.isStrict)
+    debugPrint('  bailSensitivityLevel = ' + options.bailSensitivityLevel)
+    debugPrint('         isIncludeMeta = ' + options.isIncludeMeta)
+    debugPrint('     isWithDiagnostics = ' + options.isWithDiagnostics)
+    debugPrint('          isWithTiming = ' + options.isWithTiming)
+    debugPrint('isRequireDocTerminator = ' + options.isRequireDocTerminator)
+
+    //---------------------------------------------
+    // Note: Only computed when isWithTiming.
+    let timeStartMs: number = 0
+    let timeEnd1Ms: number = 0
+    let timeEnd2Ms: number = 0
+    let timeEnd3Ms: number = 0
+    let timeEnd4Ms: number = 0
+    //---------------------------------------------
+
+    //---------------------------------------------
+    // Note: Should ALWAYS be computed.
+    let runStartedAt = ''
+    let runFinishedAt = ''
+    let durationMs: number = 0
+    //---------------------------------------------
 
     let persistThreshold: TPersistThreshold
     switch (options.bailSensitivityLevel) {
@@ -104,30 +157,54 @@ export const parseMain = (
             persistThreshold = '2-Abort-Even-on-Warnings'
     }
 
+    const errorHandler = new ErrorDataHandler(persistThreshold)
+
     isDebug() && console.log()
     debugPrint(
-        '=== Phase 1 ===================================================',
+        '=== Phase 1 - Lexing ===================================================',
     )
+    // -----------------------------
+    // Below block should always be done despite isWithTiming to compute
+    // total time and runStartedAt that should always be computed.
+    {
+        timeStartMs = performance.now()
+        runStartedAt = new Date().toISOString()
+    }
+    // -----------------------------
+
     const inputStream = CharStreams.fromString(yiniContent)
     const lexer = new YiniLexer(inputStream)
-    const tokenStream = new CommonTokenStream(lexer)
-    const parser = new YiniParser(tokenStream)
-
-    const errorHandler = new ErrorDataHandler(persistThreshold)
 
     // Remove the default ConsoleErrorListener
     lexer.removeErrorListeners() // Removes the default lexer console error output.
     const lexerErrorListener = new MyLexerErrorListener(errorHandler)
     lexer.addErrorListener(lexerErrorListener)
 
+    const tokenStream = new CommonTokenStream(lexer)
+
+    // Important: force tokenization here so lexing is measured separately.
+    tokenStream.fill()
+
+    debugPrint('--- Parsing done. ---')
+    debugPrint(
+        '=== Ended phase 1 =============================================',
+    )
+    isDebug() && console.log()
+
+    debugPrint(
+        '=== Phase 2 - Parsing ===================================================',
+    )
+    if (options.isWithTiming) {
+        timeEnd1Ms = performance.now()
+    }
+
+    const parser = new YiniParser(tokenStream)
+
     // const errorListener = new MyParserErrorListener(errorHandler)
 
     parser.removeErrorListeners() // Removes the default parser console error output.
     const parserErrorListener = new MyParserErrorListener(errorHandler)
     parser.addErrorListener(parserErrorListener)
-
-    debugPrint()
-    debugPrint('--- Starting parsing... ---')
 
     const parseTree: YiniContext = parser.yini() // The function yini() is the start rule.
     if (
@@ -143,55 +220,75 @@ export const parseMain = (
                 parserErrorListener.errors,
                 lexerErrorListener.errors,
             )
-            //process.exit(1)
         }
     }
 
-    debugPrint('--- Parsing done. ---')
-    debugPrint(
-        '=== Ended phase 1 =============================================',
-    )
-    isDebug() && console.log()
-
-    debugPrint(
-        '=== Phase 2 ===================================================',
-    )
-    //    const errorHandler = new ErrorDataHandler(persistThreshold)
-
-    const visitor = new YINIVisitor(errorHandler, options.isStrict)
-    const syntaxTreeC: TSyntaxTreeContainer = visitor.visit(
-        parseTree as any,
-    ) as TSyntaxTreeContainer
-    if (isDebug()) {
-        console.log()
-        console.log(
-            '**************************************************************************',
-        )
-        console.log(
-            '*** syntaxTreeContainer: *************************************************',
-        )
-        printObject(syntaxTreeC)
-        console.log(
-            '**************************************************************************',
-        )
-        console.log(
-            '**************************************************************************',
-        )
-        console.log()
-    }
     debugPrint(
         '=== Ended phase 2 =============================================',
     )
     isDebug() && console.log()
 
     debugPrint(
-        '=== Phase 3 ===================================================',
+        '=== Phase 3 - AST Model build & validation ===================================================',
     )
-    // Construct.
-    const finalJSResult = constructFinalObject(syntaxTreeC, errorHandler)
+    if (options.isWithTiming) {
+        timeEnd2Ms = performance.now()
+    }
+
+    // const visitor = new YINIVisitor(errorHandler, options.isStrict)
+    const builder = new ASTBuilder(
+        errorHandler,
+        options,
+        fileLoadMetaPayload.fileName || null,
+    )
+    const ast: IYiniAST = builder.buildAST(parseTree)
+    // const syntaxTreeC: TSyntaxTreeContainer = visitor.visit(
+    //     parseTree as any,
+    // ) as TSyntaxTreeContainer
+    if (isDebug()) {
+        console.log()
+        console.log(
+            '**************************************************************************',
+        )
+        console.log('*** AST *************************************************')
+        printObject(ast)
+        console.log(
+            '**************************************************************************',
+        )
+        console.log(
+            '**************************************************************************',
+        )
+        console.log()
+    }
     debugPrint(
         '=== Ended phase 3 =============================================',
     )
+    isDebug() && console.log()
+
+    debugPrint(
+        '=== Phase 4 - Object Building Construction / Binding / Evaluation) ===================================================',
+    )
+    if (options.isWithTiming) {
+        timeEnd3Ms = performance.now()
+    }
+
+    // Construct.
+    // const finalJSResult = constructFinalObject(syntaxTreeC, errorHandler)
+    // const finalJSResult = builder.build(parseTree)
+    // const finalJSResult = ast //NOTE: ONLY TEMP so code runs
+    const finalJSResult = astToObject(ast, errorHandler)
+    debugPrint(
+        '=== Ended phase 4 =============================================',
+    )
+    // -----------------------------
+    // Below block should always be done despite isWithTiming to compute
+    // total time and runStartedAt that should always be computed.
+    {
+        timeEnd4Ms = performance.now()
+        durationMs = timeEnd4Ms - timeStartMs
+        runFinishedAt = new Date().toISOString()
+    }
+    // -----------------------------
 
     debugPrint('visitor.visit(..): finalJSResult:')
     isDebug() && console.debug(finalJSResult)
@@ -211,48 +308,180 @@ export const parseMain = (
         isDebug() && console.debug(finalJSResult)
     }
 
-    // Construct meta data.
-    const metaData: IParseMetaData = {
-        strictMode: options.isStrict,
-        hasTerminal: syntaxTreeC._hasTerminal,
-        sections: syntaxTreeC._meta_numOfSections,
-        members: syntaxTreeC._meta_numOfMembers,
-        sectionChains: syntaxTreeC._meta_numOfChains,
-        keysParsed: null,
-        timing: {
-            totalMs: null,
-            phase1Ms: null,
-            phase2Ms: null,
-            phase3Ms: null,
-        },
-    }
-    if (options.isWithDiagnostics) {
+    const constructResultMetaData = (): IResultMetaData => {
+        // --- Construct meta information -------------------------------------
+        const to3 = (n: number): number => Number.parseFloat(n.toFixed(3))
+
+        // Construct meta data.
+        const metaData: IResultMetaData = {
+            parserVersion: pkg.version,
+            mode: options.isStrict ? 'strict' : 'lenient',
+            orderPreserved: true,
+            errorCount: errorHandler.getNumOfErrors(),
+            warningCount: errorHandler.getNumOfWarnings(),
+            anyMessageCount: errorHandler.getNumOfAllMessages(),
+            runStartedAt,
+            runFinishedAt,
+            durationMs: to3(durationMs),
+            source: {
+                sourceType: toLowerSnakeCase(ast.sourceType),
+                fileName: ast.fileName,
+                hasDocumentTerminator: ast.terminatorSeen,
+                hasYiniMarker: ast.yiniMarkerSeen,
+                lineCount: fileLoadMetaPayload.lineCount,
+                byteSize: fileLoadMetaPayload.fileByteSize,
+                sha256: fileLoadMetaPayload.sha256,
+            },
+            structure: {
+                maxDepth: ast.maxDepth,
+                sectionCount: ast.numOfSections,
+                memberCount: ast.numOfMembers,
+                keysParsedCount: null,
+                // objectCount: null,
+                // listCount: null,
+                sectionNamePaths: ast.sectionNamePaths,
+            },
+            metaSchemaVersion: '1.0.0',
+        }
+
         // Attach optional diagnostics.
-        metaData.diagnostics = {
-            bailSensitivityLevel: options.bailSensitivityLevel,
-            errors: errorHandler.getNumOfErrors(),
-            warnings: errorHandler.getNumOfWarnings(),
-            infoAndNotices: errorHandler.getNumOfInfoAndNotices(),
-            envs: {
-                NODE_ENV: process.env.NODE_ENV,
-                APP_ENV: process.env.APP_ENV,
-                libNodeEnv: localNodeEnv,
-                libAppEnv: localAppEnv,
-            },
-            libFlags: {
-                isDev: isDev(),
-                isDebug: isDebug(),
-            },
+        if (options.isWithDiagnostics) {
+            const mapLevelKey = (
+                level: TBailSensitivityLevel,
+            ): TBailSensitivityLevelKey => {
+                switch (level) {
+                    case 0:
+                        return 'ignore_errors'
+                    case 1:
+                        return 'abort_on_errors'
+                    case 2:
+                        return 'abort_on_warnings'
+                }
+            }
+            const mapLevelLabel = (
+                level: TBailSensitivityLevel,
+            ): TPersistThreshold => {
+                switch (level) {
+                    case 0:
+                        return '0-Ignore-Errors'
+                    case 1:
+                        return '1-Abort-on-Errors'
+                    case 2:
+                        return '2-Abort-Even-on-Warnings'
+                }
+            }
+            const mapLevelDescription = (
+                level: TBailSensitivityLevel,
+            ): string | null => {
+                switch (level) {
+                    case 0:
+                        return 'Continue despite errors.'
+                    case 1:
+                        return 'Abort when errors occur.'
+                    case 2:
+                        return 'Abort when errors or warnings occur.'
+                }
+                return null
+            }
+
+            metaData.diagnostics = {
+                bailSensitivity: {
+                    preferredLevel:
+                        fileLoadMetaPayload.preferredBailSensitivity,
+                    levelUsed: options.bailSensitivityLevel,
+                    levelKey: mapLevelKey(options.bailSensitivityLevel),
+                    levelLabel: mapLevelLabel(options.bailSensitivityLevel),
+                    levelDescription: <any>(
+                        mapLevelDescription(options.bailSensitivityLevel)
+                    ),
+                },
+                errors: {
+                    count: errorHandler.getNumOfErrors(),
+                    payload: errorHandler.getErrors(),
+                },
+                warnings: {
+                    count: errorHandler.getNumOfWarnings(),
+                    payload: errorHandler.getWarnings(),
+                },
+                notices: {
+                    count: errorHandler.getNumOfNotices(),
+                    payload: errorHandler.getNotices(),
+                },
+                infos: {
+                    count: errorHandler.getNumOfInfos(),
+                    payload: errorHandler.getInfos(),
+                },
+                environment: {
+                    NODE_ENV: process.env.NODE_ENV,
+                    APP_ENV: process.env.APP_ENV,
+                    lib: {
+                        nodeEnv: localNodeEnv,
+                        appEnv: localAppEnv,
+                        flags: { isDev: isDev(), isDebug: isDebug() },
+                    },
+                },
+                options: {
+                    isStrict: options.isStrict,
+                    bailSensitivityLevel: options.bailSensitivityLevel,
+                    isIncludeMeta: options.isIncludeMeta,
+                    isWithDiagnostics: options.isWithDiagnostics,
+                    isWithTiming: options.isWithTiming,
+                    isKeepUndefinedInMeta: options.isKeepUndefinedInMeta,
+                    isRequireDocTerminator: options.isRequireDocTerminator,
+                },
+            }
         }
-    }
-    if (options.isWithTiming) {
-        // Attach optional timing data.
-        metaData.timing = {
-            totalMs: null,
-            phase1Ms: null,
-            phase2Ms: null,
-            phase3Ms: null,
+
+        // Attach optional durations timing data.
+        if (options.isWithTiming) {
+            metaData.timing = {
+                total: !options.isWithTiming
+                    ? null
+                    : {
+                          timeMs: to3(durationMs), // durationMs = timeEnd4Ms - timeStartMs
+                          name:
+                              fileLoadMetaPayload.sourceType === 'Inline'
+                                  ? 'Total'
+                                  : 'Total, excluding phase0 (I/O)',
+                      },
+                phase0:
+                    !options.isWithTiming ||
+                    fileLoadMetaPayload.sourceType === 'Inline'
+                        ? undefined
+                        : {
+                              timeMs: to3(fileLoadMetaPayload.timeIoMs!),
+
+                              name: 'I/O',
+                          },
+                phase1: !options.isWithTiming
+                    ? null
+                    : {
+                          timeMs: to3(timeEnd1Ms - timeStartMs),
+
+                          name: 'Lexing',
+                      },
+                phase2: !options.isWithTiming
+                    ? null
+                    : {
+                          timeMs: to3(timeEnd2Ms - timeEnd1Ms),
+                          name: 'Parsing',
+                      },
+                phase3: !options.isWithTiming
+                    ? null
+                    : {
+                          timeMs: to3(timeEnd3Ms - timeEnd2Ms),
+                          name: 'AST Building',
+                      },
+                phase4: !options.isWithTiming
+                    ? null
+                    : {
+                          timeMs: to3(timeEnd4Ms - timeEnd3Ms),
+                          name: 'Object Building',
+                      },
+            }
         }
+
+        return metaData
     }
 
     debugPrint('getNumOfErrors(): ' + errorHandler.getNumOfErrors())
@@ -267,7 +496,9 @@ export const parseMain = (
     if (options.isIncludeMeta) {
         return {
             result: finalJSResult as any,
-            meta: metaData,
+            meta: !options.isKeepUndefinedInMeta
+                ? removeUndefinedDeep(constructResultMetaData())
+                : constructResultMetaData(),
         }
     }
 

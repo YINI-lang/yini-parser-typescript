@@ -16,6 +16,7 @@ describe('Throw error when parsing bad section head tests:', () => {
         const fixture = `
         ^^ InvalidHeader // INVALID: Must start with atleast one 1-level section.
         value = 3
+        /END
         `
 
         // Act & Assert.
@@ -32,6 +33,7 @@ describe('Throw error when parsing bad section head tests:', () => {
         // BELOW INVALID: Invalid to jump over sections when increasing nesting.
         ^^^ InvalidHeader
         anotherValue = 123
+        /END
         `
 
         // Act & Assert.
@@ -44,6 +46,7 @@ describe('Throw error when parsing bad section head tests:', () => {
         // Arrange.
         const fixture = `
         ^^ InvalidHeader // INVALID: Must start with atleast one 1-level section.
+        /END
         `
 
         // Act & Assert.
@@ -58,6 +61,7 @@ describe('Throw error when parsing bad section head tests:', () => {
         ^ Header1
         // BELOW INVALID: Invalid to jump over sections when increasing nesting.
         ^^^ InvalidHeader
+        /END
         `
 
         // Act & Assert.
@@ -71,6 +75,7 @@ describe('Throw error when parsing bad section head tests:', () => {
         const fixture = `
         ^^^ InvalidHeader // INVALID: Must start with atleast one 1-level section.
         strValue = "5"
+        /END
         `
 
         // Act & Assert.
@@ -89,6 +94,7 @@ describe('Throw error when parsing bad section head tests:', () => {
         // BELOW INVALID: Invalid to jump over sections when increasing nesting.
         ^^^^ InvalidHeader
         anotherValue = 123
+        /END
         `
 
         // Act & Assert.
@@ -101,6 +107,7 @@ describe('Throw error when parsing bad section head tests:', () => {
         // Arrange.
         const fixture = `
         ^^^ InvalidHeader // INVALID: Must start with atleast one 1-level section.
+        /END
         `
 
         // Act & Assert.
@@ -116,6 +123,7 @@ describe('Throw error when parsing bad section head tests:', () => {
         ^^ Section2
         // BELOW INVALID: Invalid to jump over sections when increasing nesting.
         ^^^^ InvalidHeader
+        /END
         `
 
         // Act & Assert.
@@ -129,6 +137,7 @@ describe('Throw error when parsing bad section head tests:', () => {
         const fixture = `
         // BELOW IS INVALID: Must start with atleast one 1-level section.
         ^^ InvalidHeader
+        /END
         `
 
         // Act & Assert.
@@ -144,6 +153,7 @@ describe('Throw error when parsing bad section head tests:', () => {
         ^^ Section2
         --// BELOW INVALID: Invalid to jump over sections when increasing nesting.
         ^^^^ InvalidHeader
+        /END
         `
 
         // Act & Assert.
@@ -157,6 +167,7 @@ describe('Throw error when parsing bad section head tests:', () => {
         const invalidYini = `
         ^^^3 Section1 // NOT OK, bad section marker, cannot mix marker types.
         x = 200
+        /END
         `
 
         // Act & Assert.
@@ -176,6 +187,7 @@ describe('Throw error when parsing bad section head tests:', () => {
             <<2 prefs // NOT OK, bad section marker, cannot mix marker types.
             theme = "special-dark"
             notifications = ON
+        /END
         `
 
         // Act & Assert.

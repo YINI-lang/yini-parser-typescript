@@ -2,6 +2,20 @@
 
 ## --dev/uppcoming--
 
+## 1.0.3-beta - 2025 Sep
+### Parser
+- **Reimplemented parser from scratch** (`core/ASTBuilder.ts`) using the refactored grammar for a much cleaner and more maintainable design.  
+- **Build logic reimplemented** (`core/objectBuilder.ts`) for improved reliability and consistency.  
+- **Error reporting enhanced** to be more user-friendly and informative.  
+### Specification Alignment
+- Updated to follow the **latest YINI specification (v1.0.0-rc.3)**.  
+  - Document terminator `/END` is now optional in both lenient and strict mode.
+### Meta Data
+- The optional returned **meta data structure** has been redesigned.  
+  - Now includes improved organization.  
+  - **Timing support** added for detailed performance insight.
+  - Grouping with **source**, **structure**, **diagnostics**, etc.
+
 ## 1.0.2-beta - 2025 Aug
 - Fixed issues with floats, including negative and exponential numbers with new test files here: `tests/fixed-issues/issue-32/*`
 - Fixed an issue where parseFile(..) did not output a warning when parsing a file missing a newline at EOF. Plus added test cases to check that it is fixed (in `tests/fixed-issues/issue-30`).

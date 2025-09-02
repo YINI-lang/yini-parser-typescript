@@ -1,0 +1,7 @@
+@yini
+
+^ App
+title = "My App"
+enabled = ON
+
+/END

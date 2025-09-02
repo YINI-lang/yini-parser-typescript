@@ -1,29 +1,31 @@
-// Generated from grammar/v1.0.0-rc.2x/YiniParser.g4 by ANTLR 4.13.2
+// Generated from grammar/v1.0.0-rc.3/YiniParser.g4 by ANTLR 4.13.2
 
 import {ParseTreeVisitor} from 'antlr4';
 
 
 import { YiniContext } from "./YiniParser.js";
-import { SectionContext } from "./YiniParser.js";
-import { Terminal_lineContext } from "./YiniParser.js";
-import { Section_membersContext } from "./YiniParser.js";
+import { PrologContext } from "./YiniParser.js";
+import { Terminal_stmtContext } from "./YiniParser.js";
+import { StmtContext } from "./YiniParser.js";
+import { Meta_stmtContext } from "./YiniParser.js";
+import { DirectiveContext } from "./YiniParser.js";
+import { AnnotationContext } from "./YiniParser.js";
+import { EolContext } from "./YiniParser.js";
+import { AssignmentContext } from "./YiniParser.js";
 import { MemberContext } from "./YiniParser.js";
-import { Member_colon_listContext } from "./YiniParser.js";
+import { Colon_list_declContext } from "./YiniParser.js";
 import { ValueContext } from "./YiniParser.js";
 import { Object_literalContext } from "./YiniParser.js";
-import { ObjectMemberListContext } from "./YiniParser.js";
-import { ObjectMemberContext } from "./YiniParser.js";
-import { ListContext } from "./YiniParser.js";
-import { List_in_bracketsContext } from "./YiniParser.js";
+import { Object_membersContext } from "./YiniParser.js";
+import { Object_memberContext } from "./YiniParser.js";
+import { List_literalContext } from "./YiniParser.js";
 import { ElementsContext } from "./YiniParser.js";
-import { ElementContext } from "./YiniParser.js";
 import { Number_literalContext } from "./YiniParser.js";
 import { Null_literalContext } from "./YiniParser.js";
 import { String_literalContext } from "./YiniParser.js";
 import { String_concatContext } from "./YiniParser.js";
 import { Boolean_literalContext } from "./YiniParser.js";
-import { Empty_objectContext } from "./YiniParser.js";
-import { Empty_listContext } from "./YiniParser.js";
+import { Bad_meta_textContext } from "./YiniParser.js";
 import { Bad_memberContext } from "./YiniParser.js";
 
 
@@ -42,23 +44,53 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 */
 	visitYini?: (ctx: YiniContext) => Result;
 	/**
-	 * Visit a parse tree produced by `YiniParser.section`.
+	 * Visit a parse tree produced by `YiniParser.prolog`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitSection?: (ctx: SectionContext) => Result;
+	visitProlog?: (ctx: PrologContext) => Result;
 	/**
-	 * Visit a parse tree produced by `YiniParser.terminal_line`.
+	 * Visit a parse tree produced by `YiniParser.terminal_stmt`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitTerminal_line?: (ctx: Terminal_lineContext) => Result;
+	visitTerminal_stmt?: (ctx: Terminal_stmtContext) => Result;
 	/**
-	 * Visit a parse tree produced by `YiniParser.section_members`.
+	 * Visit a parse tree produced by `YiniParser.stmt`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitSection_members?: (ctx: Section_membersContext) => Result;
+	visitStmt?: (ctx: StmtContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.meta_stmt`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitMeta_stmt?: (ctx: Meta_stmtContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.directive`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitDirective?: (ctx: DirectiveContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.annotation`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitAnnotation?: (ctx: AnnotationContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.eol`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitEol?: (ctx: EolContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.assignment`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitAssignment?: (ctx: AssignmentContext) => Result;
 	/**
 	 * Visit a parse tree produced by `YiniParser.member`.
 	 * @param ctx the parse tree
@@ -66,11 +98,11 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 */
 	visitMember?: (ctx: MemberContext) => Result;
 	/**
-	 * Visit a parse tree produced by `YiniParser.member_colon_list`.
+	 * Visit a parse tree produced by `YiniParser.colon_list_decl`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitMember_colon_list?: (ctx: Member_colon_listContext) => Result;
+	visitColon_list_decl?: (ctx: Colon_list_declContext) => Result;
 	/**
 	 * Visit a parse tree produced by `YiniParser.value`.
 	 * @param ctx the parse tree
@@ -84,41 +116,29 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 */
 	visitObject_literal?: (ctx: Object_literalContext) => Result;
 	/**
-	 * Visit a parse tree produced by `YiniParser.objectMemberList`.
+	 * Visit a parse tree produced by `YiniParser.object_members`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitObjectMemberList?: (ctx: ObjectMemberListContext) => Result;
+	visitObject_members?: (ctx: Object_membersContext) => Result;
 	/**
-	 * Visit a parse tree produced by `YiniParser.objectMember`.
+	 * Visit a parse tree produced by `YiniParser.object_member`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitObjectMember?: (ctx: ObjectMemberContext) => Result;
+	visitObject_member?: (ctx: Object_memberContext) => Result;
 	/**
-	 * Visit a parse tree produced by `YiniParser.list`.
+	 * Visit a parse tree produced by `YiniParser.list_literal`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitList?: (ctx: ListContext) => Result;
-	/**
-	 * Visit a parse tree produced by `YiniParser.list_in_brackets`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitList_in_brackets?: (ctx: List_in_bracketsContext) => Result;
+	visitList_literal?: (ctx: List_literalContext) => Result;
 	/**
 	 * Visit a parse tree produced by `YiniParser.elements`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	visitElements?: (ctx: ElementsContext) => Result;
-	/**
-	 * Visit a parse tree produced by `YiniParser.element`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitElement?: (ctx: ElementContext) => Result;
 	/**
 	 * Visit a parse tree produced by `YiniParser.number_literal`.
 	 * @param ctx the parse tree
@@ -150,17 +170,11 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 */
 	visitBoolean_literal?: (ctx: Boolean_literalContext) => Result;
 	/**
-	 * Visit a parse tree produced by `YiniParser.empty_object`.
+	 * Visit a parse tree produced by `YiniParser.bad_meta_text`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitEmpty_object?: (ctx: Empty_objectContext) => Result;
-	/**
-	 * Visit a parse tree produced by `YiniParser.empty_list`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitEmpty_list?: (ctx: Empty_listContext) => Result;
+	visitBad_meta_text?: (ctx: Bad_meta_textContext) => Result;
 	/**
 	 * Visit a parse tree produced by `YiniParser.bad_member`.
 	 * @param ctx the parse tree

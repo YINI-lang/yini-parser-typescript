@@ -271,7 +271,7 @@ const config = YINI.parse(`
           username = 'user_name'
           password = 'your_password_here'
     
-    /END
+    /END // (only optional)
 `);
 
 console.log(config);

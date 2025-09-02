@@ -275,7 +275,7 @@ describe('Binary number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('4.a) Should throw error parsing a bad BIN number with # (lenient-mode).', () => {
+    test('4.a) Should throw error parsing a bad BIN number with # (lenient-mode, bail on error).', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badBin = %
@@ -283,7 +283,7 @@ describe('Binary number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false)
+            const result = YINI.parse(badYini, false, 1)
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -303,7 +303,7 @@ describe('Binary number literal tests:', () => {
         }).toThrow()
     })
 
-    test('4.c) Should throw error parsing a bad BIN number with 0b (lenient-mode).', () => {
+    test('4.c) Should throw error parsing a bad BIN number with 0b (lenient-mode, bail on error).', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badBin = 0b
@@ -311,7 +311,7 @@ describe('Binary number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false)
+            const result = YINI.parse(badYini, false, 1)
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -331,7 +331,7 @@ describe('Binary number literal tests:', () => {
         }).toThrow()
     })
 
-    test('4.e) Should throw error parsing a bad BIN number with 0B (lenient-mode).', () => {
+    test('4.e) Should throw error parsing a bad BIN number with 0B (lenient-mode, bail on error).', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badBin = 0B
@@ -339,7 +339,7 @@ describe('Binary number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false)
+            const result = YINI.parse(badYini, false, 1)
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -359,7 +359,7 @@ describe('Binary number literal tests:', () => {
         }).toThrow()
     })
 
-    test('5.a) Should throw error parsing a bad BIN number with % (lenient-mode).', () => {
+    test('5.a) Should throw error parsing a bad BIN number with % (lenient-mode, bail on error).', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badBin = %21    // Invalid BIN digit "2"
@@ -367,7 +367,7 @@ describe('Binary number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false)
+            const result = YINI.parse(badYini, false, 1)
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -387,7 +387,7 @@ describe('Binary number literal tests:', () => {
         }).toThrow()
     })
 
-    test('5.c) Should throw error parsing a bad BIN number with 0b (lenient-mode).', () => {
+    test('5.c) Should throw error parsing a bad BIN number with 0b (lenient-mode, bail on error).', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badBin = 0b21    // Invalid BIN digit "2"
@@ -395,7 +395,7 @@ describe('Binary number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false)
+            const result = YINI.parse(badYini, false, 1)
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -415,7 +415,7 @@ describe('Binary number literal tests:', () => {
         }).toThrow()
     })
 
-    test('5.e) Should throw error parsing a bad BIN number with 0B (lenient-mode).', () => {
+    test('5.e) Should throw error parsing a bad BIN number with 0B (lenient-mode, bail on error).', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badBin = 0B21    // Invalid BIN digit "2"
@@ -423,7 +423,7 @@ describe('Binary number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false)
+            const result = YINI.parse(badYini, false, 1)
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -474,7 +474,7 @@ describe('Binary number literal tests:', () => {
         }).toThrow()
     })
 
-    test('6.c) Should throw error parsing a bad BIN number with 0b (lenient-mode).', () => {
+    test('6.c) Should throw error parsing a bad BIN number with 0b (lenient-mode, bail on error).', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badBin = -0b     // Minus sign with no digits
@@ -482,7 +482,7 @@ describe('Binary number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false)
+            const result = YINI.parse(badYini, false, 1)
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -502,7 +502,7 @@ describe('Binary number literal tests:', () => {
         }).toThrow()
     })
 
-    test('6.e) Should throw error parsing a bad BIN number with 0B (lenient-mode).', () => {
+    test('6.e) Should throw error parsing a bad BIN number with 0B (lenient-mode, bail on error).', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badBin = -0B     // Minus sign with no digits
@@ -510,7 +510,7 @@ describe('Binary number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false)
+            const result = YINI.parse(badYini, false, 1)
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()

@@ -36,6 +36,7 @@ module.exports = [
             'no-undef': 'off',
             'no-unused-expressions': 'off',
             '@typescript-eslint/no-unused-expressions': 'off',
+            curly: ['error', 'all'], // Enforces braces around all if, else, for, while, and do.
         },
     },
     prettier,

@@ -17,12 +17,12 @@ describe('Issue #32 Tests:', () => {
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const result = YINI.parseFile(fullPath, true)
+        const result = YINI.parseFile(fullPath, false)
         debugPrint('fullPath = ' + fullPath)
         debugPrint('result:')
         debugPrint(result)
 
-        // Assert.
+        // Assert all values in the file.
         expect(result.Section.float2).toEqual(-0.123)
         expect(result.Section.float3).toEqual(0.0)
         expect(result.Section.float4).toEqual(0.0)
@@ -233,7 +233,7 @@ describe('Additional issue #32 Tests:', () => {
         // Assert.
         const correct = {
             'Neg. ints': {
-                value: -0,
+                value: 0,
                 count: -42,
                 maxItems: -1000,
                 minScore: -7,

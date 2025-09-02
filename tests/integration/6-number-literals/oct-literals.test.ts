@@ -185,7 +185,7 @@ describe('Octal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('4.a) Should throw error parsing a bad OCT number with 0o (lenient-mode).', () => {
+    test('4.a) Should throw error parsing a bad OCT number with 0o (lenient-mode, bail on error).', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = 0o
@@ -193,7 +193,7 @@ describe('Octal number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false)
+            const result = YINI.parse(badYini, false, 1)
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -213,7 +213,7 @@ describe('Octal number literal tests:', () => {
         }).toThrow()
     })
 
-    test('4.c) Should throw error parsing a bad OCT number with 0O (lenient-mode).', () => {
+    test('4.c) Should throw error parsing a bad OCT number with 0O (lenient-mode, bail on error).', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = 0O
@@ -221,7 +221,7 @@ describe('Octal number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false)
+            const result = YINI.parse(badYini, false, 1)
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -241,7 +241,7 @@ describe('Octal number literal tests:', () => {
         }).toThrow()
     })
 
-    test('5.a) Should throw error parsing a bad OCT number with 0o (lenient-mode).', () => {
+    test('5.a) Should throw error parsing a bad OCT number with 0o (lenient-mode, bail on error).', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = 0o81    // Invalid OCT digit "8"
@@ -249,7 +249,7 @@ describe('Octal number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false)
+            const result = YINI.parse(badYini, false, 1)
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -269,7 +269,7 @@ describe('Octal number literal tests:', () => {
         }).toThrow()
     })
 
-    test('5.c) Should throw error parsing a bad OCT number with 0O (lenient-mode).', () => {
+    test('5.c) Should throw error parsing a bad OCT number with 0O (lenient-mode, bail on error).', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = 0O81    // Invalid OCT digit "8"
@@ -277,7 +277,7 @@ describe('Octal number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false)
+            const result = YINI.parse(badYini, false, 1)
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -297,7 +297,7 @@ describe('Octal number literal tests:', () => {
         }).toThrow()
     })
 
-    test('6.a) Should throw error parsing a bad OCT number with 0o (lenient-mode).', () => {
+    test('6.a) Should throw error parsing a bad OCT number with 0o (lenient-mode, bail on error).', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = -0o     // Minus sign with no digits
@@ -305,7 +305,7 @@ describe('Octal number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false)
+            const result = YINI.parse(badYini, false, 1)
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -325,7 +325,7 @@ describe('Octal number literal tests:', () => {
         }).toThrow()
     })
 
-    test('6.c) Should throw error parsing a bad OCT number with 0O (lenient-mode).', () => {
+    test('6.c) Should throw error parsing a bad OCT number with 0O (lenient-mode, bail on error).', () => {
         // Arrange.
         const badYini = `^ BinNumber
             badOct = -0O     // Minus sign with no digits
@@ -333,7 +333,7 @@ describe('Octal number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false)
+            const result = YINI.parse(badYini, false, 1)
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()

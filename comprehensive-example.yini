@@ -6,15 +6,15 @@
     many syntax features, section header styles, data
     types, and comment types/styles as possible.
 
-    Version: 1.0.0
+    Version: 1.0.1
 */
 
 /*
  * Optional directive variants (use only one "@yini" per file)
  */
 @yini
---@Yini
---@YINI
+@Yini
+@YINI
 
 /*
     Example of a YINI document - all features showcased.
@@ -183,5 +183,7 @@ val = 123
 
         <<< AltThirdLevel
         val3 = false
+
+/END // (only optional)
 
 // End of demo

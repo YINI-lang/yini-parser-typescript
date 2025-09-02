@@ -3,14 +3,19 @@
  * @note More specific YINI helper functions should go into yiniHelpers.ts-file.
  */
 
+import { createHash } from 'crypto'
 import { debugPrint } from './print'
+
+export const computeSha256 = (content: string): string => {
+    return createHash('sha256').update(content, 'utf8').digest('hex')
+}
 
 /**
  * Splits a string into an array of lines, handling both LF and CRLF newlines.
  * @param content The input string.
  * @returns Array of lines (strings).
  */
-export function splitLines(content: string): string[] {
+export const splitLines = (content: string): string[] => {
     // Chould handle \n (LF), \r\n (CRLF), and even just \r (old Mac style).
     return content.split(/\r\n|\r|\n/)
 }
@@ -99,4 +104,12 @@ export const stripNLAndAfter = (line: string): string => {
     debugPrint('stripNLAndAfter(..),       line: >>>' + line + '<<<')
     debugPrint('stripNLAndAfter(..), resultLine: >>>' + resultLine + '<<<')
     return resultLine
+}
+
+/**
+ * Transforms strings such as 'Id-Name' to 'id_name'.
+ * Replaces all '-' to '_', and returns rusult in lower case.
+ */
+export const toLowerSnakeCase = (txt: string): string => {
+    return txt.trim().toLowerCase().replace(/[-]/g, '_')
 }

@@ -3,7 +3,13 @@
  * @note More general helper functions should go into the dir "src/utils/".
  */
 
-import { debugPrint } from './utils/print'
+import {
+    TListValue,
+    TObjectValue,
+    TScalarValue,
+    TValueLiteral,
+} from './core/types'
+import { debugPrint, printObject } from './utils/print'
 import { isEnclosedInBackticks, splitLines } from './utils/string'
 
 const SECTION_MARKER1 = '^'
@@ -43,13 +49,14 @@ export const isMarkerCharacter = (character: string): boolean => {
  * @throws Will throw if consisting more than 1 lines.
  */
 export const stripCommentsAndAfter = (line: string): string => {
-    if (splitLines(line).length > 1) {
-        throw new Error(
-            'Internal error: Detected several row lines in line: >>>' +
-                line +
-                '<<<',
-        )
-    }
+    // if (splitLines(line).length > 1) {
+    //     throw new Error(
+    //         'Internal error: Detected several row lines in line: >>>' +
+    //             line +
+    //             '<<<',
+    //     )
+    // }
+    line = line.split('\n', 1)[0]
 
     let idx1 = line.indexOf('//')
     let idx2 = line.indexOf('# ') // NOTE: (!) Hash comments requires a WS after the hash!
@@ -76,7 +83,7 @@ export const stripCommentsAndAfter = (line: string): string => {
     debugPrint(
         'stripCommentsAndAfter(..), resultLine: >>>' + resultLine + '<<<',
     )
-    return resultLine
+    return resultLine.trim()
 }
 
 /**
@@ -156,3 +163,39 @@ export const isValidBacktickedIdent = (str: string): boolean => {
     }
     return true
 }
+
+const assertNever = (x: never): never => {
+    throw new Error(`Unhandled: ${JSON.stringify(x)}`)
+}
+
+export const printLiteral = (value: TValueLiteral): void => {
+    switch (value.type) {
+        case 'String':
+        case 'Number':
+        case 'Boolean':
+        case 'Null':
+            console.log('' + value.value)
+            break
+        case 'Undefined':
+            console.log('' + value.value)
+            break
+        case 'List':
+            printObject((value as TListValue).elems)
+            break
+        case 'Object':
+            printObject((value as TObjectValue).entries)
+            break
+        default:
+            return assertNever(value) // ensures exhaustiveness
+    }
+}
+
+export const isScalar = (v: TValueLiteral): v is TScalarValue =>
+    v.type === 'String' ||
+    v.type === 'Number' ||
+    v.type === 'Boolean' ||
+    v.type === 'Null'
+
+// export const isList = (v: TValueLiteral): v is TListValue => v.type === 'List'
+// export const isObject = (v: TValueLiteral): v is TObjectValue =>
+//     v.type === 'Object'

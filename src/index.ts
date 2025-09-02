@@ -118,59 +118,233 @@ if (isProdEnv()) {
              altDoz = 0z10AB        // Alternative notation: A=10, B=11
         ` // End.
         */
+
+        /*
         const yini = `
-    // This is a comment in YINI
-    // YINI is a simple, human-readable configuration file format.
+    @yini    
+    @YINI   ///dfsf
 
-    // Note: In YINI, spaces and tabs don't change meaning - indentation is just
-    // for readability.
+    < User
+    nullKey = 
+    nullKey2 = NULL
+    username = 'tester two'
+    userId   = 234
+    userColor = #ffaa99
+    userPerm = 0O733
+    userFearues = %01101
+    isSysOp = YES
 
-    /*  This is a block comment
+    map = { 
+        a: 3,
+        b: 4,
+        cc: 5,
+        \`d d\`: 3453
+        }
 
-        In YINI, section headers use repeated characters "^" at the start to
-        show their level: (Section header names are case-sensitive.)
-
-        ^ SectionLevel1
-        ^^ SectionLevel2
-        ^^^ SectionLevel3
-    */
-
-    ^ App                           // Definition of section (group) "App" 
-      title = 'My App'
-      items = 25
-      debug = ON                    // "true" and "YES" works too
-
-    ^ Server                        // Definition of section (group) "Server"
-      host = 'localhost'
-      port = 8080
-      useTLS = OFF                  // "false" and "NO" works too
-
-        // Sub-section of "Server"
-        ^^ Login
-          username = 'user_name'
-          password = 'your_password_here'
+    listValueB: 3, 4, 5
+    listValue2 = ["a", "b"]
+    listValue3 = [434]
+    listValue4 = []
+    listValue5 = [1, ["a", "b", "c", [null, TRUE]], 3]
     
-    /END
-`
+    --listObject = { a: 1, b: 2}
+    
+    colonList:
+        1,
+        2,
+        3,
 
-        console.log(toPrettyJSON(YINI.parse(yini, false)))
+        << Prefs
+        theme = "light"
+        notifications = OFF
+        nullValue = NULL
 
-        // console.log(
-        //     toPrettyJSON(YINI.parseFile('comprehensive-example.yini', true)),
-        // )
+    ^1 User2
+    ^2 PrefsOfUser2
+    ^3 DeepSection
+    ^4 DeeperSection
+    key = "Level 4 section"
+    ^5 YetDeeperSection
+    key = "Level 5 section"
+    item = 77
+
+    <1 User3
+    username = 'tester three'
+    isSysOp = NO
+
+        <2 Prefs2
+        theme = "special-dark"
+        notifications = ON
+
+        <2 Special
+        value = 123
+        `
+*/
+        // npm run start:dev
+        // "timing": {
+        //     "totalMs": 158.421,
+        //     "phase1Ms": 151.36,
+        //     "phase2Ms": 6.92,
+        //     "phase3Ms": 0.14
+        // }
+        //console.log(toPrettyJSON(YINI.parse(yini, false, 'auto', true)))
+
+        // const yini = `
+        //     < SubTitle
+        //     theme = "special-dark"
+        //     notifications = ON
+
+        //     < SubTitle // NOT OK, SubTitle already exists
+        //     theme2 = "special-dark"
+        //         `
+        // Arrange.
+        /*
+        const yini = `
+        @yini
+        // Example: Strict-friendly YINI document (no trailing commas, explicit /END)
+
+        ^ App
+        name = 'YINI Demo Service'
+        version = '1.4.0'
+        description = 'Demo service for showcasing the YINI format'
+        owners = ['dev-team', 'ops-team']
+
+        // String concatenation (the '+' joins adjacent STRING tokens)
+--        longNote = 'This text is split across ' +
+--                    'two strings and then concatenated.'
+
+        // Case-insensitive booleans
+        enabled = YES
+        experimentalMode = off
+
+        // Numbers (ints, floats, scientific)
+        retries = 3
+        requestTimeoutMs = 2500
+        backoffFactor = 1.25
+        maxPayloadMB = 1.0e2
+
+        ^ Server
+        host = '127.0.0.1'
+        port = 8080
+        useTLS = false
+
+        ^^ CORS
+            allowedOrigins: 'https://example.com', 'https://admin.example.com'
+            allowCredentials = true
+
+        ^^ Headers
+            // Object literal with key:value pairs
+            defaults = {
+            \`X-Frame-Options\`: 'DENY',
+            \`X-Content-Type-Options\`: 'nosniff'
+            }
+
+        ^ Database
+        engine = 'postgres'
+        host = 'db.internal'
+        port = 5432
+        username = 'app_user'
+        password = 'change_me'
+        pool = {
+            min: 2,
+            max: 16
+        }
+
+        ^^ Replicas
+            // Colon-form list (values only)
+            endpoints: 'db-replica-1.internal', 'db-replica-2.internal'
+            readPreference = 'nearest'
+
+        ^ Features
+        // Mixed data types
+        betaFlags = ['new-ui', 'fast-path']
+        darkLaunch = NO
+        uploadLimitMB = 128
+
+        ^ Integrations
+        // List of objects
+        webhooks = [
+            { name: 'audit', url: 'https://hooks.example.com/audit',  active: true },
+            { name: 'metrics', url: 'https://hooks.example.com/metric', active: true }
+        ]
+
+        ^ Users
+        // Simple table-ish list using colon form
+        admins: 'alice', 'bob', 'carol'
+        reviewers: 'dave', 'erin'
+
+        ^^ Profiles
+            // Object-of-objects
+            alice = {
+            email: 'alice@example.com',
+            roles: ['admin', 'dev'],
+            mfa: true
+            }
+            bob = {
+            email: 'bob@example.com',
+            roles: ['admin'],
+            mfa: false
+            }
+
+        ^ Paths
+        logs = '/var/log/yini-demo/'
+        data = '/srv/yini-demo/data'
+
+        ^^ \`Backups\`
+            // Empty value -> null in lenient mode; in strict mode, supply explicit null:
+            lastFull = null
+            targets: '/mnt/backup1', '/mnt/backup2'
+        ^^^ Backups2
+            value = 23
+
+        ^ Security
+        allowedIPs: '10.0.0.0/24', '10.1.0.0/24'
+
+        ^ Logging
+        level = 'info'
+        format = 'json'
+        sinks = ['stdout']
+
+        /END      
+        `*/
+        // const yini = `
+        //     /*sdfsdf*/
+        //     @yini
+
+        //     @include 'sdf'
+
+        //     --@invalid
+
+        //     @deprecated
+        //     ^ window
+        //     --^^ window2
+        //     title = 'Sample Window'  // Strings can be enclosed in either ' or ".
+        //     @deprecated
+        //     id = 'window_main'
+        //     // @bla
+        //     --@include 'wrongplace'
+        //     --@yini   // This is an error should be catched in the parser.
+        //     /end
+        // `
+
+        // const yini = `
+        // ^ InvalidHeader // INVALID: Must start with atleast one 1-level section.
+        // --/END
+        // `
+        // console.log(toPrettyJSON(YINI.parse(yini, true, 1, true)))
+
+        console.log(
+            toPrettyJSON(
+                YINI.parseFile(
+                    'comprehensive-example.yini',
+                    false,
+                    'auto',
+                    true,
+                ),
+            ),
+        )
 
         // const fileName = './tests/fixtures/valid/common/common-config-2.yini'
-        // YINI.parseFile(fileName, false)
-
-        //         parseUntilError(`
-        // ^ Section1
-        //             ^^ Section2
-        //             ^^^ Section3
-        //             ^^^^ Section4  // Level 4.
-        //             ^^^^^ Section5
-        //             ^^^^^^ Section6
-        //             ^^^^^^^ Section7
-        //             strVar = "These section header are valid!"
-        //     `)
+        // YINI.parseFile(fileName, false, 'auto', true)
     }
 }
