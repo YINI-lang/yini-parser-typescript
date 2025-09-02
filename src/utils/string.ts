@@ -6,6 +6,17 @@
 import { createHash } from 'crypto'
 import { debugPrint } from './print'
 
+/**
+ * Capitalizes the first character of a string.
+ *
+ * @param str The input string.
+ * @returns A new string with the first character uppercased.
+ */
+export const capitalizeFirst = (str: string): string => {
+    if (!str) return str
+    return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
 export const computeSha256 = (content: string): string => {
     return createHash('sha256').update(content, 'utf8').digest('hex')
 }

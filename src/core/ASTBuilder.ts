@@ -451,13 +451,14 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         debugPrint('rawText2 = "' + rawText + '"')
 
         if (rawText.toLowerCase() === '/end') {
+            // NOTE: Below, maybe not reached at all.
             if (this.ast.terminatorSeen) {
                 // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                 this.errorHandler!.pushOrBail(
                     ctx,
                     'Syntax-Warning',
                     'Hit a duplicate terminator in document',
-                    `'${rawText}' already exists in this file, there must only be one terminator at the end of file ('/END').`,
+                    `'${rawText}' already exists in this file, there must only be one terminator at the end of file ('/END'). Also note that the terminator is optional in both lenient and strict mode, unless the option 'isRequireDocTerminator' is enabled.`,
                 )
             }
         } else {
@@ -593,7 +594,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                 this.errorHandler!.pushOrBail(
                     ctx,
                     this.isStrict ? 'Syntax-Error' : 'Syntax-Warning',
-                    `Hit a duplicate YINI Marker in document ${this.isStrict ? '(strict mode)' : '(lenient mode)'}`,
+                    `Hit a duplicate YINI Marker in document`,
                     `'${rawText}' already exists in this file, it's enough with only one YINI Marker ('@YINI').`,
                 )
             }
@@ -722,7 +723,6 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         if (!rawValue) {
             // Empty value => Null in lenient mode, error in strict (Spec 12.3, 8.2). :contentReference[oaicite:10]{index=10}:contentReference[oaicite:11]{index=11}
             if (!this.isStrict) {
-                debugPrint('HITTTTT!! - in visitMember(..)')
                 valueNode = makeScalarValue('Null', null, 'Implicit null')
             } else {
                 // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.

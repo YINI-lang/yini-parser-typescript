@@ -23,7 +23,7 @@ import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
 import { removeUndefinedDeep } from './utils/object'
 import { debugPrint, printObject } from './utils/print'
-import { toLowerSnakeCase } from './utils/string'
+import { capitalizeFirst, toLowerSnakeCase } from './utils/string'
 
 const pkg = require('../package.json')
 
@@ -44,10 +44,17 @@ class MyParserErrorListener implements ErrorListener<any> {
         e: RecognitionException | undefined,
     ): void {
         debugPrint('ANTLR parser cached an error')
-        this.errors.push(`Line ${line}:${charPositionInLine} ${msg}`)
+        // this.errors.push(`Line ${line}:${charPositionInLine} ${msg}`)
+        const col = charPositionInLine + 1
 
-        const msgWhat = `Syntax error, at line: ${line}`
-        const msgWhy = `At about column ${1 + charPositionInLine} ${msg}`
+        const msgWhat = `Syntax error at line ${line}, column ${col}:`
+
+        // Try to map message:
+        // From: "mismatched input '/END' expecting <EOF>"
+        // To:   "Found '/END', but expected the end of the document."
+        // const msgWhy = `${capitalizeFirst(msg)}`
+        const msgWhy = `Details: ${msg}`
+        // const msgHint = ``
 
         this.errorHandler.pushOrBail(null, 'Syntax-Error', msgWhat, msgWhy)
     }
@@ -75,11 +82,18 @@ class MyLexerErrorListener implements ErrorListener<any> {
         e: RecognitionException | undefined,
     ) {
         // Handle the error as you want:
-        debugPrint('ANTLR parser cached an error')
-        this.errors.push(`Line ${line}:${charPositionInLine} ${msg}`)
+        debugPrint('ANTLR lexer cached an error')
+        // this.errors.push(`Line ${line}:${charPositionInLine} ${msg}`)
+        const col = charPositionInLine + 1
 
-        const msgWhat = `Syntax error, at line: ${line}`
-        const msgWhy = `At about column ${1 + charPositionInLine} ${msg}`
+        const msgWhat = `Syntax error at line ${line}, column ${col}:`
+
+        // Try to map message:
+        // From: "mismatched input '/END' expecting <EOF>"
+        // To:   "Found '/END', but expected the end of the document."
+        // const msgWhy = `${capitalizeFirst(msg)}`
+        const msgWhy = `Details: ${msg}`
+        // const msgHint = ``
 
         this.errorHandler.pushOrBail(null, 'Syntax-Error', msgWhat, msgWhy)
     }

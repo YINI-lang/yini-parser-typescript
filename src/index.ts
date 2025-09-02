@@ -329,11 +329,11 @@ if (isProdEnv()) {
         //     /end
         // `
 
-        const yini = `
-        @yini
+        const yini = `        @yini
         --@yini
         ^ InvalidHeader // INVALID: Must start with atleast one 1-level section.
-        --/END
+        /END
+        /END
         `
         console.log(
             toPrettyJSON(
@@ -341,7 +341,7 @@ if (isProdEnv()) {
                     strictMode: false,
                     bailSensitivity: 1,
                     includeMetaData: true,
-                    isRequireDocTerminator: true,
+                    isRequireDocTerminator: false,
                 }),
             ),
         )
