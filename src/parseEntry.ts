@@ -269,16 +269,17 @@ export const _parseMain = (
         fileLoadMetaPayload.fileName || null,
     )
     const ast: IYiniAST = builder.buildAST(parseTree)
-    if (ast.numOfMembers === 0 && ast.numOfSections === 0) {
-        // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-        errorHandler.pushOrBail(
-            null,
-            'Syntax-Error',
-            'No meaningful content.',
-            `No sections or members found in the ${ast.sourceType === 'File' ? 'YINI file' : 'YINI inline content'}.`,
-            `${ast.sourceType === 'File' ? 'A valid YINI file' : 'Any valid YINI inline content'} must contain at least one section '^ SectionName' or a key–value pair 'key = value' to make it a valid YINI file.`,
-        )
-    }
+    //@todo Enable below once counting members and sections
+    // if (ast.numOfMembers === 0 && ast.numOfSections === 0) {
+    //     // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+    //     errorHandler.pushOrBail(
+    //         null,
+    //         'Syntax-Error',
+    //         'No meaningful content.',
+    //         `No sections or members found in the ${ast.sourceType === 'File' ? 'YINI file' : 'YINI inline content'}.`,
+    //         `${ast.sourceType === 'File' ? 'A valid YINI file' : 'Any valid YINI inline content'} must contain at least one section '^ SectionName' or a key–value pair 'key = value' to make it a valid YINI file.`,
+    //     )
+    // }
 
     if (isDebug()) {
         console.log()

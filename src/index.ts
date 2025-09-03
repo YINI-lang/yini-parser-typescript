@@ -344,9 +344,7 @@ if (isProdEnv()) {
         //     ),
         // )
 
-        const yini = ` 
-         @yini
-        `
+        const yini = '      \t  \n  '
         console.log(
             toPrettyJSON(
                 YINI.parse(yini, {
