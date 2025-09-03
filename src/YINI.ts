@@ -24,6 +24,23 @@ let _fileLoadMetaPayload: IFileLoadMetaPayload = {
     sha256: null,
 }
 
+// Type guard: did the caller use the options-object form?
+const isOptionsObjectForm = (v: unknown): v is IAllUserOptions => {
+    return (
+        v != null &&
+        typeof v === 'object' &&
+        // Note: If one wants, this can be relax to "typeof v === 'object'"
+        // but this keeps accidental booleans/strings out.
+        ('strictMode' in (v as any) ||
+            'bailSensitivity' in (v as any) ||
+            'includeMetaData' in (v as any) ||
+            'isWithDiagnostics' in (v as any) ||
+            'isWithTiming' in (v as any) ||
+            'isKeepUndefinedInMeta' in (v as any) ||
+            'isRequireDocTerminator' in (v as any))
+    )
+}
+
 // Initial default values.
 const DEFAULT_OPTS: Required<
     Pick<
@@ -68,8 +85,8 @@ export default class YINI {
      */
     // --- Method overload signature ---------------------------------------
     // (With no body + not declared with arrow function.)
-    // Easier and simpler positional form ((legacy/simple)).
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
+    // Easier and simpler positional form ((legacy/simple)).
     public static parse(
         yiniContent: string,
         strictMode?: boolean,
@@ -87,8 +104,8 @@ export default class YINI {
      */
     // --- Method overload signature ---------------------------------------
     // (With no body + not declared with arrow function.)
-    // Options-object form (recommended) for power/expert users (more future-proof).
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
+    // Options-object form (recommended) for power/expert users (more future-proof).
     public static parse(
         yiniContent: string,
         options?: IAllUserOptions,
@@ -100,24 +117,24 @@ export default class YINI {
     public static parse(
         yiniContent: string,
         arg2?: boolean | IAllUserOptions, // strictMode | options
-        bailSensitivity: TPreferredBailSensitivityLevel = 'auto',
-        includeMetaData = false,
+        bailSensitivity: TPreferredBailSensitivityLevel = DEFAULT_OPTS.bailSensitivity,
+        includeMetaData = DEFAULT_OPTS.includeMetaData,
     ): TJSObject {
-        debugPrint('-> Entered implementing static parse(..) in class YINI\n')
+        debugPrint('-> Entered static parse(..) in class YINI\n')
 
-        // Type guard: did the caller use the options-object form?
-        const isOptionsObjectForm = (v: unknown): v is IAllUserOptions =>
-            v != null &&
-            typeof v === 'object' &&
-            // Note: If one wants, this can be relax to "typeof v === 'object'"
-            // but this keeps accidental booleans/strings out.
-            ('strictMode' in (v as any) ||
-                'bailSensitivity' in (v as any) ||
-                'includeMetaData' in (v as any) ||
-                'isWithDiagnostics' in (v as any) ||
-                'isWithTiming' in (v as any) ||
-                'isKeepUndefinedInMeta' in (v as any) ||
-                'isRequireDocTerminator' in (v as any))
+        // // Type guard: did the caller use the options-object form?
+        // const isOptionsObjectForm = (v: unknown): v is IAllUserOptions =>
+        //     v != null &&
+        //     typeof v === 'object' &&
+        //     // Note: If one wants, this can be relax to "typeof v === 'object'"
+        //     // but this keeps accidental booleans/strings out.
+        //     ('strictMode' in (v as any) ||
+        //         'bailSensitivity' in (v as any) ||
+        //         'includeMetaData' in (v as any) ||
+        //         'isWithDiagnostics' in (v as any) ||
+        //         'isWithTiming' in (v as any) ||
+        //         'isKeepUndefinedInMeta' in (v as any) ||
+        //         'isRequireDocTerminator' in (v as any))
 
         // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
         if (
@@ -317,8 +334,6 @@ export default class YINI {
     }
     */
 
-    // === parseFile / parseFileWithOptions ================================
-
     /**
      * Parse a YINI file into a JavaScript object.
      *
@@ -333,22 +348,115 @@ export default class YINI {
      *
      * @returns A JavaScript object representing the parsed YINI content.
      */
+    // --- Method overload signature ---------------------------------------
+    // (With no body + not declared with arrow function.)
+    // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
     // Easy and simple positional API (great for most users).
-    public static parseFile = (
+    public static parseFile(
         filePath: string,
-        strictMode = false,
-        bailSensitivity: TPreferredBailSensitivityLevel = 'auto',
-        includeMetaData = false,
-    ): TJSObject => {
+        strictMode?: boolean,
+        bailSensitivity?: TPreferredBailSensitivityLevel,
+        includeMetaData?: boolean,
+    ): TJSObject
+
+    /**
+     * Parse a YINI file into a JavaScript object, using an options object for configuration.
+     *
+     * @param yiniFile Path to the YINI file.
+     * @param options Optional settings to customize parsing and/or results, useful if you need more control.
+     *
+     * @returns A JavaScript object representing the parsed YINI content.
+     */
+    // --- Method overload signature ---------------------------------------
+    // (With no body + not declared with arrow function.)
+    // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
+    // Options-object form (recommended) for power/expert users (more future-proof).
+    public static parseFile(
+        filePath: string,
+        options?: IAllUserOptions,
+    ): TJSObject
+
+    // --- Single implementation --------------------------------------------
+    // Implementation method (not declared with arrow function) for both method overload signatures.
+    // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
+    public static parseFile(
+        filePath: string,
+        arg2?: boolean | IAllUserOptions, // strictMode | options
+        bailSensitivity: TPreferredBailSensitivityLevel = DEFAULT_OPTS.bailSensitivity,
+        includeMetaData = DEFAULT_OPTS.includeMetaData,
+    ): TJSObject {
         debugPrint('-> Entered static parseFile(..) in class YINI\n')
         debugPrint('Current directory = ' + process.cwd())
 
+        // // Type guard: did the caller use the options-object form?
+        // const isOptionsObjectForm = (v: unknown): v is IAllUserOptions =>
+        //     v != null &&
+        //     typeof v === 'object' &&
+        //     // Note: If one wants, this can be relax to "typeof v === 'object'"
+        //     // but this keeps accidental booleans/strings out.
+        //     ('strictMode' in (v as any) ||
+        //         'bailSensitivity' in (v as any) ||
+        //         'includeMetaData' in (v as any) ||
+        //         'isWithDiagnostics' in (v as any) ||
+        //         'isWithTiming' in (v as any) ||
+        //         'isKeepUndefinedInMeta' in (v as any) ||
+        //         'isRequireDocTerminator' in (v as any))
+
+        // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
+        if (
+            isOptionsObjectForm(arg2) &&
+            (bailSensitivity !== 'auto' || includeMetaData !== false)
+        ) {
+            throw new TypeError(
+                'Invalid call: when providing an options object, do not also pass positional parameters.',
+            )
+        }
+
+        // Normalize to a fully-required options object.
+        let userOpts: Required<IAllUserOptions>
+
         // Required, makes all properties in T required, no undefined.
-        const userOpts: Required<IAllUserOptions> = {
-            ...DEFAULT_OPTS, // Sets the default options.
-            strictMode,
-            bailSensitivity,
-            includeMetaData,
+        // const userOpts: Required<IAllUserOptions> = isOptionsObjectForm(arg2)
+        if (isOptionsObjectForm(arg2)) {
+            // Options-object Form.
+            /* parse = (
+                  yiniContent: string,
+                  options: IAllUserOptions,
+               )
+            */
+            userOpts = {
+                ...DEFAULT_OPTS, // Sets the default options.
+                strictMode: arg2.strictMode ?? DEFAULT_OPTS.strictMode,
+                bailSensitivity:
+                    arg2.bailSensitivity ?? DEFAULT_OPTS.bailSensitivity,
+                includeMetaData:
+                    arg2.includeMetaData ?? DEFAULT_OPTS.includeMetaData,
+                isWithDiagnostics:
+                    arg2.isWithDiagnostics ?? DEFAULT_OPTS.isWithDiagnostics,
+                isWithTiming: arg2.isWithTiming ?? DEFAULT_OPTS.isWithTiming,
+                isKeepUndefinedInMeta:
+                    arg2.isKeepUndefinedInMeta ??
+                    DEFAULT_OPTS.isKeepUndefinedInMeta,
+                isRequireDocTerminator:
+                    arg2.isRequireDocTerminator ??
+                    DEFAULT_OPTS.isRequireDocTerminator,
+            }
+        } else {
+            // Positional form.
+            /* parse = (
+                  yiniContent: string,
+                  strictMode?: boolean,
+                  bailSensitivity?: TPreferredBailSensitivityLevel,
+                  includeMetaData?: boolean,
+               )
+            */
+            userOpts = {
+                ...DEFAULT_OPTS, // Sets the default options.
+                strictMode:
+                    (arg2 as boolean | undefined) ?? DEFAULT_OPTS.strictMode,
+                bailSensitivity,
+                includeMetaData,
+            }
         }
 
         if (getFileNameExtension(filePath).toLowerCase() !== '.yini') {

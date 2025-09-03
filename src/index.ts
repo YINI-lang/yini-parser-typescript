@@ -327,22 +327,22 @@ if (isProdEnv()) {
         //     /end
         // `
 
-        const yini = `        @yini
-        --@yini
-        ^ InvalidHeader // INVALID: Must start with atleast one 1-level section.
-        /END
-        /END
-        `
-        console.log(
-            toPrettyJSON(
-                YINI.parse(yini, {
-                    strictMode: false,
-                    bailSensitivity: 1,
-                    includeMetaData: true,
-                    isRequireDocTerminator: false,
-                }),
-            ),
-        )
+        // const yini = `        @yini
+        // --@yini
+        // ^ InvalidHeader // INVALID: Must start with atleast one 1-level section.
+        // /END
+        // /END
+        // `
+        // console.log(
+        //     toPrettyJSON(
+        //         YINI.parse(yini, {
+        //             strictMode: false,
+        //             bailSensitivity: 1,
+        //             includeMetaData: true,
+        //             isRequireDocTerminator: false,
+        //         }),
+        //     ),
+        // )
 
         // console.log(
         //     toPrettyJSON(
@@ -354,15 +354,15 @@ if (isProdEnv()) {
         //         ),
         //     ),
         // )
-        // console.log(
-        //     toPrettyJSON(
-        //         YINI.parseFileWithOptions('comprehensive-example.yini', {
-        //             strictMode: false,
-        //             bailSensitivity: 'auto',
-        //             includeMetaData: true,
-        //         }),
-        //     ),
-        // )
+        console.log(
+            toPrettyJSON(
+                YINI.parseFile('comprehensive-example.yini', {
+                    strictMode: false,
+                    bailSensitivity: 'auto',
+                    includeMetaData: true,
+                }),
+            ),
+        )
 
         // const fileName = './tests/fixtures/valid/common/common-config-2.yini'
         // YINI.parseFileWithOptions(fileName, {
