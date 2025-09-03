@@ -192,8 +192,8 @@ export default class YINI {
             _fileLoadMetaPayload.sha256 = sha256
         }
 
-        // Important: First, before anything, trim beginning and trailing whitespaces!
-        yiniContent = yiniContent.trim()
+        // NOTE: Important: Do not trim or mutate the yiniContent here, due
+        // to it will mess up the line numbers in error reporting.
 
         if (!yiniContent) {
             throw new Error('Syntax-Error: Unexpected blank YINI input')

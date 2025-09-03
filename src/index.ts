@@ -354,21 +354,29 @@ if (isProdEnv()) {
         //         ),
         //     ),
         // )
-        console.log(
-            toPrettyJSON(
-                YINI.parseFile('comprehensive-example.yini', {
-                    strictMode: false,
-                    bailSensitivity: 'auto',
-                    includeMetaData: true,
-                }),
-            ),
-        )
+        // console.log(
+        //     toPrettyJSON(
+        //         YINI.parseFile('comprehensive-example.yini', {
+        //             strictMode: false,
+        //             bailSensitivity: 'auto',
+        //             includeMetaData: true,
+        //         }),
+        //     ),
+        // )
 
         // const fileName = './tests/fixtures/valid/common/common-config-2.yini'
-        // YINI.parseFileWithOptions(fileName, {
+        // YINI.parseFile(fileName, {
         //     strictMode: false,
         //     bailSensitivity: 'auto',
         //     includeMetaData: true,
         // })
+
+        const fileName =
+            './tests/fixtures/invalid/bad-cli-application-config.yini'
+        YINI.parseFile(fileName, {
+            strictMode: true,
+            bailSensitivity: 'auto',
+            includeMetaData: true,
+        })
     }
 }

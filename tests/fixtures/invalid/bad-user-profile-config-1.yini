@@ -1,0 +1,11 @@
+@yini
+invalid_token            // ERROR: Unknow keyword
+
+^ profile
+  username = "robinkoda"
+  display_name = 'Robin Koda'
+  email = "robin@example.com"
+  avatar = null
+  is_active = true
+  roles = ["user", "editor"]
+  created_at = "2024-05-12T10:30:00Z"
