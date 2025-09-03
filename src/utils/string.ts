@@ -32,6 +32,16 @@ export const splitLines = (content: string): string[] => {
 }
 
 /**
+ * Trims trailing non-letter characters (A–Z, a–z) from the end of a string.
+ *
+ * @param str Input string
+ * @returns String with trailing non-letters removed
+ */
+export const trimTrailingNonLetters = (str: string): string => {
+    return str.replace(/[^a-zA-Z]+$/g, '')
+}
+
+/**
  * If a string starts and ends with a backtick `, if so trims the
  * first and last character (the backticks).
  */

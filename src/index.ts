@@ -344,6 +344,20 @@ if (isProdEnv()) {
         //     ),
         // )
 
+        const yini = ` 
+         @yini
+        `
+        console.log(
+            toPrettyJSON(
+                YINI.parse(yini, {
+                    strictMode: false,
+                    bailSensitivity: 1,
+                    includeMetaData: false,
+                    isRequireDocTerminator: false,
+                }),
+            ),
+        )
+
         // console.log(
         //     toPrettyJSON(
         //         YINI.parseFile(
@@ -371,12 +385,12 @@ if (isProdEnv()) {
         //     includeMetaData: true,
         // })
 
-        const fileName =
-            './tests/fixtures/invalid/bad-cli-application-config.yini'
-        YINI.parseFile(fileName, {
-            strictMode: true,
-            bailSensitivity: 'auto',
-            includeMetaData: true,
-        })
+        // const fileName =
+        //     './tests/fixtures/invalid/bad-cli-application-config.yini'
+        // YINI.parseFile(fileName, {
+        //     strictMode: true,
+        //     bailSensitivity: 'auto',
+        //     includeMetaData: true,
+        // })
     }
 }

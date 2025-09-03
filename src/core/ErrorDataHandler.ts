@@ -1,23 +1,8 @@
 import { isDebug, isTestEnv } from '../config/env'
+import { YiniContext } from '../grammar/YiniParser'
 import { debugPrint } from '../utils/print'
 import { toLowerSnakeCase } from '../utils/string'
 import { IIssuePayload, TIssueType, TPersistThreshold } from './types'
-
-/*
-interface IIssuePayload {
-    type: TIssueType
-    msgWhat: string
-    // msgHintOrFix: string = '', // Hint or wow to fix.
-    start: {
-        line: number
-        column: number
-    }
-    end?: {
-        line?: number
-        column?: number
-    }
-}
-*/
 
 // All the issue titles are defined here to get a quick overview of all
 // titles, and to easier check that all titles match with relation to
@@ -62,42 +47,14 @@ export class ErrorDataHandler {
         this.persistThreshold = threshold
     }
 
-    /*
-    makeIssuePayload = (
-        type: TIssueType,
-        msgWhat: string,
-        lineNum: number,
-        startCol: number,
-        endCol: number,
-        // msgHintOrFix: string = '', // Hint or wow to fix.
-    ): IIssuePayload => {
-        const issue: IIssuePayload = {
-            type,
-            msgWhat,
-            // msgHintOrFix: string = '', // Hint or wow to fix.
-            start: {
-                line: lineNum,
-                column: startCol,
-            },
-            end: {
-                line: lineNum,
-                column: endCol,
-            },
-        }
-
-        debugPrint('issue:')
-        isDebug() && console.log(issue)
-        return issue
-    }
-    */
-    makeIssue = (
+    private makeIssue(
         line: number | undefined,
         column: number | undefined,
         type: TIssueType,
         message: string,
         advice: string | undefined = undefined,
         hint: string | undefined = undefined,
-    ): IIssuePayload => {
+    ): IIssuePayload {
         const issue: IIssuePayload = {
             line,
             column: !column ? undefined : column,
@@ -125,13 +82,13 @@ export class ErrorDataHandler {
      * @param msgWhy More details and more specific info about the issue/error.
      * @param msgHint Hint or HUMBLE description on how to fix the issue.
      */
-    pushOrBail = (
+    public pushOrBail(
         ctx: any,
         type: TIssueType,
         msgWhat: string,
         msgWhy: string = '',
         msgHint: string = '',
-    ) => {
+    ) {
         debugPrint('-> pushOrBail(..)')
         debugPrint('ctx.exception?.name       =' + ctx?.exception?.name)
         debugPrint('ctx.exception?.message    = ' + ctx?.exception?.message)
@@ -153,7 +110,7 @@ export class ErrorDataHandler {
         // const endCol = (ctx?.stop?.column || 0) + 1 // Column (0-based).
         const endCol: number | undefined = !!ctx?.stop?.column
             ? ++ctx.stop.column
-            : undefined // Column (0-based).
+            : undefined // Note: Column (0-based).
 
         let colNum: number | undefined = startCol || endCol
         // if (colNum === 0) {
@@ -176,14 +133,6 @@ export class ErrorDataHandler {
         debugPrint('persistThreshold = ' + this.persistThreshold)
         debugPrint('lineNum = ' + lineNum)
         debugPrint()
-
-        // const issue: IIssuePayload = this.makeIssuePayload(
-        //     type,
-        //     msgWhat,
-        //     lineNum,
-        //     startCol,
-        //     endCol,
-        // )
 
         switch (type) {
             case 'Internal-Error':
@@ -313,56 +262,52 @@ export class ErrorDataHandler {
         }
     }
 
-    private emitFatalError = (
+    private emitFatalError(
         msgWhat = 'Something went wrong!',
         msgWhy = '',
         msgHint = '',
-    ) => {
+    ) {
         console.error(issueTitle[0]) // Print the issue title.
-        msgWhat && console.error(msgWhat)
+        msgWhat && console.log(msgWhat)
         msgWhy && console.log(msgWhy)
         msgHint && console.log(msgHint)
     }
 
-    private emitInternalError = (
+    private emitInternalError(
         msgWhat = 'Something went wrong!',
         msgWhy = '',
         msgHint = '',
-    ) => {
+    ) {
         console.error(issueTitle[1]) // Print the issue title.
-        msgWhat && console.error(msgWhat)
+        msgWhat && console.log(msgWhat)
         msgWhy && console.log(msgWhy)
         msgHint && console.log(msgHint)
     }
 
-    private emitSyntaxError = (msgWhat: string, msgWhy = '', msgHint = '') => {
+    private emitSyntaxError(msgWhat: string, msgWhy = '', msgHint = '') {
         console.error(issueTitle[2]) // Print the issue title.
-        msgWhat && console.error(msgWhat)
+        msgWhat && console.log(msgWhat)
         msgWhy && console.log(msgWhy)
         msgHint && console.log(msgHint)
     }
 
-    private emitSyntaxWarning = (
-        msgWhat: string,
-        msgWhy = '',
-        msgHint = '',
-    ) => {
+    private emitSyntaxWarning(msgWhat: string, msgWhy = '', msgHint = '') {
         console.warn(issueTitle[3]) // Print the issue title.
-        msgWhat && console.warn(msgWhat)
+        msgWhat && console.log(msgWhat)
         msgWhy && console.log(msgWhy)
         msgHint && console.log(msgHint)
     }
 
-    private emitNotice = (msgWhat: string, msgWhy = '', msgHint = '') => {
+    private emitNotice(msgWhat: string, msgWhy = '', msgHint = '') {
         console.warn(issueTitle[4]) // Print the issue title.
-        msgWhat && console.warn(msgWhat)
+        msgWhat && console.log(msgWhat)
         msgWhy && console.log(msgWhy)
         msgHint && console.log(msgHint)
     }
 
-    private emitInfo = (msgWhat: string, msgWhy = '', msgHint = '') => {
+    private emitInfo(msgWhat: string, msgWhy = '', msgHint = '') {
         console.info(issueTitle[5]) // Print the issue title.
-        msgWhat && console.info(msgWhat)
+        msgWhat && console.log(msgWhat)
         msgWhy && console.log(msgWhy)
         msgHint && console.log(msgHint)
     }

@@ -5,6 +5,7 @@ import {
     ErrorListener,
     RecognitionException,
     Recognizer,
+    Token,
 } from 'antlr4'
 import { isDebug, isDev, localAppEnv, localNodeEnv } from './config/env'
 import ASTBuilder from './core/ASTBuilder'
@@ -26,6 +27,21 @@ import { debugPrint, printObject } from './utils/print'
 import { capitalizeFirst, toLowerSnakeCase } from './utils/string'
 
 const pkg = require('../package.json')
+
+/**
+ * @param line Line number as 1-based.
+ * @param col Column number as 0-based.
+ */
+const createGeneralCtx = (line: number, col: number): YiniContext => {
+    const startToken = new Token()
+    const ctx = new YiniContext()
+    ctx.start = startToken
+
+    ctx.start.line = line // Note: Line num is 1-based.
+    ctx.start.column = col // Note: Column num is 0-based.
+
+    return ctx
+}
 
 class MyParserErrorListener implements ErrorListener<any> {
     public errors: string[] = []
@@ -54,9 +70,10 @@ class MyParserErrorListener implements ErrorListener<any> {
         // To:   "Found '/END', but expected the end of the document."
         // const msgWhy = `${capitalizeFirst(msg)}`
         const msgWhy = `Details: ${msg}`
-        // const msgHint = ``
 
-        this.errorHandler.pushOrBail(null, 'Syntax-Error', msgWhat, msgWhy)
+        const ctx = createGeneralCtx(line, charPositionInLine) // So we can show line/col in error message.
+        // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+        this.errorHandler.pushOrBail(ctx, 'Syntax-Error', msgWhat, msgWhy)
     }
 
     // The following are required for the interface, but can be left empty.
@@ -95,30 +112,11 @@ class MyLexerErrorListener implements ErrorListener<any> {
         const msgWhy = `Details: ${msg}`
         // const msgHint = ``
 
-        this.errorHandler.pushOrBail(null, 'Syntax-Error', msgWhat, msgWhy)
+        const ctx = createGeneralCtx(line, charPositionInLine) // So we can show line/col in error message.
+        // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+        this.errorHandler.pushOrBail(ctx, 'Syntax-Error', msgWhat, msgWhy)
     }
 }
-
-// public and exposed parse with advanced options
-//@todo in future maybe
-// export const parseWithOptions = (
-// export const parseFileWithOptions = (
-//     filePath: string,
-//     options: IParseMainOptions = {
-//         isStrict: false,
-//         bailSensitivityLevel: 0,
-//         isIncludeMeta: false,
-//         isWithDiagnostics: false,
-//         isWithTiming: false,
-//         isKeepUndefinedInMeta: false,
-//     },
-// ) => {
-//     //find the below
-//         fileLoadMetaPayload.fileName || null,
-//         fileLoadMetaPayload.lineCount,
-
-//     // parseMain
-// }
 
 /** Single source of truth. */
 export const _parseMain = (
@@ -145,6 +143,33 @@ export const _parseMain = (
     debugPrint('          isWithTiming = ' + options.isWithTiming)
     debugPrint('isRequireDocTerminator = ' + options.isRequireDocTerminator)
 
+    let persistThreshold: TPersistThreshold
+    switch (options.bailSensitivityLevel) {
+        case 0:
+            persistThreshold = '0-Ignore-Errors'
+            break
+        case 1:
+            persistThreshold = '1-Abort-on-Errors'
+            break
+        default:
+            persistThreshold = '2-Abort-Even-on-Warnings'
+    }
+
+    const errorHandler = new ErrorDataHandler(persistThreshold)
+
+    if (yiniContent.trim() === '') {
+        const isFileSourceType: boolean =
+            fileLoadMetaPayload?.sourceType === 'File'
+        // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+        errorHandler.pushOrBail(
+            null,
+            'Syntax-Error',
+            'Empty YINI document.',
+            `The input is blank or contains only whitespace in the ${isFileSourceType ? 'YINI file' : 'YINI inline content'}.`,
+            `Tip: Add at least one section '^ SectionName' or a key–value pair 'key = value' to make it a valid YINI file.`,
+        )
+    }
+
     //---------------------------------------------
     // Note: Only computed when isWithTiming.
     let timeStartMs: number = 0
@@ -160,20 +185,6 @@ export const _parseMain = (
     let runFinishedAt = ''
     let durationMs: number = 0
     //---------------------------------------------
-
-    let persistThreshold: TPersistThreshold
-    switch (options.bailSensitivityLevel) {
-        case 0:
-            persistThreshold = '0-Ignore-Errors'
-            break
-        case 1:
-            persistThreshold = '1-Abort-on-Errors'
-            break
-        default:
-            persistThreshold = '2-Abort-Even-on-Warnings'
-    }
-
-    const errorHandler = new ErrorDataHandler(persistThreshold)
 
     isDebug() && console.log()
     debugPrint(
@@ -258,9 +269,17 @@ export const _parseMain = (
         fileLoadMetaPayload.fileName || null,
     )
     const ast: IYiniAST = builder.buildAST(parseTree)
-    // const syntaxTreeC: TSyntaxTreeContainer = visitor.visit(
-    //     parseTree as any,
-    // ) as TSyntaxTreeContainer
+    if (ast.numOfMembers === 0 && ast.numOfSections === 0) {
+        // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+        errorHandler.pushOrBail(
+            null,
+            'Syntax-Error',
+            'No meaningful content.',
+            `No sections or members found in the ${ast.sourceType === 'File' ? 'YINI file' : 'YINI inline content'}.`,
+            `${ast.sourceType === 'File' ? 'A valid YINI file' : 'Any valid YINI inline content'} must contain at least one section '^ SectionName' or a key–value pair 'key = value' to make it a valid YINI file.`,
+        )
+    }
+
     if (isDebug()) {
         console.log()
         console.log(
@@ -311,7 +330,7 @@ export const _parseMain = (
     debugPrint()
 
     if (options.isStrict) {
-        //throw Error('ERROR: Strict-mode not yet implemented')
+        // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
         errorHandler.pushOrBail(
             null,
             'Syntax-Warning',

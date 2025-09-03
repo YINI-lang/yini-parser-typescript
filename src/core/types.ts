@@ -190,8 +190,8 @@ export interface IYiniAST extends IMetaBaseInfo {
     terminatorSeen: boolean // Required '/END' in strict mode.
     yiniMarkerSeen: boolean
     maxDepth: number | null
-    numOfSections: number | null
-    numOfMembers: number | null
+    numOfSections: number
+    numOfMembers: number
     sectionNamePaths: string[] | null
     // errors: string[] // @deprecated Will soon get deleted
     // warnings: string[] // @deprecated Will soon get deleted

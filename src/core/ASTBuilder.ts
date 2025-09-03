@@ -248,8 +248,8 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             terminatorSeen: false,
             yiniMarkerSeen: false,
             maxDepth: null,
-            numOfSections: null,
-            numOfMembers: null,
+            numOfSections: 0,
+            numOfMembers: 0,
             sectionNamePaths: null,
         }
         this.sectionStack = [root]
