@@ -122,20 +122,6 @@ export default class YINI {
     ): TJSObject {
         debugPrint('-> Entered static parse(..) in class YINI\n')
 
-        // // Type guard: did the caller use the options-object form?
-        // const isOptionsObjectForm = (v: unknown): v is IAllUserOptions =>
-        //     v != null &&
-        //     typeof v === 'object' &&
-        //     // Note: If one wants, this can be relax to "typeof v === 'object'"
-        //     // but this keeps accidental booleans/strings out.
-        //     ('strictMode' in (v as any) ||
-        //         'bailSensitivity' in (v as any) ||
-        //         'includeMetaData' in (v as any) ||
-        //         'isWithDiagnostics' in (v as any) ||
-        //         'isWithTiming' in (v as any) ||
-        //         'isKeepUndefinedInMeta' in (v as any) ||
-        //         'isRequireDocTerminator' in (v as any))
-
         // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
         if (
             isOptionsObjectForm(arg2) &&
@@ -251,88 +237,6 @@ export default class YINI {
 
         return result
     }
-
-    /**
-     * Parse inline YINI content into a JavaScript object.
-     *
-     * @param yiniContent      YINI code as a string (multi‑line content supported).
-     * @param options Optional settings to customize parsing and/or results, useful if you need more control.
-     *
-     * @returns A JavaScript object representing the parsed YINI content.
-     */
-    // Advanced, named options for power/expert users (more future-proof).
-    /*
-    public static parseWithOptions = (
-        yiniContent: string,
-        options: IAllUserOptions,
-    ): TJSObject => {
-        debugPrint('-> Entered static parseWithOptions(..) in class YINI\n')
-
-        // Required, makes all properties in T required, no undefined.
-        const userOpts: Required<IAllUserOptions> = {
-            ...DEFAULT_OPTS, // Sets the default options.
-            ...options, // Overrides any options provided by the user.
-        }
-
-        if (
-            userOpts.includeMetaData &&
-            _fileLoadMetaPayload.sourceType === 'Inline'
-        ) {
-            const lineCount = yiniContent.split(/\r?\n/).length // Counts the lines.
-            const sha256 = computeSha256(yiniContent) // NOTE: Compute BEFORE any possible tampering of content.
-
-            _fileLoadMetaPayload.lineCount = lineCount
-            _fileLoadMetaPayload.preferredBailSensitivity =
-                userOpts.bailSensitivity
-            _fileLoadMetaPayload.sha256 = sha256
-        }
-
-        // Important: First, before anything, trim beginning and trailing whitespaces!
-        yiniContent = yiniContent.trim()
-
-        if (!yiniContent) {
-            throw new Error('Syntax-Error: Unexpected blank YINI input')
-        }
-        if (!yiniContent.endsWith('\n')) {
-            yiniContent += '\n'
-        }
-
-        let level: TBailSensitivityLevel = 0
-        if (userOpts.bailSensitivity === 'auto') {
-            if (!userOpts.strictMode) level = 0
-            if (userOpts.strictMode) level = 1
-        } else {
-            level = userOpts.bailSensitivity
-        }
-
-        const coreOpts: IParseCoreOptions = {
-            isStrict: userOpts.strictMode,
-            bailSensitivityLevel: level,
-            isIncludeMeta: userOpts.includeMetaData,
-            isWithDiagnostics:
-                isDev() || isDebug() || userOpts.isWithDiagnostics,
-            isWithTiming: isDev() || isDebug() || userOpts.isWithTiming,
-            isKeepUndefinedInMeta: isDebug() || userOpts.isKeepUndefinedInMeta,
-            isRequireDocTerminator: userOpts.isRequireDocTerminator,
-        }
-
-        debugPrint()
-        debugPrint('==== Call parse ==========================')
-        const result = _parseMain(yiniContent, coreOpts, _fileLoadMetaPayload)
-        debugPrint('==== End call parse ==========================\n')
-
-        if (isDev()) {
-            console.log()
-            devPrint('YINI.parse(..): result:')
-            console.log(result)
-
-            devPrint('Complete result:')
-            printObject(result)
-        }
-
-        return result
-    }
-    */
 
     /**
      * Parse a YINI file into a JavaScript object.
@@ -388,20 +292,6 @@ export default class YINI {
         debugPrint('-> Entered static parseFile(..) in class YINI\n')
         debugPrint('Current directory = ' + process.cwd())
 
-        // // Type guard: did the caller use the options-object form?
-        // const isOptionsObjectForm = (v: unknown): v is IAllUserOptions =>
-        //     v != null &&
-        //     typeof v === 'object' &&
-        //     // Note: If one wants, this can be relax to "typeof v === 'object'"
-        //     // but this keeps accidental booleans/strings out.
-        //     ('strictMode' in (v as any) ||
-        //         'bailSensitivity' in (v as any) ||
-        //         'includeMetaData' in (v as any) ||
-        //         'isWithDiagnostics' in (v as any) ||
-        //         'isWithTiming' in (v as any) ||
-        //         'isKeepUndefinedInMeta' in (v as any) ||
-        //         'isRequireDocTerminator' in (v as any))
-
         // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
         if (
             isOptionsObjectForm(arg2) &&
@@ -510,80 +400,4 @@ export default class YINI {
 
         return result
     }
-
-    /**
-     * Parse a YINI file into a JavaScript object.
-     *
-     * @param yiniFile Path to the YINI file.
-     * @param options Optional settings to customize parsing and/or results, useful if you need more control.
-     *
-     * @returns A JavaScript object representing the parsed YINI content.
-     */
-    // Advanced, named options for power/expert users (more future-proof).
-    /*
-    public static parseFileWithOptions = (
-        filePath: string,
-        options: IAllUserOptions,
-    ): TJSObject => {
-        debugPrint('-> Entered static parseFileWithOptions(..) in class YINI\n')
-        debugPrint('Current directory = ' + process.cwd())
-
-        // Required, makes all properties in T required, no undefined.
-        const userOpts: Required<IAllUserOptions> = {
-            ...DEFAULT_OPTS, // Sets the default options.
-            ...options, // Overrides any options provided by the user.
-        }
-
-        if (getFileNameExtension(filePath).toLowerCase() !== '.yini') {
-            console.error('Invalid file extension for YINI file:')
-            console.error(`"${filePath}"`)
-            console.log(
-                'File does not have a valid ".yini" extension (case-insensitive).',
-            )
-            throw new Error('Error: Unexpected file extension for YINI file')
-        }
-
-        // ---- Phase 0: I/O ----
-        const timeStartMs = performance.now()
-
-        // let content = fs.readFileSync(filePath, 'utf8')
-        const rawBuffer = fs.readFileSync(filePath) // Raw buffer for size.
-        const fileByteSize = rawBuffer.byteLength // Byte size in UTF-8.
-
-        let content = rawBuffer.toString('utf8')
-        const timeEndMs = performance.now()
-
-        _fileLoadMetaPayload.sourceType = 'File'
-        _fileLoadMetaPayload.fileName = filePath
-
-        if (userOpts.includeMetaData) {
-            _fileLoadMetaPayload.lineCount = content.split(/\r?\n/).length // Counts the lines.
-            _fileLoadMetaPayload.fileByteSize = fileByteSize
-            _fileLoadMetaPayload.timeIoMs = +(timeEndMs - timeStartMs)
-            _fileLoadMetaPayload.preferredBailSensitivity =
-                userOpts.bailSensitivity
-            _fileLoadMetaPayload.sha256 = computeSha256(content) // NOTE: Compute BEFORE any possible tampering of content.
-        }
-
-        let hasNoNewlineAtEOF = false
-        if (!content.endsWith('\n')) {
-            content += '\n'
-            hasNoNewlineAtEOF = true
-        }
-
-        const result = this.parse(
-            content,
-            userOpts.strictMode,
-            userOpts.bailSensitivity,
-            userOpts.includeMetaData,
-        )
-        if (hasNoNewlineAtEOF) {
-            console.warn(
-                `No newline at end of file, it's recommended to end a file with a newline. File:\n"${filePath}"`,
-            )
-        }
-
-        return result
-    }
-    */
 }
