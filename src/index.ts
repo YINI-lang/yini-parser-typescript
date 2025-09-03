@@ -25,8 +25,6 @@ import YINI from './YINI'
 
 export const parse = YINI.parse
 export const parseFile = YINI.parseFile
-export const parseWithOptions = YINI.parse
-export const parseFileWithOptions = YINI.parseFile
 export default YINI
 
 debugPrint()
@@ -337,7 +335,7 @@ if (isProdEnv()) {
         `
         console.log(
             toPrettyJSON(
-                YINI.parseWithOptions(yini, {
+                YINI.parse(yini, {
                     strictMode: false,
                     bailSensitivity: 1,
                     includeMetaData: true,
