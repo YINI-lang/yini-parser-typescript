@@ -202,7 +202,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
 
     private meta_hasYiniMarker = false // For stats.
     // private meta_numOfSections = 0 // For stats.
-    private meta_numOfMembers = 0 // For stats.
+    private _numOfMembers = 0 // For error checking and stats.
     // private meta_numOfChains = 0 // For stats.
     private meta_maxLevel = 0 // For stats.
 
@@ -379,7 +379,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         }
 
         sec.members.set(key, value)
-        this.meta_numOfMembers++
+        this._numOfMembers++
     }
 
     // --------------------------------
@@ -399,11 +399,13 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             this.errorHandler!.pushOrBail(null, 'Syntax-Error', msgWhat, msgWhy)
         }
 
+        // Note: Below is important for error checking as well as for meta data.
+        this.ast.numOfSections = this.mapSectionNamePaths.size
+        this.ast.numOfMembers = this._numOfMembers
+
         if (this.options.isIncludeMeta) {
             // Attach collected meta information.
             this.ast.maxDepth = this.meta_maxLevel
-            this.ast.numOfSections = this.mapSectionNamePaths.size
-            this.ast.numOfMembers = this.meta_numOfMembers
             this.ast.sectionNamePaths = [...this.mapSectionNamePaths.keys()]
         }
 
@@ -569,7 +571,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         rawText = stripCommentsAndAfter(rawText) // Remove possible comments.
         debugPrint('rawText2 = "' + rawText + '"')
 
-        if (this.mapSectionNamePaths.size || this.meta_numOfMembers) {
+        if (this.mapSectionNamePaths.size || this._numOfMembers) {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
                 ctx,

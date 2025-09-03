@@ -268,7 +268,6 @@ export const _parseMain = (
         fileLoadMetaPayload.fileName || null,
     )
     const ast: IYiniAST = builder.buildAST(parseTree)
-    //@todo Enable below once counting members and sections
     if (ast.numOfMembers === 0 && ast.numOfSections === 0) {
         // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
         errorHandler.pushOrBail(

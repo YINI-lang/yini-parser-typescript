@@ -358,7 +358,7 @@ bool6 = no
                 YINI.parse(yini, {
                     strictMode: true,
                     bailSensitivity: 'auto',
-                    includeMetaData: true,
+                    includeMetaData: false,
                     isRequireDocTerminator: false,
                 }),
             ),
