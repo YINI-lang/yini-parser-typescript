@@ -344,13 +344,21 @@ if (isProdEnv()) {
         //     ),
         // )
 
-        const yini = '      \t  \n  '
+        const yini = `
+^ Booleans
+bool1 = true
+bool2 = false
+bool3 = on
+bool4 = off
+bool5 = yes
+bool6 = no
+        `
         console.log(
             toPrettyJSON(
                 YINI.parse(yini, {
-                    strictMode: false,
-                    bailSensitivity: 1,
-                    includeMetaData: false,
+                    strictMode: true,
+                    bailSensitivity: 'auto',
+                    includeMetaData: true,
                     isRequireDocTerminator: false,
                 }),
             ),

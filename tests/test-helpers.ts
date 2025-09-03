@@ -12,7 +12,11 @@ export const parseUntilError = (
     isStrictMode = false,
     isIncludeMeta = false,
 ) => {
-    const result = YINI.parse(content, isStrictMode, 1, isIncludeMeta)
+    const result = YINI.parse(content, {
+        strictMode: isStrictMode,
+        bailSensitivity: 1,
+        includeMetaData: isIncludeMeta,
+    })
     return result
 }
 
@@ -28,6 +32,10 @@ export const parseFileUntilError = (
     isStrictMode = false,
     isIncludeMeta = false,
 ) => {
-    const result = YINI.parseFile(content, isStrictMode, 1, isIncludeMeta)
+    const result = YINI.parseFile(content, {
+        strictMode: isStrictMode,
+        bailSensitivity: 1,
+        includeMetaData: isIncludeMeta,
+    })
     return result
 }
