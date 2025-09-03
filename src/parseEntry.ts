@@ -333,9 +333,8 @@ export const _parseMain = (
         errorHandler.pushOrBail(
             null,
             'Syntax-Warning',
-            'WARNING: Strict-mode not yet fully implemented',
-            '',
-            '',
+            'Warning: Strict mode is not yet fully implemented.',
+            'Some validation rules may still be missing or incomplete.',
         )
     } else {
         debugPrint('visitor.visit(..): finalJSResult:')
