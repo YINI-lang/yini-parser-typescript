@@ -3,18 +3,18 @@ import { performance } from 'perf_hooks'
 import { isDebug, isDev } from './config/env'
 import {
     IAllUserOptions,
-    IFileLoadMetaPayload,
     IParseCoreOptions,
+    IRuntimeInfo,
     TBailSensitivityLevel,
     TJSObject,
-    TPreferredBailSensitivityLevel,
+    TPreferredFailLevel,
 } from './core/types'
 import { _parseMain } from './parseEntry'
 import { getFileNameExtension } from './utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from './utils/print'
 import { computeSha256 } from './utils/string'
 
-let _fileLoadMetaPayload: IFileLoadMetaPayload = {
+let _runtimeInfo: IRuntimeInfo = {
     sourceType: 'Inline',
     fileName: undefined,
     fileByteSize: null,
@@ -32,7 +32,7 @@ const isOptionsObjectForm = (v: unknown): v is IAllUserOptions => {
         // Note: If one wants, this can be relax to "typeof v === 'object'"
         // but this keeps accidental booleans/strings out.
         ('strictMode' in (v as any) ||
-            'bailSensitivity' in (v as any) ||
+            'failLevel' in (v as any) ||
             'includeMetaData' in (v as any) ||
             'isWithDiagnostics' in (v as any) ||
             'isWithTiming' in (v as any) ||
@@ -46,7 +46,7 @@ const DEFAULT_OPTS: Required<
     Pick<
         IAllUserOptions,
         | 'strictMode'
-        | 'bailSensitivity'
+        | 'failLevel'
         | 'includeMetaData'
         | 'isWithDiagnostics'
         | 'isWithTiming'
@@ -55,7 +55,7 @@ const DEFAULT_OPTS: Required<
     >
 > = {
     strictMode: false,
-    bailSensitivity: 'auto',
+    failLevel: 'auto',
     includeMetaData: false,
     isWithDiagnostics: false,
     isWithTiming: false,
@@ -74,7 +74,7 @@ export default class YINI {
      *
      * @param yiniContent      YINI code as a string (multi‑line content supported).
      * @param strictMode       If `true`, enforce strict parsing rules (e.g. require `/END`, disallow trailing commas).
-     * @param bailSensitivity  Preferred bail sensitivity level, controls how errors and warnings are handled:
+     * @param failLevel        Preferred bail sensitivity level, controls how errors and warnings are handled:
      *   - `'auto'` (default)       : Auto‑select level (strict→1, lenient→0)
      *   - `0` / `'Ignore-Errors'`    : Continue parsing despite errors; log them and attempt recovery.
      *   - `1` / `'Abort-on-Errors'`  : Stop parsing on the first error.
@@ -90,7 +90,7 @@ export default class YINI {
     public static parse(
         yiniContent: string,
         strictMode?: boolean,
-        bailSensitivity?: TPreferredBailSensitivityLevel,
+        failLevel?: TPreferredFailLevel,
         includeMetaData?: boolean,
     ): TJSObject
 
@@ -117,7 +117,7 @@ export default class YINI {
     public static parse(
         yiniContent: string,
         arg2?: boolean | IAllUserOptions, // strictMode | options
-        bailSensitivity: TPreferredBailSensitivityLevel = DEFAULT_OPTS.bailSensitivity,
+        failLevel: TPreferredFailLevel = DEFAULT_OPTS.failLevel,
         includeMetaData = DEFAULT_OPTS.includeMetaData,
     ): TJSObject {
         debugPrint('-> Entered static parse(..) in class YINI\n')
@@ -125,7 +125,7 @@ export default class YINI {
         // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
         if (
             isOptionsObjectForm(arg2) &&
-            (bailSensitivity !== 'auto' || includeMetaData !== false)
+            (failLevel !== 'auto' || includeMetaData !== false)
         ) {
             throw new TypeError(
                 'Invalid call: when providing an options object, do not also pass positional parameters.',
@@ -147,8 +147,7 @@ export default class YINI {
             userOpts = {
                 ...DEFAULT_OPTS, // Sets the default options.
                 strictMode: arg2.strictMode ?? DEFAULT_OPTS.strictMode,
-                bailSensitivity:
-                    arg2.bailSensitivity ?? DEFAULT_OPTS.bailSensitivity,
+                failLevel: arg2.failLevel ?? DEFAULT_OPTS.failLevel,
                 includeMetaData:
                     arg2.includeMetaData ?? DEFAULT_OPTS.includeMetaData,
                 isWithDiagnostics:
@@ -166,7 +165,7 @@ export default class YINI {
             /* parse = (
                   yiniContent: string,
                   strictMode?: boolean,
-                  bailSensitivity?: TPreferredBailSensitivityLevel,
+                  failLevel?: TPreferredFailLevel,
                   includeMetaData?: boolean,
                )
             */
@@ -174,22 +173,18 @@ export default class YINI {
                 ...DEFAULT_OPTS, // Sets the default options.
                 strictMode:
                     (arg2 as boolean | undefined) ?? DEFAULT_OPTS.strictMode,
-                bailSensitivity,
+                failLevel,
                 includeMetaData,
             }
         }
 
-        if (
-            userOpts.includeMetaData &&
-            _fileLoadMetaPayload.sourceType === 'Inline'
-        ) {
+        if (userOpts.includeMetaData && _runtimeInfo.sourceType === 'Inline') {
             const lineCount = yiniContent.split(/\r?\n/).length // Counts the lines.
             const sha256 = computeSha256(yiniContent) // NOTE: Compute BEFORE any possible tampering of content.
 
-            _fileLoadMetaPayload.lineCount = lineCount
-            _fileLoadMetaPayload.preferredBailSensitivity =
-                userOpts.bailSensitivity
-            _fileLoadMetaPayload.sha256 = sha256
+            _runtimeInfo.lineCount = lineCount
+            _runtimeInfo.preferredBailSensitivity = userOpts.failLevel
+            _runtimeInfo.sha256 = sha256
         }
 
         // NOTE: Important: Do not trim or mutate the yiniContent here, due
@@ -203,16 +198,16 @@ export default class YINI {
         }
 
         let level: TBailSensitivityLevel = 0
-        if (userOpts.bailSensitivity === 'auto') {
+        if (userOpts.failLevel === 'auto') {
             if (!userOpts.strictMode) level = 0
             if (userOpts.strictMode) level = 1
         } else {
-            level = userOpts.bailSensitivity
+            level = userOpts.failLevel
         }
 
         const coreOpts: IParseCoreOptions = {
             isStrict: userOpts.strictMode,
-            bailSensitivityLevel: level,
+            bailSensitivity: level,
             isIncludeMeta: userOpts.includeMetaData,
             isWithDiagnostics:
                 isDev() || isDebug() || userOpts.isWithDiagnostics,
@@ -223,7 +218,7 @@ export default class YINI {
 
         debugPrint()
         debugPrint('==== Call parse ==========================')
-        const result = _parseMain(yiniContent, coreOpts, _fileLoadMetaPayload)
+        const result = _parseMain(yiniContent, coreOpts, _runtimeInfo)
         debugPrint('==== End call parse ==========================\n')
 
         if (isDev()) {
@@ -243,7 +238,7 @@ export default class YINI {
      *
      * @param yiniFile Path to the YINI file.
      * @param strictMode       If `true`, enforce strict parsing rules (e.g. require `/END`, disallow trailing commas).
-     * @param bailSensitivity  Preferred bail sensitivity level, controls how errors and warnings are handled:
+     * @param failLevel        Preferred bail sensitivity level, controls how errors and warnings are handled:
      *   - `'auto'` (default)       : Auto‑select level (strict→1, lenient→0)
      *   - `0` / `'Ignore-Errors'`    : Continue parsing despite errors; log them and attempt recovery.
      *   - `1` / `'Abort-on-Errors'`  : Stop parsing on the first error.
@@ -259,7 +254,7 @@ export default class YINI {
     public static parseFile(
         filePath: string,
         strictMode?: boolean,
-        bailSensitivity?: TPreferredBailSensitivityLevel,
+        failLevel?: TPreferredFailLevel,
         includeMetaData?: boolean,
     ): TJSObject
 
@@ -286,7 +281,7 @@ export default class YINI {
     public static parseFile(
         filePath: string,
         arg2?: boolean | IAllUserOptions, // strictMode | options
-        bailSensitivity: TPreferredBailSensitivityLevel = DEFAULT_OPTS.bailSensitivity,
+        failLevel: TPreferredFailLevel = DEFAULT_OPTS.failLevel,
         includeMetaData = DEFAULT_OPTS.includeMetaData,
     ): TJSObject {
         debugPrint('-> Entered static parseFile(..) in class YINI\n')
@@ -295,7 +290,7 @@ export default class YINI {
         // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
         if (
             isOptionsObjectForm(arg2) &&
-            (bailSensitivity !== 'auto' || includeMetaData !== false)
+            (failLevel !== 'auto' || includeMetaData !== false)
         ) {
             throw new TypeError(
                 'Invalid call: when providing an options object, do not also pass positional parameters.',
@@ -317,8 +312,7 @@ export default class YINI {
             userOpts = {
                 ...DEFAULT_OPTS, // Sets the default options.
                 strictMode: arg2.strictMode ?? DEFAULT_OPTS.strictMode,
-                bailSensitivity:
-                    arg2.bailSensitivity ?? DEFAULT_OPTS.bailSensitivity,
+                failLevel: arg2.failLevel ?? DEFAULT_OPTS.failLevel,
                 includeMetaData:
                     arg2.includeMetaData ?? DEFAULT_OPTS.includeMetaData,
                 isWithDiagnostics:
@@ -336,7 +330,7 @@ export default class YINI {
             /* parse = (
                   yiniContent: string,
                   strictMode?: boolean,
-                  bailSensitivity?: TPreferredBailSensitivityLevel,
+                  failLevel?: TPreferredFailLevel,
                   includeMetaData?: boolean,
                )
             */
@@ -344,7 +338,7 @@ export default class YINI {
                 ...DEFAULT_OPTS, // Sets the default options.
                 strictMode:
                     (arg2 as boolean | undefined) ?? DEFAULT_OPTS.strictMode,
-                bailSensitivity,
+                failLevel,
                 includeMetaData,
             }
         }
@@ -368,16 +362,15 @@ export default class YINI {
         let content = rawBuffer.toString('utf8')
         const timeEndMs = performance.now()
 
-        _fileLoadMetaPayload.sourceType = 'File'
-        _fileLoadMetaPayload.fileName = filePath
+        _runtimeInfo.sourceType = 'File'
+        _runtimeInfo.fileName = filePath
 
         if (userOpts.includeMetaData) {
-            _fileLoadMetaPayload.lineCount = content.split(/\r?\n/).length // Counts the lines.
-            _fileLoadMetaPayload.fileByteSize = fileByteSize
-            _fileLoadMetaPayload.timeIoMs = +(timeEndMs - timeStartMs)
-            _fileLoadMetaPayload.preferredBailSensitivity =
-                userOpts.bailSensitivity
-            _fileLoadMetaPayload.sha256 = computeSha256(content) // NOTE: Compute BEFORE any possible tampering of content.
+            _runtimeInfo.lineCount = content.split(/\r?\n/).length // Counts the lines.
+            _runtimeInfo.fileByteSize = fileByteSize
+            _runtimeInfo.timeIoMs = +(timeEndMs - timeStartMs)
+            _runtimeInfo.preferredBailSensitivity = userOpts.failLevel
+            _runtimeInfo.sha256 = computeSha256(content) // NOTE: Compute BEFORE any possible tampering of content.
         }
 
         let hasNoNewlineAtEOF = false
@@ -389,7 +382,7 @@ export default class YINI {
         const result = this.parse(
             content,
             userOpts.strictMode,
-            userOpts.bailSensitivity,
+            userOpts.failLevel,
             userOpts.includeMetaData,
         )
         if (hasNoNewlineAtEOF) {

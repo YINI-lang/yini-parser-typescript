@@ -327,42 +327,42 @@ if (isProdEnv()) {
         //     /end
         // `
 
-        // const yini = `        @yini
-        // --@yini
-        // ^ InvalidHeader // INVALID: Must start with atleast one 1-level section.
-        // /END
-        // /END
-        // `
-        // console.log(
-        //     toPrettyJSON(
-        //         YINI.parse(yini, {
-        //             strictMode: false,
-        //             bailSensitivity: 1,
-        //             includeMetaData: true,
-        //             isRequireDocTerminator: false,
-        //         }),
-        //     ),
-        // )
-
-        const yini = `
-^ Booleans
-bool1 = true
-bool2 = false
-bool3 = on
-bool4 = off
-bool5 = yes
-bool6 = no
+        const yini = `        @yini
+        --@yini
+        ^ InvalidHeader // INVALID: Must start with atleast one 1-level section.
+        /END
+        /END
         `
         console.log(
             toPrettyJSON(
                 YINI.parse(yini, {
-                    strictMode: true,
-                    bailSensitivity: 'auto',
+                    strictMode: false,
+                    failLevel: 1,
                     includeMetaData: false,
                     isRequireDocTerminator: false,
                 }),
             ),
         )
+
+        //         const yini = `
+        // ^ Booleans
+        // bool1 = true
+        // bool2 = false
+        // bool3 = on
+        // bool4 = off
+        // bool5 = yes
+        // bool6 = no
+        //         `
+        //         console.log(
+        //             toPrettyJSON(
+        //                 YINI.parse(yini, {
+        //                     strictMode: true,
+        //                     failLevel: 'auto',
+        //                     includeMetaData: false,
+        //                     isRequireDocTerminator: false,
+        //                 }),
+        //             ),
+        //         )
 
         // console.log(
         //     toPrettyJSON(
@@ -378,7 +378,7 @@ bool6 = no
         //     toPrettyJSON(
         //         YINI.parseFile('comprehensive-example.yini', {
         //             strictMode: false,
-        //             bailSensitivity: 'auto',
+        //             failLevel: 'auto',
         //             includeMetaData: true,
         //         }),
         //     ),
@@ -387,7 +387,7 @@ bool6 = no
         // const fileName = './tests/fixtures/valid/common/common-config-2.yini'
         // YINI.parseFile(fileName, {
         //     strictMode: false,
-        //     bailSensitivity: 'auto',
+        //     failLevel: 'auto',
         //     includeMetaData: true,
         // })
 
@@ -395,7 +395,7 @@ bool6 = no
         //     './tests/fixtures/invalid/bad-cli-application-config.yini'
         // YINI.parseFile(fileName, {
         //     strictMode: true,
-        //     bailSensitivity: 'auto',
+        //     failLevel: 'auto',
         //     includeMetaData: true,
         // })
     }

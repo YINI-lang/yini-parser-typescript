@@ -4,7 +4,7 @@ import YINI from '../src/YINI'
  * Ensures that all errors cause parsing to fail,
  * regardless of whether lenient or strict mode is used.
  *
- * @note Wraps YINI.parse(..) with bailSensitivity
+ * @note Wraps YINI.parse(..) with failLevel
  * set to 1 ('Abort-on-Errors' mode).
  */
 export const parseUntilError = (
@@ -14,7 +14,7 @@ export const parseUntilError = (
 ) => {
     const result = YINI.parse(content, {
         strictMode: isStrictMode,
-        bailSensitivity: 1,
+        failLevel: 1,
         includeMetaData: isIncludeMeta,
     })
     return result
@@ -24,7 +24,7 @@ export const parseUntilError = (
  * Ensures that all errors cause parsing to fail,
  * regardless of whether lenient or strict mode is used.
  *
- * @note Wraps YINI.parseFile(..) with bailSensitivity
+ * @note Wraps YINI.parseFile(..) with failLevel
  * set to 1 ('Abort-on-Errors' mode).
  */
 export const parseFileUntilError = (
@@ -34,7 +34,7 @@ export const parseFileUntilError = (
 ) => {
     const result = YINI.parseFile(content, {
         strictMode: isStrictMode,
-        bailSensitivity: 1,
+        failLevel: 1,
         includeMetaData: isIncludeMeta,
     })
     return result

@@ -34,7 +34,7 @@ describe('Throw error when parsing bad file/inline content tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(fixture, { bailSensitivity: 1 })
+            YINI.parse(fixture, { failLevel: 1 })
         }).toThrow()
     })
 
@@ -44,7 +44,7 @@ describe('Throw error when parsing bad file/inline content tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(fixture, { bailSensitivity: 1 })
+            YINI.parse(fixture, { failLevel: 1 })
         }).toThrow()
     })
 
@@ -54,7 +54,7 @@ describe('Throw error when parsing bad file/inline content tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(fixture, { bailSensitivity: 1 })
+            YINI.parse(fixture, { failLevel: 1 })
         }).toThrow()
     })
 
@@ -65,7 +65,7 @@ describe('Throw error when parsing bad file/inline content tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(fixture, { bailSensitivity: 1 })
+            YINI.parse(fixture, { failLevel: 1 })
         }).toThrow()
     })
 
@@ -76,7 +76,7 @@ describe('Throw error when parsing bad file/inline content tests:', () => {
         // Act & Assert.
         expect(() => {
             debugPrint('fullPath = ' + fullPath)
-            YINI.parseFile(fullPath, { bailSensitivity: 1 })
+            YINI.parseFile(fullPath, { failLevel: 1 })
         }).toThrow()
     })
 
@@ -87,7 +87,7 @@ describe('Throw error when parsing bad file/inline content tests:', () => {
         // Act & Assert.
         expect(() => {
             debugPrint('fullPath = ' + fullPath)
-            YINI.parseFile(fullPath, { bailSensitivity: 1 })
+            YINI.parseFile(fullPath, { failLevel: 1 })
         }).toThrow()
     })
 })

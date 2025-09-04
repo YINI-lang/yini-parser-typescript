@@ -13,8 +13,8 @@ export type TJSObject = any // NOTE: Currently must be any! Not unknown or Recor
 
 export type TSourceType = 'File' | 'Inline'
 
-export type TBailSensitivityLevel = 0 | 1 | 2
-export type TPreferredBailSensitivityLevel = 'auto' | 0 | 1 | 2
+export type TBailSensitivityLevel = 0 | 1 | 2 // Bail sensitivity level.
+export type TPreferredFailLevel = 'auto' | 0 | 1 | 2 // Preferred bail sensitivity level.
 
 // Human label types.
 export type TPersistThreshold =
@@ -26,7 +26,7 @@ export type TPersistThreshold =
  * Only for returned meta data to user.
  * NOTE: Only use lower case snake_case for keys.
  */
-export type TBailSensitivityLevelKey =
+export type TFailLevelKey =
     | 'ignore_errors' // 0 - Don't bail/fail on error, persist and try to recover.
     | 'abort_on_errors' // 1 - Stop parsing on the first error.
     | 'abort_on_warnings' // 2 - Stop parsing on the first warning or error.
@@ -95,11 +95,15 @@ interface IMetaBaseInfo {
     fileName: string | undefined
 }
 
-export interface IFileLoadMetaPayload extends IMetaBaseInfo {
+/**
+ * Internal runtime info / meta data.
+ * @note Used for internal diagnostics, bookkeeping, state, etc.
+ */
+export interface IRuntimeInfo extends IMetaBaseInfo {
     lineCount: number | null
     fileByteSize: number | null // Only when source type is 'File'.
     timeIoMs: number | null // Only when source type is 'File'.
-    preferredBailSensitivity: null | TPreferredBailSensitivityLevel
+    preferredBailSensitivity: null | TPreferredFailLevel
     sha256: string | null
 }
 
@@ -131,7 +135,7 @@ export interface IFileLoadMetaPayload extends IMetaBaseInfo {
 // Internal option names, most if not all SHOULD be prefixed with 'is' or 'has'.
 export interface IParseCoreOptions {
     isStrict: boolean
-    bailSensitivityLevel: TBailSensitivityLevel // 0 | 1 | 2
+    bailSensitivity: TBailSensitivityLevel // 0 | 1 | 2
     isIncludeMeta: boolean // Include meta data along the returned result.
     isWithDiagnostics: boolean // (Requires isIncludeMeta) Include diagnostics in meta data, when isIncludeMeta.
     isWithTiming: boolean // (Requires isIncludeMeta) Include timing data of the different phases in meta data, when isIncludeMeta.
@@ -151,7 +155,7 @@ export interface IParseCoreOptions {
 // NOTE: (!) All props MUST be optional.
 interface IPrimaryUserParams {
     strictMode?: boolean
-    bailSensitivity?: TPreferredBailSensitivityLevel // 0 | "auto" | 1 | 2
+    failLevel?: TPreferredFailLevel // 0 | "auto" | 1 | 2
     includeMetaData?: boolean // Include meta data along the returned result.
 }
 
@@ -173,14 +177,14 @@ export interface IAllUserOptions extends IPrimaryUserParams {
 
 // export interface IParseOptionsAll extends IParseOptionsAdditional {
 //     isStrict: boolean
-//     bailSensitivityLevel: TBailSensitivityLevel
+//     failLevel: TFailLevel
 //     isIncludeMeta: boolean // Include meta data along the returned result.
 // }
 
 // With internal parameter names.
 // export interface IParseMainOptions extends IParseOptionsAdditional {
 //     isStrict: boolean
-//     bailSensitivityLevel: TBailSensitivityLevel
+//     failLevel: TFailLevel
 //     isIncludeMeta: boolean // Include meta data along the returned result.
 // }
 
@@ -260,10 +264,10 @@ export interface IResultMetaData {
     }
     metaSchemaVersion: '1.0.0'
     diagnostics?: {
-        bailSensitivity: {
+        failLevel: {
             preferredLevel: null | 'auto' | 0 | 1 | 2 // Input level into function.
             levelUsed: TBailSensitivityLevel
-            levelKey: TBailSensitivityLevelKey // Mapped from the corresponding type, keep it lowercase since it's shown in meta, easier for tooling.
+            levelKey: TFailLevelKey // Mapped from the corresponding type, keep it lowercase since it's shown in meta, easier for tooling.
             levelLabel: TPersistThreshold
             levelDescription: string | null
         }

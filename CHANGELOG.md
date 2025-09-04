@@ -8,6 +8,7 @@
 - **Build logic reimplemented** (`core/objectBuilder.ts`) for improved reliability and consistency.  
 - **Error reporting enhanced** to be more user-friendly and informative.  
 - **Fixed bug sometimes wrong line** Sometimes incorrect line number in error messages are now reported accurately.
+- Renamed option `bailSensitivity` to a more shorter and user-friendly name `failLevel`.
 ### Specification Alignment
 - Updated to follow the **latest YINI specification (v1.0.0-rc.3)**.  
   - Document terminator `/END` is now optional in both lenient and strict mode.

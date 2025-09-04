@@ -12,12 +12,12 @@ import ASTBuilder from './core/ASTBuilder'
 import { ErrorDataHandler } from './core/ErrorDataHandler'
 import { astToObject } from './core/objectBuilder'
 import {
-    IFileLoadMetaPayload,
     IParseCoreOptions,
     IResultMetaData,
+    IRuntimeInfo,
     IYiniAST,
     TBailSensitivityLevel,
-    TBailSensitivityLevelKey,
+    TFailLevelKey,
     TPersistThreshold,
 } from './core/types'
 import YiniLexer from './grammar/YiniLexer'
@@ -124,27 +124,26 @@ export const _parseMain = (
     // options: IParseMainOptions = {
     options: IParseCoreOptions = {
         isStrict: false,
-        bailSensitivityLevel: 0,
+        bailSensitivity: 0,
         isIncludeMeta: false,
         isWithDiagnostics: false,
         isWithTiming: false,
         isKeepUndefinedInMeta: false,
         isRequireDocTerminator: false,
     },
-    // metaFilename: undefined | string,
-    fileLoadMetaPayload: IFileLoadMetaPayload,
+    runtimeInfo: IRuntimeInfo,
 ) => {
     debugPrint()
     debugPrint('-> Entered parseMain(..) in parseEntry')
     debugPrint('         isStrict mode = ' + options.isStrict)
-    debugPrint('  bailSensitivityLevel = ' + options.bailSensitivityLevel)
+    debugPrint('       bailSensitivity = ' + options.bailSensitivity)
     debugPrint('         isIncludeMeta = ' + options.isIncludeMeta)
     debugPrint('     isWithDiagnostics = ' + options.isWithDiagnostics)
     debugPrint('          isWithTiming = ' + options.isWithTiming)
     debugPrint('isRequireDocTerminator = ' + options.isRequireDocTerminator)
 
     let persistThreshold: TPersistThreshold
-    switch (options.bailSensitivityLevel) {
+    switch (options.bailSensitivity) {
         case 0:
             persistThreshold = '0-Ignore-Errors'
             break
@@ -158,15 +157,14 @@ export const _parseMain = (
     const errorHandler = new ErrorDataHandler(persistThreshold)
 
     if (yiniContent.trim() === '') {
-        const isFileSourceType: boolean =
-            fileLoadMetaPayload?.sourceType === 'File'
+        const isFileSourceType: boolean = runtimeInfo?.sourceType === 'File'
         // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
         errorHandler.pushOrBail(
             null,
             'Syntax-Error',
             'Empty YINI document.',
             `The input is blank or contains only whitespace in the ${isFileSourceType ? 'YINI file' : 'YINI inline content'}.`,
-            `Tip: Add at least one section '^ SectionName' or a key–value pair 'key = value' to make it a valid YINI file.`,
+            `Tip: Add at least one section '^ SectionName' or a key-value pair 'key = value' to make it a valid YINI file.`,
         )
     }
 
@@ -265,7 +263,7 @@ export const _parseMain = (
     const builder = new ASTBuilder(
         errorHandler,
         options,
-        fileLoadMetaPayload.fileName || null,
+        runtimeInfo.fileName || null,
     )
     const ast: IYiniAST = builder.buildAST(parseTree)
     if (ast.numOfMembers === 0 && ast.numOfSections === 0) {
@@ -361,9 +359,9 @@ export const _parseMain = (
                 fileName: ast.fileName,
                 hasDocumentTerminator: ast.terminatorSeen,
                 hasYiniMarker: ast.yiniMarkerSeen,
-                lineCount: fileLoadMetaPayload.lineCount,
-                byteSize: fileLoadMetaPayload.fileByteSize,
-                sha256: fileLoadMetaPayload.sha256,
+                lineCount: runtimeInfo.lineCount,
+                byteSize: runtimeInfo.fileByteSize,
+                sha256: runtimeInfo.sha256,
             },
             structure: {
                 maxDepth: ast.maxDepth,
@@ -381,7 +379,7 @@ export const _parseMain = (
         if (options.isWithDiagnostics) {
             const mapLevelKey = (
                 level: TBailSensitivityLevel,
-            ): TBailSensitivityLevelKey => {
+            ): TFailLevelKey => {
                 switch (level) {
                     case 0:
                         return 'ignore_errors'
@@ -418,14 +416,13 @@ export const _parseMain = (
             }
 
             metaData.diagnostics = {
-                bailSensitivity: {
-                    preferredLevel:
-                        fileLoadMetaPayload.preferredBailSensitivity,
-                    levelUsed: options.bailSensitivityLevel,
-                    levelKey: mapLevelKey(options.bailSensitivityLevel),
-                    levelLabel: mapLevelLabel(options.bailSensitivityLevel),
+                failLevel: {
+                    preferredLevel: runtimeInfo.preferredBailSensitivity,
+                    levelUsed: options.bailSensitivity,
+                    levelKey: mapLevelKey(options.bailSensitivity),
+                    levelLabel: mapLevelLabel(options.bailSensitivity),
                     levelDescription: <any>(
-                        mapLevelDescription(options.bailSensitivityLevel)
+                        mapLevelDescription(options.bailSensitivity)
                     ),
                 },
                 errors: {
@@ -456,7 +453,7 @@ export const _parseMain = (
                 optionsUsed: {
                     // NOTE: (!) These MUST user options.
                     strictMode: options.isStrict,
-                    bailSensitivity: options.bailSensitivityLevel,
+                    failLevel: options.bailSensitivity,
                     includeMetaData: options.isIncludeMeta,
                     isWithDiagnostics: options.isWithDiagnostics,
                     isWithTiming: options.isWithTiming,
@@ -474,16 +471,15 @@ export const _parseMain = (
                     : {
                           timeMs: to3(durationMs), // durationMs = timeEnd4Ms - timeStartMs
                           name:
-                              fileLoadMetaPayload.sourceType === 'Inline'
+                              runtimeInfo.sourceType === 'Inline'
                                   ? 'Total'
                                   : 'Total (excluding phase0 (I/O))',
                       },
                 phase0:
-                    !options.isWithTiming ||
-                    fileLoadMetaPayload.sourceType === 'Inline'
+                    !options.isWithTiming || runtimeInfo.sourceType === 'Inline'
                         ? undefined
                         : {
-                              timeMs: to3(fileLoadMetaPayload.timeIoMs!),
+                              timeMs: to3(runtimeInfo.timeIoMs!),
 
                               name: 'I/O',
                           },
