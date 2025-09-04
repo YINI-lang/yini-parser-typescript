@@ -339,7 +339,7 @@ if (isProdEnv()) {
                     strictMode: false,
                     failLevel: 1,
                     includeMetaData: false,
-                    isRequireDocTerminator: false,
+                    requireDocTerminator: false,
                 }),
             ),
         )
@@ -359,7 +359,7 @@ if (isProdEnv()) {
         //                     strictMode: true,
         //                     failLevel: 'auto',
         //                     includeMetaData: false,
-        //                     isRequireDocTerminator: false,
+        //                     requireDocTerminator: false,
         //                 }),
         //             ),
         //         )

@@ -140,7 +140,7 @@ export const _parseMain = (
     debugPrint('         isIncludeMeta = ' + options.isIncludeMeta)
     debugPrint('     isWithDiagnostics = ' + options.isWithDiagnostics)
     debugPrint('          isWithTiming = ' + options.isWithTiming)
-    debugPrint('isRequireDocTerminator = ' + options.isRequireDocTerminator)
+    debugPrint('requireDocTerminator = ' + options.isRequireDocTerminator)
 
     let persistThreshold: TPersistThreshold
     switch (options.bailSensitivity) {
@@ -455,10 +455,10 @@ export const _parseMain = (
                     strictMode: options.isStrict,
                     failLevel: options.bailSensitivity,
                     includeMetaData: options.isIncludeMeta,
-                    isWithDiagnostics: options.isWithDiagnostics,
-                    isWithTiming: options.isWithTiming,
-                    isKeepUndefinedInMeta: options.isKeepUndefinedInMeta,
-                    isRequireDocTerminator: options.isRequireDocTerminator,
+                    includeDiagnostics: options.isWithDiagnostics,
+                    includeTiming: options.isWithTiming,
+                    preserveUndefinedInMeta: options.isKeepUndefinedInMeta,
+                    requireDocTerminator: options.isRequireDocTerminator,
                 },
             }
         }

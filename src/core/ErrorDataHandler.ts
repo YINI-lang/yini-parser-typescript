@@ -262,6 +262,13 @@ export class ErrorDataHandler {
         }
     }
 
+    /*
+    @todo: need: line, col, sourceType/filename
+     */
+    private formatSignificantMessageLine(issueTitle: string): string {
+        return 'XXXX'
+    }
+
     private emitFatalError(
         msgWhat = 'Something went wrong!',
         msgWhy = '',

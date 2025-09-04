@@ -132,7 +132,7 @@ export interface IRuntimeInfo extends IMetaBaseInfo {
     // collectSectionNamePaths
     // collectMemberKeyPaths
 */
-// Internal option names, most if not all SHOULD be prefixed with 'is' or 'has'.
+// Internal engine option names, most if not all SHOULD be prefixed with 'is' or 'has'.
 export interface IParseCoreOptions {
     isStrict: boolean
     bailSensitivity: TBailSensitivityLevel // 0 | 1 | 2
@@ -144,8 +144,9 @@ export interface IParseCoreOptions {
 }
 
 /**
- * These are more user friendly, and shorter, parameter names than the (more
- * descriptive) internal options names.
+ * User-facing options, these are external and should be more user friendly,
+ * and shorter, parameter names than the (more descriptive) internal
+ * engine option names.
  *
  * @note These parameters are emphasizes a bit more than the other options,
  *       therefor these are kept a bit shorter for usability-purposes.
@@ -159,34 +160,15 @@ interface IPrimaryUserParams {
     includeMetaData?: boolean // Include meta data along the returned result.
 }
 
-// External and more user friendly parameter names.
+// User-facing options, these are external and should be more user friendly
+// parameter names.
 // NOTE: (!) All props MUST be optional.
 export interface IAllUserOptions extends IPrimaryUserParams {
-    isWithDiagnostics?: boolean // (Requires isIncludeMeta) Include diagnostics in meta data, when isIncludeMeta.
-    isWithTiming?: boolean // (Requires isIncludeMeta) Include timing data of the different phases in meta data, when isIncludeMeta.
-    isKeepUndefinedInMeta?: boolean // (Requires isIncludeMeta) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
-    isRequireDocTerminator?: boolean // // If true, the document terminator '/END' at the end of the document is required, otherwise it's optional.
+    includeDiagnostics?: boolean // (Requires includeMetaData) Include diagnostics in meta data, when isIncludeMeta.
+    includeTiming?: boolean // (Requires includeMetaData) Include timing data of the different phases in meta data, when isIncludeMeta.
+    preserveUndefinedInMeta?: boolean // (Requires includeMetaData) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
+    requireDocTerminator?: boolean // // If true, the document terminator '/END' at the end of the document is required, otherwise it's optional.
 }
-
-// export interface IParseOptionsAdditional {
-//     isWithDiagnostics: boolean // (Requires isIncludeMeta) Include diagnostics in meta data, when isIncludeMeta.
-//     isWithTiming: boolean // (Requires isIncludeMeta) Include timing data of the different phases in meta data, when isIncludeMeta.
-//     isKeepUndefinedInMeta: boolean // (Requires isIncludeMeta) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
-//     isRequireDocTerminator: boolean // // If true, the document terminator '/END' at the end of the document is required, otherwise it's optional.
-// }
-
-// export interface IParseOptionsAll extends IParseOptionsAdditional {
-//     isStrict: boolean
-//     failLevel: TFailLevel
-//     isIncludeMeta: boolean // Include meta data along the returned result.
-// }
-
-// With internal parameter names.
-// export interface IParseMainOptions extends IParseOptionsAdditional {
-//     isStrict: boolean
-//     failLevel: TFailLevel
-//     isIncludeMeta: boolean // Include meta data along the returned result.
-// }
 
 export interface IYiniAST extends IMetaBaseInfo {
     root: IYiniSection // Implicit root per spec.

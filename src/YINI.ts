@@ -34,10 +34,10 @@ const isOptionsObjectForm = (v: unknown): v is IAllUserOptions => {
         ('strictMode' in (v as any) ||
             'failLevel' in (v as any) ||
             'includeMetaData' in (v as any) ||
-            'isWithDiagnostics' in (v as any) ||
-            'isWithTiming' in (v as any) ||
-            'isKeepUndefinedInMeta' in (v as any) ||
-            'isRequireDocTerminator' in (v as any))
+            'includeDiagnostics' in (v as any) ||
+            'includeTiming' in (v as any) ||
+            'preserveUndefinedInMeta' in (v as any) ||
+            'requireDocTerminator' in (v as any))
     )
 }
 
@@ -48,19 +48,19 @@ const DEFAULT_OPTS: Required<
         | 'strictMode'
         | 'failLevel'
         | 'includeMetaData'
-        | 'isWithDiagnostics'
-        | 'isWithTiming'
-        | 'isKeepUndefinedInMeta'
-        | 'isRequireDocTerminator'
+        | 'includeDiagnostics'
+        | 'includeTiming'
+        | 'preserveUndefinedInMeta'
+        | 'requireDocTerminator'
     >
 > = {
     strictMode: false,
     failLevel: 'auto',
     includeMetaData: false,
-    isWithDiagnostics: false,
-    isWithTiming: false,
-    isKeepUndefinedInMeta: false,
-    isRequireDocTerminator: false,
+    includeDiagnostics: false,
+    includeTiming: false,
+    preserveUndefinedInMeta: false,
+    requireDocTerminator: false,
 }
 
 /**
@@ -150,15 +150,15 @@ export default class YINI {
                 failLevel: arg2.failLevel ?? DEFAULT_OPTS.failLevel,
                 includeMetaData:
                     arg2.includeMetaData ?? DEFAULT_OPTS.includeMetaData,
-                isWithDiagnostics:
-                    arg2.isWithDiagnostics ?? DEFAULT_OPTS.isWithDiagnostics,
-                isWithTiming: arg2.isWithTiming ?? DEFAULT_OPTS.isWithTiming,
-                isKeepUndefinedInMeta:
-                    arg2.isKeepUndefinedInMeta ??
-                    DEFAULT_OPTS.isKeepUndefinedInMeta,
-                isRequireDocTerminator:
-                    arg2.isRequireDocTerminator ??
-                    DEFAULT_OPTS.isRequireDocTerminator,
+                includeDiagnostics:
+                    arg2.includeDiagnostics ?? DEFAULT_OPTS.includeDiagnostics,
+                includeTiming: arg2.includeTiming ?? DEFAULT_OPTS.includeTiming,
+                preserveUndefinedInMeta:
+                    arg2.preserveUndefinedInMeta ??
+                    DEFAULT_OPTS.preserveUndefinedInMeta,
+                requireDocTerminator:
+                    arg2.requireDocTerminator ??
+                    DEFAULT_OPTS.requireDocTerminator,
             }
         } else {
             // Positional form.
@@ -210,10 +210,11 @@ export default class YINI {
             bailSensitivity: level,
             isIncludeMeta: userOpts.includeMetaData,
             isWithDiagnostics:
-                isDev() || isDebug() || userOpts.isWithDiagnostics,
-            isWithTiming: isDev() || isDebug() || userOpts.isWithTiming,
-            isKeepUndefinedInMeta: isDebug() || userOpts.isKeepUndefinedInMeta,
-            isRequireDocTerminator: userOpts.isRequireDocTerminator,
+                isDev() || isDebug() || userOpts.includeDiagnostics,
+            isWithTiming: isDev() || isDebug() || userOpts.includeTiming,
+            isKeepUndefinedInMeta:
+                isDebug() || userOpts.preserveUndefinedInMeta,
+            isRequireDocTerminator: userOpts.requireDocTerminator,
         }
 
         debugPrint()
@@ -315,15 +316,15 @@ export default class YINI {
                 failLevel: arg2.failLevel ?? DEFAULT_OPTS.failLevel,
                 includeMetaData:
                     arg2.includeMetaData ?? DEFAULT_OPTS.includeMetaData,
-                isWithDiagnostics:
-                    arg2.isWithDiagnostics ?? DEFAULT_OPTS.isWithDiagnostics,
-                isWithTiming: arg2.isWithTiming ?? DEFAULT_OPTS.isWithTiming,
-                isKeepUndefinedInMeta:
-                    arg2.isKeepUndefinedInMeta ??
-                    DEFAULT_OPTS.isKeepUndefinedInMeta,
-                isRequireDocTerminator:
-                    arg2.isRequireDocTerminator ??
-                    DEFAULT_OPTS.isRequireDocTerminator,
+                includeDiagnostics:
+                    arg2.includeDiagnostics ?? DEFAULT_OPTS.includeDiagnostics,
+                includeTiming: arg2.includeTiming ?? DEFAULT_OPTS.includeTiming,
+                preserveUndefinedInMeta:
+                    arg2.preserveUndefinedInMeta ??
+                    DEFAULT_OPTS.preserveUndefinedInMeta,
+                requireDocTerminator:
+                    arg2.requireDocTerminator ??
+                    DEFAULT_OPTS.requireDocTerminator,
             }
         } else {
             // Positional form.
