@@ -1,6 +1,6 @@
 {
     "name": "yini-parser",
-    "version": "1.0.2-beta",
+    "version": "1.1.0-beta",
     "description": "Node.js parser for YINI — a clean, structured INI alternative with types, simple section nesting, comments, and strict mode.",
     "keywords": [
         "yini",

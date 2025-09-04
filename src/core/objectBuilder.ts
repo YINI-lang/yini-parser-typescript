@@ -101,7 +101,7 @@ const literalToJS = (v: TValueLiteral): unknown => {
         case 'Undefined':
             return undefined
 
-        case 'List':
+        case 'List': {
             if (IS_LOCAL_DEBUG) {
                 debugPrint("case 'List':")
                 if (isDebug()) {
@@ -128,6 +128,7 @@ const literalToJS = (v: TValueLiteral): unknown => {
                 }
             }
             return out
+        }
         case 'Object': {
             const out: Record<string, unknown> = {}
             // for (const key of Object.keys(v.entries)) {

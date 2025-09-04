@@ -33,10 +33,13 @@ module.exports = [
             // Your custom rules here
             '@typescript-eslint/no-explicit-any': 'off',
             '@typescript-eslint/no-unused-vars': 'off',
+            '@typescript-eslint/no-require-imports': 'warn',
             'no-undef': 'off',
             'no-unused-expressions': 'off',
             '@typescript-eslint/no-unused-expressions': 'off',
             curly: ['error', 'all'], // Enforces braces around all if, else, for, while, and do.
+            'no-extra-boolean-cast': 'off', // Redundant double negation, like !!value.
+            'no-case-declarations': 'error', // let / const / class inside a case without braces may cause temporal dead zone or scoping confusion.
         },
     },
     prettier,

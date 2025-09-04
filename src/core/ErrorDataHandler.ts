@@ -313,7 +313,7 @@ export class ErrorDataHandler {
             case 'None/Ignore':
                 return issueTitle
             case 'File':
-            case 'Inline':
+            case 'Inline': {
                 // Construct a full line from several parts.
 
                 const titlePart: string = trimTrailingNonLetters(
@@ -341,6 +341,7 @@ export class ErrorDataHandler {
                 }
 
                 return line
+            }
         }
     }
 

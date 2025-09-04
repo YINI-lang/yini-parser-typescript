@@ -1,7 +1,7 @@
 YINI Parser – Feature Implementation Status
 ===========================================
 
-This table shows the implementation status of the YINI parser. Features are based on the YINI Specification v1.0.0 Beta 7 (with possible updates).
+This table shows the implementation status of the YINI parser. Features are based on the YINI Specification v1.0.0 RC 3 (with possible updates).
 
 https://github.com/YINI-lang/YINI-spec
 
