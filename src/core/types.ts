@@ -12,6 +12,7 @@
 export type TJSObject = any // NOTE: Currently must be any! Not unknown or Record<string, unknown> or anything else, since linting etc will render this as error/unknow.
 
 export type TSourceType = 'File' | 'Inline'
+export type TSubjectType = 'None/Ignore' | TSourceType
 
 export type TBailSensitivityLevel = 0 | 1 | 2 // Bail sensitivity level.
 export type TPreferredFailLevel = 'auto' | 0 | 1 | 2 // Preferred bail sensitivity level.

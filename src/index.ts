@@ -25,6 +25,8 @@ import YINI from './YINI'
 
 export const parse = YINI.parse
 export const parseFile = YINI.parseFile
+export const getTabSize = YINI.getTabSize
+export const setTabSize = YINI.setTabSize
 export default YINI
 
 debugPrint()
@@ -61,16 +63,13 @@ if (isProdEnv()) {
 } else {
     if (localAppEnv === 'local' && localNodeEnv !== 'test') {
         // parseUntilError(`^1 SectionName`, false, 2)
-
         //         const validYini = `
         // < user
         // username = 'tester two'
         // isSysOp = YES
-
         //     << prefs
         //     theme = "light"
         //     notifications = OFF
-
         // ^1 user2
         // ^2 prefs
         // ^3 deepSection
@@ -79,26 +78,20 @@ if (isProdEnv()) {
         // ^5 yetDeeperSection
         // key = "Level 5 section"
         // item = 77
-
         // <1 user3
         // username = 'tester three'
         // isSysOp = NO
-
         //     <<2 prefs
         //     theme = "special-dark"
         //     notifications = ON
-
         // `
-
         //         // Act.
         //         const result = parseUntilError(validYini)
         //         debugPrint(result)
-
         // const validYini = `^ App
         //     id = 32403  # The correct app id.
         //     title = "My Program"
         // `
-
         /*
         const yini = `
         @yini
@@ -118,7 +111,6 @@ if (isProdEnv()) {
              altDoz = 0z10AB        // Alternative notation: A=10, B=11
         ` // End.
         */
-
         /*
         const yini = `
     @yini    
@@ -188,12 +180,10 @@ if (isProdEnv()) {
         //     "phase3Ms": 0.14
         // }
         //console.log(toPrettyJSON(YINI.parse(yini, false, 'auto', true)))
-
         // const yini = `
         //     < SubTitle
         //     theme = "special-dark"
         //     notifications = ON
-
         //     < SubTitle // NOT OK, SubTitle already exists
         //     theme2 = "special-dark"
         //         `
@@ -310,11 +300,8 @@ if (isProdEnv()) {
         // const yini = `
         //     /*sdfsdf*/
         //     @yini
-
         //     @include 'sdf'
-
         //     --@invalid
-
         //     @deprecated
         //     ^ window
         //     --^^ window2
@@ -326,12 +313,14 @@ if (isProdEnv()) {
         //     --@yini   // This is an error should be catched in the parser.
         //     /end
         // `
-
+        // YINI.setTabSize(2)
+        // debugPrint('tab size = ' + YINI.getTabSize())
         const yini = `        @yini
         --@yini
-        ^ InvalidHeader // INVALID: Must start with atleast one 1-level section.
+        ^^ Header // INVALID: Must start with atleast one 1-level section.
+        key = 33254
         /END
-        /END
+        --/END
         `
         console.log(
             toPrettyJSON(
@@ -363,7 +352,6 @@ if (isProdEnv()) {
         //                 }),
         //             ),
         //         )
-
         // console.log(
         //     toPrettyJSON(
         //         YINI.parseFile(
@@ -383,16 +371,14 @@ if (isProdEnv()) {
         //         }),
         //     ),
         // )
-
         // const fileName = './tests/fixtures/valid/common/common-config-2.yini'
         // YINI.parseFile(fileName, {
         //     strictMode: false,
         //     failLevel: 'auto',
         //     includeMetaData: true,
         // })
-
         // const fileName =
-        //     './tests/fixtures/invalid/bad-cli-application-config.yini'
+        //     './tests/fixtures/invalid/bad-user-profile-config-2.yini'
         // YINI.parseFile(fileName, {
         //     strictMode: true,
         //     failLevel: 'auto',

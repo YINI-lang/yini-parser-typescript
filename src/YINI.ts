@@ -1,6 +1,7 @@
 import fs from 'fs'
 import { performance } from 'perf_hooks'
 import { isDebug, isDev } from './config/env'
+import { ErrorDataHandler } from './core/ErrorDataHandler'
 import {
     IAllUserOptions,
     IParseCoreOptions,
@@ -13,6 +14,8 @@ import { _parseMain } from './parseEntry'
 import { getFileNameExtension } from './utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from './utils/print'
 import { computeSha256 } from './utils/string'
+
+const DEFAULT_TAB_SIZE = 4 // De facto "modern default" (even though traditionally/historically it's 8).
 
 let _runtimeInfo: IRuntimeInfo = {
     sourceType: 'Inline',
@@ -69,6 +72,31 @@ const DEFAULT_OPTS: Required<
  * @note Only parse and parseFile are public.
  */
 export default class YINI {
+    private static g_tabSize = DEFAULT_TAB_SIZE // Global tab size used in error messages.
+
+    /**
+     * @returns The number of spaces per tab character used in error messages.
+     */
+    public static getTabSize() {
+        return this.g_tabSize
+    }
+
+    /**
+     * Overrides the number of spaces per tab character used in error messages.
+     * Allowed range: 1-32.
+     */
+    public static setTabSize(spaces: number) {
+        if (spaces < 1 || spaces > 32) {
+            new ErrorDataHandler('None/Ignore').pushOrBail(
+                null,
+                'Fatal-Error',
+                `Invalid tab size ${spaces} is out of range.`,
+                'Tab size must be between 1 and 32 spaces.',
+            )
+        }
+        this.g_tabSize = spaces
+    }
+
     /**
      * Parse inline YINI content into a JavaScript object.
      *

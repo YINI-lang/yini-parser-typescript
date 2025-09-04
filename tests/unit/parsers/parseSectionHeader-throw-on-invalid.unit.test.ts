@@ -10,7 +10,7 @@ describe('Throw error when parsing bad header marker (classic and numeric shorth
     let eh: ErrorDataHandler
 
     beforeAll(() => {
-        eh = new ErrorDataHandler('1-Abort-on-Errors')
+        eh = new ErrorDataHandler('None/Ignore')
     })
 
     test('1.a. Should throw error if parsing bad classic header (more than 6 marker (^) characters).', () => {

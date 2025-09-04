@@ -25,6 +25,7 @@ import YiniParser, { YiniContext } from './grammar/YiniParser'
 import { removeUndefinedDeep } from './utils/object'
 import { debugPrint, printObject } from './utils/print'
 import { capitalizeFirst, toLowerSnakeCase } from './utils/string'
+import { isError } from './utils/system'
 
 const pkg = require('../package.json')
 
@@ -32,15 +33,53 @@ const pkg = require('../package.json')
  * @param line Line number as 1-based.
  * @param col Column number as 0-based.
  */
-const createGeneralCtx = (line: number, col: number): YiniContext => {
+const createGeneralCtx = (
+    line: number,
+    endColumn: number,
+    startColumn: number | undefined = undefined,
+): YiniContext => {
     const startToken = new Token()
+    const stopToken = new Token()
     const ctx = new YiniContext()
     ctx.start = startToken
+    ctx.stop = stopToken
 
     ctx.start.line = line // Note: Line num is 1-based.
-    ctx.start.column = col // Note: Column num is 0-based.
+    if (startColumn && startColumn >= 0) {
+        ctx.start.column = startColumn // Note: Column num is 0-based.
+    }
+
+    ctx.stop.column = endColumn // Note: Column num is 0-based.
 
     return ctx
+}
+
+const parsePossibleStartCol = (
+    errorHandler: ErrorDataHandler,
+    recognizer: any,
+): number | undefined => {
+    let possibleStartCol: number | undefined = undefined
+    try {
+        possibleStartCol = recognizer?._ctx.start?.column
+            ? recognizer?._ctx.start?.column + 1
+            : undefined
+    } catch (err: unknown) {
+        let msgHint = ''
+
+        if (isError(err)) {
+            msgHint = 'Error: ' + err.message
+        } else {
+            msgHint = 'Thrown value:' + JSON.stringify(err)
+        }
+        errorHandler.pushOrBail(
+            null,
+            'Internal-Error',
+            'Catched error of possibleStartCol in parser grammar listener.',
+            msgHint,
+        )
+    }
+
+    return possibleStartCol
 }
 
 class MyParserErrorListener implements ErrorListener<any> {
@@ -60,10 +99,14 @@ class MyParserErrorListener implements ErrorListener<any> {
         e: RecognitionException | undefined,
     ): void {
         debugPrint('ANTLR parser cached an error')
-        // this.errors.push(`Line ${line}:${charPositionInLine} ${msg}`)
-        const col = charPositionInLine + 1
 
-        const msgWhat = `Syntax error at line ${line}, column ${col}:`
+        const col = charPositionInLine + 1
+        const possibleStartCol: number | undefined = parsePossibleStartCol(
+            this.errorHandler,
+            recognizer,
+        )
+
+        const msgWhat = `Syntax error`
 
         // Try to map message:
         // From: "mismatched input '/END' expecting <EOF>"
@@ -71,7 +114,7 @@ class MyParserErrorListener implements ErrorListener<any> {
         // const msgWhy = `${capitalizeFirst(msg)}`
         const msgWhy = `Details: ${msg}`
 
-        const ctx = createGeneralCtx(line, charPositionInLine) // So we can show line/col in error message.
+        const ctx = createGeneralCtx(line, charPositionInLine, possibleStartCol) // So we can show line/col in error message.
         // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
         this.errorHandler.pushOrBail(ctx, 'Syntax-Error', msgWhat, msgWhy)
     }
@@ -100,10 +143,14 @@ class MyLexerErrorListener implements ErrorListener<any> {
     ) {
         // Handle the error as you want:
         debugPrint('ANTLR lexer cached an error')
-        // this.errors.push(`Line ${line}:${charPositionInLine} ${msg}`)
         const col = charPositionInLine + 1
+        const possibleStartCol: number | undefined = parsePossibleStartCol(
+            this.errorHandler,
+            recognizer,
+        )
 
-        const msgWhat = `Syntax error at line ${line}, column ${col}:`
+        // const msgWhat = `Syntax error at line ${line}, column ${col}:`
+        const msgWhat = `Syntax error`
 
         // Try to map message:
         // From: "mismatched input '/END' expecting <EOF>"
@@ -112,7 +159,7 @@ class MyLexerErrorListener implements ErrorListener<any> {
         const msgWhy = `Details: ${msg}`
         // const msgHint = ``
 
-        const ctx = createGeneralCtx(line, charPositionInLine) // So we can show line/col in error message.
+        const ctx = createGeneralCtx(line, charPositionInLine, possibleStartCol) // So we can show line/col in error message.
         // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
         this.errorHandler.pushOrBail(ctx, 'Syntax-Error', msgWhat, msgWhy)
     }
@@ -140,7 +187,9 @@ export const _parseMain = (
     debugPrint('         isIncludeMeta = ' + options.isIncludeMeta)
     debugPrint('     isWithDiagnostics = ' + options.isWithDiagnostics)
     debugPrint('          isWithTiming = ' + options.isWithTiming)
-    debugPrint('requireDocTerminator = ' + options.isRequireDocTerminator)
+    debugPrint('  requireDocTerminator = ' + options.isRequireDocTerminator)
+    debugPrint('runtimeInfo.sourceType = ' + runtimeInfo.sourceType)
+    debugPrint('  runtimeInfo.fileName = ' + runtimeInfo.fileName)
 
     let persistThreshold: TPersistThreshold
     switch (options.bailSensitivity) {
@@ -154,7 +203,11 @@ export const _parseMain = (
             persistThreshold = '2-Abort-Even-on-Warnings'
     }
 
-    const errorHandler = new ErrorDataHandler(persistThreshold)
+    const errorHandler = new ErrorDataHandler(
+        runtimeInfo.sourceType,
+        persistThreshold,
+        runtimeInfo.fileName,
+    )
 
     if (yiniContent.trim() === '') {
         const isFileSourceType: boolean = runtimeInfo?.sourceType === 'File'
@@ -263,6 +316,7 @@ export const _parseMain = (
     const builder = new ASTBuilder(
         errorHandler,
         options,
+        runtimeInfo.sourceType,
         runtimeInfo.fileName || null,
     )
     const ast: IYiniAST = builder.buildAST(parseTree)

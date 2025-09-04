@@ -61,12 +61,17 @@ import {
     IYiniSection,
     TListValue,
     TScalarValue,
+    TSourceType,
+    TSubjectType,
     TValueLiteral,
 } from './types'
 
 // -----------------------
 
 // --- Helpers -------------------------------------------------------------
+
+// let _subjectType: TSubjectType = 'None'
+let _sourceType: TSourceType
 
 /**
  * @param {string | undefined} [tag]
@@ -90,7 +95,7 @@ const makeScalarValue = (
         case 'Undefined':
             return { type: 'Undefined', value: undefined, tag }
         default:
-            new ErrorDataHandler().pushOrBail(
+            new ErrorDataHandler(_sourceType).pushOrBail(
                 null,
                 'Fatal-Error',
                 `No such type in makeValue(..), type: ${type}, value: ${value}`,
@@ -215,18 +220,20 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     constructor(
         errorHandler: ErrorDataHandler,
         options: IParseCoreOptions,
+        sourceType: TSourceType,
         metaFileName: string | null,
     ) {
         super()
         if (!errorHandler) {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-            new ErrorDataHandler().pushOrBail(
+            new ErrorDataHandler('None/Ignore').pushOrBail(
                 null,
                 'Fatal-Error',
                 'Has no ErrorDataHandler instance when calling visitYini(..)',
                 'Something in the code is done incorrectly in order for this to happen... :S',
             )
         }
+        _sourceType = sourceType
         this.options = options
 
         this.errorHandler = errorHandler
@@ -521,7 +528,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                     'Syntax-Error',
                     'Invalid section level transition',
                     `Cannot skip levels: from ${currentLevel} to ${sectionLevel}.`,
-                    `A section header may not start directly at level ${sectionLevel}, skipping previous section levels. Please start with one level further down.`,
+                    `Section headers may not start directly at level ${sectionLevel}, skipping previous section levels. Please start with one level further down.`,
                 )
             }
             const section = makeSection(

@@ -1,8 +1,14 @@
 import { isDebug, isTestEnv } from '../config/env'
 import { YiniContext } from '../grammar/YiniParser'
-import { debugPrint } from '../utils/print'
-import { toLowerSnakeCase } from '../utils/string'
-import { IIssuePayload, TIssueType, TPersistThreshold } from './types'
+import { debugPrint, printObject } from '../utils/print'
+import { toLowerSnakeCase, trimTrailingNonLetters } from '../utils/string'
+import {
+    IIssuePayload,
+    TIssueType,
+    TPersistThreshold,
+    TSourceType,
+    TSubjectType,
+} from './types'
 
 // All the issue titles are defined here to get a quick overview of all
 // titles, and to easier check that all titles match with relation to
@@ -16,11 +22,20 @@ const issueTitle: string[] = [
     'Info:',
 ]
 
+interface ILocation {
+    lineNum: number // 1-based, if n/a use 0.
+    colNum: number // 1-based, if n/a use 0.
+    // sourceType: TSourceType
+    // fileName: string | undefined
+}
+
 /**
  * This class handles all error/notice reporting and processes exit/throwing.
  */
 export class ErrorDataHandler {
-    private persistThreshold: TPersistThreshold
+    private readonly persistThreshold: TPersistThreshold
+    private readonly subjectType: TSubjectType
+    private readonly fileName: string | undefined
 
     private errors: IIssuePayload[] = []
     private warnings: IIssuePayload[] = []
@@ -43,8 +58,14 @@ export class ErrorDataHandler {
             - Level 1 = abort on errors only
             - Level 2 = abort even on warnings
      */
-    constructor(threshold: TPersistThreshold = '1-Abort-on-Errors') {
+    constructor(
+        subjectType: TSubjectType,
+        threshold: TPersistThreshold = '1-Abort-on-Errors',
+        fileName: string | undefined = undefined,
+    ) {
+        this.subjectType = subjectType
         this.persistThreshold = threshold
+        this.fileName = fileName
     }
 
     private makeIssue(
@@ -123,7 +144,11 @@ export class ErrorDataHandler {
             //msgWhatWithLineNum =
 
             // Patch message with the offending line number.
-            msgWhatWithLineNum += ', at line: ' + lineNum
+            // msgWhatWithLineNum += ', at line: ' + lineNum
+            msgWhatWithLineNum += ' at line ' + lineNum
+            if (colNum) {
+                msgWhatWithLineNum += ', column ' + colNum
+            }
 
             if (process.env.NODE_ENV === 'test') {
                 msgWhatWithLineNum += `\nAt line: ${lineNum}, column(s): ${startCol}-${endCol}`
@@ -131,9 +156,18 @@ export class ErrorDataHandler {
         }
 
         debugPrint('persistThreshold = ' + this.persistThreshold)
-        debugPrint('lineNum = ' + lineNum)
+        debugPrint(' lineNum = ' + lineNum)
+        debugPrint('  colNum = ' + colNum)
+        debugPrint('startCol = ' + startCol)
+        debugPrint('  endCol = ' + endCol)
         debugPrint()
 
+        const loc: ILocation = {
+            lineNum: lineNum || 0, // 1-based, if n/a use 0.
+            colNum: colNum || 0, // 1-based, if n/a use 0.
+        }
+
+        console.log() // Print an empty line before outputting message.
         switch (type) {
             case 'Internal-Error':
                 this.numInternalErrors++
@@ -147,7 +181,8 @@ export class ErrorDataHandler {
                         msgHint,
                     ),
                 )
-                this.emitInternalError(msgWhatWithLineNum, msgWhy, msgHint)
+                this.emitInternalError(loc, msgWhatWithLineNum, msgWhy, msgHint)
+                console.log() // Emit an empty line before outputting message.
                 if (
                     this.persistThreshold === '1-Abort-on-Errors' ||
                     this.persistThreshold === '2-Abort-Even-on-Warnings'
@@ -172,7 +207,8 @@ export class ErrorDataHandler {
                         msgHint,
                     ),
                 )
-                this.emitSyntaxError(msgWhatWithLineNum, msgWhy, msgHint)
+                this.emitSyntaxError(loc, msgWhatWithLineNum, msgWhy, msgHint)
+                console.log() // Emit an empty line before outputting message.
                 if (
                     this.persistThreshold === '1-Abort-on-Errors' ||
                     this.persistThreshold === '2-Abort-Even-on-Warnings'
@@ -197,7 +233,8 @@ export class ErrorDataHandler {
                         msgHint,
                     ),
                 )
-                this.emitSyntaxWarning(msgWhatWithLineNum, msgWhy, msgHint)
+                this.emitSyntaxWarning(loc, msgWhatWithLineNum, msgWhy, msgHint)
+                console.log() // Emit an empty line before outputting message.
                 if (this.persistThreshold === '2-Abort-Even-on-Warnings') {
                     // if (process.env.NODE_ENV === 'test') {
                     // In test, throw an error instead of exiting.
@@ -219,7 +256,8 @@ export class ErrorDataHandler {
                         msgHint,
                     ),
                 )
-                this.emitNotice(msgWhatWithLineNum, msgWhy, msgHint)
+                this.emitNotice(loc, msgWhatWithLineNum, msgWhy, msgHint)
+                console.log() // Emit an empty line before outputting message.
                 break
             case 'Info':
                 this.numInfos++
@@ -233,7 +271,8 @@ export class ErrorDataHandler {
                         msgHint,
                     ),
                 )
-                this.emitInfo(msgWhatWithLineNum, msgWhy, msgHint)
+                this.emitInfo(loc, msgWhatWithLineNum, msgWhy, msgHint)
+                console.log() // Emit an empty line before outputting message.
                 break
             default: // Including 'Internal-Error'.
                 this.numFatalErrors++
@@ -247,7 +286,8 @@ export class ErrorDataHandler {
                         msgHint,
                     ),
                 )
-                this.emitFatalError(msgWhatWithLineNum, msgWhy, msgHint)
+                this.emitFatalError(loc, msgWhatWithLineNum, msgWhy, msgHint)
+                console.log() // Emit an empty line before outputting message.
                 // CANNOT recover fatal errors, will lead to an exit!
                 // if (process.env.NODE_ENV === 'test') {
                 // In test, throw an error instead of exiting.
@@ -262,58 +302,145 @@ export class ErrorDataHandler {
         }
     }
 
-    /*
-    @todo: need: line, col, sourceType/filename
-     */
-    private formatSignificantMessageLine(issueTitle: string): string {
-        return 'XXXX'
+    private formatSignificantMessageLine(
+        loc: ILocation,
+        issueTitle: string,
+    ): string {
+        // if (this.subjectType === 'None/Ignore') {
+        //     return issueTitle
+        // }
+        switch (this.subjectType) {
+            case 'None/Ignore':
+                return issueTitle
+            case 'File':
+            case 'Inline':
+                // Construct a full line from several parts.
+
+                const titlePart: string = trimTrailingNonLetters(
+                    issueTitle.trim(),
+                )
+
+                let line = `${titlePart} in `
+
+                if (this.subjectType === 'Inline') {
+                    line += 'inline YINI content'
+                    // if (loc?.lineNum) {
+                    //     line += `, ${loc.lineNum}`
+                    //     if (loc?.colNum) line += `:${loc.colNum}`
+                    // }
+                } else {
+                    line += `in ${this.fileName}`
+                    // if (loc?.lineNum) {
+                    //     line += `:${loc.lineNum}`
+                    //     if (loc?.colNum) line += `:${loc.colNum}`
+                    // }
+                }
+                if (loc?.lineNum) {
+                    line += `:${loc.lineNum}`
+                    if (loc?.colNum) line += `:${loc.colNum}`
+                }
+
+                return line
+        }
     }
 
     private emitFatalError(
+        loc: ILocation,
         msgWhat = 'Something went wrong!',
         msgWhy = '',
         msgHint = '',
     ) {
-        console.error(issueTitle[0]) // Print the issue title.
+        // console.error(issueTitle[0]) // Print the issue title.
+        const messageHeader = this.formatSignificantMessageLine(
+            loc,
+            issueTitle[0],
+        )
+        console.error(messageHeader) // Print the issue title.
         msgWhat && console.log(msgWhat)
         msgWhy && console.log(msgWhy)
         msgHint && console.log(msgHint)
     }
 
     private emitInternalError(
+        loc: ILocation,
         msgWhat = 'Something went wrong!',
         msgWhy = '',
         msgHint = '',
     ) {
-        console.error(issueTitle[1]) // Print the issue title.
+        // console.error(issueTitle[1]) // Print the issue title.
+        const messageHeader = this.formatSignificantMessageLine(
+            loc,
+            issueTitle[1],
+        )
+        console.error(messageHeader) // Print the issue title.
         msgWhat && console.log(msgWhat)
         msgWhy && console.log(msgWhy)
         msgHint && console.log(msgHint)
     }
 
-    private emitSyntaxError(msgWhat: string, msgWhy = '', msgHint = '') {
-        console.error(issueTitle[2]) // Print the issue title.
+    private emitSyntaxError(
+        loc: ILocation,
+        msgWhat: string,
+        msgWhy = '',
+        msgHint = '',
+    ) {
+        // console.error(issueTitle[2]) // Print the issue title.
+        const messageHeader = this.formatSignificantMessageLine(
+            loc,
+            issueTitle[2],
+        )
+        console.error(messageHeader) // Print the issue title.
         msgWhat && console.log(msgWhat)
         msgWhy && console.log(msgWhy)
         msgHint && console.log(msgHint)
     }
 
-    private emitSyntaxWarning(msgWhat: string, msgWhy = '', msgHint = '') {
-        console.warn(issueTitle[3]) // Print the issue title.
+    private emitSyntaxWarning(
+        loc: ILocation,
+        msgWhat: string,
+        msgWhy = '',
+        msgHint = '',
+    ) {
+        // console.warn(issueTitle[3]) // Print the issue title.
+        const messageHeader = this.formatSignificantMessageLine(
+            loc,
+            issueTitle[3],
+        )
+        console.warn(messageHeader) // Print the issue title.
         msgWhat && console.log(msgWhat)
         msgWhy && console.log(msgWhy)
         msgHint && console.log(msgHint)
     }
 
-    private emitNotice(msgWhat: string, msgWhy = '', msgHint = '') {
-        console.warn(issueTitle[4]) // Print the issue title.
+    private emitNotice(
+        loc: ILocation,
+        msgWhat: string,
+        msgWhy = '',
+        msgHint = '',
+    ) {
+        // console.warn(issueTitle[4]) // Print the issue title.
+        const messageHeader = this.formatSignificantMessageLine(
+            loc,
+            issueTitle[4],
+        )
+        console.warn(messageHeader) // Print the issue title.
         msgWhat && console.log(msgWhat)
         msgWhy && console.log(msgWhy)
         msgHint && console.log(msgHint)
     }
 
-    private emitInfo(msgWhat: string, msgWhy = '', msgHint = '') {
-        console.info(issueTitle[5]) // Print the issue title.
+    private emitInfo(
+        loc: ILocation,
+        msgWhat: string,
+        msgWhy = '',
+        msgHint = '',
+    ) {
+        // console.info(issueTitle[5]) // Print the issue title.
+        const messageHeader = this.formatSignificantMessageLine(
+            loc,
+            issueTitle[5],
+        )
+        console.info(messageHeader) // Print the issue title.
         msgWhat && console.log(msgWhat)
         msgWhy && console.log(msgWhy)
         msgHint && console.log(msgHint)

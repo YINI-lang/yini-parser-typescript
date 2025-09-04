@@ -10,7 +10,7 @@ describe('Parse classic section header unit tests:', () => {
     let eh: ErrorDataHandler
 
     beforeAll(() => {
-        eh = new ErrorDataHandler('1-Abort-on-Errors')
+        eh = new ErrorDataHandler('None/Ignore')
     })
 
     test('1.a. Identify classic section header with level 1.', () => {
