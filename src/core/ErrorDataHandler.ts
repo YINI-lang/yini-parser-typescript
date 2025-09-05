@@ -25,8 +25,6 @@ const issueTitle: string[] = [
 interface ILocation {
     lineNum: number // 1-based, if n/a use 0.
     colNum: number // 1-based, if n/a use 0.
-    // sourceType: TSourceType
-    // fileName: string | undefined
 }
 
 /**
@@ -124,19 +122,14 @@ export class ErrorDataHandler {
         debugPrint('ctx.stop?.column = ' + ctx?.stop?.column)
 
         const lineNum: number | undefined = ctx?.start.line || undefined // Line (1-based).
-        // const startCol = !ctx ? 0 : ++ctx.start.column // Column (0-based).
         const startCol: number | undefined = !ctx
             ? undefined
             : ++ctx.start.column // Column (0-based).
-        // const endCol = (ctx?.stop?.column || 0) + 1 // Column (0-based).
         const endCol: number | undefined = !!ctx?.stop?.column
             ? ++ctx.stop.column
             : undefined // Note: Column (0-based).
 
         let colNum: number | undefined = startCol || endCol
-        // if (colNum === 0) {
-        //     colNum = undefined
-        // }
         let msgWhatWithLineNum = msgWhat
 
         if (lineNum && lineNum > 0) {
@@ -144,7 +137,6 @@ export class ErrorDataHandler {
             //msgWhatWithLineNum =
 
             // Patch message with the offending line number.
-            // msgWhatWithLineNum += ', at line: ' + lineNum
             msgWhatWithLineNum += ' at line ' + lineNum
             if (colNum) {
                 msgWhatWithLineNum += ', column ' + colNum
@@ -187,12 +179,8 @@ export class ErrorDataHandler {
                     this.persistThreshold === '1-Abort-on-Errors' ||
                     this.persistThreshold === '2-Abort-Even-on-Warnings'
                 ) {
-                    // if (process.env.NODE_ENV === 'test') {
                     // In test, throw an error instead of exiting.
                     throw new Error(`Internal-Error: ${msgWhat}`)
-                    // } else {
-                    //     process.exit(2)
-                    // }
                 }
                 break
             case 'Syntax-Error':
@@ -213,12 +201,8 @@ export class ErrorDataHandler {
                     this.persistThreshold === '1-Abort-on-Errors' ||
                     this.persistThreshold === '2-Abort-Even-on-Warnings'
                 ) {
-                    // if (process.env.NODE_ENV === 'test') {
                     // In test, throw an error instead of exiting.
                     throw new Error(`Syntax-Error: ${'' + msgWhat}`)
-                    // } else {
-                    //     process.exit(3)
-                    // }
                 }
                 break
             case 'Syntax-Warning':
@@ -236,12 +220,8 @@ export class ErrorDataHandler {
                 this.emitSyntaxWarning(loc, msgWhatWithLineNum, msgWhy, msgHint)
                 console.log() // Emit an empty line before outputting message.
                 if (this.persistThreshold === '2-Abort-Even-on-Warnings') {
-                    // if (process.env.NODE_ENV === 'test') {
                     // In test, throw an error instead of exiting.
                     throw new Error(`Syntax-Warning: ${msgWhat}`)
-                    // } else {
-                    //     process.exit(4)
-                    // }
                 }
                 break
             case 'Notice':
@@ -289,16 +269,8 @@ export class ErrorDataHandler {
                 this.emitFatalError(loc, msgWhatWithLineNum, msgWhy, msgHint)
                 console.log() // Emit an empty line before outputting message.
                 // CANNOT recover fatal errors, will lead to an exit!
-                // if (process.env.NODE_ENV === 'test') {
                 // In test, throw an error instead of exiting.
                 throw new Error(`Internal-Error: ${msgWhat}`)
-            // } else {
-            //     process.exit(1)
-            // (!) Not sure about the below yet, if it's preferable in this case...
-            // Use this instead of process.exit(1), this will
-            // lead to that the current thread(s) will exit as well.
-            // process.exitCode = 1
-            // }
         }
     }
 
@@ -306,9 +278,6 @@ export class ErrorDataHandler {
         loc: ILocation,
         issueTitle: string,
     ): string {
-        // if (this.subjectType === 'None/Ignore') {
-        //     return issueTitle
-        // }
         switch (this.subjectType) {
             case 'None/Ignore':
                 return issueTitle
@@ -324,16 +293,8 @@ export class ErrorDataHandler {
 
                 if (this.subjectType === 'Inline') {
                     line += 'inline YINI content'
-                    // if (loc?.lineNum) {
-                    //     line += `, ${loc.lineNum}`
-                    //     if (loc?.colNum) line += `:${loc.colNum}`
-                    // }
                 } else {
-                    line += `in ${this.fileName}`
-                    // if (loc?.lineNum) {
-                    //     line += `:${loc.lineNum}`
-                    //     if (loc?.colNum) line += `:${loc.colNum}`
-                    // }
+                    line += `${this.fileName}`
                 }
                 if (loc?.lineNum) {
                     line += `:${loc.lineNum}`
@@ -351,7 +312,6 @@ export class ErrorDataHandler {
         msgWhy = '',
         msgHint = '',
     ) {
-        // console.error(issueTitle[0]) // Print the issue title.
         const messageHeader = this.formatSignificantMessageLine(
             loc,
             issueTitle[0],
@@ -368,7 +328,6 @@ export class ErrorDataHandler {
         msgWhy = '',
         msgHint = '',
     ) {
-        // console.error(issueTitle[1]) // Print the issue title.
         const messageHeader = this.formatSignificantMessageLine(
             loc,
             issueTitle[1],
@@ -385,7 +344,6 @@ export class ErrorDataHandler {
         msgWhy = '',
         msgHint = '',
     ) {
-        // console.error(issueTitle[2]) // Print the issue title.
         const messageHeader = this.formatSignificantMessageLine(
             loc,
             issueTitle[2],
@@ -402,7 +360,6 @@ export class ErrorDataHandler {
         msgWhy = '',
         msgHint = '',
     ) {
-        // console.warn(issueTitle[3]) // Print the issue title.
         const messageHeader = this.formatSignificantMessageLine(
             loc,
             issueTitle[3],
@@ -419,7 +376,6 @@ export class ErrorDataHandler {
         msgWhy = '',
         msgHint = '',
     ) {
-        // console.warn(issueTitle[4]) // Print the issue title.
         const messageHeader = this.formatSignificantMessageLine(
             loc,
             issueTitle[4],
@@ -436,7 +392,6 @@ export class ErrorDataHandler {
         msgWhy = '',
         msgHint = '',
     ) {
-        // console.info(issueTitle[5]) // Print the issue title.
         const messageHeader = this.formatSignificantMessageLine(
             loc,
             issueTitle[5],

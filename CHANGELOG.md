@@ -2,6 +2,9 @@
 
 ## --dev/uppcoming--
 
+## 1.1.0-beta + [UPDATES] - 2025 XXX
+- **Fixed:** Fixed typo (`in in`) in file parsing error message.
+
 ## 1.1.0-beta - 2025 Sep
 ### Parser
 - **Reimplemented parser from scratch** (`core/ASTBuilder.ts`) using the refactored grammar for a much cleaner and more maintainable design.  
