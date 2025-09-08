@@ -21,8 +21,10 @@ export const toPrettyJSON = (obj: any): string => {
 /** Pretty-prints a JavaScript object as formatted JSON to the console.
  * Strict JSON, all keys are enclosed in ", etc.
  */
-export const printJSON = (obj: any) => {
-    if (isProdEnv() || (isTestEnv() && !isDebug())) return
+export const printJSON = (obj: any, isForce = false) => {
+    if (!isForce) {
+        if (isProdEnv() || (isTestEnv() && !isDebug())) return
+    }
 
     const str = toPrettyJSON(obj)
     console.log(str)
@@ -33,8 +35,10 @@ export const printJSON = (obj: any) => {
  * Not strict JSON, and shows functions, symbols, getters/setters, and class names.
  * @param isColors If true, the output is styled with ANSI color codes.
  */
-export const printObject = (obj: any, isColors = true) => {
-    if (isProdEnv() || (isTestEnv() && !isDebug())) return
+export const printObject = (obj: any, isForce = false, isColors = true) => {
+    if (!isForce) {
+        if (isProdEnv() || (isTestEnv() && !isDebug())) return
+    }
 
     console.log(util.inspect(obj, { depth: null, colors: isColors }))
 }

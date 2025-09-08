@@ -2,12 +2,15 @@
 
 ## Making/Publishing a New Release on GitHub
 
-1. First:
-   * Check that all tests passes by running:
-        ```bash
-        npm run ci:test
-        ```
-   * Test `npm publish --dry-run` locally before automation.
+1. **First:**
+   - **1. a)** Make sure all tests pass by running:
+      ```bash
+      npm run ci:test
+      ```
+   - **1. b)** Run below, locally before going to the publishing step: 
+      ```bash
+      npm publish --dry-run
+      ```
 
 2. Then:
    * Check and update `CHANGELOG.md` so it's update with the latest changes.

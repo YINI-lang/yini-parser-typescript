@@ -408,12 +408,16 @@ export default class YINI {
             hasNoNewlineAtEOF = true
         }
 
-        const result = this.parse(
-            content,
-            userOpts.strictMode,
-            userOpts.failLevel,
-            userOpts.includeMetaData,
-        )
+        // IMPORTANT: (!) Do not forget to add new options here!
+        const result = this.parse(content, {
+            strictMode: userOpts.strictMode,
+            failLevel: userOpts.failLevel,
+            includeMetaData: userOpts.includeMetaData,
+            includeDiagnostics: userOpts.includeDiagnostics,
+            includeTiming: userOpts.includeTiming,
+            preserveUndefinedInMeta: userOpts.preserveUndefinedInMeta,
+            requireDocTerminator: userOpts.requireDocTerminator,
+        })
         if (hasNoNewlineAtEOF) {
             console.warn(
                 `No newline at end of file, it's recommended to end a file with a newline. File:\n"${filePath}"`,

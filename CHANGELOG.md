@@ -3,7 +3,8 @@
 ## --dev/uppcoming--
 
 ## 1.1.0-beta + [UPDATES] - 2025 XXX
-- **Fixed:** Fixed typo (`in in`) in file parsing error message.
+- **Fixed:** `parseFile()` now correctly passes through ALL options (e.g. `includeDiagnostics`) so they work as in `parse(..)`.
+- **Fixed:** typo (`in in`) in file parsing error message.
 
 ## 1.1.0-beta - 2025 Sep
 ### Parser
