@@ -258,9 +258,18 @@ export default class YINI {
                 preserveUndefinedInMeta:
                     arg2.preserveUndefinedInMeta ??
                     getDefaultOptions(mode).preserveUndefinedInMeta,
+                suppressWarnings:
+                    arg2.suppressWarnings ??
+                    getDefaultOptions(mode).suppressWarnings,
                 requireDocTerminator:
                     arg2.requireDocTerminator ??
                     getDefaultOptions(mode).requireDocTerminator,
+                treatEmptyValueAsNull:
+                    arg2.treatEmptyValueAsNull ??
+                    getDefaultOptions(mode).treatEmptyValueAsNull,
+                onDuplicateKey:
+                    arg2.onDuplicateKey ??
+                    getDefaultOptions(mode).onDuplicateKey,
             }
         } else {
             // Positional form.
@@ -467,9 +476,18 @@ export default class YINI {
                 preserveUndefinedInMeta:
                     arg2.preserveUndefinedInMeta ??
                     getDefaultOptions(mode).preserveUndefinedInMeta,
+                suppressWarnings:
+                    arg2.suppressWarnings ??
+                    getDefaultOptions(mode).suppressWarnings,
                 requireDocTerminator:
                     arg2.requireDocTerminator ??
                     getDefaultOptions(mode).requireDocTerminator,
+                treatEmptyValueAsNull:
+                    arg2.treatEmptyValueAsNull ??
+                    getDefaultOptions(mode).treatEmptyValueAsNull,
+                onDuplicateKey:
+                    arg2.onDuplicateKey ??
+                    getDefaultOptions(mode).onDuplicateKey,
             }
         } else {
             // Positional form.

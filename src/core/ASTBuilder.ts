@@ -238,12 +238,13 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
 
         this.errorHandler = errorHandler
         this.isStrict = options.isStrict
+        this.onDuplicateKey = options.onDuplicateKey // Different setting depending on mode.
 
-        if (options.isStrict) {
-            this.onDuplicateKey = 'error'
-        } else {
-            this.onDuplicateKey = 'warn'
-        }
+        // if (options.isStrict) {
+        //     this.onDuplicateKey = 'error'
+        // } else {
+        //     this.onDuplicateKey = 'warn'
+        // }
 
         const root = makeSection('(root)', 0)
         // this.mapSectionNamePaths.set('(root)', 0)
@@ -406,12 +407,38 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         // The document terminator is optional by default.
         // If the option `isRequireDocTerminator` is set to true,
         // the '/END' terminator at the end of the document becomes required.
-        if (this.options.isRequireDocTerminator && !this.ast.terminatorSeen) {
-            const msgWhat: string = `Missing '/END' at end of document (option 'isRequireDocTerminator' is enabled).`
-            const msgWhy: string = `The terminator '/END' (case insensitive) is required and must appear at the end of the document.`
+        if (
+            !this.ast.terminatorSeen &&
+            this.options.requireDocTerminator === 'required'
+        ) {
+            const msgWhat = `Missing '/END' at end of document (option requireDocTerminator is ${this.options.requireDocTerminator}).`
+            const msgWhy = `The terminator '/END' (case insensitive) is required and must appear at the end of the document.`
+            const msgHint = `This is option can be overriden by the option requireDocTerminator.`
 
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-            this.errorHandler!.pushOrBail(null, 'Syntax-Error', msgWhat, msgWhy)
+            this.errorHandler!.pushOrBail(
+                null,
+                'Syntax-Error',
+                msgWhat,
+                msgWhy,
+                msgHint,
+            )
+        } else if (
+            !this.ast.terminatorSeen &&
+            this.options.requireDocTerminator === 'warn-if-missing'
+        ) {
+            const msgWhat = `Missing '/END' at end of document (option requireDocTerminator is ${this.options.requireDocTerminator}).`
+            const msgWhy = `The terminator '/END' (case insensitive) might be missing at the end of the document.`
+            const msgHint = `This is option can be overriden by the option requireDocTerminator.`
+
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+            this.errorHandler!.pushOrBail(
+                null,
+                'Syntax-Error',
+                msgWhat,
+                msgWhy,
+                msgHint,
+            )
         }
 
         // Note: Below is important for error checking as well as for meta data.
