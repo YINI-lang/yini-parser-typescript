@@ -15,7 +15,11 @@ export type TSourceType = 'File' | 'Inline'
 export type TSubjectType = 'None/Ignore' | TSourceType
 
 export type TBailSensitivityLevel = 0 | 1 | 2 // Bail sensitivity level.
-export type TPreferredFailLevel = 'auto' | 0 | 1 | 2 // Preferred bail sensitivity level.
+export type TPreferredFailLevel =
+    | 'auto'
+    | 'ignore-errors'
+    | 'errors'
+    | 'warnings-and-errors' // Preferred bail sensitivity level.
 
 // Human label types.
 export type TPersistThreshold =
@@ -89,6 +93,15 @@ export type TIssueType =
     | 'Notice'
     | 'Info'
 
+export type TOnDuplicateKey =
+    | 'warn-and-keep-first' // Keep last with a warning.
+    | 'warn-and-overwrite' // 'warn-and-overwrite' = 'warn-and-keep-last'
+    | 'keep-first' // Silent, first wins.
+    | 'overwrite' // Silent, last wins.
+    | 'error'
+
+// export type TUserOptionToggle = 'off' | 'warn' | 'error'
+
 // --- Interfaces -----------------------------------------------------------
 
 interface IMetaBaseInfo {
@@ -157,7 +170,7 @@ export interface IParseCoreOptions {
 // NOTE: (!) All props MUST be optional.
 interface IPrimaryUserParams {
     strictMode?: boolean
-    failLevel?: TPreferredFailLevel // 0 | "auto" | 1 | 2
+    failLevel?: TPreferredFailLevel // 'auto' | 0-'ignore-errors' | 1-'errors' | 2-'warnings-and-errors'
     includeMetaData?: boolean // Include meta data along the returned result.
 }
 
@@ -168,7 +181,13 @@ export interface IAllUserOptions extends IPrimaryUserParams {
     includeDiagnostics?: boolean // (Requires includeMetaData) Include diagnostics in meta data, when isIncludeMeta.
     includeTiming?: boolean // (Requires includeMetaData) Include timing data of the different phases in meta data, when isIncludeMeta.
     preserveUndefinedInMeta?: boolean // (Requires includeMetaData) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
-    requireDocTerminator?: boolean // // If true, the document terminator '/END' at the end of the document is required, otherwise it's optional.
+    suppressWarnings?: boolean // Suppress warnings in console (does not effect warnings in meta data).
+    //hideWarnings?: boolean // Hide all warnings in console including in meta data.
+    // rules?: {
+    requireDocTerminator?: 'optional' | 'warn-if-missing' | 'required'
+    treatEmptyValueAsNull?: 'allow' | 'allow-with-warning' | 'disallow'
+    onDuplicateKey?: TOnDuplicateKey
+    // }
 }
 
 export interface IYiniAST extends IMetaBaseInfo {
@@ -193,7 +212,7 @@ export interface IYiniSection {
 
 export interface IBuildOptions {
     mode?: 'lenient' | 'strict' // default: lenient
-    onDuplicateKey?: 'error' | 'warn' | 'keep-first' | 'overwrite' // default: warn
+    onDuplicateKey?: TOnDuplicateKey
 }
 
 //{ line: 12, column: 8, type: 'Syntax-Error', message1: 'Invalid number' }

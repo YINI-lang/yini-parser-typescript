@@ -353,7 +353,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         sec: IYiniSection,
         key: string,
         value: TValueLiteral,
-        mode: IBuildOptions['onDuplicateKey'] = 'warn',
+        mode: IBuildOptions['onDuplicateKey'] = 'warn-and-keep-first',
     ) {
         isDebug() && console.log()
         debugPrint('-> Entered putMember(..)')
@@ -369,24 +369,32 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                         `Key '${key}' already exists in section '${sec.sectionName}' on level ${sec.level}.`,
                     )
                     break
-                case 'warn':
+                case 'warn-and-keep-first':
                     errorHandler!.pushOrBail(
                         ctx,
                         'Syntax-Warning',
-                        'Hit a duplicate key (keeping first) in this section and scope',
+                        `Hit a duplicate key (will keep first value) in this section and scope`,
                         `Key '${key}' already exists in section '${sec.sectionName}' on level ${sec.level}.`,
                     )
-                    return // keep first
+                    return // Keep first, don't overwrite.
+                case 'warn-and-overwrite':
+                    errorHandler!.pushOrBail(
+                        ctx,
+                        'Syntax-Warning',
+                        `Overwrote a duplicate key (will keep last value) in this section and scope`,
+                        `Key '${key}' was overwritten in section '${sec.sectionName}' on level ${sec.level}.`,
+                    )
+                    break // Overwrite, replace value.
                 case 'keep-first':
-                    return
+                    return // Keep first, don't overwrite.
                 case 'overwrite':
-                    // replace value
-                    break
+                    break // Overwrite, replace value.
             }
+        } else {
+            this._numOfMembers++
         }
 
         sec.members.set(key, value)
-        this._numOfMembers++
     }
 
     // --------------------------------

@@ -40,7 +40,10 @@ const isOptionsObjectForm = (v: unknown): v is IAllUserOptions => {
             'includeDiagnostics' in (v as any) ||
             'includeTiming' in (v as any) ||
             'preserveUndefinedInMeta' in (v as any) ||
-            'requireDocTerminator' in (v as any))
+            'suppressWarnings' in (v as any) ||
+            'requireDocTerminator' in (v as any) ||
+            'treatEmptyValueAsNull' in (v as any) ||
+            'onDuplicateKey' in (v as any))
     )
 }
 
@@ -54,7 +57,10 @@ const DEFAULT_OPTS: Required<
         | 'includeDiagnostics'
         | 'includeTiming'
         | 'preserveUndefinedInMeta'
+        | 'suppressWarnings'
         | 'requireDocTerminator'
+        | 'treatEmptyValueAsNull'
+        | 'onDuplicateKey'
     >
 > = {
     strictMode: false,
@@ -63,7 +69,10 @@ const DEFAULT_OPTS: Required<
     includeDiagnostics: false,
     includeTiming: false,
     preserveUndefinedInMeta: false,
-    requireDocTerminator: false,
+    suppressWarnings: false,
+    requireDocTerminator: 'optional',
+    treatEmptyValueAsNull: 'allow-with-warning',
+    onDuplicateKey: 'keep-first',
 }
 
 /**
