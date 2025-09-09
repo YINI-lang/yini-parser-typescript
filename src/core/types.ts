@@ -30,7 +30,6 @@ export type TPersistThreshold =
 
 /**
  * Only for returned meta data to user.
- * (!) NOTE: Only use lower case snake_case for keys.
  */
 export type TFailLevelKey =
     // | 'ignore_errors' // 0 - Don't bail/fail on error, persist and try to recover.
@@ -158,7 +157,7 @@ export interface IParseCoreOptions {
     isWithDiagnostics: boolean // (Requires isIncludeMeta) Include diagnostics in meta data, when isIncludeMeta.
     isWithTiming: boolean // (Requires isIncludeMeta) Include timing data of the different phases in meta data, when isIncludeMeta.
     isKeepUndefinedInMeta: boolean // (Requires isIncludeMeta) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
-    isAvoidWarningsInConsole: boolean // Suppress warnings in console (does not effect warnings in meta data).
+    isAvoidWarningsInConsole: boolean // Suppress warnings in console (does not affect warnings in meta data).
     requireDocTerminator: 'optional' | 'warn-if-missing' | 'required'
     treatEmptyValueAsNull: 'allow' | 'allow-with-warning' | 'disallow'
     onDuplicateKey: TOnDuplicateKey
@@ -246,7 +245,7 @@ export interface IIssuePayload {
 export interface IResultMetaData {
     parserVersion: string
     mode: 'lenient' | 'strict'
-    orderPreserved: boolean
+    orderPreserved: 'de-facto-yes' // Platform, implementaion, and programming language specific.
     totalErrors: number
     totalWarnings: number
     totalMessages: number
@@ -271,7 +270,7 @@ export interface IResultMetaData {
         // listCount: null | number
         sectionNamePaths: string[] | null // All key/access paths to section Headers.
     }
-    metaSchemaVersion: '1.0.0'
+    metaSchemaVersion: '1.1.0'
     diagnostics?: {
         failLevel: {
             // preferredLevel: null | 'auto' | 0 | 1 | 2 // Input level into function.

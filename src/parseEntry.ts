@@ -408,7 +408,7 @@ export const _parseMain = (
         const metaData: IResultMetaData = {
             parserVersion: pkg.version,
             mode: options.isStrict ? 'strict' : 'lenient',
-            orderPreserved: true,
+            orderPreserved: 'de-facto-yes',
             totalErrors: errorHandler.getNumOfErrors(),
             totalWarnings: errorHandler.getNumOfWarnings(),
             totalMessages: errorHandler.getNumOfAllMessages(),
@@ -433,7 +433,7 @@ export const _parseMain = (
                 // listCount: null,
                 sectionNamePaths: ast.sectionNamePaths,
             },
-            metaSchemaVersion: '1.0.0',
+            metaSchemaVersion: '1.1.0',
         }
 
         // Attach optional diagnostics.

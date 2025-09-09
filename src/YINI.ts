@@ -123,7 +123,7 @@ const BASE_DEFAULTS: NormalizedOpts = {
     includeDiagnostics: false,
     includeTiming: false,
     preserveUndefinedInMeta: false,
-    suppressWarnings: false, // Suppress warnings in console (does not effect warnings in meta data).
+    suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
     requireDocTerminator: 'optional',
     treatEmptyValueAsNull: 'allow-with-warning',
     onDuplicateKey: 'error',
@@ -133,7 +133,7 @@ const DEFAULT_LENIENT_OPTS: NormalizedOpts = {
     ...BASE_DEFAULTS,
     strictMode: false,
     failLevel: 'ignore-errors',
-    suppressWarnings: false, // Suppress warnings in console (does not effect warnings in meta data).
+    suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
     requireDocTerminator: 'optional',
     treatEmptyValueAsNull: 'allow-with-warning',
     onDuplicateKey: 'warn-and-keep-first',
@@ -143,7 +143,7 @@ const DEFAULT_STRICT_OPTS: NormalizedOpts = {
     ...BASE_DEFAULTS,
     strictMode: true,
     failLevel: 'errors',
-    suppressWarnings: false, // Suppress warnings in console (does not effect warnings in meta data).
+    suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
     requireDocTerminator: 'optional',
     treatEmptyValueAsNull: 'disallow',
     onDuplicateKey: 'error',
@@ -179,7 +179,7 @@ export default class YINI {
                 `Invalid tab size ${spaces} is out of range.`,
                 'Tab size must be between 1 and 32 spaces.',
             )
-            return
+            throw new RangeError(`Tab size ${spaces} is out of range (1–32).`)
         }
         this.g_tabSize = spaces
     }
@@ -510,7 +510,7 @@ export default class YINI {
         if (userOpts.includeMetaData) {
             _runtimeInfo.lineCount = content.split(/\r?\n/).length // Counts the lines.
             _runtimeInfo.fileByteSize = fileByteSize
-            _runtimeInfo.timeIoMs = +(timeEndMs - timeStartMs)
+            _runtimeInfo.timeIoMs = +(timeEndMs - timeStartMs).toFixed(3)
             _runtimeInfo.preferredBailSensitivity = userOpts.failLevel
             _runtimeInfo.sha256 = computeSha256(content) // NOTE: Compute BEFORE any possible tampering of content.
         }
@@ -532,7 +532,7 @@ export default class YINI {
             // requireDocTerminator: userOpts.requireDocTerminator,
             ...userOpts,
         })
-        if (hasNoNewlineAtEOF) {
+        if (hasNoNewlineAtEOF && !userOpts.suppressWarnings) {
             console.warn(
                 `No newline at end of file, it's recommended to end a file with a newline. File:\n"${filePath}"`,
             )
