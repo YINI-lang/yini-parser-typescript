@@ -438,18 +438,18 @@ export const _parseMain = (
 
         // Attach optional diagnostics.
         if (options.isWithDiagnostics) {
-            const mapToFailLevel = (
-                level: TBailSensitivityLevel,
-            ): TPreferredFailLevel => {
-                switch (level) {
-                    case 0:
-                        return 'ignore-errors'
-                    case 1:
-                        return 'on-errors'
-                    case 2:
-                        return 'on-warnings-and-errors'
-                }
-            }
+            // const mapToFailLevel = (
+            //     level: TBailSensitivityLevel,
+            // ): TPreferredFailLevel => {
+            //     switch (level) {
+            //         case 0:
+            //             return 'ignore-errors'
+            //         case 1:
+            //             return 'errors'
+            //         case 2:
+            //             return 'warnings-and-errors'
+            //     }
+            // }
             const mapLevelKey = (
                 level: TBailSensitivityLevel,
             ): TFailLevelKey => {
@@ -457,9 +457,9 @@ export const _parseMain = (
                     case 0:
                         return 'ignore-errors'
                     case 1:
-                        return 'on-errors'
+                        return 'errors'
                     case 2:
-                        return 'on-warnings-and-errors'
+                        return 'warnings-and-errors'
                 }
             }
             const mapLevelLabel = (
@@ -526,7 +526,7 @@ export const _parseMain = (
                 optionsUsed: {
                     // NOTE: (!) These MUST be user options.
                     strictMode: options.isStrict,
-                    failLevel: mapToFailLevel(options.bailSensitivity),
+                    failLevel: mapLevelKey(options.bailSensitivity),
                     includeMetaData: options.isIncludeMeta,
                     includeDiagnostics: options.isWithDiagnostics,
                     includeTiming: options.isWithTiming,

@@ -142,7 +142,7 @@ const DEFAULT_LENIENT_OPTS: NormalizedOpts = {
 const DEFAULT_STRICT_OPTS: NormalizedOpts = {
     ...BASE_DEFAULTS,
     strictMode: true,
-    failLevel: 'on-errors',
+    failLevel: 'errors',
     suppressWarnings: false, // Suppress warnings in console (does not effect warnings in meta data).
     requireDocTerminator: 'optional',
     treatEmptyValueAsNull: 'disallow',
@@ -338,10 +338,10 @@ export default class YINI {
                 case 'ignore-errors':
                     level = 0
                     break
-                case 'on-errors':
+                case 'errors':
                     level = 1
                     break
-                case 'on-warnings-and-errors':
+                case 'warnings-and-errors':
                     level = 2
                     break
             }

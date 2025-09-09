@@ -37,8 +37,8 @@ export type TFailLevelKey =
     // | 'abort_on_errors' // 1 - Stop parsing on the first error.
     // | 'abort_on_warnings' // 2 - Stop parsing on the first warning or error.
     | 'ignore-errors' // 0 - Don't bail/fail on error, persist and try to recover.
-    | 'on-errors' // 1 - Stop parsing on the first error.
-    | 'on-warnings-and-errors' // 2 - Stop parsing on the first warning or error.
+    | 'errors' // 1 - Stop parsing on the first error.
+    | 'warnings-and-errors' // 2 - Stop parsing on the first warning or error.
 
 /**
  * Scalar literal, a single, indivisible piece of data:

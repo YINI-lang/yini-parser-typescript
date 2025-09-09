@@ -100,7 +100,7 @@ describe('Options Consistency Smoke Tests:', () => {
             includeMetaData: mustBeTrue,
             includeDiagnostics: mustBeTrue,
             // Below values are set to arbitrarily values:
-            failLevel: 'on-errors',
+            failLevel: 'errors',
             includeTiming: true,
             preserveUndefinedInMeta: true,
             suppressWarnings: false,
@@ -175,7 +175,7 @@ describe('Options Consistency Smoke Tests:', () => {
         // Assert.
         const correctLenientOptions: IAllUserOptions = {
             strictMode: isStrictMode,
-            failLevel: 'on-errors', // 'auto' must get normalized to 'ignore-errors' (lenient mode).
+            failLevel: 'errors', // 'auto' must get normalized to 'ignore-errors' (lenient mode).
             includeMetaData: mustBeTrue,
             includeDiagnostics: mustBeTrue,
             includeTiming: false,
@@ -202,7 +202,7 @@ describe('Options Consistency Smoke Tests:', () => {
             includeMetaData: mustBeTrue,
             includeDiagnostics: mustBeTrue,
             // Below values are set to arbitrarily values:
-            failLevel: 'on-errors',
+            failLevel: 'errors',
             includeTiming: true,
             preserveUndefinedInMeta: true,
             suppressWarnings: false,
@@ -308,7 +308,7 @@ describe('Options Consistency Smoke Tests:', () => {
             includeMetaData: mustBeTrue,
             includeDiagnostics: mustBeTrue,
             // Below values are set to arbitrarily values:
-            failLevel: 'on-errors',
+            failLevel: 'errors',
             includeTiming: true,
             preserveUndefinedInMeta: true,
             suppressWarnings: false,
@@ -387,7 +387,7 @@ describe('Options Consistency Smoke Tests:', () => {
         // Assert.
         const correctLenientOptions: IAllUserOptions = {
             strictMode: isStrictMode,
-            failLevel: 'on-errors', // 'auto' must get normalized to 'ignore-errors' (lenient mode).
+            failLevel: 'errors', // 'auto' must get normalized to 'ignore-errors' (lenient mode).
             includeMetaData: mustBeTrue,
             includeDiagnostics: mustBeTrue,
             includeTiming: false,
@@ -416,7 +416,7 @@ describe('Options Consistency Smoke Tests:', () => {
             includeMetaData: mustBeTrue,
             includeDiagnostics: mustBeTrue,
             // Below values are set to arbitrarily values:
-            failLevel: 'on-errors',
+            failLevel: 'errors',
             includeTiming: true,
             preserveUndefinedInMeta: true,
             suppressWarnings: false,

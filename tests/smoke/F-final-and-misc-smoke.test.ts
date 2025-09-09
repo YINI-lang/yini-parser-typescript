@@ -292,7 +292,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
 
     test('20. Should throw parsing a corrupt Yini with bailSensitivity 2 = "Abort-Even-on-Warnings".', () => {
         // Arrange.
-        const failLevel: TPreferredFailLevel = 'on-warnings-and-errors'
+        const failLevel: TPreferredFailLevel = 'warnings-and-errors'
         const corruptYini = `
             ^ App
             title = 'MyAppTitle'

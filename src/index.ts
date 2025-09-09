@@ -326,7 +326,7 @@ if (isProdEnv()) {
             toPrettyJSON(
                 YINI.parse(yini, {
                     strictMode: false,
-                    failLevel: 'on-errors',
+                    failLevel: 'errors',
                     includeMetaData: false,
                     requireDocTerminator: 'optional',
                 }),

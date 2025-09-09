@@ -283,7 +283,7 @@ describe('Binary number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false, 'on-errors')
+            const result = YINI.parse(badYini, false, 'errors')
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -311,7 +311,7 @@ describe('Binary number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false, 'on-errors')
+            const result = YINI.parse(badYini, false, 'errors')
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -339,7 +339,7 @@ describe('Binary number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false, 'on-errors')
+            const result = YINI.parse(badYini, false, 'errors')
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -367,7 +367,7 @@ describe('Binary number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false, 'on-errors')
+            const result = YINI.parse(badYini, false, 'errors')
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -395,7 +395,7 @@ describe('Binary number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false, 'on-errors')
+            const result = YINI.parse(badYini, false, 'errors')
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -423,7 +423,7 @@ describe('Binary number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false, 'on-errors')
+            const result = YINI.parse(badYini, false, 'errors')
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -482,7 +482,7 @@ describe('Binary number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false, 'on-errors')
+            const result = YINI.parse(badYini, false, 'errors')
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -510,7 +510,7 @@ describe('Binary number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false, 'on-errors')
+            const result = YINI.parse(badYini, false, 'errors')
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
