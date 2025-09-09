@@ -7,6 +7,7 @@
 
 import { execSync } from 'child_process'
 import YINI from '../../src'
+import { TPreferredFailLevel } from '../../src/core/types'
 import { debugPrint, toPrettyJSON } from '../../src/utils/print'
 import { parseUntilError } from '../test-helpers'
 
@@ -291,7 +292,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
 
     test('20. Should throw parsing a corrupt Yini with bailSensitivity 2 = "Abort-Even-on-Warnings".', () => {
         // Arrange.
-        const failLevel = 2
+        const failLevel: TPreferredFailLevel = 'on-warnings-and-errors'
         const corruptYini = `
             ^ App
             title = 'MyAppTitle'
@@ -309,7 +310,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
 
     test('21. Should succeed parsing a corrupt Yini with bailSensitivity 0 = "Ignore-Errors".', () => {
         // Arrange.
-        const failLevel = 0
+        const failLevel: TPreferredFailLevel = 'ignore-errors'
         const corruptYini = `
             ^ App
             title = 'MyAppTitle'

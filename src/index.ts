@@ -317,7 +317,7 @@ if (isProdEnv()) {
         // debugPrint('tab size = ' + YINI.getTabSize())
         const yini = `        @yini
         --@yini
-        ^^ Header // INVALID: Must start with atleast one 1-level section.
+        ^ Header // INVALID: Must start with atleast one 1-level section.
         key = 33254
         /END
         --/END

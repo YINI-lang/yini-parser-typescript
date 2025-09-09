@@ -229,7 +229,8 @@ export default class YINI {
         // Normalize to a fully-required options object.
         let userOpts: Required<IAllUserOptions>
         const mode: TParserMode =
-            ((arg2 as any).strictMode ?? (arg2 as boolean | undefined)) === true
+            ((arg2 as any)?.strictMode ?? (arg2 as boolean | undefined)) ===
+            true
                 ? 'strict'
                 : 'lenient'
 
@@ -447,7 +448,8 @@ export default class YINI {
         // Normalize to a fully-required options object.
         let userOpts: Required<IAllUserOptions>
         const mode: TParserMode =
-            ((arg2 as any).strictMode ?? (arg2 as boolean | undefined)) === true
+            ((arg2 as any)?.strictMode ?? (arg2 as boolean | undefined)) ===
+            true
                 ? 'strict'
                 : 'lenient'
 
