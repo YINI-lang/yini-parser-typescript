@@ -29,6 +29,8 @@ let _runtimeInfo: IRuntimeInfo = {
     sha256: null,
 }
 
+// --- Helper Functions ----------------------------------------------------
+
 // Type guard: did the caller use the options-object form?
 const isOptionsObjectForm = (v: unknown): v is IAllUserOptions => {
     return (
@@ -48,6 +50,24 @@ const isOptionsObjectForm = (v: unknown): v is IAllUserOptions => {
             'onDuplicateKey' in (v as any))
     )
 }
+
+// const mode: TParserMode =
+// ((arg2 as any)?.strictMode ?? (arg2 as boolean | undefined)) ===
+
+const inferModeFromArgs = (arg2?: boolean | IAllUserOptions): TParserMode => {
+    if (typeof arg2 === 'boolean') {
+        return arg2 ? 'strict' : 'lenient'
+    }
+    if (arg2 && typeof arg2 === 'object') {
+        const sm = (arg2 as IAllUserOptions).strictMode
+        if (typeof sm === 'boolean') {
+            return sm ? 'strict' : 'lenient'
+        }
+    }
+    return 'lenient'
+}
+
+// -------------------------------------------------------------------------
 
 /*
 // Initial default values.
@@ -226,13 +246,15 @@ export default class YINI {
             )
         }
 
+        // const mode: TParserMode =
+        //     ((arg2 as any)?.strictMode ?? (arg2 as boolean | undefined)) ===
+        //     true
+        //         ? 'strict'
+        //         : 'lenient'
+        const mode: TParserMode = inferModeFromArgs(arg2)
+
         // Normalize to a fully-required options object.
         let userOpts: Required<IAllUserOptions>
-        const mode: TParserMode =
-            ((arg2 as any)?.strictMode ?? (arg2 as boolean | undefined)) ===
-            true
-                ? 'strict'
-                : 'lenient'
 
         // Required, makes all properties in T required, no undefined.
         // const userOpts: Required<IAllUserOptions> = isOptionsObjectForm(arg2)
@@ -445,13 +467,15 @@ export default class YINI {
             )
         }
 
+        // const mode: TParserMode =
+        // ((arg2 as any)?.strictMode ?? (arg2 as boolean | undefined)) ===
+        // true
+        //     ? 'strict'
+        //     : 'lenient'
+        const mode: TParserMode = inferModeFromArgs(arg2)
+
         // Normalize to a fully-required options object.
         let userOpts: Required<IAllUserOptions>
-        const mode: TParserMode =
-            ((arg2 as any)?.strictMode ?? (arg2 as boolean | undefined)) ===
-            true
-                ? 'strict'
-                : 'lenient'
 
         // Required, makes all properties in T required, no undefined.
         // const userOpts: Required<IAllUserOptions> = isOptionsObjectForm(arg2)
