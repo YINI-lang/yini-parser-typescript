@@ -133,7 +133,7 @@ const DEFAULT_LENIENT_OPTS: NormalizedOpts = {
     ...BASE_DEFAULTS,
     strictMode: false,
     failLevel: 'ignore-errors',
-    suppressWarnings: true, // Suppress warnings in console (does not effect warnings in meta data).
+    suppressWarnings: false, // Suppress warnings in console (does not effect warnings in meta data).
     requireDocTerminator: 'optional',
     treatEmptyValueAsNull: 'allow-with-warning',
     onDuplicateKey: 'warn-and-keep-first',
@@ -179,6 +179,7 @@ export default class YINI {
                 `Invalid tab size ${spaces} is out of range.`,
                 'Tab size must be between 1 and 32 spaces.',
             )
+            return
         }
         this.g_tabSize = spaces
     }
