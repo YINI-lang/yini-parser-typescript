@@ -9,7 +9,7 @@ import { IAllUserOptions } from '../../src/core/types'
 import { sortObjectKeys } from '../../src/utils/object'
 import { debugPrint, toPrettyJSON } from '../../src/utils/print'
 
-const DIR_OF_FIXTURES = '../fixtures/smoke-fixtures'
+const DIR_OF_FIXTURES = '../fixtures'
 
 const fixture = `
     ^ App
@@ -56,7 +56,7 @@ describe('Options Consistency Smoke Tests:', () => {
 
     beforeAll(() => {})
 
-    test('1.a) Have correct default options (lenient mode) when parsing inline.', () => {
+    test('1.a) Parsing inline and options having correct default values for lenient mode.', () => {
         // Arrange.
         const nonStrictMode = false
         const mustBeTrue = true
@@ -90,7 +90,7 @@ describe('Options Consistency Smoke Tests:', () => {
         ).toEqual(toPrettyJSON(sortObjectKeys(correctLenientOptions)))
     })
 
-    test('1.b) Options carried over correctly when parsing inline (in lenient mode).', () => {
+    test('1.b) Parsing inline and arbitrarily options carried over correctly when (in lenient mode).', () => {
         // Arrange.
         const nonStrictMode = false
         const mustBeTrue = true
@@ -124,21 +124,355 @@ describe('Options Consistency Smoke Tests:', () => {
         ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
     })
 
-    //@todo make below, but with different values than above
-    //test('1.c) Options carried over correctly when parsing inline (in lenient mode).', () => {
-
-    xtest('Parse file "1-web-server-configuration.*".', () => {
+    test('1.c) Parsing inline and arbitrarily options carried over correctly when (in lenient mode).', () => {
         // Arrange.
-        const fileName = '1-web-server-configuration.smoke.yini'
-        const fullPath = path.join(baseDir, fileName)
+        const nonStrictMode = false
+        const mustBeTrue = true
+        const options: IAllUserOptions = {
+            // IMPORTANT: Below values are set.
+            strictMode: nonStrictMode,
+            includeMetaData: mustBeTrue,
+            includeDiagnostics: mustBeTrue,
+            // Below values are set to arbitrarily values:
+            failLevel: 'ignore-errors',
+            includeTiming: false,
+            preserveUndefinedInMeta: false,
+            suppressWarnings: true,
+            requireDocTerminator: 'warn-if-missing',
+            treatEmptyValueAsNull: 'allow-with-warning',
+            onDuplicateKey: 'keep-first',
+        }
 
         // Act.
-        const result = YINI.parse(fullPath)
-        debugPrint('fullPath = ' + fullPath)
+        const result = YINI.parse(fixtureWithTerminator, options)
         debugPrint(result)
 
         // Assert.
-        expect(result.Server.max_connections).toEqual(200)
-        //@todo Add tests for the other literal as well.
+        const preservedOptions: IAllUserOptions = {
+            ...options,
+        }
+        expect(!!result.meta).toEqual(true)
+        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(
+            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+        ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
+    })
+
+    test('2.a) Parsing inline and options having correct default values for strict mode.', () => {
+        // Arrange.
+        const isStrictMode = true
+        const mustBeTrue = true
+
+        // Act.
+        const result = YINI.parse(fixture, {
+            // IMPORTANT: Below values are set.
+            strictMode: isStrictMode,
+            includeMetaData: mustBeTrue,
+            includeDiagnostics: mustBeTrue,
+        })
+        debugPrint(result)
+
+        // Assert.
+        const correctLenientOptions: IAllUserOptions = {
+            strictMode: isStrictMode,
+            failLevel: 'on-errors', // 'auto' must get normalized to 'ignore-errors' (lenient mode).
+            includeMetaData: mustBeTrue,
+            includeDiagnostics: mustBeTrue,
+            includeTiming: false,
+            preserveUndefinedInMeta: false,
+            suppressWarnings: false, // Suppress warnings in console (does not effect warnings in meta data).
+            requireDocTerminator: 'optional',
+            treatEmptyValueAsNull: 'disallow',
+            onDuplicateKey: 'error',
+        }
+        expect(!!result.meta).toEqual(true)
+        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(
+            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+        ).toEqual(toPrettyJSON(sortObjectKeys(correctLenientOptions)))
+    })
+
+    test('2.b) Parsing inline and arbitrarily options carried over correctly when (in strict mode).', () => {
+        // Arrange.
+        const isStrictMode = true
+        const mustBeTrue = true
+        const options: IAllUserOptions = {
+            // IMPORTANT: Below values are set.
+            strictMode: isStrictMode,
+            includeMetaData: mustBeTrue,
+            includeDiagnostics: mustBeTrue,
+            // Below values are set to arbitrarily values:
+            failLevel: 'on-errors',
+            includeTiming: true,
+            preserveUndefinedInMeta: true,
+            suppressWarnings: false,
+            requireDocTerminator: 'required',
+            treatEmptyValueAsNull: 'disallow',
+            onDuplicateKey: 'overwrite',
+        }
+
+        // Act.
+        const result = YINI.parse(fixtureWithTerminator, options)
+        debugPrint(result)
+
+        // Assert.
+        const preservedOptions: IAllUserOptions = {
+            ...options,
+        }
+        expect(!!result.meta).toEqual(true)
+        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(
+            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+        ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
+    })
+
+    test('2.c) Parsing inline and arbitrarily options carried over correctly when (in strict mode).', () => {
+        // Arrange.
+        const isStrictMode = true
+        const mustBeTrue = true
+        const options: IAllUserOptions = {
+            // IMPORTANT: Below values are set.
+            strictMode: isStrictMode,
+            includeMetaData: mustBeTrue,
+            includeDiagnostics: mustBeTrue,
+            // Below values are set to arbitrarily values:
+            failLevel: 'ignore-errors',
+            includeTiming: false,
+            preserveUndefinedInMeta: false,
+            suppressWarnings: true,
+            requireDocTerminator: 'warn-if-missing',
+            treatEmptyValueAsNull: 'allow-with-warning',
+            onDuplicateKey: 'keep-first',
+        }
+
+        // Act.
+        const result = YINI.parse(fixtureWithTerminator, options)
+        debugPrint(result)
+
+        // Assert.
+        const preservedOptions: IAllUserOptions = {
+            ...options,
+        }
+        expect(!!result.meta).toEqual(true)
+        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(
+            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+        ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
+    })
+
+    test('3.a) Parsing file and options having correct default values for lenient mode.', () => {
+        // Arrange.
+        const nonStrictMode = false
+        const mustBeTrue = true
+        const fileName = 'smoke-fixtures/1-web-server-configuration.smoke.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        // Act.
+        const result = YINI.parseFile(fullPath, {
+            // IMPORTANT: Below values are set.
+            strictMode: nonStrictMode,
+            includeMetaData: mustBeTrue,
+            includeDiagnostics: mustBeTrue,
+        })
+        debugPrint(result)
+
+        // Assert.
+        const correctLenientOptions: IAllUserOptions = {
+            strictMode: nonStrictMode,
+            failLevel: 'ignore-errors', // 'auto' must get normalized to 'ignore-errors' (lenient mode).
+            includeMetaData: mustBeTrue,
+            includeDiagnostics: mustBeTrue,
+            includeTiming: false,
+            preserveUndefinedInMeta: false,
+            suppressWarnings: false, // Suppress warnings in console (does not effect warnings in meta data).
+            requireDocTerminator: 'optional',
+            treatEmptyValueAsNull: 'allow-with-warning',
+            onDuplicateKey: 'warn-and-keep-first',
+        }
+        expect(!!result.meta).toEqual(true)
+        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(
+            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+        ).toEqual(toPrettyJSON(sortObjectKeys(correctLenientOptions)))
+    })
+
+    test('3.b) Parsing file and arbitrarily options carried over correctly when (in lenient mode).', () => {
+        // Arrange.
+        const nonStrictMode = false
+        const mustBeTrue = true
+        const fileName = 'valid/strict/strict-common-config-1.yini'
+        const fullPath = path.join(baseDir, fileName)
+        const options: IAllUserOptions = {
+            // IMPORTANT: Below values are set.
+            strictMode: nonStrictMode,
+            includeMetaData: mustBeTrue,
+            includeDiagnostics: mustBeTrue,
+            // Below values are set to arbitrarily values:
+            failLevel: 'on-errors',
+            includeTiming: true,
+            preserveUndefinedInMeta: true,
+            suppressWarnings: false,
+            requireDocTerminator: 'required',
+            treatEmptyValueAsNull: 'disallow',
+            onDuplicateKey: 'overwrite',
+        }
+
+        // Act.
+        const result = YINI.parseFile(fullPath, options)
+        debugPrint(result)
+
+        // Assert.
+        const preservedOptions: IAllUserOptions = {
+            ...options,
+        }
+        expect(!!result.meta).toEqual(true)
+        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(
+            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+        ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
+    })
+
+    test('3.c) Parsing file and arbitrarily options carried over correctly when (in lenient mode).', () => {
+        // Arrange.
+        const nonStrictMode = false
+        const mustBeTrue = true
+        const fileName = 'smoke-fixtures/1-web-server-configuration.smoke.yini'
+        const fullPath = path.join(baseDir, fileName)
+        const options: IAllUserOptions = {
+            // IMPORTANT: Below values are set.
+            strictMode: nonStrictMode,
+            includeMetaData: mustBeTrue,
+            includeDiagnostics: mustBeTrue,
+            // Below values are set to arbitrarily values:
+            failLevel: 'ignore-errors',
+            includeTiming: false,
+            preserveUndefinedInMeta: false,
+            suppressWarnings: true,
+            requireDocTerminator: 'warn-if-missing',
+            treatEmptyValueAsNull: 'allow-with-warning',
+            onDuplicateKey: 'keep-first',
+        }
+
+        // Act.
+        const result = YINI.parseFile(fullPath, options)
+        debugPrint(result)
+
+        // Assert.
+        const preservedOptions: IAllUserOptions = {
+            ...options,
+        }
+        expect(!!result.meta).toEqual(true)
+        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(
+            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+        ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
+    })
+
+    test('4.a) Parsing file and options having correct default values for strict mode.', () => {
+        // Arrange.
+        const isStrictMode = true
+        const mustBeTrue = true
+        const fileName = 'smoke-fixtures/1-web-server-configuration.smoke.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        // Act.
+        const result = YINI.parseFile(fullPath, {
+            // IMPORTANT: Below values are set.
+            strictMode: isStrictMode,
+            includeMetaData: mustBeTrue,
+            includeDiagnostics: mustBeTrue,
+        })
+        debugPrint(result)
+
+        // Assert.
+        const correctLenientOptions: IAllUserOptions = {
+            strictMode: isStrictMode,
+            failLevel: 'on-errors', // 'auto' must get normalized to 'ignore-errors' (lenient mode).
+            includeMetaData: mustBeTrue,
+            includeDiagnostics: mustBeTrue,
+            includeTiming: false,
+            preserveUndefinedInMeta: false,
+            suppressWarnings: false, // Suppress warnings in console (does not effect warnings in meta data).
+            requireDocTerminator: 'optional',
+            treatEmptyValueAsNull: 'disallow',
+            onDuplicateKey: 'error',
+        }
+        expect(!!result.meta).toEqual(true)
+        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(
+            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+        ).toEqual(toPrettyJSON(sortObjectKeys(correctLenientOptions)))
+    })
+
+    test('4.b) Parsing file and arbitrarily options carried over correctly when (in strict mode).', () => {
+        // Arrange.
+        const isStrictMode = true
+        const mustBeTrue = true
+        const fileName = 'valid/strict/strict-common-config-1.yini'
+        const fullPath = path.join(baseDir, fileName)
+        const options: IAllUserOptions = {
+            // IMPORTANT: Below values are set.
+            strictMode: isStrictMode,
+            includeMetaData: mustBeTrue,
+            includeDiagnostics: mustBeTrue,
+            // Below values are set to arbitrarily values:
+            failLevel: 'on-errors',
+            includeTiming: true,
+            preserveUndefinedInMeta: true,
+            suppressWarnings: false,
+            requireDocTerminator: 'required',
+            treatEmptyValueAsNull: 'disallow',
+            onDuplicateKey: 'overwrite',
+        }
+
+        // Act.
+        const result = YINI.parseFile(fullPath, options)
+        debugPrint(result)
+
+        // Assert.
+        const preservedOptions: IAllUserOptions = {
+            ...options,
+        }
+        expect(!!result.meta).toEqual(true)
+        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(
+            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+        ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
+    })
+
+    test('4.c) Parsing file and arbitrarily options carried over correctly when (in strict mode).', () => {
+        // Arrange.
+        const isStrictMode = true
+        const mustBeTrue = true
+        const fileName = 'smoke-fixtures/1-web-server-configuration.smoke.yini'
+        const fullPath = path.join(baseDir, fileName)
+        const options: IAllUserOptions = {
+            // IMPORTANT: Below values are set.
+            strictMode: isStrictMode,
+            includeMetaData: mustBeTrue,
+            includeDiagnostics: mustBeTrue,
+            // Below values are set to arbitrarily values:
+            failLevel: 'ignore-errors',
+            includeTiming: false,
+            preserveUndefinedInMeta: false,
+            suppressWarnings: true,
+            requireDocTerminator: 'warn-if-missing',
+            treatEmptyValueAsNull: 'allow-with-warning',
+            onDuplicateKey: 'keep-first',
+        }
+
+        // Act.
+        const result = YINI.parseFile(fullPath, options)
+        debugPrint(result)
+
+        // Assert.
+        const preservedOptions: IAllUserOptions = {
+            ...options,
+        }
+        expect(!!result.meta).toEqual(true)
+        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(
+            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+        ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
     })
 })

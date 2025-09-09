@@ -523,13 +523,14 @@ export default class YINI {
 
         // IMPORTANT: (!) Do not forget to add new options here!
         const result = this.parse(content, {
-            strictMode: userOpts.strictMode,
-            failLevel: userOpts.failLevel,
-            includeMetaData: userOpts.includeMetaData,
-            includeDiagnostics: userOpts.includeDiagnostics,
-            includeTiming: userOpts.includeTiming,
-            preserveUndefinedInMeta: userOpts.preserveUndefinedInMeta,
-            requireDocTerminator: userOpts.requireDocTerminator,
+            // strictMode: userOpts.strictMode,
+            // failLevel: userOpts.failLevel,
+            // includeMetaData: userOpts.includeMetaData,
+            // includeDiagnostics: userOpts.includeDiagnostics,
+            // includeTiming: userOpts.includeTiming,
+            // preserveUndefinedInMeta: userOpts.preserveUndefinedInMeta,
+            // requireDocTerminator: userOpts.requireDocTerminator,
+            ...userOpts,
         })
         if (hasNoNewlineAtEOF) {
             console.warn(
