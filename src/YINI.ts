@@ -8,6 +8,8 @@ import {
     IRuntimeInfo,
     TBailSensitivityLevel,
     TJSObject,
+    TParserMode,
+    TPersistThreshold,
     TPreferredFailLevel,
 } from './core/types'
 import { _parseMain } from './parseEntry'
@@ -47,6 +49,7 @@ const isOptionsObjectForm = (v: unknown): v is IAllUserOptions => {
     )
 }
 
+/*
 // Initial default values.
 const DEFAULT_OPTS: Required<
     Pick<
@@ -74,6 +77,60 @@ const DEFAULT_OPTS: Required<
     treatEmptyValueAsNull: 'allow-with-warning',
     onDuplicateKey: 'keep-first',
 }
+*/
+
+type NormalizedOpts = Required<
+    Pick<
+        IAllUserOptions,
+        | 'strictMode'
+        | 'failLevel'
+        | 'includeMetaData'
+        | 'includeDiagnostics'
+        | 'includeTiming'
+        | 'preserveUndefinedInMeta'
+        | 'suppressWarnings'
+        | 'requireDocTerminator'
+        | 'treatEmptyValueAsNull'
+        | 'onDuplicateKey'
+    >
+>
+
+// base (mode-agnostic) defaults
+const BASE_DEFAULTS: NormalizedOpts = {
+    strictMode: false,
+    failLevel: 'auto',
+    includeMetaData: false,
+    includeDiagnostics: false,
+    includeTiming: false,
+    preserveUndefinedInMeta: false,
+    suppressWarnings: false, // Suppress warnings in console (does not effect warnings in meta data).
+    requireDocTerminator: 'optional',
+    treatEmptyValueAsNull: 'allow-with-warning',
+    onDuplicateKey: 'error',
+}
+
+const DEFAULT_LENIENT_OPTS: NormalizedOpts = {
+    ...BASE_DEFAULTS,
+    strictMode: false,
+    failLevel: 'ignore-errors',
+    suppressWarnings: true, // Suppress warnings in console (does not effect warnings in meta data).
+    requireDocTerminator: 'optional',
+    treatEmptyValueAsNull: 'allow-with-warning',
+    onDuplicateKey: 'warn-and-keep-first',
+}
+
+const DEFAULT_STRICT_OPTS: NormalizedOpts = {
+    ...BASE_DEFAULTS,
+    strictMode: true,
+    failLevel: 'on-errors',
+    suppressWarnings: false, // Suppress warnings in console (does not effect warnings in meta data).
+    requireDocTerminator: 'optional',
+    treatEmptyValueAsNull: 'disallow',
+    onDuplicateKey: 'error',
+}
+
+export const getDefaultOptions = (mode: TParserMode) =>
+    mode === 'strict' ? DEFAULT_STRICT_OPTS : DEFAULT_LENIENT_OPTS
 
 /**
  * This class is the public API, which exposes only parse(..) and
@@ -154,8 +211,8 @@ export default class YINI {
     public static parse(
         yiniContent: string,
         arg2?: boolean | IAllUserOptions, // strictMode | options
-        failLevel: TPreferredFailLevel = DEFAULT_OPTS.failLevel,
-        includeMetaData = DEFAULT_OPTS.includeMetaData,
+        failLevel: TPreferredFailLevel = 'auto',
+        includeMetaData = false,
     ): TJSObject {
         debugPrint('-> Entered static parse(..) in class YINI\n')
 
@@ -171,6 +228,10 @@ export default class YINI {
 
         // Normalize to a fully-required options object.
         let userOpts: Required<IAllUserOptions>
+        const mode: TParserMode =
+            ((arg2 as any).strictMode ?? (arg2 as boolean | undefined)) === true
+                ? 'strict'
+                : 'lenient'
 
         // Required, makes all properties in T required, no undefined.
         // const userOpts: Required<IAllUserOptions> = isOptionsObjectForm(arg2)
@@ -182,20 +243,24 @@ export default class YINI {
                )
             */
             userOpts = {
-                ...DEFAULT_OPTS, // Sets the default options.
-                strictMode: arg2.strictMode ?? DEFAULT_OPTS.strictMode,
-                failLevel: arg2.failLevel ?? DEFAULT_OPTS.failLevel,
+                ...getDefaultOptions(mode), // Sets the default options.
+                strictMode:
+                    arg2.strictMode ?? getDefaultOptions(mode).strictMode,
+                failLevel: arg2.failLevel ?? getDefaultOptions(mode).failLevel,
                 includeMetaData:
-                    arg2.includeMetaData ?? DEFAULT_OPTS.includeMetaData,
+                    arg2.includeMetaData ??
+                    getDefaultOptions(mode).includeMetaData,
                 includeDiagnostics:
-                    arg2.includeDiagnostics ?? DEFAULT_OPTS.includeDiagnostics,
-                includeTiming: arg2.includeTiming ?? DEFAULT_OPTS.includeTiming,
+                    arg2.includeDiagnostics ??
+                    getDefaultOptions(mode).includeDiagnostics,
+                includeTiming:
+                    arg2.includeTiming ?? getDefaultOptions(mode).includeTiming,
                 preserveUndefinedInMeta:
                     arg2.preserveUndefinedInMeta ??
-                    DEFAULT_OPTS.preserveUndefinedInMeta,
+                    getDefaultOptions(mode).preserveUndefinedInMeta,
                 requireDocTerminator:
                     arg2.requireDocTerminator ??
-                    DEFAULT_OPTS.requireDocTerminator,
+                    getDefaultOptions(mode).requireDocTerminator,
             }
         } else {
             // Positional form.
@@ -207,9 +272,10 @@ export default class YINI {
                )
             */
             userOpts = {
-                ...DEFAULT_OPTS, // Sets the default options.
+                ...getDefaultOptions(mode), // Sets the default options.
                 strictMode:
-                    (arg2 as boolean | undefined) ?? DEFAULT_OPTS.strictMode,
+                    (arg2 as boolean | undefined) ??
+                    getDefaultOptions(mode).strictMode,
                 failLevel,
                 includeMetaData,
             }
@@ -234,12 +300,43 @@ export default class YINI {
             yiniContent += '\n'
         }
 
+        // let level: TPersistThreshold = '0-Ignore-Errors'
         let level: TBailSensitivityLevel = 0
+        /*
+        if (userOpts.failLevel === 'auto') {
+            if (!userOpts.strictMode) level = '0-Ignore-Errors'
+            if (userOpts.strictMode) level = '1-Abort-on-Errors'
+        } else {
+            // level = userOpts.failLevel
+            switch (userOpts.failLevel) {
+                case 'ignore-errors':
+                    level = '0-Ignore-Errors'
+                    break
+                case 'errors':
+                    level = '1-Abort-on-Errors'
+                    break
+                case 'warnings-and-errors':
+                    level = '2-Abort-Even-on-Warnings'
+                    break
+            }
+        }
+        */
         if (userOpts.failLevel === 'auto') {
             if (!userOpts.strictMode) level = 0
             if (userOpts.strictMode) level = 1
         } else {
-            level = userOpts.failLevel
+            // level = userOpts.failLevel
+            switch (userOpts.failLevel) {
+                case 'ignore-errors':
+                    level = 0
+                    break
+                case 'on-errors':
+                    level = 1
+                    break
+                case 'on-warnings-and-errors':
+                    level = 2
+                    break
+            }
         }
 
         const coreOpts: IParseCoreOptions = {
@@ -251,7 +348,10 @@ export default class YINI {
             isWithTiming: isDev() || isDebug() || userOpts.includeTiming,
             isKeepUndefinedInMeta:
                 isDebug() || userOpts.preserveUndefinedInMeta,
-            isRequireDocTerminator: userOpts.requireDocTerminator,
+            isAvoidWarningsInConsole: userOpts.suppressWarnings,
+            requireDocTerminator: userOpts.requireDocTerminator,
+            treatEmptyValueAsNull: userOpts.treatEmptyValueAsNull,
+            onDuplicateKey: userOpts.onDuplicateKey,
         }
 
         debugPrint()
@@ -319,8 +419,8 @@ export default class YINI {
     public static parseFile(
         filePath: string,
         arg2?: boolean | IAllUserOptions, // strictMode | options
-        failLevel: TPreferredFailLevel = DEFAULT_OPTS.failLevel,
-        includeMetaData = DEFAULT_OPTS.includeMetaData,
+        failLevel: TPreferredFailLevel = 'auto',
+        includeMetaData = false,
     ): TJSObject {
         debugPrint('-> Entered static parseFile(..) in class YINI\n')
         debugPrint('Current directory = ' + process.cwd())
@@ -337,6 +437,10 @@ export default class YINI {
 
         // Normalize to a fully-required options object.
         let userOpts: Required<IAllUserOptions>
+        const mode: TParserMode =
+            ((arg2 as any).strictMode ?? (arg2 as boolean | undefined)) === true
+                ? 'strict'
+                : 'lenient'
 
         // Required, makes all properties in T required, no undefined.
         // const userOpts: Required<IAllUserOptions> = isOptionsObjectForm(arg2)
@@ -348,20 +452,24 @@ export default class YINI {
                )
             */
             userOpts = {
-                ...DEFAULT_OPTS, // Sets the default options.
-                strictMode: arg2.strictMode ?? DEFAULT_OPTS.strictMode,
-                failLevel: arg2.failLevel ?? DEFAULT_OPTS.failLevel,
+                ...getDefaultOptions(mode), // Sets the default options.
+                strictMode:
+                    arg2.strictMode ?? getDefaultOptions(mode).strictMode,
+                failLevel: arg2.failLevel ?? getDefaultOptions(mode).failLevel,
                 includeMetaData:
-                    arg2.includeMetaData ?? DEFAULT_OPTS.includeMetaData,
+                    arg2.includeMetaData ??
+                    getDefaultOptions(mode).includeMetaData,
                 includeDiagnostics:
-                    arg2.includeDiagnostics ?? DEFAULT_OPTS.includeDiagnostics,
-                includeTiming: arg2.includeTiming ?? DEFAULT_OPTS.includeTiming,
+                    arg2.includeDiagnostics ??
+                    getDefaultOptions(mode).includeDiagnostics,
+                includeTiming:
+                    arg2.includeTiming ?? getDefaultOptions(mode).includeTiming,
                 preserveUndefinedInMeta:
                     arg2.preserveUndefinedInMeta ??
-                    DEFAULT_OPTS.preserveUndefinedInMeta,
+                    getDefaultOptions(mode).preserveUndefinedInMeta,
                 requireDocTerminator:
                     arg2.requireDocTerminator ??
-                    DEFAULT_OPTS.requireDocTerminator,
+                    getDefaultOptions(mode).requireDocTerminator,
             }
         } else {
             // Positional form.
@@ -373,9 +481,10 @@ export default class YINI {
                )
             */
             userOpts = {
-                ...DEFAULT_OPTS, // Sets the default options.
+                ...getDefaultOptions(mode), // Sets the default options.
                 strictMode:
-                    (arg2 as boolean | undefined) ?? DEFAULT_OPTS.strictMode,
+                    (arg2 as boolean | undefined) ??
+                    getDefaultOptions(mode).strictMode,
                 failLevel,
                 includeMetaData,
             }

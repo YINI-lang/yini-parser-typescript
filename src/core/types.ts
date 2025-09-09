@@ -9,17 +9,18 @@
 
 // --- Types ----------------------------------------------------------------
 
+export type TParserMode = 'lenient' | 'strict'
+
 export type TJSObject = any // NOTE: Currently must be any! Not unknown or Record<string, unknown> or anything else, since linting etc will render this as error/unknow.
 
 export type TSourceType = 'File' | 'Inline'
 export type TSubjectType = 'None/Ignore' | TSourceType
 
 export type TBailSensitivityLevel = 0 | 1 | 2 // Bail sensitivity level.
-export type TPreferredFailLevel =
-    | 'auto'
-    | 'ignore-errors'
-    | 'errors'
-    | 'warnings-and-errors' // Preferred bail sensitivity level.
+export type TPreferredFailLevel = 'auto' | TFailLevelKey
+// | 'ignore-errors'
+// | 'errors'
+// | 'warnings-and-errors'
 
 // Human label types.
 export type TPersistThreshold =
@@ -29,12 +30,15 @@ export type TPersistThreshold =
 
 /**
  * Only for returned meta data to user.
- * NOTE: Only use lower case snake_case for keys.
+ * (!) NOTE: Only use lower case snake_case for keys.
  */
 export type TFailLevelKey =
-    | 'ignore_errors' // 0 - Don't bail/fail on error, persist and try to recover.
-    | 'abort_on_errors' // 1 - Stop parsing on the first error.
-    | 'abort_on_warnings' // 2 - Stop parsing on the first warning or error.
+    // | 'ignore_errors' // 0 - Don't bail/fail on error, persist and try to recover.
+    // | 'abort_on_errors' // 1 - Stop parsing on the first error.
+    // | 'abort_on_warnings' // 2 - Stop parsing on the first warning or error.
+    | 'ignore-errors' // 0 - Don't bail/fail on error, persist and try to recover.
+    | 'on-errors' // 1 - Stop parsing on the first error.
+    | 'on-warnings-and-errors' // 2 - Stop parsing on the first warning or error.
 
 /**
  * Scalar literal, a single, indivisible piece of data:
@@ -154,7 +158,10 @@ export interface IParseCoreOptions {
     isWithDiagnostics: boolean // (Requires isIncludeMeta) Include diagnostics in meta data, when isIncludeMeta.
     isWithTiming: boolean // (Requires isIncludeMeta) Include timing data of the different phases in meta data, when isIncludeMeta.
     isKeepUndefinedInMeta: boolean // (Requires isIncludeMeta) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
-    isRequireDocTerminator: boolean // // If true, the document terminator '/END' at the end of the document is required, otherwise it's optional.
+    isAvoidWarningsInConsole: boolean // Suppress warnings in console (does not effect warnings in meta data).
+    requireDocTerminator: 'optional' | 'warn-if-missing' | 'required'
+    treatEmptyValueAsNull: 'allow' | 'allow-with-warning' | 'disallow'
+    onDuplicateKey: TOnDuplicateKey
 }
 
 /**
@@ -267,7 +274,8 @@ export interface IResultMetaData {
     metaSchemaVersion: '1.0.0'
     diagnostics?: {
         failLevel: {
-            preferredLevel: null | 'auto' | 0 | 1 | 2 // Input level into function.
+            // preferredLevel: null | 'auto' | 0 | 1 | 2 // Input level into function.
+            preferredLevel: null | TPreferredFailLevel // Input level into function.
             levelUsed: TBailSensitivityLevel
             levelKey: TFailLevelKey // Mapped from the corresponding type, keep it lowercase since it's shown in meta, easier for tooling.
             levelLabel: TPersistThreshold

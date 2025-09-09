@@ -326,9 +326,9 @@ if (isProdEnv()) {
             toPrettyJSON(
                 YINI.parse(yini, {
                     strictMode: false,
-                    failLevel: 1,
+                    failLevel: 'on-errors',
                     includeMetaData: false,
-                    requireDocTerminator: false,
+                    requireDocTerminator: 'optional',
                 }),
             ),
         )
@@ -348,7 +348,7 @@ if (isProdEnv()) {
         //                     strictMode: true,
         //                     failLevel: 'auto',
         //                     includeMetaData: false,
-        //                     requireDocTerminator: false,
+        //                     requireDocTerminator: 'optional',
         //                 }),
         //             ),
         //         )

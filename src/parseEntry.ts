@@ -19,6 +19,7 @@ import {
     TBailSensitivityLevel,
     TFailLevelKey,
     TPersistThreshold,
+    TPreferredFailLevel,
 } from './core/types'
 import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
@@ -169,27 +170,33 @@ class MyLexerErrorListener implements ErrorListener<any> {
 export const _parseMain = (
     yiniContent: string,
     // options: IParseMainOptions = {
-    options: IParseCoreOptions = {
-        isStrict: false,
-        bailSensitivity: 0,
-        isIncludeMeta: false,
-        isWithDiagnostics: false,
-        isWithTiming: false,
-        isKeepUndefinedInMeta: false,
-        isRequireDocTerminator: false,
-    },
+    // options: IParseCoreOptions = {
+    //     isStrict: false,
+    //     bailSensitivity: 0,
+    //     isIncludeMeta: false,
+    //     isWithDiagnostics: false,
+    //     isWithTiming: false,
+    //     isKeepUndefinedInMeta: false,
+    //     isRequireDocTerminator: false,
+    // },
+    options: IParseCoreOptions,
     runtimeInfo: IRuntimeInfo,
 ) => {
     debugPrint()
     debugPrint('-> Entered parseMain(..) in parseEntry')
-    debugPrint('         isStrict mode = ' + options.isStrict)
-    debugPrint('       bailSensitivity = ' + options.bailSensitivity)
-    debugPrint('         isIncludeMeta = ' + options.isIncludeMeta)
-    debugPrint('     isWithDiagnostics = ' + options.isWithDiagnostics)
-    debugPrint('          isWithTiming = ' + options.isWithTiming)
-    debugPrint('  requireDocTerminator = ' + options.isRequireDocTerminator)
-    debugPrint('runtimeInfo.sourceType = ' + runtimeInfo.sourceType)
-    debugPrint('  runtimeInfo.fileName = ' + runtimeInfo.fileName)
+    debugPrint('           isStrict mode = ' + options.isStrict)
+    debugPrint('         bailSensitivity = ' + options.bailSensitivity)
+    debugPrint('           isIncludeMeta = ' + options.isIncludeMeta)
+    debugPrint('       isWithDiagnostics = ' + options.isWithDiagnostics)
+    debugPrint('            isWithTiming = ' + options.isWithTiming)
+    debugPrint('   isKeepUndefinedInMeta = ' + options.isKeepUndefinedInMeta)
+    debugPrint('isAvoidWarningsInConsole = ' + options.isAvoidWarningsInConsole)
+    debugPrint('    requireDocTerminator = ' + options.requireDocTerminator)
+    debugPrint('   treatEmptyValueAsNull = ' + options.treatEmptyValueAsNull)
+    debugPrint('          onDuplicateKey = ' + options.onDuplicateKey)
+    debugPrint()
+    debugPrint('  runtimeInfo.sourceType = ' + runtimeInfo.sourceType)
+    debugPrint('    runtimeInfo.fileName = ' + runtimeInfo.fileName)
 
     let persistThreshold: TPersistThreshold
     switch (options.bailSensitivity) {
@@ -431,16 +438,28 @@ export const _parseMain = (
 
         // Attach optional diagnostics.
         if (options.isWithDiagnostics) {
+            const mapToFailLevel = (
+                level: TBailSensitivityLevel,
+            ): TPreferredFailLevel => {
+                switch (level) {
+                    case 0:
+                        return 'ignore-errors'
+                    case 1:
+                        return 'on-errors'
+                    case 2:
+                        return 'on-warnings-and-errors'
+                }
+            }
             const mapLevelKey = (
                 level: TBailSensitivityLevel,
             ): TFailLevelKey => {
                 switch (level) {
                     case 0:
-                        return 'ignore_errors'
+                        return 'ignore-errors'
                     case 1:
-                        return 'abort_on_errors'
+                        return 'on-errors'
                     case 2:
-                        return 'abort_on_warnings'
+                        return 'on-warnings-and-errors'
                 }
             }
             const mapLevelLabel = (
@@ -505,14 +524,17 @@ export const _parseMain = (
                     },
                 },
                 optionsUsed: {
-                    // NOTE: (!) These MUST user options.
+                    // NOTE: (!) These MUST be user options.
                     strictMode: options.isStrict,
-                    failLevel: options.bailSensitivity,
+                    failLevel: mapToFailLevel(options.bailSensitivity),
                     includeMetaData: options.isIncludeMeta,
                     includeDiagnostics: options.isWithDiagnostics,
                     includeTiming: options.isWithTiming,
                     preserveUndefinedInMeta: options.isKeepUndefinedInMeta,
-                    requireDocTerminator: options.isRequireDocTerminator,
+                    suppressWarnings: options.isAvoidWarningsInConsole,
+                    requireDocTerminator: options.requireDocTerminator,
+                    treatEmptyValueAsNull: options.treatEmptyValueAsNull,
+                    onDuplicateKey: options.onDuplicateKey,
                 },
             }
         }
