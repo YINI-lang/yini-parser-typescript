@@ -252,6 +252,7 @@ export default class YINI {
         //         ? 'strict'
         //         : 'lenient'
         const mode: TParserMode = inferModeFromArgs(arg2)
+        const defaultOptions = getDefaultOptions(mode)
 
         // Normalize to a fully-required options object.
         let userOpts: Required<IAllUserOptions>
@@ -266,33 +267,8 @@ export default class YINI {
                )
             */
             userOpts = {
-                ...getDefaultOptions(mode), // Sets the default options.
-                strictMode:
-                    arg2.strictMode ?? getDefaultOptions(mode).strictMode,
-                failLevel: arg2.failLevel ?? getDefaultOptions(mode).failLevel,
-                includeMetaData:
-                    arg2.includeMetaData ??
-                    getDefaultOptions(mode).includeMetaData,
-                includeDiagnostics:
-                    arg2.includeDiagnostics ??
-                    getDefaultOptions(mode).includeDiagnostics,
-                includeTiming:
-                    arg2.includeTiming ?? getDefaultOptions(mode).includeTiming,
-                preserveUndefinedInMeta:
-                    arg2.preserveUndefinedInMeta ??
-                    getDefaultOptions(mode).preserveUndefinedInMeta,
-                suppressWarnings:
-                    arg2.suppressWarnings ??
-                    getDefaultOptions(mode).suppressWarnings,
-                requireDocTerminator:
-                    arg2.requireDocTerminator ??
-                    getDefaultOptions(mode).requireDocTerminator,
-                treatEmptyValueAsNull:
-                    arg2.treatEmptyValueAsNull ??
-                    getDefaultOptions(mode).treatEmptyValueAsNull,
-                onDuplicateKey:
-                    arg2.onDuplicateKey ??
-                    getDefaultOptions(mode).onDuplicateKey,
+                ...defaultOptions, // Sets the default options.
+                ...arg2,
             }
         } else {
             // Positional form.
@@ -304,10 +280,9 @@ export default class YINI {
                )
             */
             userOpts = {
-                ...getDefaultOptions(mode), // Sets the default options.
+                ...defaultOptions, // Sets the default options.
                 strictMode:
-                    (arg2 as boolean | undefined) ??
-                    getDefaultOptions(mode).strictMode,
+                    (arg2 as boolean | undefined) ?? defaultOptions.strictMode,
                 failLevel,
                 includeMetaData,
             }
@@ -473,6 +448,7 @@ export default class YINI {
         //     ? 'strict'
         //     : 'lenient'
         const mode: TParserMode = inferModeFromArgs(arg2)
+        const defaultOptions = getDefaultOptions(mode)
 
         // Normalize to a fully-required options object.
         let userOpts: Required<IAllUserOptions>
@@ -487,33 +463,8 @@ export default class YINI {
                )
             */
             userOpts = {
-                ...getDefaultOptions(mode), // Sets the default options.
-                strictMode:
-                    arg2.strictMode ?? getDefaultOptions(mode).strictMode,
-                failLevel: arg2.failLevel ?? getDefaultOptions(mode).failLevel,
-                includeMetaData:
-                    arg2.includeMetaData ??
-                    getDefaultOptions(mode).includeMetaData,
-                includeDiagnostics:
-                    arg2.includeDiagnostics ??
-                    getDefaultOptions(mode).includeDiagnostics,
-                includeTiming:
-                    arg2.includeTiming ?? getDefaultOptions(mode).includeTiming,
-                preserveUndefinedInMeta:
-                    arg2.preserveUndefinedInMeta ??
-                    getDefaultOptions(mode).preserveUndefinedInMeta,
-                suppressWarnings:
-                    arg2.suppressWarnings ??
-                    getDefaultOptions(mode).suppressWarnings,
-                requireDocTerminator:
-                    arg2.requireDocTerminator ??
-                    getDefaultOptions(mode).requireDocTerminator,
-                treatEmptyValueAsNull:
-                    arg2.treatEmptyValueAsNull ??
-                    getDefaultOptions(mode).treatEmptyValueAsNull,
-                onDuplicateKey:
-                    arg2.onDuplicateKey ??
-                    getDefaultOptions(mode).onDuplicateKey,
+                ...defaultOptions, // Sets the default options.
+                ...arg2,
             }
         } else {
             // Positional form.
@@ -525,10 +476,9 @@ export default class YINI {
                )
             */
             userOpts = {
-                ...getDefaultOptions(mode), // Sets the default options.
+                ...defaultOptions, // Sets the default options.
                 strictMode:
-                    (arg2 as boolean | undefined) ??
-                    getDefaultOptions(mode).strictMode,
+                    (arg2 as boolean | undefined) ?? defaultOptions.strictMode,
                 failLevel,
                 includeMetaData,
             }
