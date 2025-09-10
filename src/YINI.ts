@@ -393,8 +393,8 @@ export default class YINI {
         const runtime = new YiniRuntime('File')
 
         const result = isOptionsObjectForm(arg2)
-            ? runtime.doParse(filePath, arg2) // Overload #2: (content, options)
-            : runtime.doParse(
+            ? runtime.doParseFile(filePath, arg2) // Overload #2: (content, options)
+            : runtime.doParseFile(
                   // Overload #1: (content, strict?, failLevel?, includeMeta?)
                   filePath,
                   arg2 as boolean | undefined,
