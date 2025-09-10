@@ -8,6 +8,8 @@ import {
     IRuntimeInfo,
     TBailSensitivityLevel,
     TJSObject,
+    TParserMode,
+    TPersistThreshold,
     TPreferredFailLevel,
 } from './core/types'
 import { _parseMain } from './parseEntry'
@@ -27,6 +29,8 @@ let _runtimeInfo: IRuntimeInfo = {
     sha256: null,
 }
 
+// --- Helper Functions ----------------------------------------------------
+
 // Type guard: did the caller use the options-object form?
 const isOptionsObjectForm = (v: unknown): v is IAllUserOptions => {
     return (
@@ -40,10 +44,32 @@ const isOptionsObjectForm = (v: unknown): v is IAllUserOptions => {
             'includeDiagnostics' in (v as any) ||
             'includeTiming' in (v as any) ||
             'preserveUndefinedInMeta' in (v as any) ||
-            'requireDocTerminator' in (v as any))
+            'suppressWarnings' in (v as any) ||
+            'requireDocTerminator' in (v as any) ||
+            'treatEmptyValueAsNull' in (v as any) ||
+            'onDuplicateKey' in (v as any))
     )
 }
 
+// const mode: TParserMode =
+// ((arg2 as any)?.strictMode ?? (arg2 as boolean | undefined)) ===
+
+const inferModeFromArgs = (arg2?: boolean | IAllUserOptions): TParserMode => {
+    if (typeof arg2 === 'boolean') {
+        return arg2 ? 'strict' : 'lenient'
+    }
+    if (arg2 && typeof arg2 === 'object') {
+        const sm = (arg2 as IAllUserOptions).strictMode
+        if (typeof sm === 'boolean') {
+            return sm ? 'strict' : 'lenient'
+        }
+    }
+    return 'lenient'
+}
+
+// -------------------------------------------------------------------------
+
+/*
 // Initial default values.
 const DEFAULT_OPTS: Required<
     Pick<
@@ -54,7 +80,10 @@ const DEFAULT_OPTS: Required<
         | 'includeDiagnostics'
         | 'includeTiming'
         | 'preserveUndefinedInMeta'
+        | 'suppressWarnings'
         | 'requireDocTerminator'
+        | 'treatEmptyValueAsNull'
+        | 'onDuplicateKey'
     >
 > = {
     strictMode: false,
@@ -63,8 +92,65 @@ const DEFAULT_OPTS: Required<
     includeDiagnostics: false,
     includeTiming: false,
     preserveUndefinedInMeta: false,
-    requireDocTerminator: false,
+    suppressWarnings: false,
+    requireDocTerminator: 'optional',
+    treatEmptyValueAsNull: 'allow-with-warning',
+    onDuplicateKey: 'keep-first',
 }
+*/
+
+type NormalizedOpts = Required<
+    Pick<
+        IAllUserOptions,
+        | 'strictMode'
+        | 'failLevel'
+        | 'includeMetaData'
+        | 'includeDiagnostics'
+        | 'includeTiming'
+        | 'preserveUndefinedInMeta'
+        | 'suppressWarnings'
+        | 'requireDocTerminator'
+        | 'treatEmptyValueAsNull'
+        | 'onDuplicateKey'
+    >
+>
+
+// base (mode-agnostic) defaults
+const BASE_DEFAULTS: NormalizedOpts = {
+    strictMode: false,
+    failLevel: 'auto',
+    includeMetaData: false,
+    includeDiagnostics: false,
+    includeTiming: false,
+    preserveUndefinedInMeta: false,
+    suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
+    requireDocTerminator: 'optional',
+    treatEmptyValueAsNull: 'allow-with-warning',
+    onDuplicateKey: 'error',
+}
+
+const DEFAULT_LENIENT_OPTS: NormalizedOpts = {
+    ...BASE_DEFAULTS,
+    strictMode: false,
+    failLevel: 'ignore-errors',
+    suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
+    requireDocTerminator: 'optional',
+    treatEmptyValueAsNull: 'allow-with-warning',
+    onDuplicateKey: 'warn-and-keep-first',
+}
+
+const DEFAULT_STRICT_OPTS: NormalizedOpts = {
+    ...BASE_DEFAULTS,
+    strictMode: true,
+    failLevel: 'errors',
+    suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
+    requireDocTerminator: 'optional',
+    treatEmptyValueAsNull: 'disallow',
+    onDuplicateKey: 'error',
+}
+
+export const getDefaultOptions = (mode: TParserMode) =>
+    mode === 'strict' ? DEFAULT_STRICT_OPTS : DEFAULT_LENIENT_OPTS
 
 /**
  * This class is the public API, which exposes only parse(..) and
@@ -93,6 +179,7 @@ export default class YINI {
                 `Invalid tab size ${spaces} is out of range.`,
                 'Tab size must be between 1 and 32 spaces.',
             )
+            throw new RangeError(`Tab size ${spaces} is out of range (1–32).`)
         }
         this.g_tabSize = spaces
     }
@@ -100,14 +187,14 @@ export default class YINI {
     /**
      * Parse inline YINI content into a JavaScript object.
      *
-     * @param yiniContent      YINI code as a string (multi‑line content supported).
-     * @param strictMode       If `true`, enforce strict parsing rules (e.g. require `/END`, disallow trailing commas).
-     * @param failLevel        Preferred bail sensitivity level, controls how errors and warnings are handled:
-     *   - `'auto'` (default)       : Auto‑select level (strict→1, lenient→0)
-     *   - `0` / `'Ignore-Errors'`    : Continue parsing despite errors; log them and attempt recovery.
-     *   - `1` / `'Abort-on-Errors'`  : Stop parsing on the first error.
-     *   - `2` / `'Abort-Even-on-Warnings'`: Stop parsing on the first warning **or** error.
-     * @param includeMetaData  If `true`, return additional metadata (e.g. warnings, statistics) alongside the parsed object.
+     * @param yiniContent        YINI code as a string (multi‑line content supported).
+     * @param strictMode         If `true`, enforce strict parsing rules (e.g. require `/END`, disallow trailing commas).
+     * @param failLevel          Preferred bail sensitivity level, controls how errors and warnings are handled:
+     *   - `'auto'` (default)      : Auto‑select level (strict → `'errors'`, lenient → `'ignore-errors'`)
+     *   - `'ignore-errors'`       : Continue parsing despite errors; log them and attempt recovery.
+     *   - `'errors'`              : Stop parsing on the first error.
+     *   - `'warnings-and-errors'` : Stop parsing on the first warning **or** error.
+     * @param includeMetaData    If `true`, return additional metadata (e.g. warnings, statistics) alongside the parsed object.
      *
      * @returns A JavaScript object representing the parsed YINI content.
      */
@@ -128,6 +215,31 @@ export default class YINI {
      * @param yiniContent      YINI code as a string (multi‑line content supported).
      * @param options Optional settings to customize parsing and/or results, useful if you need more control.
      *
+     * @param options.failLevel - Minimum severity that should cause the parse to fail.
+     *   Accepts:
+     *     `'ignore-errors'` - Don't bail/fail on error, persist and try to recover.
+     *     `'errors'` - Stop parsing on the first error.
+     *     `'warnings-and-errors'` - Stop parsing on the first warning or error.
+     *   (Type: TPreferredFailLevel; exact behavior is implementation-defined.)
+     * @param options.includeDiagnostics - Include diagnostics in the returned metadata.
+     *   Requires: `includeMetaData = true`. Ignored otherwise.
+     * @param options.includeMetaData - Attach a metadata object to the parse result
+     *   (e.g., timings, diagnostics).
+     * @param options.includeTiming - Include timing information for parser phases in metadata.
+     *   Requires: `includeMetaData = true`. Ignored otherwise.
+     * @param options.onDuplicateKey - Strategy/handler when encountering a duplicate key.
+     *   Allowed values: `'warn-and-keep-first'` | `'warn-and-overwrite'` | `'keep-first'` (silent, first wins) | `'overwrite'` (silent, last wins) | `'error'`.
+     * @param options.preserveUndefinedInMeta - Keep properties with value `undefined` inside
+     *   the returned metadata. Requires: `includeMetaData = true`. Ignored otherwise.
+     * @param options.requireDocTerminator - Controls whether a document terminator is required.
+     *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
+     * @param options.strictMode - Enable stricter syntax and well-formedness checks according
+     *   to the spec (exact rules are implementation-defined).
+     * @param options.suppressWarnings - Suppress warnings sent to the console/log.
+     *   Does not affect warnings included in returned metadata.
+     * @param options.treatEmptyValueAsNull - How to treat an explicitly empty value on the
+     *   right-hand side of '='. Allowed values: `'allow'` | `'allow-with-warning'` | `'disallow'`.
+     *
      * @returns A JavaScript object representing the parsed YINI content.
      */
     // --- Method overload signature ---------------------------------------
@@ -145,8 +257,8 @@ export default class YINI {
     public static parse(
         yiniContent: string,
         arg2?: boolean | IAllUserOptions, // strictMode | options
-        failLevel: TPreferredFailLevel = DEFAULT_OPTS.failLevel,
-        includeMetaData = DEFAULT_OPTS.includeMetaData,
+        failLevel: TPreferredFailLevel = 'auto',
+        includeMetaData = false,
     ): TJSObject {
         debugPrint('-> Entered static parse(..) in class YINI\n')
 
@@ -159,6 +271,14 @@ export default class YINI {
                 'Invalid call: when providing an options object, do not also pass positional parameters.',
             )
         }
+
+        // const mode: TParserMode =
+        //     ((arg2 as any)?.strictMode ?? (arg2 as boolean | undefined)) ===
+        //     true
+        //         ? 'strict'
+        //         : 'lenient'
+        const mode: TParserMode = inferModeFromArgs(arg2)
+        const defaultOptions = getDefaultOptions(mode)
 
         // Normalize to a fully-required options object.
         let userOpts: Required<IAllUserOptions>
@@ -173,20 +293,8 @@ export default class YINI {
                )
             */
             userOpts = {
-                ...DEFAULT_OPTS, // Sets the default options.
-                strictMode: arg2.strictMode ?? DEFAULT_OPTS.strictMode,
-                failLevel: arg2.failLevel ?? DEFAULT_OPTS.failLevel,
-                includeMetaData:
-                    arg2.includeMetaData ?? DEFAULT_OPTS.includeMetaData,
-                includeDiagnostics:
-                    arg2.includeDiagnostics ?? DEFAULT_OPTS.includeDiagnostics,
-                includeTiming: arg2.includeTiming ?? DEFAULT_OPTS.includeTiming,
-                preserveUndefinedInMeta:
-                    arg2.preserveUndefinedInMeta ??
-                    DEFAULT_OPTS.preserveUndefinedInMeta,
-                requireDocTerminator:
-                    arg2.requireDocTerminator ??
-                    DEFAULT_OPTS.requireDocTerminator,
+                ...defaultOptions, // Sets the default options.
+                ...arg2,
             }
         } else {
             // Positional form.
@@ -198,9 +306,9 @@ export default class YINI {
                )
             */
             userOpts = {
-                ...DEFAULT_OPTS, // Sets the default options.
+                ...defaultOptions, // Sets the default options.
                 strictMode:
-                    (arg2 as boolean | undefined) ?? DEFAULT_OPTS.strictMode,
+                    (arg2 as boolean | undefined) ?? defaultOptions.strictMode,
                 failLevel,
                 includeMetaData,
             }
@@ -225,12 +333,43 @@ export default class YINI {
             yiniContent += '\n'
         }
 
+        // let level: TPersistThreshold = '0-Ignore-Errors'
         let level: TBailSensitivityLevel = 0
+        /*
+        if (userOpts.failLevel === 'auto') {
+            if (!userOpts.strictMode) level = '0-Ignore-Errors'
+            if (userOpts.strictMode) level = '1-Abort-on-Errors'
+        } else {
+            // level = userOpts.failLevel
+            switch (userOpts.failLevel) {
+                case 'ignore-errors':
+                    level = '0-Ignore-Errors'
+                    break
+                case 'errors':
+                    level = '1-Abort-on-Errors'
+                    break
+                case 'warnings-and-errors':
+                    level = '2-Abort-Even-on-Warnings'
+                    break
+            }
+        }
+        */
         if (userOpts.failLevel === 'auto') {
             if (!userOpts.strictMode) level = 0
             if (userOpts.strictMode) level = 1
         } else {
-            level = userOpts.failLevel
+            // level = userOpts.failLevel
+            switch (userOpts.failLevel) {
+                case 'ignore-errors':
+                    level = 0
+                    break
+                case 'errors':
+                    level = 1
+                    break
+                case 'warnings-and-errors':
+                    level = 2
+                    break
+            }
         }
 
         const coreOpts: IParseCoreOptions = {
@@ -242,7 +381,10 @@ export default class YINI {
             isWithTiming: isDev() || isDebug() || userOpts.includeTiming,
             isKeepUndefinedInMeta:
                 isDebug() || userOpts.preserveUndefinedInMeta,
-            isRequireDocTerminator: userOpts.requireDocTerminator,
+            isAvoidWarningsInConsole: userOpts.suppressWarnings,
+            requireDocTerminator: userOpts.requireDocTerminator,
+            treatEmptyValueAsNull: userOpts.treatEmptyValueAsNull,
+            onDuplicateKey: userOpts.onDuplicateKey,
         }
 
         debugPrint()
@@ -265,14 +407,14 @@ export default class YINI {
     /**
      * Parse a YINI file into a JavaScript object.
      *
-     * @param yiniFile Path to the YINI file.
-     * @param strictMode       If `true`, enforce strict parsing rules (e.g. require `/END`, disallow trailing commas).
-     * @param failLevel        Preferred bail sensitivity level, controls how errors and warnings are handled:
-     *   - `'auto'` (default)       : Auto‑select level (strict→1, lenient→0)
-     *   - `0` / `'Ignore-Errors'`    : Continue parsing despite errors; log them and attempt recovery.
-     *   - `1` / `'Abort-on-Errors'`  : Stop parsing on the first error.
-     *   - `2` / `'Abort-Even-on-Warnings'`: Stop parsing on the first warning **or** error.
-     * @param includeMetaData  If `true`, return additional metadata (e.g. warnings, statistics) alongside the parsed object.
+     * @param yiniFile           Path to the YINI file.
+     * @param strictMode         If `true`, enforce strict parsing rules (e.g. require `/END`, disallow trailing commas).
+     * @param failLevel          Preferred bail sensitivity level, controls how errors and warnings are handled:
+     *   - `'auto'` (default)      : Auto‑select level (strict → `'errors'`, lenient → `'ignore-errors'`)
+     *   - `'ignore-errors'`       : Continue parsing despite errors; log them and attempt recovery.
+     *   - `'errors'`              : Stop parsing on the first error.
+     *   - `'warnings-and-errors'` : Stop parsing on the first warning **or** error.
+     * @param includeMetaData    If `true`, return additional metadata (e.g. warnings, statistics) alongside the parsed object.
      *
      * @returns A JavaScript object representing the parsed YINI content.
      */
@@ -293,6 +435,31 @@ export default class YINI {
      * @param yiniFile Path to the YINI file.
      * @param options Optional settings to customize parsing and/or results, useful if you need more control.
      *
+     * @param options.failLevel - Minimum severity that should cause the parse to fail.
+     *   Accepts:
+     *     `'ignore-errors'` - Don't bail/fail on error, persist and try to recover.
+     *     `'errors'` - Stop parsing on the first error.
+     *     `'warnings-and-errors'` - Stop parsing on the first warning or error.
+     *   (Type: TPreferredFailLevel; exact behavior is implementation-defined.)
+     * @param options.includeDiagnostics - Include diagnostics in the returned metadata.
+     *   Requires: `includeMetaData = true`. Ignored otherwise.
+     * @param options.includeMetaData - Attach a metadata object to the parse result
+     *   (e.g., timings, diagnostics).
+     * @param options.includeTiming - Include timing information for parser phases in metadata.
+     *   Requires: `includeMetaData = true`. Ignored otherwise.
+     * @param options.onDuplicateKey - Strategy/handler when encountering a duplicate key.
+     *   Allowed values: `'warn-and-keep-first'` | `'warn-and-overwrite'` | `'keep-first'` (silent, first wins) | `'overwrite'` (silent, last wins) | `'error'`.
+     * @param options.preserveUndefinedInMeta - Keep properties with value `undefined` inside
+     *   the returned metadata. Requires: `includeMetaData = true`. Ignored otherwise.
+     * @param options.requireDocTerminator - Controls whether a document terminator is required.
+     *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
+     * @param options.strictMode - Enable stricter syntax and well-formedness checks according
+     *   to the spec (exact rules are implementation-defined).
+     * @param options.suppressWarnings - Suppress warnings sent to the console/log.
+     *   Does not affect warnings included in returned metadata.
+     * @param options.treatEmptyValueAsNull - How to treat an explicitly empty value on the
+     *   right-hand side of '='. Allowed values: `'allow'` | `'allow-with-warning'` | `'disallow'`.
+     *
      * @returns A JavaScript object representing the parsed YINI content.
      */
     // --- Method overload signature ---------------------------------------
@@ -310,8 +477,8 @@ export default class YINI {
     public static parseFile(
         filePath: string,
         arg2?: boolean | IAllUserOptions, // strictMode | options
-        failLevel: TPreferredFailLevel = DEFAULT_OPTS.failLevel,
-        includeMetaData = DEFAULT_OPTS.includeMetaData,
+        failLevel: TPreferredFailLevel = 'auto',
+        includeMetaData = false,
     ): TJSObject {
         debugPrint('-> Entered static parseFile(..) in class YINI\n')
         debugPrint('Current directory = ' + process.cwd())
@@ -326,6 +493,14 @@ export default class YINI {
             )
         }
 
+        // const mode: TParserMode =
+        // ((arg2 as any)?.strictMode ?? (arg2 as boolean | undefined)) ===
+        // true
+        //     ? 'strict'
+        //     : 'lenient'
+        const mode: TParserMode = inferModeFromArgs(arg2)
+        const defaultOptions = getDefaultOptions(mode)
+
         // Normalize to a fully-required options object.
         let userOpts: Required<IAllUserOptions>
 
@@ -339,20 +514,8 @@ export default class YINI {
                )
             */
             userOpts = {
-                ...DEFAULT_OPTS, // Sets the default options.
-                strictMode: arg2.strictMode ?? DEFAULT_OPTS.strictMode,
-                failLevel: arg2.failLevel ?? DEFAULT_OPTS.failLevel,
-                includeMetaData:
-                    arg2.includeMetaData ?? DEFAULT_OPTS.includeMetaData,
-                includeDiagnostics:
-                    arg2.includeDiagnostics ?? DEFAULT_OPTS.includeDiagnostics,
-                includeTiming: arg2.includeTiming ?? DEFAULT_OPTS.includeTiming,
-                preserveUndefinedInMeta:
-                    arg2.preserveUndefinedInMeta ??
-                    DEFAULT_OPTS.preserveUndefinedInMeta,
-                requireDocTerminator:
-                    arg2.requireDocTerminator ??
-                    DEFAULT_OPTS.requireDocTerminator,
+                ...defaultOptions, // Sets the default options.
+                ...arg2,
             }
         } else {
             // Positional form.
@@ -364,9 +527,9 @@ export default class YINI {
                )
             */
             userOpts = {
-                ...DEFAULT_OPTS, // Sets the default options.
+                ...defaultOptions, // Sets the default options.
                 strictMode:
-                    (arg2 as boolean | undefined) ?? DEFAULT_OPTS.strictMode,
+                    (arg2 as boolean | undefined) ?? defaultOptions.strictMode,
                 failLevel,
                 includeMetaData,
             }
@@ -397,7 +560,7 @@ export default class YINI {
         if (userOpts.includeMetaData) {
             _runtimeInfo.lineCount = content.split(/\r?\n/).length // Counts the lines.
             _runtimeInfo.fileByteSize = fileByteSize
-            _runtimeInfo.timeIoMs = +(timeEndMs - timeStartMs)
+            _runtimeInfo.timeIoMs = +(timeEndMs - timeStartMs).toFixed(3)
             _runtimeInfo.preferredBailSensitivity = userOpts.failLevel
             _runtimeInfo.sha256 = computeSha256(content) // NOTE: Compute BEFORE any possible tampering of content.
         }
@@ -410,15 +573,16 @@ export default class YINI {
 
         // IMPORTANT: (!) Do not forget to add new options here!
         const result = this.parse(content, {
-            strictMode: userOpts.strictMode,
-            failLevel: userOpts.failLevel,
-            includeMetaData: userOpts.includeMetaData,
-            includeDiagnostics: userOpts.includeDiagnostics,
-            includeTiming: userOpts.includeTiming,
-            preserveUndefinedInMeta: userOpts.preserveUndefinedInMeta,
-            requireDocTerminator: userOpts.requireDocTerminator,
+            // strictMode: userOpts.strictMode,
+            // failLevel: userOpts.failLevel,
+            // includeMetaData: userOpts.includeMetaData,
+            // includeDiagnostics: userOpts.includeDiagnostics,
+            // includeTiming: userOpts.includeTiming,
+            // preserveUndefinedInMeta: userOpts.preserveUndefinedInMeta,
+            // requireDocTerminator: userOpts.requireDocTerminator,
+            ...userOpts,
         })
-        if (hasNoNewlineAtEOF) {
+        if (hasNoNewlineAtEOF && !userOpts.suppressWarnings) {
             console.warn(
                 `No newline at end of file, it's recommended to end a file with a newline. File:\n"${filePath}"`,
             )

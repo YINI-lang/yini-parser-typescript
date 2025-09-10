@@ -19,6 +19,7 @@ import {
     TBailSensitivityLevel,
     TFailLevelKey,
     TPersistThreshold,
+    TPreferredFailLevel,
 } from './core/types'
 import YiniLexer from './grammar/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/YiniParser'
@@ -169,27 +170,33 @@ class MyLexerErrorListener implements ErrorListener<any> {
 export const _parseMain = (
     yiniContent: string,
     // options: IParseMainOptions = {
-    options: IParseCoreOptions = {
-        isStrict: false,
-        bailSensitivity: 0,
-        isIncludeMeta: false,
-        isWithDiagnostics: false,
-        isWithTiming: false,
-        isKeepUndefinedInMeta: false,
-        isRequireDocTerminator: false,
-    },
+    // options: IParseCoreOptions = {
+    //     isStrict: false,
+    //     bailSensitivity: 0,
+    //     isIncludeMeta: false,
+    //     isWithDiagnostics: false,
+    //     isWithTiming: false,
+    //     isKeepUndefinedInMeta: false,
+    //     isRequireDocTerminator: false,
+    // },
+    options: IParseCoreOptions,
     runtimeInfo: IRuntimeInfo,
 ) => {
     debugPrint()
     debugPrint('-> Entered parseMain(..) in parseEntry')
-    debugPrint('         isStrict mode = ' + options.isStrict)
-    debugPrint('       bailSensitivity = ' + options.bailSensitivity)
-    debugPrint('         isIncludeMeta = ' + options.isIncludeMeta)
-    debugPrint('     isWithDiagnostics = ' + options.isWithDiagnostics)
-    debugPrint('          isWithTiming = ' + options.isWithTiming)
-    debugPrint('  requireDocTerminator = ' + options.isRequireDocTerminator)
-    debugPrint('runtimeInfo.sourceType = ' + runtimeInfo.sourceType)
-    debugPrint('  runtimeInfo.fileName = ' + runtimeInfo.fileName)
+    debugPrint('           isStrict mode = ' + options.isStrict)
+    debugPrint('         bailSensitivity = ' + options.bailSensitivity)
+    debugPrint('           isIncludeMeta = ' + options.isIncludeMeta)
+    debugPrint('       isWithDiagnostics = ' + options.isWithDiagnostics)
+    debugPrint('            isWithTiming = ' + options.isWithTiming)
+    debugPrint('   isKeepUndefinedInMeta = ' + options.isKeepUndefinedInMeta)
+    debugPrint('isAvoidWarningsInConsole = ' + options.isAvoidWarningsInConsole)
+    debugPrint('    requireDocTerminator = ' + options.requireDocTerminator)
+    debugPrint('   treatEmptyValueAsNull = ' + options.treatEmptyValueAsNull)
+    debugPrint('          onDuplicateKey = ' + options.onDuplicateKey)
+    debugPrint()
+    debugPrint('  runtimeInfo.sourceType = ' + runtimeInfo.sourceType)
+    debugPrint('    runtimeInfo.fileName = ' + runtimeInfo.fileName)
 
     let persistThreshold: TPersistThreshold
     switch (options.bailSensitivity) {
@@ -401,13 +408,14 @@ export const _parseMain = (
         const metaData: IResultMetaData = {
             parserVersion: pkg.version,
             mode: options.isStrict ? 'strict' : 'lenient',
-            orderPreserved: true,
             totalErrors: errorHandler.getNumOfErrors(),
             totalWarnings: errorHandler.getNumOfWarnings(),
             totalMessages: errorHandler.getNumOfAllMessages(),
             runStartedAt,
             runFinishedAt,
             durationMs: to3(durationMs),
+            preservesOrder: true,
+            orderGuarantee: 'implementation-defined',
             source: {
                 sourceType: toLowerSnakeCase(ast.sourceType),
                 fileName: ast.fileName,
@@ -426,21 +434,33 @@ export const _parseMain = (
                 // listCount: null,
                 sectionNamePaths: ast.sectionNamePaths,
             },
-            metaSchemaVersion: '1.0.0',
+            metaSchemaVersion: '1.1.0',
         }
 
         // Attach optional diagnostics.
         if (options.isWithDiagnostics) {
+            // const mapToFailLevel = (
+            //     level: TBailSensitivityLevel,
+            // ): TPreferredFailLevel => {
+            //     switch (level) {
+            //         case 0:
+            //             return 'ignore-errors'
+            //         case 1:
+            //             return 'errors'
+            //         case 2:
+            //             return 'warnings-and-errors'
+            //     }
+            // }
             const mapLevelKey = (
                 level: TBailSensitivityLevel,
             ): TFailLevelKey => {
                 switch (level) {
                     case 0:
-                        return 'ignore_errors'
+                        return 'ignore-errors'
                     case 1:
-                        return 'abort_on_errors'
+                        return 'errors'
                     case 2:
-                        return 'abort_on_warnings'
+                        return 'warnings-and-errors'
                 }
             }
             const mapLevelLabel = (
@@ -505,14 +525,17 @@ export const _parseMain = (
                     },
                 },
                 optionsUsed: {
-                    // NOTE: (!) These MUST user options.
+                    // NOTE: (!) These MUST be user options.
                     strictMode: options.isStrict,
-                    failLevel: options.bailSensitivity,
+                    failLevel: mapLevelKey(options.bailSensitivity),
                     includeMetaData: options.isIncludeMeta,
                     includeDiagnostics: options.isWithDiagnostics,
                     includeTiming: options.isWithTiming,
                     preserveUndefinedInMeta: options.isKeepUndefinedInMeta,
-                    requireDocTerminator: options.isRequireDocTerminator,
+                    suppressWarnings: options.isAvoidWarningsInConsole,
+                    requireDocTerminator: options.requireDocTerminator,
+                    treatEmptyValueAsNull: options.treatEmptyValueAsNull,
+                    onDuplicateKey: options.onDuplicateKey,
                 },
             }
         }

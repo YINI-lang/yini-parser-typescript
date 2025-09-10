@@ -317,7 +317,7 @@ if (isProdEnv()) {
         // debugPrint('tab size = ' + YINI.getTabSize())
         const yini = `        @yini
         --@yini
-        ^^ Header // INVALID: Must start with atleast one 1-level section.
+        ^ Header // INVALID: Must start with atleast one 1-level section.
         key = 33254
         /END
         --/END
@@ -326,9 +326,9 @@ if (isProdEnv()) {
             toPrettyJSON(
                 YINI.parse(yini, {
                     strictMode: false,
-                    failLevel: 1,
+                    failLevel: 'errors',
                     includeMetaData: false,
-                    requireDocTerminator: false,
+                    requireDocTerminator: 'optional',
                 }),
             ),
         )
@@ -348,7 +348,7 @@ if (isProdEnv()) {
         //                     strictMode: true,
         //                     failLevel: 'auto',
         //                     includeMetaData: false,
-        //                     requireDocTerminator: false,
+        //                     requireDocTerminator: 'optional',
         //                 }),
         //             ),
         //         )

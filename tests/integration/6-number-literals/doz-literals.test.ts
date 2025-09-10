@@ -260,7 +260,7 @@ describe('Duodecimal (doz) number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false, 1)
+            const result = YINI.parse(badYini, false, 'errors')
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -288,7 +288,7 @@ describe('Duodecimal (doz) number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false, 1)
+            const result = YINI.parse(badYini, false, 'errors')
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -316,7 +316,7 @@ describe('Duodecimal (doz) number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false, 1)
+            const result = YINI.parse(badYini, false, 'errors')
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -344,7 +344,7 @@ describe('Duodecimal (doz) number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false, 1)
+            const result = YINI.parse(badYini, false, 'errors')
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -372,7 +372,7 @@ describe('Duodecimal (doz) number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false, 1)
+            const result = YINI.parse(badYini, false, 'errors')
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()
@@ -400,7 +400,7 @@ describe('Duodecimal (doz) number literal tests:', () => {
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(badYini, false, 1)
+            const result = YINI.parse(badYini, false, 'errors')
             debugPrint('result:')
             debugPrint(result)
         }).toThrow()

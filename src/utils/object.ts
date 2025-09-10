@@ -1,3 +1,62 @@
+type PlainObject = Record<string, unknown>
+
+interface SortOptions {
+    /** Sort nested objects too (default: false) */
+    deep?: boolean
+    /** Custom key comparator (default: a.localeCompare(b)) */
+    comparator?: (a: string, b: string) => number
+}
+
+const isPlainObject = (value: unknown): value is PlainObject => {
+    return (
+        typeof value === 'object' &&
+        value !== null &&
+        !Array.isArray(value) &&
+        Object.prototype.toString.call(value) === '[object Object]'
+    )
+}
+
+/**
+ * Returns a new object with keys sorted alphabetically.
+ * Arrays and non-plain objects are preserved as-is (unless deep + they contain plain objects).
+ */
+export const sortObjectKeys = <T>(obj: T, options: SortOptions = {}): T => {
+    const { deep = false, comparator } = options
+
+    if (!isPlainObject(obj)) {
+        // If it's not a plain object (array, Date, null, primitive), return as-is.
+        return obj
+    }
+
+    const keys = Object.keys(obj).sort(
+        comparator ?? ((a, b) => a.localeCompare(b)),
+    )
+
+    const sortedEntries = keys.map((k) => {
+        const value = (obj as PlainObject)[k]
+        if (deep) {
+            if (isPlainObject(value)) {
+                return [k, sortObjectKeys(value, options)]
+            }
+            if (Array.isArray(value)) {
+                // Deep-sort any plain objects inside arrays, leave others as-is.
+                return [
+                    k,
+                    value.map((item) =>
+                        isPlainObject(item)
+                            ? sortObjectKeys(item, options)
+                            : item,
+                    ),
+                ]
+            }
+        }
+        return [k, value]
+    })
+
+    // Preserve the original type T structurally.
+    return Object.fromEntries(sortedEntries) as T
+}
+
 /**
  * Removes top-level properties with value `undefined`.
  * Does not recurse into nested objects or arrays.
@@ -63,7 +122,7 @@ export const removeUndefinedShallow = <T extends object>(
  *     }
  *   }
  */
-export const removeUndefinedDeep = <T,>(obj: T): T => {
+export const removeUndefinedDeep = <T>(obj: T): T => {
     if (obj === null || typeof obj !== 'object') {
         return obj // primitive value
     }
