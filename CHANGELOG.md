@@ -5,6 +5,12 @@
 ## 1.1.0-beta + [UPDATES] - 2025 XXX
 - **Fixed:** `parseFile()` now correctly passes through ALL options (e.g. `includeDiagnostics`) so they work as in `parse(..)`.
 - **Fixed:** typo (`in in`) in file parsing error message.
+- Meta data structure bumped to version 1.1.0, and below added:
+    ```ts
+    preservesOrder: true // Member/section order: platform-, implementation-, and language-specific. Not mandated by the YINI spec.
+    orderGuarantee: 'implementation-defined'
+    orderNotes?: string
+    ```
 
 ## 1.1.0-beta - 2025 Sep
 ### Parser

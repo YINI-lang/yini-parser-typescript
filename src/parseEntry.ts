@@ -408,13 +408,14 @@ export const _parseMain = (
         const metaData: IResultMetaData = {
             parserVersion: pkg.version,
             mode: options.isStrict ? 'strict' : 'lenient',
-            orderPreserved: 'de-facto-yes',
             totalErrors: errorHandler.getNumOfErrors(),
             totalWarnings: errorHandler.getNumOfWarnings(),
             totalMessages: errorHandler.getNumOfAllMessages(),
             runStartedAt,
             runFinishedAt,
             durationMs: to3(durationMs),
+            preservesOrder: true,
+            orderGuarantee: 'implementation-defined',
             source: {
                 sourceType: toLowerSnakeCase(ast.sourceType),
                 fileName: ast.fileName,

@@ -245,13 +245,15 @@ export interface IIssuePayload {
 export interface IResultMetaData {
     parserVersion: string
     mode: 'lenient' | 'strict'
-    orderPreserved: 'de-facto-yes' // Platform, implementaion, and programming language specific.
     totalErrors: number
     totalWarnings: number
     totalMessages: number
     runStartedAt: string
     runFinishedAt: string
     durationMs: number
+    preservesOrder: boolean // Member/section order: platform-, implementation-, and language-specific. Not mandated by the YINI spec.
+    orderGuarantee: 'implementation-defined' // De facto yes, in this specific implementation.
+    orderNotes?: string
     source: {
         sourceType: string // Transformed from the type, keep it lowercase since it's shown in resulted meta, easier for tooling.
         fileName: undefined | string // Path and file name if from file.
