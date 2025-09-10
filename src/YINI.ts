@@ -187,14 +187,14 @@ export default class YINI {
     /**
      * Parse inline YINI content into a JavaScript object.
      *
-     * @param yiniContent      YINI code as a string (multi‑line content supported).
-     * @param strictMode       If `true`, enforce strict parsing rules (e.g. require `/END`, disallow trailing commas).
-     * @param failLevel        Preferred bail sensitivity level, controls how errors and warnings are handled:
-     *   - `'auto'` (default)       : Auto‑select level (strict→1, lenient→0)
-     *   - `0` / `'Ignore-Errors'`    : Continue parsing despite errors; log them and attempt recovery.
-     *   - `1` / `'Abort-on-Errors'`  : Stop parsing on the first error.
-     *   - `2` / `'Abort-Even-on-Warnings'`: Stop parsing on the first warning **or** error.
-     * @param includeMetaData  If `true`, return additional metadata (e.g. warnings, statistics) alongside the parsed object.
+     * @param yiniContent        YINI code as a string (multi‑line content supported).
+     * @param strictMode         If `true`, enforce strict parsing rules (e.g. require `/END`, disallow trailing commas).
+     * @param failLevel          Preferred bail sensitivity level, controls how errors and warnings are handled:
+     *   - `'auto'` (default)      : Auto‑select level (strict → `'errors'`, lenient → `'ignore-errors'`)
+     *   - `'ignore-errors'`       : Continue parsing despite errors; log them and attempt recovery.
+     *   - `'errors'`              : Stop parsing on the first error.
+     *   - `'warnings-and-errors'` : Stop parsing on the first warning **or** error.
+     * @param includeMetaData    If `true`, return additional metadata (e.g. warnings, statistics) alongside the parsed object.
      *
      * @returns A JavaScript object representing the parsed YINI content.
      */
@@ -214,6 +214,31 @@ export default class YINI {
      *
      * @param yiniContent      YINI code as a string (multi‑line content supported).
      * @param options Optional settings to customize parsing and/or results, useful if you need more control.
+     *
+     * @param options.failLevel - Minimum severity that should cause the parse to fail.
+     *   Accepts:
+     *     `'ignore-errors'` - Don't bail/fail on error, persist and try to recover.
+     *     `'errors'` - Stop parsing on the first error.
+     *     `'warnings-and-errors'` - Stop parsing on the first warning or error.
+     *   (Type: TPreferredFailLevel; exact behavior is implementation-defined.)
+     * @param options.includeDiagnostics - Include diagnostics in the returned metadata.
+     *   Requires: `includeMetaData = true`. Ignored otherwise.
+     * @param options.includeMetaData - Attach a metadata object to the parse result
+     *   (e.g., timings, diagnostics).
+     * @param options.includeTiming - Include timing information for parser phases in metadata.
+     *   Requires: `includeMetaData = true`. Ignored otherwise.
+     * @param options.onDuplicateKey - Strategy/handler when encountering a duplicate key.
+     *   Allowed values: `'warn-and-keep-first'` | `'warn-and-overwrite'` | `'keep-first'` (silent, first wins) | `'overwrite'` (silent, last wins) | `'error'`.
+     * @param options.preserveUndefinedInMeta - Keep properties with value `undefined` inside
+     *   the returned metadata. Requires: `includeMetaData = true`. Ignored otherwise.
+     * @param options.requireDocTerminator - Controls whether a document terminator is required.
+     *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
+     * @param options.strictMode - Enable stricter syntax and well-formedness checks according
+     *   to the spec (exact rules are implementation-defined).
+     * @param options.suppressWarnings - Suppress warnings sent to the console/log.
+     *   Does not affect warnings included in returned metadata.
+     * @param options.treatEmptyValueAsNull - How to treat an explicitly empty value on the
+     *   right-hand side of '='. Allowed values: `'allow'` | `'allow-with-warning'` | `'disallow'`.
      *
      * @returns A JavaScript object representing the parsed YINI content.
      */
@@ -382,14 +407,14 @@ export default class YINI {
     /**
      * Parse a YINI file into a JavaScript object.
      *
-     * @param yiniFile Path to the YINI file.
-     * @param strictMode       If `true`, enforce strict parsing rules (e.g. require `/END`, disallow trailing commas).
-     * @param failLevel        Preferred bail sensitivity level, controls how errors and warnings are handled:
-     *   - `'auto'` (default)       : Auto‑select level (strict→1, lenient→0)
-     *   - `0` / `'Ignore-Errors'`    : Continue parsing despite errors; log them and attempt recovery.
-     *   - `1` / `'Abort-on-Errors'`  : Stop parsing on the first error.
-     *   - `2` / `'Abort-Even-on-Warnings'`: Stop parsing on the first warning **or** error.
-     * @param includeMetaData  If `true`, return additional metadata (e.g. warnings, statistics) alongside the parsed object.
+     * @param yiniFile           Path to the YINI file.
+     * @param strictMode         If `true`, enforce strict parsing rules (e.g. require `/END`, disallow trailing commas).
+     * @param failLevel          Preferred bail sensitivity level, controls how errors and warnings are handled:
+     *   - `'auto'` (default)      : Auto‑select level (strict → `'errors'`, lenient → `'ignore-errors'`)
+     *   - `'ignore-errors'`       : Continue parsing despite errors; log them and attempt recovery.
+     *   - `'errors'`              : Stop parsing on the first error.
+     *   - `'warnings-and-errors'` : Stop parsing on the first warning **or** error.
+     * @param includeMetaData    If `true`, return additional metadata (e.g. warnings, statistics) alongside the parsed object.
      *
      * @returns A JavaScript object representing the parsed YINI content.
      */
@@ -409,6 +434,31 @@ export default class YINI {
      *
      * @param yiniFile Path to the YINI file.
      * @param options Optional settings to customize parsing and/or results, useful if you need more control.
+     *
+     * @param options.failLevel - Minimum severity that should cause the parse to fail.
+     *   Accepts:
+     *     `'ignore-errors'` - Don't bail/fail on error, persist and try to recover.
+     *     `'errors'` - Stop parsing on the first error.
+     *     `'warnings-and-errors'` - Stop parsing on the first warning or error.
+     *   (Type: TPreferredFailLevel; exact behavior is implementation-defined.)
+     * @param options.includeDiagnostics - Include diagnostics in the returned metadata.
+     *   Requires: `includeMetaData = true`. Ignored otherwise.
+     * @param options.includeMetaData - Attach a metadata object to the parse result
+     *   (e.g., timings, diagnostics).
+     * @param options.includeTiming - Include timing information for parser phases in metadata.
+     *   Requires: `includeMetaData = true`. Ignored otherwise.
+     * @param options.onDuplicateKey - Strategy/handler when encountering a duplicate key.
+     *   Allowed values: `'warn-and-keep-first'` | `'warn-and-overwrite'` | `'keep-first'` (silent, first wins) | `'overwrite'` (silent, last wins) | `'error'`.
+     * @param options.preserveUndefinedInMeta - Keep properties with value `undefined` inside
+     *   the returned metadata. Requires: `includeMetaData = true`. Ignored otherwise.
+     * @param options.requireDocTerminator - Controls whether a document terminator is required.
+     *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
+     * @param options.strictMode - Enable stricter syntax and well-formedness checks according
+     *   to the spec (exact rules are implementation-defined).
+     * @param options.suppressWarnings - Suppress warnings sent to the console/log.
+     *   Does not affect warnings included in returned metadata.
+     * @param options.treatEmptyValueAsNull - How to treat an explicitly empty value on the
+     *   right-hand side of '='. Allowed values: `'allow'` | `'allow-with-warning'` | `'disallow'`.
      *
      * @returns A JavaScript object representing the parsed YINI content.
      */
