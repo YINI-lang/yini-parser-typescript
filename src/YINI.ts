@@ -207,16 +207,21 @@ export default class YINI {
         // const coreOpts: IParseCoreOptions = toCoreOptions(level, userOpts)
 
         debugPrint()
-        debugPrint('==== Call parse ==========================')
-        // const result = _parseMain(yiniContent, coreOpts, _runtimeInfo)
-        const runtime = new YiniRun('Inline')
-        const result = runtime.doParse(
-            yiniContent,
-            arg2,
-            failLevel,
-            includeMetaData,
+        debugPrint(
+            '==== Call doParse(..) in runtime ==========================',
         )
+        // const result = _parseMain(yiniContent, coreOpts, _runtimeInfo)
+        const runtime = new YiniRuntime('Inline')
 
+        const result = isOptionsObjectForm(arg2)
+            ? runtime.doParse(yiniContent, arg2) // Overload #2: (content, options)
+            : runtime.doParse(
+                  // Overload #1: (content, strict?, failLevel?, includeMeta?)
+                  yiniContent,
+                  arg2 as boolean | undefined,
+                  failLevel,
+                  includeMetaData,
+              )
         debugPrint('==== End call parse ==========================\n')
 
         if (isDev()) {
@@ -381,15 +386,21 @@ export default class YINI {
         // }
 
         debugPrint()
-        debugPrint('==== Call parse ==========================')
-        // const result = _parseMain(yiniContent, coreOpts, _runtimeInfo)
-        const runtime = new YiniRun('File')
-        const result = runtime.doParseFile(
-            yiniContent,
-            arg2,
-            failLevel,
-            includeMetaData,
+        debugPrint(
+            '==== Call doParseFile(..) in runtime ==========================',
         )
+        // const result = _parseMain(yiniContent, coreOpts, _runtimeInfo)
+        const runtime = new YiniRuntime('File')
+
+        const result = isOptionsObjectForm(arg2)
+            ? runtime.doParse(filePath, arg2) // Overload #2: (content, options)
+            : runtime.doParse(
+                  // Overload #1: (content, strict?, failLevel?, includeMeta?)
+                  filePath,
+                  arg2 as boolean | undefined,
+                  failLevel,
+                  includeMetaData,
+              )
 
         debugPrint('==== End call parse ==========================\n')
         return result
@@ -401,7 +412,7 @@ export default class YINI {
 /**
  * Private class for a runtime object, making a per-parse-call instance.
  */
-class YiniRun {
+class YiniRuntime {
     /**
      * @note Leading # makes the property "truly private" at runtime.
      */
@@ -451,7 +462,7 @@ class YiniRun {
         failLevel: TPreferredFailLevel = 'auto',
         includeMetaData = false,
     ): TJSObject {
-        debugPrint('-> Entered static parse(..) in class YINI\n')
+        debugPrint('-> Entered doParse(..) in YiniRuntime class\n')
 
         // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
         if (
@@ -555,7 +566,7 @@ class YiniRun {
         failLevel: TPreferredFailLevel = 'auto',
         includeMetaData = false,
     ): TJSObject {
-        debugPrint('-> Entered static parseFile(..) in class YINI\n')
+        debugPrint('-> Entered doParseFile(..) in YiniRuntime class\n')
         debugPrint('Current directory = ' + process.cwd())
 
         // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
@@ -611,7 +622,7 @@ class YiniRun {
         let content = rawBuffer.toString('utf8')
         const timeEndMs = performance.now()
 
-        this.#runtime.sourceType = 'File'
+        // this.#runtime.sourceType = 'File'
         this.#runtime.fileName = filePath
 
         if (userOpts.includeMetaData) {
