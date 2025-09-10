@@ -2,6 +2,13 @@ import fs from 'fs'
 import { performance } from 'perf_hooks'
 import { isDebug, isDev } from './config/env'
 import { ErrorDataHandler } from './core/ErrorDataHandler'
+import { mapFailLevelToBail } from './core/options/failLevel'
+import {
+    inferModeFromArgs,
+    isOptionsObjectForm,
+    toCoreOptions,
+} from './core/options/normalizeOptions'
+import { getDefaultOptions } from './core/options/parserOptionsConstants'
 import {
     IAllUserOptions,
     IParseCoreOptions,
@@ -28,129 +35,6 @@ let _runtimeInfo: IRuntimeInfo = {
     preferredBailSensitivity: null,
     sha256: null,
 }
-
-// --- Helper Functions ----------------------------------------------------
-
-// Type guard: did the caller use the options-object form?
-const isOptionsObjectForm = (v: unknown): v is IAllUserOptions => {
-    return (
-        v != null &&
-        typeof v === 'object' &&
-        // Note: If one wants, this can be relax to "typeof v === 'object'"
-        // but this keeps accidental booleans/strings out.
-        ('strictMode' in (v as any) ||
-            'failLevel' in (v as any) ||
-            'includeMetaData' in (v as any) ||
-            'includeDiagnostics' in (v as any) ||
-            'includeTiming' in (v as any) ||
-            'preserveUndefinedInMeta' in (v as any) ||
-            'suppressWarnings' in (v as any) ||
-            'requireDocTerminator' in (v as any) ||
-            'treatEmptyValueAsNull' in (v as any) ||
-            'onDuplicateKey' in (v as any))
-    )
-}
-
-// const mode: TParserMode =
-// ((arg2 as any)?.strictMode ?? (arg2 as boolean | undefined)) ===
-
-const inferModeFromArgs = (arg2?: boolean | IAllUserOptions): TParserMode => {
-    if (typeof arg2 === 'boolean') {
-        return arg2 ? 'strict' : 'lenient'
-    }
-    if (arg2 && typeof arg2 === 'object') {
-        const sm = (arg2 as IAllUserOptions).strictMode
-        if (typeof sm === 'boolean') {
-            return sm ? 'strict' : 'lenient'
-        }
-    }
-    return 'lenient'
-}
-
-// -------------------------------------------------------------------------
-
-/*
-// Initial default values.
-const DEFAULT_OPTS: Required<
-    Pick<
-        IAllUserOptions,
-        | 'strictMode'
-        | 'failLevel'
-        | 'includeMetaData'
-        | 'includeDiagnostics'
-        | 'includeTiming'
-        | 'preserveUndefinedInMeta'
-        | 'suppressWarnings'
-        | 'requireDocTerminator'
-        | 'treatEmptyValueAsNull'
-        | 'onDuplicateKey'
-    >
-> = {
-    strictMode: false,
-    failLevel: 'auto',
-    includeMetaData: false,
-    includeDiagnostics: false,
-    includeTiming: false,
-    preserveUndefinedInMeta: false,
-    suppressWarnings: false,
-    requireDocTerminator: 'optional',
-    treatEmptyValueAsNull: 'allow-with-warning',
-    onDuplicateKey: 'keep-first',
-}
-*/
-
-type NormalizedOpts = Required<
-    Pick<
-        IAllUserOptions,
-        | 'strictMode'
-        | 'failLevel'
-        | 'includeMetaData'
-        | 'includeDiagnostics'
-        | 'includeTiming'
-        | 'preserveUndefinedInMeta'
-        | 'suppressWarnings'
-        | 'requireDocTerminator'
-        | 'treatEmptyValueAsNull'
-        | 'onDuplicateKey'
-    >
->
-
-// base (mode-agnostic) defaults
-const BASE_DEFAULTS: NormalizedOpts = {
-    strictMode: false,
-    failLevel: 'auto',
-    includeMetaData: false,
-    includeDiagnostics: false,
-    includeTiming: false,
-    preserveUndefinedInMeta: false,
-    suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
-    requireDocTerminator: 'optional',
-    treatEmptyValueAsNull: 'allow-with-warning',
-    onDuplicateKey: 'error',
-}
-
-const DEFAULT_LENIENT_OPTS: NormalizedOpts = {
-    ...BASE_DEFAULTS,
-    strictMode: false,
-    failLevel: 'ignore-errors',
-    suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
-    requireDocTerminator: 'optional',
-    treatEmptyValueAsNull: 'allow-with-warning',
-    onDuplicateKey: 'warn-and-keep-first',
-}
-
-const DEFAULT_STRICT_OPTS: NormalizedOpts = {
-    ...BASE_DEFAULTS,
-    strictMode: true,
-    failLevel: 'errors',
-    suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
-    requireDocTerminator: 'optional',
-    treatEmptyValueAsNull: 'disallow',
-    onDuplicateKey: 'error',
-}
-
-export const getDefaultOptions = (mode: TParserMode) =>
-    mode === 'strict' ? DEFAULT_STRICT_OPTS : DEFAULT_LENIENT_OPTS
 
 /**
  * This class is the public API, which exposes only parse(..) and
@@ -272,11 +156,6 @@ export default class YINI {
             )
         }
 
-        // const mode: TParserMode =
-        //     ((arg2 as any)?.strictMode ?? (arg2 as boolean | undefined)) ===
-        //     true
-        //         ? 'strict'
-        //         : 'lenient'
         const mode: TParserMode = inferModeFromArgs(arg2)
         const defaultOptions = getDefaultOptions(mode)
 
@@ -284,27 +163,13 @@ export default class YINI {
         let userOpts: Required<IAllUserOptions>
 
         // Required, makes all properties in T required, no undefined.
-        // const userOpts: Required<IAllUserOptions> = isOptionsObjectForm(arg2)
         if (isOptionsObjectForm(arg2)) {
-            // Options-object Form.
-            /* parse = (
-                  yiniContent: string,
-                  options: IAllUserOptions,
-               )
-            */
             userOpts = {
                 ...defaultOptions, // Sets the default options.
                 ...arg2,
             }
         } else {
             // Positional form.
-            /* parse = (
-                  yiniContent: string,
-                  strictMode?: boolean,
-                  failLevel?: TPreferredFailLevel,
-                  includeMetaData?: boolean,
-               )
-            */
             userOpts = {
                 ...defaultOptions, // Sets the default options.
                 strictMode:
@@ -333,59 +198,12 @@ export default class YINI {
             yiniContent += '\n'
         }
 
-        // let level: TPersistThreshold = '0-Ignore-Errors'
-        let level: TBailSensitivityLevel = 0
-        /*
-        if (userOpts.failLevel === 'auto') {
-            if (!userOpts.strictMode) level = '0-Ignore-Errors'
-            if (userOpts.strictMode) level = '1-Abort-on-Errors'
-        } else {
-            // level = userOpts.failLevel
-            switch (userOpts.failLevel) {
-                case 'ignore-errors':
-                    level = '0-Ignore-Errors'
-                    break
-                case 'errors':
-                    level = '1-Abort-on-Errors'
-                    break
-                case 'warnings-and-errors':
-                    level = '2-Abort-Even-on-Warnings'
-                    break
-            }
-        }
-        */
-        if (userOpts.failLevel === 'auto') {
-            if (!userOpts.strictMode) level = 0
-            if (userOpts.strictMode) level = 1
-        } else {
-            // level = userOpts.failLevel
-            switch (userOpts.failLevel) {
-                case 'ignore-errors':
-                    level = 0
-                    break
-                case 'errors':
-                    level = 1
-                    break
-                case 'warnings-and-errors':
-                    level = 2
-                    break
-            }
-        }
+        let level: TBailSensitivityLevel = mapFailLevelToBail(
+            userOpts.strictMode,
+            userOpts.failLevel,
+        )
 
-        const coreOpts: IParseCoreOptions = {
-            isStrict: userOpts.strictMode,
-            bailSensitivity: level,
-            isIncludeMeta: userOpts.includeMetaData,
-            isWithDiagnostics:
-                isDev() || isDebug() || userOpts.includeDiagnostics,
-            isWithTiming: isDev() || isDebug() || userOpts.includeTiming,
-            isKeepUndefinedInMeta:
-                isDebug() || userOpts.preserveUndefinedInMeta,
-            isAvoidWarningsInConsole: userOpts.suppressWarnings,
-            requireDocTerminator: userOpts.requireDocTerminator,
-            treatEmptyValueAsNull: userOpts.treatEmptyValueAsNull,
-            onDuplicateKey: userOpts.onDuplicateKey,
-        }
+        const coreOpts: IParseCoreOptions = toCoreOptions(level, userOpts)
 
         debugPrint()
         debugPrint('==== Call parse ==========================')
@@ -493,11 +311,6 @@ export default class YINI {
             )
         }
 
-        // const mode: TParserMode =
-        // ((arg2 as any)?.strictMode ?? (arg2 as boolean | undefined)) ===
-        // true
-        //     ? 'strict'
-        //     : 'lenient'
         const mode: TParserMode = inferModeFromArgs(arg2)
         const defaultOptions = getDefaultOptions(mode)
 
@@ -505,27 +318,14 @@ export default class YINI {
         let userOpts: Required<IAllUserOptions>
 
         // Required, makes all properties in T required, no undefined.
-        // const userOpts: Required<IAllUserOptions> = isOptionsObjectForm(arg2)
         if (isOptionsObjectForm(arg2)) {
             // Options-object Form.
-            /* parse = (
-                  yiniContent: string,
-                  options: IAllUserOptions,
-               )
-            */
             userOpts = {
                 ...defaultOptions, // Sets the default options.
                 ...arg2,
             }
         } else {
             // Positional form.
-            /* parse = (
-                  yiniContent: string,
-                  strictMode?: boolean,
-                  failLevel?: TPreferredFailLevel,
-                  includeMetaData?: boolean,
-               )
-            */
             userOpts = {
                 ...defaultOptions, // Sets the default options.
                 strictMode:
@@ -573,13 +373,6 @@ export default class YINI {
 
         // IMPORTANT: (!) Do not forget to add new options here!
         const result = this.parse(content, {
-            // strictMode: userOpts.strictMode,
-            // failLevel: userOpts.failLevel,
-            // includeMetaData: userOpts.includeMetaData,
-            // includeDiagnostics: userOpts.includeDiagnostics,
-            // includeTiming: userOpts.includeTiming,
-            // preserveUndefinedInMeta: userOpts.preserveUndefinedInMeta,
-            // requireDocTerminator: userOpts.requireDocTerminator,
             ...userOpts,
         })
         if (hasNoNewlineAtEOF && !userOpts.suppressWarnings) {
