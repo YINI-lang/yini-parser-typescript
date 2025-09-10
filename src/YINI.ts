@@ -422,6 +422,7 @@ class YiniRuntime {
     constructor(sourceType: 'Inline' | 'File') {
         // this.#runtime = { sourceType, fileName: undefined, ...seed }
         this.#runtime = this.makeRuntimeInfo()
+        this.#runtime.sourceType = sourceType
     }
 
     private makeRuntimeInfo(): IRuntimeInfo {
