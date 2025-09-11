@@ -15,7 +15,7 @@ import { IYiniAST, IYiniSection, TValueLiteral } from './internalTypes'
 export const astToObject = (
     ast: IYiniAST,
     errorHandler: ErrorDataHandler,
-    // ): TJSObject => {
+    // ): ParsedObject => {
 ): Record<string, unknown> => {
     debugPrint('-> constructFinalObject(..)')
     // return sectionChildrenToObject(ast.root)

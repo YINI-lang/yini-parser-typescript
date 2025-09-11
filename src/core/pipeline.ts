@@ -18,9 +18,11 @@ import YiniLexer from '../grammar/generated/YiniLexer'
 import YiniParser, { YiniContext } from '../grammar/generated/YiniParser'
 import {
     IResultMetadata,
+    ParsedObject,
     TBailSensitivityLevel,
     TFailLevelKey,
     TPersistThreshold,
+    YiniParseResult,
 } from '../types'
 import { removeUndefinedDeep } from '../utils/object'
 import { debugPrint, printObject } from '../utils/print'
@@ -188,7 +190,7 @@ export const runPipeline = (
     // },
     coreOptions: IParseCoreOptions,
     runtimeInfo: IRuntimeInfo,
-) => {
+): ParsedObject | YiniParseResult => {
     debugPrint()
     debugPrint('-> Entered parseMain(..) in parseEntry')
     debugPrint('           isStrict mode = ' + coreOptions.isStrict)
@@ -621,8 +623,8 @@ export const runPipeline = (
             meta: !coreOptions.isKeepUndefinedInMeta
                 ? removeUndefinedDeep(constructResultMetadata())
                 : constructResultMetadata(),
-        }
+        } as YiniParseResult
     }
 
-    return finalJSResult as any
+    return finalJSResult as ParsedObject
 }

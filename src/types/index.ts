@@ -7,8 +7,25 @@
 
 // --- Public (user-facing) Types ----------------------------------------------------------------
 
+/**
+ * JavaScript object produced by parsing a YINI document.
+ */
+// @note Currently typed as `any` for maximum flexibility.
+// NOTE: This cannot be safely narrowed to `unknown` or `Record<string, unknown>`
+// without breaking linting and downstream usage.
+export type ParsedObject = any
 // NOTE: Currently 'any' to preserve flexibility of parse result.
-export type TJSObject = any // NOTE: Currently must be any! Not unknown or Record<string, unknown> or anything else, since linting etc will render this as error/unknow.
+// export type TJSObject = any // NOTE: Currently must be any! Not unknown or Record<string, unknown> or anything else, since linting etc will render this as error/unknow.
+
+/**
+ * Result returned from `parse(..)` and `parseFile(..)`,
+ * containing both the parsed object and associated metadata.
+ */
+export interface YiniParseResult {
+    // result: TJSObject
+    result: ParsedObject
+    meta: IResultMetadata
+}
 
 // Human label types.
 export type TPersistThreshold =

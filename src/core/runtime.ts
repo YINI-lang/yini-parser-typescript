@@ -2,8 +2,8 @@ import fs from 'fs'
 import { isDev } from '../config/env'
 import {
     IAllUserOptions,
+    ParsedObject,
     TBailSensitivityLevel,
-    TJSObject,
     TPreferredFailLevel,
 } from '../types'
 import { getFileNameExtension } from '../utils/pathAndFileName'
@@ -60,13 +60,13 @@ export class YiniRuntime {
         strictMode?: boolean,
         failLevel?: TPreferredFailLevel,
         includeMetadata?: boolean,
-    ): TJSObject
+    ): ParsedObject
 
     // --- Method overload signature ---------------------------------------
     // (With no body + not declared with arrow function.)
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
     // Options-object form (recommended) for power/expert users (more future-proof).
-    public doParse(yiniContent: string, options?: IAllUserOptions): TJSObject
+    public doParse(yiniContent: string, options?: IAllUserOptions): ParsedObject
 
     // --- Single implementation --------------------------------------------
     // Implementation method (not declared with arrow function) for both method overload signatures.
@@ -76,7 +76,7 @@ export class YiniRuntime {
         arg2?: boolean | IAllUserOptions, // strictMode | options
         failLevel: TPreferredFailLevel = 'auto',
         includeMetadata = false,
-    ): TJSObject {
+    ): ParsedObject {
         debugPrint('-> Entered doParse(..) in YiniRuntime class\n')
 
         // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
@@ -164,13 +164,16 @@ export class YiniRuntime {
         strictMode?: boolean,
         failLevel?: TPreferredFailLevel,
         includeMetadata?: boolean,
-    ): TJSObject
+    ): ParsedObject
 
     // --- Method overload signature ---------------------------------------
     // (With no body + not declared with arrow function.)
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
     // Options-object form (recommended) for power/expert users (more future-proof).
-    public doParseFile(filePath: string, options?: IAllUserOptions): TJSObject
+    public doParseFile(
+        filePath: string,
+        options?: IAllUserOptions,
+    ): ParsedObject
 
     // --- Single implementation --------------------------------------------
     // Implementation method (not declared with arrow function) for both method overload signatures.
@@ -180,7 +183,7 @@ export class YiniRuntime {
         arg2?: boolean | IAllUserOptions, // strictMode | options
         failLevel: TPreferredFailLevel = 'auto',
         includeMetadata = false,
-    ): TJSObject {
+    ): ParsedObject {
         debugPrint('-> Entered doParseFile(..) in YiniRuntime class\n')
         debugPrint('Current directory = ' + process.cwd())
 

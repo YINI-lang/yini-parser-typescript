@@ -53,7 +53,7 @@ The default style for function declarations is arrow functions style, e.g:
 ```ts
 const parseBooleanLiteral = (txt: string): boolean => { ... }
 
-const doCheckAndBuild = (): TJSObject => { ... }
+const doCheckAndBuild = (): ParsedObject => { ... }
 ```
 
 However, (non-callback) methods (functions) within classes MAY (but is not required to) use traditional method style, e.g.:
@@ -61,5 +61,5 @@ However, (non-callback) methods (functions) within classes MAY (but is not requi
 ```ts
 constructor(syntaxTreeC: TSyntaxTreeContainer) { ... }
 
-public doCheckAndBuild(): TJSObject { ... }
+public doCheckAndBuild(): ParsedObject { ... }
 ```

@@ -18,6 +18,7 @@ import {
     localAppEnv,
     localNodeEnv,
 } from '../config/env'
+import { ParsedObject, YiniParseResult } from '../types'
 import { debugPrint, toPrettyJSON } from '../utils/print'
 import YINI from '../YINI'
 
@@ -344,16 +345,25 @@ if (isProdEnv()) {
         //                 }),
         //             ),
         //         )
-        console.log(
-            toPrettyJSON(
-                YINI.parseFile(
-                    'comprehensive-example.yini',
-                    false,
-                    'auto',
-                    true,
-                ),
-            ),
+
+        // console.log(
+        //     toPrettyJSON(
+        //         YINI.parseFile(
+        //             'comprehensive-example.yini',
+        //             false,
+        //             'auto',
+        //             true,
+        //         ),
+        //     ),
+        // )
+
+        const result: YiniParseResult = YINI.parseFile(
+            'comprehensive-example.yini',
+            { includeMetadata: true },
         )
+
+        console.log(toPrettyJSON('' + result.meta))
+
         // console.log(
         //     toPrettyJSON(
         //         YINI.parseFile('comprehensive-example.yini', {

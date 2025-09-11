@@ -2,7 +2,12 @@ import { isDebug, isDev } from './config/env'
 import { ErrorDataHandler } from './core/errorDataHandler'
 import { isOptionsObjectForm } from './core/options/normalizeOptions'
 import { YiniRuntime } from './core/runtime'
-import { IAllUserOptions, TJSObject, TPreferredFailLevel } from './types'
+import {
+    IAllUserOptions,
+    ParsedObject,
+    TPreferredFailLevel,
+    YiniParseResult,
+} from './types'
 import { debugPrint, devPrint, printObject } from './utils/print'
 
 const DEFAULT_TAB_SIZE = 4 // De facto "modern default" (even though traditionally/historically it's 8).
@@ -73,7 +78,7 @@ export default class YINI {
         strictMode?: boolean,
         failLevel?: TPreferredFailLevel,
         includeMetadata?: boolean,
-    ): TJSObject
+    ): ParsedObject | YiniParseResult
 
     /**
      * Parse inline YINI content into a JavaScript object, using an options object for configuration.
@@ -116,7 +121,7 @@ export default class YINI {
     public static parse(
         yiniContent: string,
         options?: IAllUserOptions,
-    ): TJSObject
+    ): ParsedObject | YiniParseResult
 
     // --- Single implementation --------------------------------------------
     // Implementation method (not declared with arrow function) for both method overload signatures.
@@ -126,7 +131,7 @@ export default class YINI {
         arg2?: boolean | IAllUserOptions, // strictMode | options
         failLevel: TPreferredFailLevel = 'auto',
         includeMetadata = false,
-    ): TJSObject {
+    ): ParsedObject | YiniParseResult {
         debugPrint('-> Entered static parse(..) in class YINI\n')
 
         // // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
@@ -242,13 +247,14 @@ export default class YINI {
         strictMode?: boolean,
         failLevel?: TPreferredFailLevel,
         includeMetadata?: boolean,
-    ): TJSObject
+    ): ParsedObject | YiniParseResult
 
     /**
      * Parse a YINI file into a JavaScript object, using an options object for configuration.
      *
      * @param yiniFile Path to the YINI file.
      * @param options Optional settings to customize parsing and/or results, useful if you need more control.
+     *        For all options, see types/IAllUserOptions.
      *
      * @param options.failLevel - Minimum severity that should cause the parse to fail.
      *   Accepts:
@@ -284,7 +290,7 @@ export default class YINI {
     public static parseFile(
         filePath: string,
         options?: IAllUserOptions,
-    ): TJSObject
+    ): ParsedObject | YiniParseResult
 
     // --- Single implementation --------------------------------------------
     // Implementation method (not declared with arrow function) for both method overload signatures.
@@ -294,7 +300,7 @@ export default class YINI {
         arg2?: boolean | IAllUserOptions, // strictMode | options
         failLevel: TPreferredFailLevel = 'auto',
         includeMetadata = false,
-    ): TJSObject {
+    ): ParsedObject | YiniParseResult {
         debugPrint('-> Entered static parseFile(..) in class YINI\n')
         debugPrint('Current directory = ' + process.cwd())
 
