@@ -6,7 +6,7 @@ LEXER_FILE=grammar/v1.0.0-rc.3/YiniLexer.g4
 ANTLR4=libs/antlr4/antlr-4.13.2-complete.jar
 
 # Output dir for ANTLR.
-DIR_OUTPUT=src/grammar
+DIR_OUTPUT=src/grammar/generated
 
 START_RULE="yini"
 

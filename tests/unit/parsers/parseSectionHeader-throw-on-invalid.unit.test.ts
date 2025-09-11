@@ -1,7 +1,5 @@
-import { ErrorDataHandler } from '../../../src/core/ErrorDataHandler'
-import { TSectionHeaderType } from '../../../src/core/types'
+import { ErrorDataHandler } from '../../../src/core/errorDataHandler'
 import parseSectionHeader from '../../../src/parsers/parseSectionHeader'
-import { debugPrint } from '../../../src/utils/print'
 
 /**
  * Throw error when parsing bad classic header unit tests.

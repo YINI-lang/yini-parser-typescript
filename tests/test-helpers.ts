@@ -15,7 +15,7 @@ export const parseUntilError = (
     const result = YINI.parse(content, {
         strictMode: isStrictMode,
         failLevel: 'errors',
-        includeMetaData: isIncludeMeta,
+        includeMetadata: isIncludeMeta,
     })
     return result
 }
@@ -35,7 +35,7 @@ export const parseFileUntilError = (
     const result = YINI.parseFile(content, {
         strictMode: isStrictMode,
         failLevel: 'errors',
-        includeMetaData: isIncludeMeta,
+        includeMetadata: isIncludeMeta,
     })
     return result
 }

@@ -1,9 +1,15 @@
 import fs from 'fs'
 import { isDev } from '../config/env'
-import { _parseMain } from '../parseEntry'
+import {
+    IAllUserOptions,
+    ParsedObject,
+    TBailSensitivityLevel,
+    TPreferredFailLevel,
+} from '../types'
 import { getFileNameExtension } from '../utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from '../utils/print'
 import { computeSha256 } from '../utils/string'
+import { IParseCoreOptions, IRuntimeInfo, TParserMode } from './internalTypes'
 import { mapFailLevelToBail } from './options/failLevel'
 import {
     inferModeFromArgs,
@@ -11,15 +17,7 @@ import {
     toCoreOptions,
 } from './options/normalizeOptions'
 import { getDefaultOptions } from './options/parserOptionsConstants'
-import {
-    IAllUserOptions,
-    IParseCoreOptions,
-    IRuntimeInfo,
-    TBailSensitivityLevel,
-    TJSObject,
-    TParserMode,
-    TPreferredFailLevel,
-} from './types'
+import { runPipeline } from './pipeline'
 
 /**
  * Private class representing a runtime context for a single parse call.
@@ -61,14 +59,14 @@ export class YiniRuntime {
         yiniContent: string,
         strictMode?: boolean,
         failLevel?: TPreferredFailLevel,
-        includeMetaData?: boolean,
-    ): TJSObject
+        includeMetadata?: boolean,
+    ): ParsedObject
 
     // --- Method overload signature ---------------------------------------
     // (With no body + not declared with arrow function.)
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
     // Options-object form (recommended) for power/expert users (more future-proof).
-    public doParse(yiniContent: string, options?: IAllUserOptions): TJSObject
+    public doParse(yiniContent: string, options?: IAllUserOptions): ParsedObject
 
     // --- Single implementation --------------------------------------------
     // Implementation method (not declared with arrow function) for both method overload signatures.
@@ -77,14 +75,14 @@ export class YiniRuntime {
         yiniContent: string,
         arg2?: boolean | IAllUserOptions, // strictMode | options
         failLevel: TPreferredFailLevel = 'auto',
-        includeMetaData = false,
-    ): TJSObject {
+        includeMetadata = false,
+    ): ParsedObject {
         debugPrint('-> Entered doParse(..) in YiniRuntime class\n')
 
         // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
         if (
             isOptionsObjectForm(arg2) &&
-            (failLevel !== 'auto' || includeMetaData !== false)
+            (failLevel !== 'auto' || includeMetadata !== false)
         ) {
             throw new TypeError(
                 'Invalid call: when providing an options object, do not also pass positional parameters.',
@@ -110,11 +108,11 @@ export class YiniRuntime {
                 strictMode:
                     (arg2 as boolean | undefined) ?? defaultOptions.strictMode,
                 failLevel,
-                includeMetaData,
+                includeMetadata,
             }
         }
 
-        if (userOpts.includeMetaData && this.#runtime.sourceType === 'Inline') {
+        if (userOpts.includeMetadata && this.#runtime.sourceType === 'Inline') {
             const lineCount = yiniContent.split(/\r?\n/).length // Counts the lines.
             const sha256 = computeSha256(yiniContent) // NOTE: Compute BEFORE any possible tampering of content.
 
@@ -142,7 +140,7 @@ export class YiniRuntime {
 
         debugPrint()
         debugPrint('==== Call parse ==========================')
-        const result = _parseMain(yiniContent, coreOpts, this.#runtime)
+        const result = runPipeline(yiniContent, coreOpts, this.#runtime)
         debugPrint('==== End call parse ==========================\n')
 
         if (isDev()) {
@@ -165,14 +163,17 @@ export class YiniRuntime {
         filePath: string,
         strictMode?: boolean,
         failLevel?: TPreferredFailLevel,
-        includeMetaData?: boolean,
-    ): TJSObject
+        includeMetadata?: boolean,
+    ): ParsedObject
 
     // --- Method overload signature ---------------------------------------
     // (With no body + not declared with arrow function.)
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
     // Options-object form (recommended) for power/expert users (more future-proof).
-    public doParseFile(filePath: string, options?: IAllUserOptions): TJSObject
+    public doParseFile(
+        filePath: string,
+        options?: IAllUserOptions,
+    ): ParsedObject
 
     // --- Single implementation --------------------------------------------
     // Implementation method (not declared with arrow function) for both method overload signatures.
@@ -181,15 +182,15 @@ export class YiniRuntime {
         filePath: string,
         arg2?: boolean | IAllUserOptions, // strictMode | options
         failLevel: TPreferredFailLevel = 'auto',
-        includeMetaData = false,
-    ): TJSObject {
+        includeMetadata = false,
+    ): ParsedObject {
         debugPrint('-> Entered doParseFile(..) in YiniRuntime class\n')
         debugPrint('Current directory = ' + process.cwd())
 
         // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
         if (
             isOptionsObjectForm(arg2) &&
-            (failLevel !== 'auto' || includeMetaData !== false)
+            (failLevel !== 'auto' || includeMetadata !== false)
         ) {
             throw new TypeError(
                 'Invalid call: when providing an options object, do not also pass positional parameters.',
@@ -216,7 +217,7 @@ export class YiniRuntime {
                 strictMode:
                     (arg2 as boolean | undefined) ?? defaultOptions.strictMode,
                 failLevel,
-                includeMetaData,
+                includeMetadata,
             }
         }
 
@@ -242,7 +243,7 @@ export class YiniRuntime {
         // this.#runtime.sourceType = 'File'
         this.#runtime.fileName = filePath
 
-        if (userOpts.includeMetaData) {
+        if (userOpts.includeMetadata) {
             this.#runtime.lineCount = content.split(/\r?\n/).length // Counts the lines.
             this.#runtime.fileByteSize = fileByteSize
             this.#runtime.timeIoMs = +(timeEndMs - timeStartMs).toFixed(3)

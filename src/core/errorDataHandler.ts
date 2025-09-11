@@ -1,14 +1,9 @@
 import { isDebug, isTestEnv } from '../config/env'
-import { YiniContext } from '../grammar/YiniParser'
+import { YiniContext } from '../grammar/generated/YiniParser'
+import { IIssuePayload, TPersistThreshold } from '../types'
 import { debugPrint, printObject } from '../utils/print'
 import { toLowerSnakeCase, trimTrailingNonLetters } from '../utils/string'
-import {
-    IIssuePayload,
-    TIssueType,
-    TPersistThreshold,
-    TSourceType,
-    TSubjectType,
-} from './types'
+import { TIssueType, TSubjectType } from './internalTypes'
 
 // All the issue titles are defined here to get a quick overview of all
 // titles, and to easier check that all titles match with relation to

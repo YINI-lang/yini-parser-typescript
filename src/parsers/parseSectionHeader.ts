@@ -1,12 +1,15 @@
 import { isDebug } from '../config/env'
-import { ErrorDataHandler } from '../core/ErrorDataHandler'
-import { TSectionHeaderType } from '../core/types'
-import { StmtContext } from '../grammar/YiniParser'
+import { ErrorDataHandler } from '../core/errorDataHandler'
+import { TSectionHeaderType } from '../core/internalTypes'
+import { StmtContext } from '../grammar/generated/YiniParser'
 import extractHeaderParts from '../parsers/extractHeaderParts'
 import { extractYiniLine } from '../parsers/extractSignificantYiniLine'
 import { debugPrint } from '../utils/print'
 import { isAlpha, trimBackticks } from '../utils/string'
-import { isValidBacktickedIdent, isValidSimpleIdent } from '../yiniHelpers'
+import {
+    isValidBacktickedIdent,
+    isValidSimpleIdent,
+} from '../utils/yiniHelpers'
 
 /**
  * Extract ...

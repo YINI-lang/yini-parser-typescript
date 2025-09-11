@@ -1,7 +1,7 @@
 import { isDebug } from '../config/env'
-import { IYiniAST, IYiniSection, TValueLiteral } from '../core/types'
 import { debugPrint, printObject, toPrettyJSON } from '../utils/print'
-import { ErrorDataHandler } from './ErrorDataHandler'
+import { ErrorDataHandler } from './errorDataHandler'
+import { IYiniAST, IYiniSection, TValueLiteral } from './internalTypes'
 
 /**
  * Construct the final JavaScript Object.
@@ -15,7 +15,7 @@ import { ErrorDataHandler } from './ErrorDataHandler'
 export const astToObject = (
     ast: IYiniAST,
     errorHandler: ErrorDataHandler,
-    // ): TJSObject => {
+    // ): ParsedObject => {
 ): Record<string, unknown> => {
     debugPrint('-> constructFinalObject(..)')
     // return sectionChildrenToObject(ast.root)

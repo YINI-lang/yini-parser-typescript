@@ -1,9 +1,10 @@
 /**
  * This file is the orchestrator that wires up the pipeline (lexer → parser →
- * ASTBuilder → objectBuilder, etc.)
+ * astBuilder → objectBuilder, etc.)
  */
 
 import { performance } from 'perf_hooks'
+import { isError } from 'util'
 import {
     CharStreams,
     CommonTokenStream,
@@ -12,28 +13,26 @@ import {
     Recognizer,
     Token,
 } from 'antlr4'
-import { isDebug, isDev, localAppEnv, localNodeEnv } from './config/env'
-import ASTBuilder from './core/ASTBuilder'
-import { ErrorDataHandler } from './core/ErrorDataHandler'
-import { astToObject } from './core/objectBuilder'
+import { isDebug, isDev, localAppEnv, localNodeEnv } from '../config/env'
+import YiniLexer from '../grammar/generated/YiniLexer'
+import YiniParser, { YiniContext } from '../grammar/generated/YiniParser'
 import {
-    IParseCoreOptions,
-    IResultMetaData,
-    IRuntimeInfo,
-    IYiniAST,
+    IResultMetadata,
+    ParsedObject,
     TBailSensitivityLevel,
     TFailLevelKey,
     TPersistThreshold,
-    TPreferredFailLevel,
-} from './core/types'
-import YiniLexer from './grammar/YiniLexer'
-import YiniParser, { YiniContext } from './grammar/YiniParser'
-import { removeUndefinedDeep } from './utils/object'
-import { debugPrint, printObject } from './utils/print'
-import { capitalizeFirst, toLowerSnakeCase } from './utils/string'
-import { isError } from './utils/system'
+    YiniParseResult,
+} from '../types'
+import { removeUndefinedDeep } from '../utils/object'
+import { debugPrint, printObject } from '../utils/print'
+import { toLowerKebabCase, toLowerSnakeCase } from '../utils/string'
+import astBuilder from './astBuilder'
+import { ErrorDataHandler } from './errorDataHandler'
+import { IParseCoreOptions, IRuntimeInfo, IYiniAST } from './internalTypes'
+import { astToObject } from './objectBuilder'
 
-const pkg = require('../package.json')
+const pkg = require('../../package.json')
 
 /**
  * @param line Line number as 1-based.
@@ -171,8 +170,13 @@ class MyLexerErrorListener implements ErrorListener<any> {
     }
 }
 
-/** Single source of truth. */
-export const _parseMain = (
+/**
+ *  @internal Single source of truth.
+ *
+ *  Entrypoint for the YINI parsing pipeline:
+ *  tokenization → grammar parse → AST build → object build → result.
+ */
+export const runPipeline = (
     yiniContent: string,
     // coreOptions: IParseMainOptions = {
     // coreOptions: IParseCoreOptions = {
@@ -186,7 +190,7 @@ export const _parseMain = (
     // },
     coreOptions: IParseCoreOptions,
     runtimeInfo: IRuntimeInfo,
-) => {
+): ParsedObject | YiniParseResult => {
     debugPrint()
     debugPrint('-> Entered parseMain(..) in parseEntry')
     debugPrint('           isStrict mode = ' + coreOptions.isStrict)
@@ -331,7 +335,7 @@ export const _parseMain = (
         timeEnd2Ms = performance.now()
     }
 
-    const builder = new ASTBuilder(
+    const builder = new astBuilder(
         errorHandler,
         coreOptions,
         runtimeInfo.sourceType,
@@ -411,12 +415,12 @@ export const _parseMain = (
         isDebug() && console.debug(finalJSResult)
     }
 
-    const constructResultMetaData = (): IResultMetaData => {
+    const constructResultMetadata = (): IResultMetadata => {
         // --- Construct meta information -------------------------------------
         const to3 = (n: number): number => Number.parseFloat(n.toFixed(3))
 
         // Construct meta data.
-        const metaData: IResultMetaData = {
+        const metadata: IResultMetadata = {
             parserVersion: pkg.version,
             mode: coreOptions.isStrict ? 'strict' : 'lenient',
             totalErrors: errorHandler.getNumOfErrors(),
@@ -428,7 +432,8 @@ export const _parseMain = (
             preservesOrder: true,
             orderGuarantee: 'implementation-defined',
             source: {
-                sourceType: toLowerSnakeCase(ast.sourceType),
+                // sourceType: toLowerSnakeCase(ast.sourceType),
+                sourceType: toLowerKebabCase(ast.sourceType),
                 fileName: ast.fileName,
                 hasDocumentTerminator: ast.terminatorSeen,
                 hasYiniMarker: ast.yiniMarkerSeen,
@@ -500,7 +505,7 @@ export const _parseMain = (
                 return null
             }
 
-            metaData.diagnostics = {
+            metadata.diagnostics = {
                 failLevel: {
                     preferredLevel: runtimeInfo.preferredBailSensitivity,
                     levelUsed: coreOptions.bailSensitivity,
@@ -539,7 +544,7 @@ export const _parseMain = (
                     // NOTE: (!) These MUST be user coreOptions.
                     strictMode: coreOptions.isStrict,
                     failLevel: mapLevelKey(coreOptions.bailSensitivity),
-                    includeMetaData: coreOptions.isIncludeMeta,
+                    includeMetadata: coreOptions.isIncludeMeta,
                     includeDiagnostics: coreOptions.isWithDiagnostics,
                     includeTiming: coreOptions.isWithTiming,
                     preserveUndefinedInMeta: coreOptions.isKeepUndefinedInMeta,
@@ -553,7 +558,7 @@ export const _parseMain = (
 
         // Attach optional durations timing data.
         if (coreOptions.isWithTiming) {
-            metaData.timing = {
+            metadata.timing = {
                 total: !coreOptions.isWithTiming
                     ? null
                     : {
@@ -600,7 +605,7 @@ export const _parseMain = (
             }
         }
 
-        return metaData
+        return metadata
     }
 
     debugPrint('getNumOfErrors(): ' + errorHandler.getNumOfErrors())
@@ -616,10 +621,10 @@ export const _parseMain = (
         return {
             result: finalJSResult as any,
             meta: !coreOptions.isKeepUndefinedInMeta
-                ? removeUndefinedDeep(constructResultMetaData())
-                : constructResultMetaData(),
-        }
+                ? removeUndefinedDeep(constructResultMetadata())
+                : constructResultMetadata(),
+        } as YiniParseResult
     }
 
-    return finalJSResult as any
+    return finalJSResult as ParsedObject
 }
