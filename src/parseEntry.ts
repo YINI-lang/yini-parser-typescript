@@ -1,3 +1,8 @@
+/**
+ * This file is the orchestrator that wires up the pipeline (lexer → parser →
+ * ASTBuilder → objectBuilder, etc.)
+ */
+
 import { performance } from 'perf_hooks'
 import {
     CharStreams,
@@ -169,8 +174,8 @@ class MyLexerErrorListener implements ErrorListener<any> {
 /** Single source of truth. */
 export const _parseMain = (
     yiniContent: string,
-    // options: IParseMainOptions = {
-    // options: IParseCoreOptions = {
+    // coreOptions: IParseMainOptions = {
+    // coreOptions: IParseCoreOptions = {
     //     isStrict: false,
     //     bailSensitivity: 0,
     //     isIncludeMeta: false,
@@ -179,27 +184,33 @@ export const _parseMain = (
     //     isKeepUndefinedInMeta: false,
     //     isRequireDocTerminator: false,
     // },
-    options: IParseCoreOptions,
+    coreOptions: IParseCoreOptions,
     runtimeInfo: IRuntimeInfo,
 ) => {
     debugPrint()
     debugPrint('-> Entered parseMain(..) in parseEntry')
-    debugPrint('           isStrict mode = ' + options.isStrict)
-    debugPrint('         bailSensitivity = ' + options.bailSensitivity)
-    debugPrint('           isIncludeMeta = ' + options.isIncludeMeta)
-    debugPrint('       isWithDiagnostics = ' + options.isWithDiagnostics)
-    debugPrint('            isWithTiming = ' + options.isWithTiming)
-    debugPrint('   isKeepUndefinedInMeta = ' + options.isKeepUndefinedInMeta)
-    debugPrint('isAvoidWarningsInConsole = ' + options.isAvoidWarningsInConsole)
-    debugPrint('    requireDocTerminator = ' + options.requireDocTerminator)
-    debugPrint('   treatEmptyValueAsNull = ' + options.treatEmptyValueAsNull)
-    debugPrint('          onDuplicateKey = ' + options.onDuplicateKey)
+    debugPrint('           isStrict mode = ' + coreOptions.isStrict)
+    debugPrint('         bailSensitivity = ' + coreOptions.bailSensitivity)
+    debugPrint('           isIncludeMeta = ' + coreOptions.isIncludeMeta)
+    debugPrint('       isWithDiagnostics = ' + coreOptions.isWithDiagnostics)
+    debugPrint('            isWithTiming = ' + coreOptions.isWithTiming)
+    debugPrint(
+        '   isKeepUndefinedInMeta = ' + coreOptions.isKeepUndefinedInMeta,
+    )
+    debugPrint(
+        'isAvoidWarningsInConsole = ' + coreOptions.isAvoidWarningsInConsole,
+    )
+    debugPrint('    requireDocTerminator = ' + coreOptions.requireDocTerminator)
+    debugPrint(
+        '   treatEmptyValueAsNull = ' + coreOptions.treatEmptyValueAsNull,
+    )
+    debugPrint('          onDuplicateKey = ' + coreOptions.onDuplicateKey)
     debugPrint()
     debugPrint('  runtimeInfo.sourceType = ' + runtimeInfo.sourceType)
     debugPrint('    runtimeInfo.fileName = ' + runtimeInfo.fileName)
 
     let persistThreshold: TPersistThreshold
-    switch (options.bailSensitivity) {
+    switch (coreOptions.bailSensitivity) {
         case 0:
             persistThreshold = '0-Ignore-Errors'
             break
@@ -279,7 +290,7 @@ export const _parseMain = (
     debugPrint(
         '=== Phase 2 - Parsing ===================================================',
     )
-    if (options.isWithTiming) {
+    if (coreOptions.isWithTiming) {
         timeEnd1Ms = performance.now()
     }
 
@@ -316,13 +327,13 @@ export const _parseMain = (
     debugPrint(
         '=== Phase 3 - AST Model build & validation ===================================================',
     )
-    if (options.isWithTiming) {
+    if (coreOptions.isWithTiming) {
         timeEnd2Ms = performance.now()
     }
 
     const builder = new ASTBuilder(
         errorHandler,
-        options,
+        coreOptions,
         runtimeInfo.sourceType,
         runtimeInfo.fileName || null,
     )
@@ -361,7 +372,7 @@ export const _parseMain = (
     debugPrint(
         '=== Phase 4 - Object Building Construction / Binding / Evaluation) ===================================================',
     )
-    if (options.isWithTiming) {
+    if (coreOptions.isWithTiming) {
         timeEnd3Ms = performance.now()
     }
 
@@ -387,7 +398,7 @@ export const _parseMain = (
     isDebug() && console.debug(finalJSResult)
     debugPrint()
 
-    if (options.isStrict) {
+    if (coreOptions.isStrict) {
         // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
         errorHandler.pushOrBail(
             null,
@@ -407,7 +418,7 @@ export const _parseMain = (
         // Construct meta data.
         const metaData: IResultMetaData = {
             parserVersion: pkg.version,
-            mode: options.isStrict ? 'strict' : 'lenient',
+            mode: coreOptions.isStrict ? 'strict' : 'lenient',
             totalErrors: errorHandler.getNumOfErrors(),
             totalWarnings: errorHandler.getNumOfWarnings(),
             totalMessages: errorHandler.getNumOfAllMessages(),
@@ -438,7 +449,7 @@ export const _parseMain = (
         }
 
         // Attach optional diagnostics.
-        if (options.isWithDiagnostics) {
+        if (coreOptions.isWithDiagnostics) {
             // const mapToFailLevel = (
             //     level: TBailSensitivityLevel,
             // ): TPreferredFailLevel => {
@@ -492,11 +503,11 @@ export const _parseMain = (
             metaData.diagnostics = {
                 failLevel: {
                     preferredLevel: runtimeInfo.preferredBailSensitivity,
-                    levelUsed: options.bailSensitivity,
-                    levelKey: mapLevelKey(options.bailSensitivity),
-                    levelLabel: mapLevelLabel(options.bailSensitivity),
+                    levelUsed: coreOptions.bailSensitivity,
+                    levelKey: mapLevelKey(coreOptions.bailSensitivity),
+                    levelLabel: mapLevelLabel(coreOptions.bailSensitivity),
                     levelDescription: <any>(
-                        mapLevelDescription(options.bailSensitivity)
+                        mapLevelDescription(coreOptions.bailSensitivity)
                     ),
                 },
                 errors: {
@@ -525,25 +536,25 @@ export const _parseMain = (
                     },
                 },
                 optionsUsed: {
-                    // NOTE: (!) These MUST be user options.
-                    strictMode: options.isStrict,
-                    failLevel: mapLevelKey(options.bailSensitivity),
-                    includeMetaData: options.isIncludeMeta,
-                    includeDiagnostics: options.isWithDiagnostics,
-                    includeTiming: options.isWithTiming,
-                    preserveUndefinedInMeta: options.isKeepUndefinedInMeta,
-                    suppressWarnings: options.isAvoidWarningsInConsole,
-                    requireDocTerminator: options.requireDocTerminator,
-                    treatEmptyValueAsNull: options.treatEmptyValueAsNull,
-                    onDuplicateKey: options.onDuplicateKey,
+                    // NOTE: (!) These MUST be user coreOptions.
+                    strictMode: coreOptions.isStrict,
+                    failLevel: mapLevelKey(coreOptions.bailSensitivity),
+                    includeMetaData: coreOptions.isIncludeMeta,
+                    includeDiagnostics: coreOptions.isWithDiagnostics,
+                    includeTiming: coreOptions.isWithTiming,
+                    preserveUndefinedInMeta: coreOptions.isKeepUndefinedInMeta,
+                    suppressWarnings: coreOptions.isAvoidWarningsInConsole,
+                    requireDocTerminator: coreOptions.requireDocTerminator,
+                    treatEmptyValueAsNull: coreOptions.treatEmptyValueAsNull,
+                    onDuplicateKey: coreOptions.onDuplicateKey,
                 },
             }
         }
 
         // Attach optional durations timing data.
-        if (options.isWithTiming) {
+        if (coreOptions.isWithTiming) {
             metaData.timing = {
-                total: !options.isWithTiming
+                total: !coreOptions.isWithTiming
                     ? null
                     : {
                           timeMs: to3(durationMs), // durationMs = timeEnd4Ms - timeStartMs
@@ -553,33 +564,34 @@ export const _parseMain = (
                                   : 'Total (excluding phase0 (I/O))',
                       },
                 phase0:
-                    !options.isWithTiming || runtimeInfo.sourceType === 'Inline'
+                    !coreOptions.isWithTiming ||
+                    runtimeInfo.sourceType === 'Inline'
                         ? undefined
                         : {
                               timeMs: to3(runtimeInfo.timeIoMs!),
 
                               name: 'I/O',
                           },
-                phase1: !options.isWithTiming
+                phase1: !coreOptions.isWithTiming
                     ? null
                     : {
                           timeMs: to3(timeEnd1Ms - timeStartMs),
 
                           name: 'Lexing',
                       },
-                phase2: !options.isWithTiming
+                phase2: !coreOptions.isWithTiming
                     ? null
                     : {
                           timeMs: to3(timeEnd2Ms - timeEnd1Ms),
                           name: 'Parsing',
                       },
-                phase3: !options.isWithTiming
+                phase3: !coreOptions.isWithTiming
                     ? null
                     : {
                           timeMs: to3(timeEnd3Ms - timeEnd2Ms),
                           name: 'AST Building',
                       },
-                phase4: !options.isWithTiming
+                phase4: !coreOptions.isWithTiming
                     ? null
                     : {
                           timeMs: to3(timeEnd4Ms - timeEnd3Ms),
@@ -600,10 +612,10 @@ export const _parseMain = (
         console.log('Number of errors found: ' + errorHandler.getNumOfErrors())
     }
 
-    if (options.isIncludeMeta) {
+    if (coreOptions.isIncludeMeta) {
         return {
             result: finalJSResult as any,
-            meta: !options.isKeepUndefinedInMeta
+            meta: !coreOptions.isKeepUndefinedInMeta
                 ? removeUndefinedDeep(constructResultMetaData())
                 : constructResultMetaData(),
         }

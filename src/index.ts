@@ -315,23 +315,23 @@ if (isProdEnv()) {
         // `
         // YINI.setTabSize(2)
         // debugPrint('tab size = ' + YINI.getTabSize())
-        const yini = `        @yini
-        --@yini
-        ^ Header // INVALID: Must start with atleast one 1-level section.
-        key = 33254
-        /END
-        --/END
-        `
-        console.log(
-            toPrettyJSON(
-                YINI.parse(yini, {
-                    strictMode: false,
-                    failLevel: 'errors',
-                    includeMetaData: false,
-                    requireDocTerminator: 'optional',
-                }),
-            ),
-        )
+        // const yini = `        @yini
+        // --@yini
+        // ^ Header // INVALID: Must start with atleast one 1-level section.
+        // key = 33254
+        // /END
+        // --/END
+        // `
+        // console.log(
+        //     toPrettyJSON(
+        //         YINI.parse(yini, {
+        //             strictMode: false,
+        //             failLevel: 'errors',
+        //             includeMetaData: false,
+        //             requireDocTerminator: 'optional',
+        //         }),
+        //     ),
+        // )
 
         //         const yini = `
         // ^ Booleans
@@ -352,16 +352,16 @@ if (isProdEnv()) {
         //                 }),
         //             ),
         //         )
-        // console.log(
-        //     toPrettyJSON(
-        //         YINI.parseFile(
-        //             'comprehensive-example.yini',
-        //             false,
-        //             'auto',
-        //             true,
-        //         ),
-        //     ),
-        // )
+        console.log(
+            toPrettyJSON(
+                YINI.parseFile(
+                    'comprehensive-example.yini',
+                    false,
+                    'auto',
+                    true,
+                ),
+            ),
+        )
         // console.log(
         //     toPrettyJSON(
         //         YINI.parseFile('comprehensive-example.yini', {

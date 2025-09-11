@@ -1,156 +1,22 @@
-import fs from 'fs'
-import { performance } from 'perf_hooks'
 import { isDebug, isDev } from './config/env'
 import { ErrorDataHandler } from './core/ErrorDataHandler'
-import {
-    IAllUserOptions,
-    IParseCoreOptions,
-    IRuntimeInfo,
-    TBailSensitivityLevel,
-    TJSObject,
-    TParserMode,
-    TPersistThreshold,
-    TPreferredFailLevel,
-} from './core/types'
+import { isOptionsObjectForm } from './core/options/normalizeOptions'
+import { YiniRuntime } from './core/runtime'
+import { IAllUserOptions, TJSObject, TPreferredFailLevel } from './core/types'
 import { _parseMain } from './parseEntry'
-import { getFileNameExtension } from './utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from './utils/print'
-import { computeSha256 } from './utils/string'
 
 const DEFAULT_TAB_SIZE = 4 // De facto "modern default" (even though traditionally/historically it's 8).
 
-let _runtimeInfo: IRuntimeInfo = {
-    sourceType: 'Inline',
-    fileName: undefined,
-    fileByteSize: null,
-    lineCount: null,
-    timeIoMs: null,
-    preferredBailSensitivity: null,
-    sha256: null,
-}
-
-// --- Helper Functions ----------------------------------------------------
-
-// Type guard: did the caller use the options-object form?
-const isOptionsObjectForm = (v: unknown): v is IAllUserOptions => {
-    return (
-        v != null &&
-        typeof v === 'object' &&
-        // Note: If one wants, this can be relax to "typeof v === 'object'"
-        // but this keeps accidental booleans/strings out.
-        ('strictMode' in (v as any) ||
-            'failLevel' in (v as any) ||
-            'includeMetaData' in (v as any) ||
-            'includeDiagnostics' in (v as any) ||
-            'includeTiming' in (v as any) ||
-            'preserveUndefinedInMeta' in (v as any) ||
-            'suppressWarnings' in (v as any) ||
-            'requireDocTerminator' in (v as any) ||
-            'treatEmptyValueAsNull' in (v as any) ||
-            'onDuplicateKey' in (v as any))
-    )
-}
-
-// const mode: TParserMode =
-// ((arg2 as any)?.strictMode ?? (arg2 as boolean | undefined)) ===
-
-const inferModeFromArgs = (arg2?: boolean | IAllUserOptions): TParserMode => {
-    if (typeof arg2 === 'boolean') {
-        return arg2 ? 'strict' : 'lenient'
-    }
-    if (arg2 && typeof arg2 === 'object') {
-        const sm = (arg2 as IAllUserOptions).strictMode
-        if (typeof sm === 'boolean') {
-            return sm ? 'strict' : 'lenient'
-        }
-    }
-    return 'lenient'
-}
-
-// -------------------------------------------------------------------------
-
-/*
-// Initial default values.
-const DEFAULT_OPTS: Required<
-    Pick<
-        IAllUserOptions,
-        | 'strictMode'
-        | 'failLevel'
-        | 'includeMetaData'
-        | 'includeDiagnostics'
-        | 'includeTiming'
-        | 'preserveUndefinedInMeta'
-        | 'suppressWarnings'
-        | 'requireDocTerminator'
-        | 'treatEmptyValueAsNull'
-        | 'onDuplicateKey'
-    >
-> = {
-    strictMode: false,
-    failLevel: 'auto',
-    includeMetaData: false,
-    includeDiagnostics: false,
-    includeTiming: false,
-    preserveUndefinedInMeta: false,
-    suppressWarnings: false,
-    requireDocTerminator: 'optional',
-    treatEmptyValueAsNull: 'allow-with-warning',
-    onDuplicateKey: 'keep-first',
-}
-*/
-
-type NormalizedOpts = Required<
-    Pick<
-        IAllUserOptions,
-        | 'strictMode'
-        | 'failLevel'
-        | 'includeMetaData'
-        | 'includeDiagnostics'
-        | 'includeTiming'
-        | 'preserveUndefinedInMeta'
-        | 'suppressWarnings'
-        | 'requireDocTerminator'
-        | 'treatEmptyValueAsNull'
-        | 'onDuplicateKey'
-    >
->
-
-// base (mode-agnostic) defaults
-const BASE_DEFAULTS: NormalizedOpts = {
-    strictMode: false,
-    failLevel: 'auto',
-    includeMetaData: false,
-    includeDiagnostics: false,
-    includeTiming: false,
-    preserveUndefinedInMeta: false,
-    suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
-    requireDocTerminator: 'optional',
-    treatEmptyValueAsNull: 'allow-with-warning',
-    onDuplicateKey: 'error',
-}
-
-const DEFAULT_LENIENT_OPTS: NormalizedOpts = {
-    ...BASE_DEFAULTS,
-    strictMode: false,
-    failLevel: 'ignore-errors',
-    suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
-    requireDocTerminator: 'optional',
-    treatEmptyValueAsNull: 'allow-with-warning',
-    onDuplicateKey: 'warn-and-keep-first',
-}
-
-const DEFAULT_STRICT_OPTS: NormalizedOpts = {
-    ...BASE_DEFAULTS,
-    strictMode: true,
-    failLevel: 'errors',
-    suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
-    requireDocTerminator: 'optional',
-    treatEmptyValueAsNull: 'disallow',
-    onDuplicateKey: 'error',
-}
-
-export const getDefaultOptions = (mode: TParserMode) =>
-    mode === 'strict' ? DEFAULT_STRICT_OPTS : DEFAULT_LENIENT_OPTS
+// let _runtimeInfo: IRuntimeInfo = {
+//     sourceType: 'Inline',
+//     fileName: undefined,
+//     fileByteSize: null,
+//     lineCount: null,
+//     timeIoMs: null,
+//     preferredBailSensitivity: null,
+//     sha256: null,
+// }
 
 /**
  * This class is the public API, which exposes only parse(..) and
@@ -158,6 +24,7 @@ export const getDefaultOptions = (mode: TParserMode) =>
  * @note Only parse and parseFile are public.
  */
 export default class YINI {
+    // @todo In future move/change this to not be a global and suffer from possible race conditions, possibly move this into YiniRuntime class.
     private static g_tabSize = DEFAULT_TAB_SIZE // Global tab size used in error messages.
 
     /**
@@ -262,134 +129,82 @@ export default class YINI {
     ): TJSObject {
         debugPrint('-> Entered static parse(..) in class YINI\n')
 
-        // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
-        if (
-            isOptionsObjectForm(arg2) &&
-            (failLevel !== 'auto' || includeMetaData !== false)
-        ) {
-            throw new TypeError(
-                'Invalid call: when providing an options object, do not also pass positional parameters.',
-            )
-        }
+        // // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
+        // if (
+        //     isOptionsObjectForm(arg2) &&
+        //     (failLevel !== 'auto' || includeMetaData !== false)
+        // ) {
+        //     throw new TypeError(
+        //         'Invalid call: when providing an options object, do not also pass positional parameters.',
+        //     )
+        // }
 
-        // const mode: TParserMode =
-        //     ((arg2 as any)?.strictMode ?? (arg2 as boolean | undefined)) ===
-        //     true
-        //         ? 'strict'
-        //         : 'lenient'
-        const mode: TParserMode = inferModeFromArgs(arg2)
-        const defaultOptions = getDefaultOptions(mode)
+        // const mode: TParserMode = inferModeFromArgs(arg2)
+        // const defaultOptions = getDefaultOptions(mode)
 
-        // Normalize to a fully-required options object.
-        let userOpts: Required<IAllUserOptions>
+        // // Normalize to a fully-required options object.
+        // let userOpts: Required<IAllUserOptions>
 
-        // Required, makes all properties in T required, no undefined.
-        // const userOpts: Required<IAllUserOptions> = isOptionsObjectForm(arg2)
-        if (isOptionsObjectForm(arg2)) {
-            // Options-object Form.
-            /* parse = (
-                  yiniContent: string,
-                  options: IAllUserOptions,
-               )
-            */
-            userOpts = {
-                ...defaultOptions, // Sets the default options.
-                ...arg2,
-            }
-        } else {
-            // Positional form.
-            /* parse = (
-                  yiniContent: string,
-                  strictMode?: boolean,
-                  failLevel?: TPreferredFailLevel,
-                  includeMetaData?: boolean,
-               )
-            */
-            userOpts = {
-                ...defaultOptions, // Sets the default options.
-                strictMode:
-                    (arg2 as boolean | undefined) ?? defaultOptions.strictMode,
-                failLevel,
-                includeMetaData,
-            }
-        }
+        // // Required, makes all properties in T required, no undefined.
+        // if (isOptionsObjectForm(arg2)) {
+        //     userOpts = {
+        //         ...defaultOptions, // Sets the default options.
+        //         ...arg2,
+        //     }
+        // } else {
+        //     // Positional form.
+        //     userOpts = {
+        //         ...defaultOptions, // Sets the default options.
+        //         strictMode:
+        //             (arg2 as boolean | undefined) ?? defaultOptions.strictMode,
+        //         failLevel,
+        //         includeMetaData,
+        //     }
+        // }
 
-        if (userOpts.includeMetaData && _runtimeInfo.sourceType === 'Inline') {
-            const lineCount = yiniContent.split(/\r?\n/).length // Counts the lines.
-            const sha256 = computeSha256(yiniContent) // NOTE: Compute BEFORE any possible tampering of content.
+        // if (userOpts.includeMetaData && _runtimeInfo.sourceType === 'Inline') {
+        //     const lineCount = yiniContent.split(/\r?\n/).length // Counts the lines.
+        //     const sha256 = computeSha256(yiniContent) // NOTE: Compute BEFORE any possible tampering of content.
 
-            _runtimeInfo.lineCount = lineCount
-            _runtimeInfo.preferredBailSensitivity = userOpts.failLevel
-            _runtimeInfo.sha256 = sha256
-        }
+        //     _runtimeInfo.lineCount = lineCount
+        //     _runtimeInfo.preferredBailSensitivity = userOpts.failLevel
+        //     _runtimeInfo.sha256 = sha256
+        // }
 
-        // NOTE: Important: Do not trim or mutate the yiniContent here, due
-        // to it will mess up the line numbers in error reporting.
+        // // NOTE: Important: Do not trim or mutate the yiniContent here, due
+        // // to it will mess up the line numbers in error reporting.
 
-        if (!yiniContent) {
-            throw new Error('Syntax-Error: Unexpected blank YINI input')
-        }
-        if (!yiniContent.endsWith('\n')) {
-            yiniContent += '\n'
-        }
+        // if (!yiniContent) {
+        //     throw new Error('Syntax-Error: Unexpected blank YINI input')
+        // }
+        // if (!yiniContent.endsWith('\n')) {
+        //     yiniContent += '\n'
+        // }
 
-        // let level: TPersistThreshold = '0-Ignore-Errors'
-        let level: TBailSensitivityLevel = 0
-        /*
-        if (userOpts.failLevel === 'auto') {
-            if (!userOpts.strictMode) level = '0-Ignore-Errors'
-            if (userOpts.strictMode) level = '1-Abort-on-Errors'
-        } else {
-            // level = userOpts.failLevel
-            switch (userOpts.failLevel) {
-                case 'ignore-errors':
-                    level = '0-Ignore-Errors'
-                    break
-                case 'errors':
-                    level = '1-Abort-on-Errors'
-                    break
-                case 'warnings-and-errors':
-                    level = '2-Abort-Even-on-Warnings'
-                    break
-            }
-        }
-        */
-        if (userOpts.failLevel === 'auto') {
-            if (!userOpts.strictMode) level = 0
-            if (userOpts.strictMode) level = 1
-        } else {
-            // level = userOpts.failLevel
-            switch (userOpts.failLevel) {
-                case 'ignore-errors':
-                    level = 0
-                    break
-                case 'errors':
-                    level = 1
-                    break
-                case 'warnings-and-errors':
-                    level = 2
-                    break
-            }
-        }
+        // let level: TBailSensitivityLevel = mapFailLevelToBail(
+        //     userOpts.strictMode,
+        //     userOpts.failLevel,
+        // )
+        ////////////////
 
-        const coreOpts: IParseCoreOptions = {
-            isStrict: userOpts.strictMode,
-            bailSensitivity: level,
-            isIncludeMeta: userOpts.includeMetaData,
-            isWithDiagnostics:
-                isDev() || isDebug() || userOpts.includeDiagnostics,
-            isWithTiming: isDev() || isDebug() || userOpts.includeTiming,
-            isKeepUndefinedInMeta:
-                isDebug() || userOpts.preserveUndefinedInMeta,
-            isAvoidWarningsInConsole: userOpts.suppressWarnings,
-            requireDocTerminator: userOpts.requireDocTerminator,
-            treatEmptyValueAsNull: userOpts.treatEmptyValueAsNull,
-            onDuplicateKey: userOpts.onDuplicateKey,
-        }
+        // const coreOpts: IParseCoreOptions = toCoreOptions(level, userOpts)
 
         debugPrint()
-        debugPrint('==== Call parse ==========================')
-        const result = _parseMain(yiniContent, coreOpts, _runtimeInfo)
+        debugPrint(
+            '==== Call doParse(..) in runtime ==========================',
+        )
+        // const result = _parseMain(yiniContent, coreOpts, _runtimeInfo)
+        const runtime = new YiniRuntime('Inline')
+
+        const result = isOptionsObjectForm(arg2)
+            ? runtime.doParse(yiniContent, arg2) // Overload #2: (content, options)
+            : runtime.doParse(
+                  // Overload #1: (content, strict?, failLevel?, includeMeta?)
+                  yiniContent,
+                  arg2 as boolean | undefined,
+                  failLevel,
+                  includeMetaData,
+              )
         debugPrint('==== End call parse ==========================\n')
 
         if (isDev()) {
@@ -483,111 +298,94 @@ export default class YINI {
         debugPrint('-> Entered static parseFile(..) in class YINI\n')
         debugPrint('Current directory = ' + process.cwd())
 
-        // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
-        if (
-            isOptionsObjectForm(arg2) &&
-            (failLevel !== 'auto' || includeMetaData !== false)
-        ) {
-            throw new TypeError(
-                'Invalid call: when providing an options object, do not also pass positional parameters.',
-            )
-        }
+        // // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
+        // if (
+        //     isOptionsObjectForm(arg2) &&
+        //     (failLevel !== 'auto' || includeMetaData !== false)
+        // ) {
+        //     throw new TypeError(
+        //         'Invalid call: when providing an options object, do not also pass positional parameters.',
+        //     )
+        // }
 
-        // const mode: TParserMode =
-        // ((arg2 as any)?.strictMode ?? (arg2 as boolean | undefined)) ===
-        // true
-        //     ? 'strict'
-        //     : 'lenient'
-        const mode: TParserMode = inferModeFromArgs(arg2)
-        const defaultOptions = getDefaultOptions(mode)
+        // const mode: TParserMode = inferModeFromArgs(arg2)
+        // const defaultOptions = getDefaultOptions(mode)
 
-        // Normalize to a fully-required options object.
-        let userOpts: Required<IAllUserOptions>
+        // // Normalize to a fully-required options object.
+        // let userOpts: Required<IAllUserOptions>
 
-        // Required, makes all properties in T required, no undefined.
-        // const userOpts: Required<IAllUserOptions> = isOptionsObjectForm(arg2)
-        if (isOptionsObjectForm(arg2)) {
-            // Options-object Form.
-            /* parse = (
-                  yiniContent: string,
-                  options: IAllUserOptions,
-               )
-            */
-            userOpts = {
-                ...defaultOptions, // Sets the default options.
-                ...arg2,
-            }
-        } else {
-            // Positional form.
-            /* parse = (
-                  yiniContent: string,
-                  strictMode?: boolean,
-                  failLevel?: TPreferredFailLevel,
-                  includeMetaData?: boolean,
-               )
-            */
-            userOpts = {
-                ...defaultOptions, // Sets the default options.
-                strictMode:
-                    (arg2 as boolean | undefined) ?? defaultOptions.strictMode,
-                failLevel,
-                includeMetaData,
-            }
-        }
+        // // Required, makes all properties in T required, no undefined.
+        // if (isOptionsObjectForm(arg2)) {
+        //     // Options-object Form.
+        //     userOpts = {
+        //         ...defaultOptions, // Sets the default options.
+        //         ...arg2,
+        //     }
+        // } else {
+        //     // Positional form.
+        //     userOpts = {
+        //         ...defaultOptions, // Sets the default options.
+        //         strictMode:
+        //             (arg2 as boolean | undefined) ?? defaultOptions.strictMode,
+        //         failLevel,
+        //         includeMetaData,
+        //     }
+        // }
 
-        if (getFileNameExtension(filePath).toLowerCase() !== '.yini') {
-            console.error('Invalid file extension for YINI file:')
-            console.error(`"${filePath}"`)
-            console.log(
-                'File does not have a valid ".yini" extension (case-insensitive).',
-            )
-            throw new Error('Error: Unexpected file extension for YINI file')
-        }
+        // if (getFileNameExtension(filePath).toLowerCase() !== '.yini') {
+        //     console.error('Invalid file extension for YINI file:')
+        //     console.error(`"${filePath}"`)
+        //     console.log(
+        //         'File does not have a valid ".yini" extension (case-insensitive).',
+        //     )
+        //     throw new Error('Error: Unexpected file extension for YINI file')
+        // }
 
-        // ---- Phase 0: I/O ----
-        const timeStartMs = performance.now()
+        // // ---- Phase 0: I/O ----
+        // const timeStartMs = performance.now()
 
-        // let content = fs.readFileSync(filePath, 'utf8')
-        const rawBuffer = fs.readFileSync(filePath) // Raw buffer for size.
-        const fileByteSize = rawBuffer.byteLength // Byte size in UTF-8.
+        // // let content = fs.readFileSync(filePath, 'utf8')
+        // const rawBuffer = fs.readFileSync(filePath) // Raw buffer for size.
+        // const fileByteSize = rawBuffer.byteLength // Byte size in UTF-8.
 
-        let content = rawBuffer.toString('utf8')
-        const timeEndMs = performance.now()
+        // let content = rawBuffer.toString('utf8')
+        // const timeEndMs = performance.now()
 
-        _runtimeInfo.sourceType = 'File'
-        _runtimeInfo.fileName = filePath
+        // _runtimeInfo.sourceType = 'File'
+        // _runtimeInfo.fileName = filePath
 
-        if (userOpts.includeMetaData) {
-            _runtimeInfo.lineCount = content.split(/\r?\n/).length // Counts the lines.
-            _runtimeInfo.fileByteSize = fileByteSize
-            _runtimeInfo.timeIoMs = +(timeEndMs - timeStartMs).toFixed(3)
-            _runtimeInfo.preferredBailSensitivity = userOpts.failLevel
-            _runtimeInfo.sha256 = computeSha256(content) // NOTE: Compute BEFORE any possible tampering of content.
-        }
+        // if (userOpts.includeMetaData) {
+        //     _runtimeInfo.lineCount = content.split(/\r?\n/).length // Counts the lines.
+        //     _runtimeInfo.fileByteSize = fileByteSize
+        //     _runtimeInfo.timeIoMs = +(timeEndMs - timeStartMs).toFixed(3)
+        //     _runtimeInfo.preferredBailSensitivity = userOpts.failLevel
+        //     _runtimeInfo.sha256 = computeSha256(content) // NOTE: Compute BEFORE any possible tampering of content.
+        // }
 
-        let hasNoNewlineAtEOF = false
-        if (!content.endsWith('\n')) {
-            content += '\n'
-            hasNoNewlineAtEOF = true
-        }
+        // let hasNoNewlineAtEOF = false
+        // if (!content.endsWith('\n')) {
+        //     content += '\n'
+        //     hasNoNewlineAtEOF = true
+        // }
 
-        // IMPORTANT: (!) Do not forget to add new options here!
-        const result = this.parse(content, {
-            // strictMode: userOpts.strictMode,
-            // failLevel: userOpts.failLevel,
-            // includeMetaData: userOpts.includeMetaData,
-            // includeDiagnostics: userOpts.includeDiagnostics,
-            // includeTiming: userOpts.includeTiming,
-            // preserveUndefinedInMeta: userOpts.preserveUndefinedInMeta,
-            // requireDocTerminator: userOpts.requireDocTerminator,
-            ...userOpts,
-        })
-        if (hasNoNewlineAtEOF && !userOpts.suppressWarnings) {
-            console.warn(
-                `No newline at end of file, it's recommended to end a file with a newline. File:\n"${filePath}"`,
-            )
-        }
+        debugPrint()
+        debugPrint(
+            '==== Call doParseFile(..) in runtime ==========================',
+        )
+        // const result = _parseMain(yiniContent, coreOpts, _runtimeInfo)
+        const runtime = new YiniRuntime('File')
 
+        const result = isOptionsObjectForm(arg2)
+            ? runtime.doParseFile(filePath, arg2) // Overload #2: (content, options)
+            : runtime.doParseFile(
+                  // Overload #1: (content, strict?, failLevel?, includeMeta?)
+                  filePath,
+                  arg2 as boolean | undefined,
+                  failLevel,
+                  includeMetaData,
+              )
+
+        debugPrint('==== End call parse ==========================\n')
         return result
     }
 }
