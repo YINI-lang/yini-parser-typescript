@@ -1,9 +1,12 @@
 import { isDebug, isDev } from './config/env'
 import { ErrorDataHandler } from './core/ErrorDataHandler'
+import {
+    IAllUserOptions,
+    TJSObject,
+    TPreferredFailLevel,
+} from './core/internalTypes'
 import { isOptionsObjectForm } from './core/options/normalizeOptions'
 import { YiniRuntime } from './core/runtime'
-import { IAllUserOptions, TJSObject, TPreferredFailLevel } from './core/types'
-import { _parseMain } from './parseEntry'
 import { debugPrint, devPrint, printObject } from './utils/print'
 
 const DEFAULT_TAB_SIZE = 4 // De facto "modern default" (even though traditionally/historically it's 8).

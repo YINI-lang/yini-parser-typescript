@@ -1,7 +1,7 @@
 import { isDebug } from '../config/env'
-import { IYiniAST, IYiniSection, TValueLiteral } from '../core/types'
 import { debugPrint, printObject, toPrettyJSON } from '../utils/print'
 import { ErrorDataHandler } from './ErrorDataHandler'
+import { IYiniAST, IYiniSection, TValueLiteral } from './internalTypes'
 
 /**
  * Construct the final JavaScript Object.

@@ -1,4 +1,4 @@
-import { IAllUserOptions, TParserMode } from '../types'
+import { IAllUserOptions, TParserMode } from '../internalTypes'
 
 export const getDefaultOptions = (mode: TParserMode) =>
     mode === 'strict' ? DEFAULT_STRICT_OPTS : DEFAULT_LENIENT_OPTS

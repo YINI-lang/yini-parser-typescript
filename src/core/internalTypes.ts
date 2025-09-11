@@ -1,4 +1,6 @@
 /**
+ * Internal types ONLY, public (user-facing) type should go into src/types/index.ts.
+ *
  * @note
  *   The use of null vs undefined
  *   ----------------------------

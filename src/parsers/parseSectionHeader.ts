@@ -1,6 +1,6 @@
 import { isDebug } from '../config/env'
 import { ErrorDataHandler } from '../core/ErrorDataHandler'
-import { TSectionHeaderType } from '../core/types'
+import { TSectionHeaderType } from '../core/internalTypes'
 import { StmtContext } from '../grammar/YiniParser'
 import extractHeaderParts from '../parsers/extractHeaderParts'
 import { extractYiniLine } from '../parsers/extractSignificantYiniLine'

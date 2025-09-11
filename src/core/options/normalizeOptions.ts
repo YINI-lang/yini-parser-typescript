@@ -4,7 +4,7 @@ import {
     IParseCoreOptions,
     TBailSensitivityLevel,
     TParserMode,
-} from '../types'
+} from '../internalTypes'
 
 export const toCoreOptions = (
     bailLevel: TBailSensitivityLevel,

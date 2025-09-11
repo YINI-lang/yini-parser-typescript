@@ -28,6 +28,7 @@ export const parseFile = YINI.parseFile
 export const getTabSize = YINI.getTabSize
 export const setTabSize = YINI.setTabSize
 export default YINI
+export * from './types' // NOTE: The public (user-facing) types only!
 
 debugPrint()
 debugPrint('-> Entered index.ts')

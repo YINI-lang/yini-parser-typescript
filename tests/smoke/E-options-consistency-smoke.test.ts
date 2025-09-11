@@ -5,7 +5,7 @@
 
 import path from 'path'
 import YINI from '../../src'
-import { IAllUserOptions } from '../../src/core/types'
+import { IAllUserOptions } from '../../src/core/internalTypes'
 import { sortObjectKeys } from '../../src/utils/object'
 import { debugPrint, toPrettyJSON } from '../../src/utils/print'
 

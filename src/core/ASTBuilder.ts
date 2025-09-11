@@ -64,7 +64,7 @@ import {
     TSourceType,
     TSubjectType,
     TValueLiteral,
-} from './types'
+} from './internalTypes'
 
 // -----------------------
 

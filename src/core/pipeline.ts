@@ -171,8 +171,13 @@ class MyLexerErrorListener implements ErrorListener<any> {
     }
 }
 
-/** Single source of truth. */
-export const _parseMain = (
+/**
+ *  @internal Single source of truth.
+ *
+ *  Entrypoint for the YINI parsing pipeline:
+ *  tokenization → grammar parse → AST build → object build → result.
+ */
+export const runPipeline = (
     yiniContent: string,
     // coreOptions: IParseMainOptions = {
     // coreOptions: IParseCoreOptions = {

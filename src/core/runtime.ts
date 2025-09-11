@@ -1,16 +1,8 @@
 import fs from 'fs'
 import { isDev } from '../config/env'
-import { _parseMain } from '../parseEntry'
 import { getFileNameExtension } from '../utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from '../utils/print'
 import { computeSha256 } from '../utils/string'
-import { mapFailLevelToBail } from './options/failLevel'
-import {
-    inferModeFromArgs,
-    isOptionsObjectForm,
-    toCoreOptions,
-} from './options/normalizeOptions'
-import { getDefaultOptions } from './options/parserOptionsConstants'
 import {
     IAllUserOptions,
     IParseCoreOptions,
@@ -19,7 +11,14 @@ import {
     TJSObject,
     TParserMode,
     TPreferredFailLevel,
-} from './types'
+} from './internalTypes'
+import { mapFailLevelToBail } from './options/failLevel'
+import {
+    inferModeFromArgs,
+    isOptionsObjectForm,
+    toCoreOptions,
+} from './options/normalizeOptions'
+import { getDefaultOptions } from './options/parserOptionsConstants'
 
 /**
  * Private class representing a runtime context for a single parse call.
@@ -142,7 +141,7 @@ export class YiniRuntime {
 
         debugPrint()
         debugPrint('==== Call parse ==========================')
-        const result = _parseMain(yiniContent, coreOpts, this.#runtime)
+        const result = runPipeline(yiniContent, coreOpts, this.#runtime)
         debugPrint('==== End call parse ==========================\n')
 
         if (isDev()) {

@@ -8,7 +8,7 @@ import {
     TPersistThreshold,
     TSourceType,
     TSubjectType,
-} from './types'
+} from './internalTypes'
 
 // All the issue titles are defined here to get a quick overview of all
 // titles, and to easier check that all titles match with relation to
