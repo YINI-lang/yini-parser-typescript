@@ -19,6 +19,9 @@
       - And moved public (user-facing) types and interfaces into its own file `src/types/index.ts`.
   * Moved the file `src/yiniHelpers.ts` to `src/utils/yiniHelpers.ts`.
 - **Renamed:** `includeMetaData` to `includeMetadata`.
+- Updates the codebase to consistently use the `ParsedObject` type,
+replacing the older `TJSObject` type for representing parsed YINI.
+
 
 ## 1.1.0-beta - 2025 Sep
 ### Parser
