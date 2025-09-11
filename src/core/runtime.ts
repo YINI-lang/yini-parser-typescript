@@ -1,15 +1,15 @@
 import fs from 'fs'
 import { isDev } from '../config/env'
-import { IAllUserOptions, TJSObject, TPreferredFailLevel } from '../types'
+import {
+    IAllUserOptions,
+    TBailSensitivityLevel,
+    TJSObject,
+    TPreferredFailLevel,
+} from '../types'
 import { getFileNameExtension } from '../utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from '../utils/print'
 import { computeSha256 } from '../utils/string'
-import {
-    IParseCoreOptions,
-    IRuntimeInfo,
-    TBailSensitivityLevel,
-    TParserMode,
-} from './internalTypes'
+import { IParseCoreOptions, IRuntimeInfo, TParserMode } from './internalTypes'
 import { mapFailLevelToBail } from './options/failLevel'
 import {
     inferModeFromArgs,

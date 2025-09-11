@@ -17,19 +17,21 @@ import ASTBuilder from './core/astBuilder'
 import { ErrorDataHandler } from './core/errorDataHandler'
 import {
     IParseCoreOptions,
-    IResultMetaData,
     IRuntimeInfo,
     IYiniAST,
-    TBailSensitivityLevel,
     TFailLevelKey,
-    TPersistThreshold,
 } from './core/internalTypes'
 import { astToObject } from './core/objectBuilder'
 import YiniLexer from './grammar/generated/YiniLexer'
 import YiniParser, { YiniContext } from './grammar/generated/YiniParser'
+import {
+    IResultMetaData,
+    TBailSensitivityLevel,
+    TPersistThreshold,
+} from './types'
 import { removeUndefinedDeep } from './utils/object'
 import { debugPrint, printObject } from './utils/print'
-import { capitalizeFirst, toLowerSnakeCase } from './utils/string'
+import { toLowerSnakeCase } from './utils/string'
 import { isError } from './utils/system'
 
 const pkg = require('../package.json')

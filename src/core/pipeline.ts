@@ -16,6 +16,11 @@ import {
 import { isDebug, isDev, localAppEnv, localNodeEnv } from '../config/env'
 import YiniLexer from '../grammar/generated/YiniLexer'
 import YiniParser, { YiniContext } from '../grammar/generated/YiniParser'
+import {
+    IResultMetaData,
+    TBailSensitivityLevel,
+    TPersistThreshold,
+} from '../types'
 import { removeUndefinedDeep } from '../utils/object'
 import { debugPrint, printObject } from '../utils/print'
 import { toLowerKebabCase, toLowerSnakeCase } from '../utils/string'
@@ -23,12 +28,9 @@ import astBuilder from './astBuilder'
 import { ErrorDataHandler } from './errorDataHandler'
 import {
     IParseCoreOptions,
-    IResultMetaData,
     IRuntimeInfo,
     IYiniAST,
-    TBailSensitivityLevel,
     TFailLevelKey,
-    TPersistThreshold,
 } from './internalTypes'
 import { astToObject } from './objectBuilder'
 

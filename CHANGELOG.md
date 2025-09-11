@@ -12,6 +12,12 @@
     orderNotes?: string
     ```
 - **Refactored** the static public (user-facing) YINI class to use per-invocation runtime state, preventing race conditions in runtime info when multiple calls to `parse(..)` / `parseFile(..)` run in parallel.
+- **Refactored file layout:** Moved and renamed files in `src/`
+  * File `src/parseEntry.ts` renamed and moved to `src/src/pipeline.ts`, 
+      - And in that file, rename the method/function `_parseEntry(..)` to `runPipeline(..)`.
+  * Renamed the file `core/types.ts` to `core/internalTypes.ts`
+      - And moved public (user-facing) types and interfaces into its own file `src/types/index.ts`.
+  * Moved the file `src/yiniHelpers.ts` to `src/utils/yiniHelpers.ts`.
 
 ## 1.1.0-beta - 2025 Sep
 ### Parser

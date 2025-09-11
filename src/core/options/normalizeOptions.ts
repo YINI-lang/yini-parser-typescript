@@ -1,10 +1,6 @@
 import { isDebug, isDev } from '../../config/env'
-import { IAllUserOptions } from '../../types'
-import {
-    IParseCoreOptions,
-    TBailSensitivityLevel,
-    TParserMode,
-} from '../internalTypes'
+import { IAllUserOptions, TBailSensitivityLevel } from '../../types'
+import { IParseCoreOptions, TParserMode } from '../internalTypes'
 
 export const toCoreOptions = (
     bailLevel: TBailSensitivityLevel,
