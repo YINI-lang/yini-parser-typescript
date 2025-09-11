@@ -65,7 +65,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const result = YINI.parse(fixture, {
             // IMPORTANT: Below values are set.
             strictMode: nonStrictMode,
-            includeMetaData: mustBeTrue,
+            includeMetadata: mustBeTrue,
             includeDiagnostics: mustBeTrue,
         })
         debugPrint(result)
@@ -74,7 +74,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const correctLenientOptions: IAllUserOptions = {
             strictMode: nonStrictMode,
             failLevel: 'ignore-errors', // 'auto' must get normalized to 'ignore-errors' (lenient mode).
-            includeMetaData: mustBeTrue,
+            includeMetadata: mustBeTrue,
             includeDiagnostics: mustBeTrue,
             includeTiming: false,
             preserveUndefinedInMeta: false,
@@ -97,7 +97,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const options: IAllUserOptions = {
             // IMPORTANT: Below values are set.
             strictMode: nonStrictMode,
-            includeMetaData: mustBeTrue,
+            includeMetadata: mustBeTrue,
             includeDiagnostics: mustBeTrue,
             // Below values are set to arbitrarily values:
             failLevel: 'errors',
@@ -131,7 +131,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const options: IAllUserOptions = {
             // IMPORTANT: Below values are set.
             strictMode: nonStrictMode,
-            includeMetaData: mustBeTrue,
+            includeMetadata: mustBeTrue,
             includeDiagnostics: mustBeTrue,
             // Below values are set to arbitrarily values:
             failLevel: 'ignore-errors',
@@ -167,7 +167,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const result = YINI.parse(fixture, {
             // IMPORTANT: Below values are set.
             strictMode: isStrictMode,
-            includeMetaData: mustBeTrue,
+            includeMetadata: mustBeTrue,
             includeDiagnostics: mustBeTrue,
         })
         debugPrint(result)
@@ -176,7 +176,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const correctLenientOptions: IAllUserOptions = {
             strictMode: isStrictMode,
             failLevel: 'errors', // 'auto' must get normalized to 'ignore-errors' (lenient mode).
-            includeMetaData: mustBeTrue,
+            includeMetadata: mustBeTrue,
             includeDiagnostics: mustBeTrue,
             includeTiming: false,
             preserveUndefinedInMeta: false,
@@ -199,7 +199,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const options: IAllUserOptions = {
             // IMPORTANT: Below values are set.
             strictMode: isStrictMode,
-            includeMetaData: mustBeTrue,
+            includeMetadata: mustBeTrue,
             includeDiagnostics: mustBeTrue,
             // Below values are set to arbitrarily values:
             failLevel: 'errors',
@@ -233,7 +233,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const options: IAllUserOptions = {
             // IMPORTANT: Below values are set.
             strictMode: isStrictMode,
-            includeMetaData: mustBeTrue,
+            includeMetadata: mustBeTrue,
             includeDiagnostics: mustBeTrue,
             // Below values are set to arbitrarily values:
             failLevel: 'ignore-errors',
@@ -271,7 +271,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const result = YINI.parseFile(fullPath, {
             // IMPORTANT: Below values are set.
             strictMode: nonStrictMode,
-            includeMetaData: mustBeTrue,
+            includeMetadata: mustBeTrue,
             includeDiagnostics: mustBeTrue,
         })
         debugPrint(result)
@@ -280,7 +280,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const correctLenientOptions: IAllUserOptions = {
             strictMode: nonStrictMode,
             failLevel: 'ignore-errors', // 'auto' must get normalized to 'ignore-errors' (lenient mode).
-            includeMetaData: mustBeTrue,
+            includeMetadata: mustBeTrue,
             includeDiagnostics: mustBeTrue,
             includeTiming: false,
             preserveUndefinedInMeta: false,
@@ -305,7 +305,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const options: IAllUserOptions = {
             // IMPORTANT: Below values are set.
             strictMode: nonStrictMode,
-            includeMetaData: mustBeTrue,
+            includeMetadata: mustBeTrue,
             includeDiagnostics: mustBeTrue,
             // Below values are set to arbitrarily values:
             failLevel: 'errors',
@@ -341,7 +341,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const options: IAllUserOptions = {
             // IMPORTANT: Below values are set.
             strictMode: nonStrictMode,
-            includeMetaData: mustBeTrue,
+            includeMetadata: mustBeTrue,
             includeDiagnostics: mustBeTrue,
             // Below values are set to arbitrarily values:
             failLevel: 'ignore-errors',
@@ -379,7 +379,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const result = YINI.parseFile(fullPath, {
             // IMPORTANT: Below values are set.
             strictMode: isStrictMode,
-            includeMetaData: mustBeTrue,
+            includeMetadata: mustBeTrue,
             includeDiagnostics: mustBeTrue,
         })
         debugPrint(result)
@@ -388,7 +388,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const correctLenientOptions: IAllUserOptions = {
             strictMode: isStrictMode,
             failLevel: 'errors', // 'auto' must get normalized to 'ignore-errors' (lenient mode).
-            includeMetaData: mustBeTrue,
+            includeMetadata: mustBeTrue,
             includeDiagnostics: mustBeTrue,
             includeTiming: false,
             preserveUndefinedInMeta: false,
@@ -413,7 +413,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const options: IAllUserOptions = {
             // IMPORTANT: Below values are set.
             strictMode: isStrictMode,
-            includeMetaData: mustBeTrue,
+            includeMetadata: mustBeTrue,
             includeDiagnostics: mustBeTrue,
             // Below values are set to arbitrarily values:
             failLevel: 'errors',
@@ -449,7 +449,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const options: IAllUserOptions = {
             // IMPORTANT: Below values are set.
             strictMode: isStrictMode,
-            includeMetaData: mustBeTrue,
+            includeMetadata: mustBeTrue,
             includeDiagnostics: mustBeTrue,
             // Below values are set to arbitrarily values:
             failLevel: 'ignore-errors',

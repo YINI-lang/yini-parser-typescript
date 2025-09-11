@@ -60,7 +60,7 @@ export default class YINI {
      *   - `'ignore-errors'`       : Continue parsing despite errors; log them and attempt recovery.
      *   - `'errors'`              : Stop parsing on the first error.
      *   - `'warnings-and-errors'` : Stop parsing on the first warning **or** error.
-     * @param includeMetaData    If `true`, return additional metadata (e.g. warnings, statistics) alongside the parsed object.
+     * @param includeMetadata    If `true`, return additional metadata (e.g. warnings, statistics) alongside the parsed object.
      *
      * @returns A JavaScript object representing the parsed YINI content.
      */
@@ -72,7 +72,7 @@ export default class YINI {
         yiniContent: string,
         strictMode?: boolean,
         failLevel?: TPreferredFailLevel,
-        includeMetaData?: boolean,
+        includeMetadata?: boolean,
     ): TJSObject
 
     /**
@@ -89,15 +89,15 @@ export default class YINI {
      *     `'warnings-and-errors'` - Stop parsing on the first warning or error.
      *   (Type: TPreferredFailLevel; exact behavior is implementation-defined.)
      * @param options.includeDiagnostics - Include diagnostics in the returned metadata.
-     *   Requires: `includeMetaData = true`. Ignored otherwise.
-     * @param options.includeMetaData - Attach a metadata object to the parse result
+     *   Requires: `includeMetadata = true`. Ignored otherwise.
+     * @param options.includeMetadata - Attach a metadata object to the parse result
      *   (e.g., timings, diagnostics).
      * @param options.includeTiming - Include timing information for parser phases in metadata.
-     *   Requires: `includeMetaData = true`. Ignored otherwise.
+     *   Requires: `includeMetadata = true`. Ignored otherwise.
      * @param options.onDuplicateKey - Strategy/handler when encountering a duplicate key.
      *   Allowed values: `'warn-and-keep-first'` | `'warn-and-overwrite'` | `'keep-first'` (silent, first wins) | `'overwrite'` (silent, last wins) | `'error'`.
      * @param options.preserveUndefinedInMeta - Keep properties with value `undefined` inside
-     *   the returned metadata. Requires: `includeMetaData = true`. Ignored otherwise.
+     *   the returned metadata. Requires: `includeMetadata = true`. Ignored otherwise.
      * @param options.requireDocTerminator - Controls whether a document terminator is required.
      *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
      * @param options.strictMode - Enable stricter syntax and well-formedness checks according
@@ -125,14 +125,14 @@ export default class YINI {
         yiniContent: string,
         arg2?: boolean | IAllUserOptions, // strictMode | options
         failLevel: TPreferredFailLevel = 'auto',
-        includeMetaData = false,
+        includeMetadata = false,
     ): TJSObject {
         debugPrint('-> Entered static parse(..) in class YINI\n')
 
         // // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
         // if (
         //     isOptionsObjectForm(arg2) &&
-        //     (failLevel !== 'auto' || includeMetaData !== false)
+        //     (failLevel !== 'auto' || includeMetadata !== false)
         // ) {
         //     throw new TypeError(
         //         'Invalid call: when providing an options object, do not also pass positional parameters.',
@@ -158,11 +158,11 @@ export default class YINI {
         //         strictMode:
         //             (arg2 as boolean | undefined) ?? defaultOptions.strictMode,
         //         failLevel,
-        //         includeMetaData,
+        //         includeMetadata,
         //     }
         // }
 
-        // if (userOpts.includeMetaData && _runtimeInfo.sourceType === 'Inline') {
+        // if (userOpts.includeMetadata && _runtimeInfo.sourceType === 'Inline') {
         //     const lineCount = yiniContent.split(/\r?\n/).length // Counts the lines.
         //     const sha256 = computeSha256(yiniContent) // NOTE: Compute BEFORE any possible tampering of content.
 
@@ -203,7 +203,7 @@ export default class YINI {
                   yiniContent,
                   arg2 as boolean | undefined,
                   failLevel,
-                  includeMetaData,
+                  includeMetadata,
               )
         debugPrint('==== End call parse ==========================\n')
 
@@ -229,7 +229,7 @@ export default class YINI {
      *   - `'ignore-errors'`       : Continue parsing despite errors; log them and attempt recovery.
      *   - `'errors'`              : Stop parsing on the first error.
      *   - `'warnings-and-errors'` : Stop parsing on the first warning **or** error.
-     * @param includeMetaData    If `true`, return additional metadata (e.g. warnings, statistics) alongside the parsed object.
+     * @param includeMetadata    If `true`, return additional metadata (e.g. warnings, statistics) alongside the parsed object.
      *
      * @returns A JavaScript object representing the parsed YINI content.
      */
@@ -241,7 +241,7 @@ export default class YINI {
         filePath: string,
         strictMode?: boolean,
         failLevel?: TPreferredFailLevel,
-        includeMetaData?: boolean,
+        includeMetadata?: boolean,
     ): TJSObject
 
     /**
@@ -257,15 +257,15 @@ export default class YINI {
      *     `'warnings-and-errors'` - Stop parsing on the first warning or error.
      *   (Type: TPreferredFailLevel; exact behavior is implementation-defined.)
      * @param options.includeDiagnostics - Include diagnostics in the returned metadata.
-     *   Requires: `includeMetaData = true`. Ignored otherwise.
-     * @param options.includeMetaData - Attach a metadata object to the parse result
+     *   Requires: `includeMetadata = true`. Ignored otherwise.
+     * @param options.includeMetadata - Attach a metadata object to the parse result
      *   (e.g., timings, diagnostics).
      * @param options.includeTiming - Include timing information for parser phases in metadata.
-     *   Requires: `includeMetaData = true`. Ignored otherwise.
+     *   Requires: `includeMetadata = true`. Ignored otherwise.
      * @param options.onDuplicateKey - Strategy/handler when encountering a duplicate key.
      *   Allowed values: `'warn-and-keep-first'` | `'warn-and-overwrite'` | `'keep-first'` (silent, first wins) | `'overwrite'` (silent, last wins) | `'error'`.
      * @param options.preserveUndefinedInMeta - Keep properties with value `undefined` inside
-     *   the returned metadata. Requires: `includeMetaData = true`. Ignored otherwise.
+     *   the returned metadata. Requires: `includeMetadata = true`. Ignored otherwise.
      * @param options.requireDocTerminator - Controls whether a document terminator is required.
      *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
      * @param options.strictMode - Enable stricter syntax and well-formedness checks according
@@ -293,7 +293,7 @@ export default class YINI {
         filePath: string,
         arg2?: boolean | IAllUserOptions, // strictMode | options
         failLevel: TPreferredFailLevel = 'auto',
-        includeMetaData = false,
+        includeMetadata = false,
     ): TJSObject {
         debugPrint('-> Entered static parseFile(..) in class YINI\n')
         debugPrint('Current directory = ' + process.cwd())
@@ -301,7 +301,7 @@ export default class YINI {
         // // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
         // if (
         //     isOptionsObjectForm(arg2) &&
-        //     (failLevel !== 'auto' || includeMetaData !== false)
+        //     (failLevel !== 'auto' || includeMetadata !== false)
         // ) {
         //     throw new TypeError(
         //         'Invalid call: when providing an options object, do not also pass positional parameters.',
@@ -328,7 +328,7 @@ export default class YINI {
         //         strictMode:
         //             (arg2 as boolean | undefined) ?? defaultOptions.strictMode,
         //         failLevel,
-        //         includeMetaData,
+        //         includeMetadata,
         //     }
         // }
 
@@ -354,7 +354,7 @@ export default class YINI {
         // _runtimeInfo.sourceType = 'File'
         // _runtimeInfo.fileName = filePath
 
-        // if (userOpts.includeMetaData) {
+        // if (userOpts.includeMetadata) {
         //     _runtimeInfo.lineCount = content.split(/\r?\n/).length // Counts the lines.
         //     _runtimeInfo.fileByteSize = fileByteSize
         //     _runtimeInfo.timeIoMs = +(timeEndMs - timeStartMs).toFixed(3)
@@ -382,7 +382,7 @@ export default class YINI {
                   filePath,
                   arg2 as boolean | undefined,
                   failLevel,
-                  includeMetaData,
+                  includeMetadata,
               )
 
         debugPrint('==== End call parse ==========================\n')

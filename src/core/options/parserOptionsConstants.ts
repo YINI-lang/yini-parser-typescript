@@ -9,7 +9,7 @@ export type NormalizedOptions = Required<
         IAllUserOptions,
         | 'strictMode'
         | 'failLevel'
-        | 'includeMetaData'
+        | 'includeMetadata'
         | 'includeDiagnostics'
         | 'includeTiming'
         | 'preserveUndefinedInMeta'
@@ -24,7 +24,7 @@ export type NormalizedOptions = Required<
 export const BASE_DEFAULTS: NormalizedOptions = {
     strictMode: false,
     failLevel: 'auto',
-    includeMetaData: false,
+    includeMetadata: false,
     includeDiagnostics: false,
     includeTiming: false,
     preserveUndefinedInMeta: false,

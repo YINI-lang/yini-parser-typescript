@@ -9,7 +9,7 @@ export const toCoreOptions = (
     return {
         isStrict: userOpts.strictMode,
         bailSensitivity: bailLevel,
-        isIncludeMeta: userOpts.includeMetaData,
+        isIncludeMeta: userOpts.includeMetadata,
         isWithDiagnostics: isDev() || isDebug() || userOpts.includeDiagnostics,
         isWithTiming: isDev() || isDebug() || userOpts.includeTiming,
         isKeepUndefinedInMeta: isDebug() || userOpts.preserveUndefinedInMeta,
@@ -29,7 +29,7 @@ export const isOptionsObjectForm = (v: unknown): v is IAllUserOptions => {
         // but this keeps accidental booleans/strings out.
         ('strictMode' in (v as any) ||
             'failLevel' in (v as any) ||
-            'includeMetaData' in (v as any) ||
+            'includeMetadata' in (v as any) ||
             'includeDiagnostics' in (v as any) ||
             'includeTiming' in (v as any) ||
             'preserveUndefinedInMeta' in (v as any) ||

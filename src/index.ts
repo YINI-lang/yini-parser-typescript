@@ -328,7 +328,7 @@ if (isProdEnv()) {
         //         YINI.parse(yini, {
         //             strictMode: false,
         //             failLevel: 'errors',
-        //             includeMetaData: false,
+        //             includeMetadata: false,
         //             requireDocTerminator: 'optional',
         //         }),
         //     ),
@@ -348,7 +348,7 @@ if (isProdEnv()) {
         //                 YINI.parse(yini, {
         //                     strictMode: true,
         //                     failLevel: 'auto',
-        //                     includeMetaData: false,
+        //                     includeMetadata: false,
         //                     requireDocTerminator: 'optional',
         //                 }),
         //             ),
@@ -368,7 +368,7 @@ if (isProdEnv()) {
         //         YINI.parseFile('comprehensive-example.yini', {
         //             strictMode: false,
         //             failLevel: 'auto',
-        //             includeMetaData: true,
+        //             includeMetadata: true,
         //         }),
         //     ),
         // )
@@ -376,14 +376,14 @@ if (isProdEnv()) {
         // YINI.parseFile(fileName, {
         //     strictMode: false,
         //     failLevel: 'auto',
-        //     includeMetaData: true,
+        //     includeMetadata: true,
         // })
         // const fileName =
         //     './tests/fixtures/invalid/bad-user-profile-config-2.yini'
         // YINI.parseFile(fileName, {
         //     strictMode: true,
         //     failLevel: 'auto',
-        //     includeMetaData: true,
+        //     includeMetadata: true,
         // })
     }
 }

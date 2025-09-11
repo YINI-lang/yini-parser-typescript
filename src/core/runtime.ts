@@ -59,7 +59,7 @@ export class YiniRuntime {
         yiniContent: string,
         strictMode?: boolean,
         failLevel?: TPreferredFailLevel,
-        includeMetaData?: boolean,
+        includeMetadata?: boolean,
     ): TJSObject
 
     // --- Method overload signature ---------------------------------------
@@ -75,14 +75,14 @@ export class YiniRuntime {
         yiniContent: string,
         arg2?: boolean | IAllUserOptions, // strictMode | options
         failLevel: TPreferredFailLevel = 'auto',
-        includeMetaData = false,
+        includeMetadata = false,
     ): TJSObject {
         debugPrint('-> Entered doParse(..) in YiniRuntime class\n')
 
         // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
         if (
             isOptionsObjectForm(arg2) &&
-            (failLevel !== 'auto' || includeMetaData !== false)
+            (failLevel !== 'auto' || includeMetadata !== false)
         ) {
             throw new TypeError(
                 'Invalid call: when providing an options object, do not also pass positional parameters.',
@@ -108,11 +108,11 @@ export class YiniRuntime {
                 strictMode:
                     (arg2 as boolean | undefined) ?? defaultOptions.strictMode,
                 failLevel,
-                includeMetaData,
+                includeMetadata,
             }
         }
 
-        if (userOpts.includeMetaData && this.#runtime.sourceType === 'Inline') {
+        if (userOpts.includeMetadata && this.#runtime.sourceType === 'Inline') {
             const lineCount = yiniContent.split(/\r?\n/).length // Counts the lines.
             const sha256 = computeSha256(yiniContent) // NOTE: Compute BEFORE any possible tampering of content.
 
@@ -163,7 +163,7 @@ export class YiniRuntime {
         filePath: string,
         strictMode?: boolean,
         failLevel?: TPreferredFailLevel,
-        includeMetaData?: boolean,
+        includeMetadata?: boolean,
     ): TJSObject
 
     // --- Method overload signature ---------------------------------------
@@ -179,7 +179,7 @@ export class YiniRuntime {
         filePath: string,
         arg2?: boolean | IAllUserOptions, // strictMode | options
         failLevel: TPreferredFailLevel = 'auto',
-        includeMetaData = false,
+        includeMetadata = false,
     ): TJSObject {
         debugPrint('-> Entered doParseFile(..) in YiniRuntime class\n')
         debugPrint('Current directory = ' + process.cwd())
@@ -187,7 +187,7 @@ export class YiniRuntime {
         // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
         if (
             isOptionsObjectForm(arg2) &&
-            (failLevel !== 'auto' || includeMetaData !== false)
+            (failLevel !== 'auto' || includeMetadata !== false)
         ) {
             throw new TypeError(
                 'Invalid call: when providing an options object, do not also pass positional parameters.',
@@ -214,7 +214,7 @@ export class YiniRuntime {
                 strictMode:
                     (arg2 as boolean | undefined) ?? defaultOptions.strictMode,
                 failLevel,
-                includeMetaData,
+                includeMetadata,
             }
         }
 
@@ -240,7 +240,7 @@ export class YiniRuntime {
         // this.#runtime.sourceType = 'File'
         this.#runtime.fileName = filePath
 
-        if (userOpts.includeMetaData) {
+        if (userOpts.includeMetadata) {
             this.#runtime.lineCount = content.split(/\r?\n/).length // Counts the lines.
             this.#runtime.fileByteSize = fileByteSize
             this.#runtime.timeIoMs = +(timeEndMs - timeStartMs).toFixed(3)

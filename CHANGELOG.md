@@ -18,6 +18,7 @@
   * Renamed the file `core/types.ts` to `core/internalTypes.ts`
       - And moved public (user-facing) types and interfaces into its own file `src/types/index.ts`.
   * Moved the file `src/yiniHelpers.ts` to `src/utils/yiniHelpers.ts`.
+- **Renamed:** `includeMetaData` to `includeMetadata`.
 
 ## 1.1.0-beta - 2025 Sep
 ### Parser
@@ -32,7 +33,7 @@
   const config= YINI.parse(yini, {
             strictMode: false,
             failLevel: 'auto',
-            includeMetaData: false,
+            includeMetadata: false,
             requireDocTerminator: false,
         })  
   ```  

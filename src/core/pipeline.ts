@@ -17,8 +17,9 @@ import { isDebug, isDev, localAppEnv, localNodeEnv } from '../config/env'
 import YiniLexer from '../grammar/generated/YiniLexer'
 import YiniParser, { YiniContext } from '../grammar/generated/YiniParser'
 import {
-    IResultMetaData,
+    IResultMetadata,
     TBailSensitivityLevel,
+    TFailLevelKey,
     TPersistThreshold,
 } from '../types'
 import { removeUndefinedDeep } from '../utils/object'
@@ -26,12 +27,7 @@ import { debugPrint, printObject } from '../utils/print'
 import { toLowerKebabCase, toLowerSnakeCase } from '../utils/string'
 import astBuilder from './astBuilder'
 import { ErrorDataHandler } from './errorDataHandler'
-import {
-    IParseCoreOptions,
-    IRuntimeInfo,
-    IYiniAST,
-    TFailLevelKey,
-} from './internalTypes'
+import { IParseCoreOptions, IRuntimeInfo, IYiniAST } from './internalTypes'
 import { astToObject } from './objectBuilder'
 
 const pkg = require('../../package.json')
@@ -417,12 +413,12 @@ export const runPipeline = (
         isDebug() && console.debug(finalJSResult)
     }
 
-    const constructResultMetaData = (): IResultMetaData => {
+    const constructResultMetadata = (): IResultMetadata => {
         // --- Construct meta information -------------------------------------
         const to3 = (n: number): number => Number.parseFloat(n.toFixed(3))
 
         // Construct meta data.
-        const metaData: IResultMetaData = {
+        const metadata: IResultMetadata = {
             parserVersion: pkg.version,
             mode: coreOptions.isStrict ? 'strict' : 'lenient',
             totalErrors: errorHandler.getNumOfErrors(),
@@ -507,7 +503,7 @@ export const runPipeline = (
                 return null
             }
 
-            metaData.diagnostics = {
+            metadata.diagnostics = {
                 failLevel: {
                     preferredLevel: runtimeInfo.preferredBailSensitivity,
                     levelUsed: coreOptions.bailSensitivity,
@@ -546,7 +542,7 @@ export const runPipeline = (
                     // NOTE: (!) These MUST be user coreOptions.
                     strictMode: coreOptions.isStrict,
                     failLevel: mapLevelKey(coreOptions.bailSensitivity),
-                    includeMetaData: coreOptions.isIncludeMeta,
+                    includeMetadata: coreOptions.isIncludeMeta,
                     includeDiagnostics: coreOptions.isWithDiagnostics,
                     includeTiming: coreOptions.isWithTiming,
                     preserveUndefinedInMeta: coreOptions.isKeepUndefinedInMeta,
@@ -560,7 +556,7 @@ export const runPipeline = (
 
         // Attach optional durations timing data.
         if (coreOptions.isWithTiming) {
-            metaData.timing = {
+            metadata.timing = {
                 total: !coreOptions.isWithTiming
                     ? null
                     : {
@@ -607,7 +603,7 @@ export const runPipeline = (
             }
         }
 
-        return metaData
+        return metadata
     }
 
     debugPrint('getNumOfErrors(): ' + errorHandler.getNumOfErrors())
@@ -623,8 +619,8 @@ export const runPipeline = (
         return {
             result: finalJSResult as any,
             meta: !coreOptions.isKeepUndefinedInMeta
-                ? removeUndefinedDeep(constructResultMetaData())
-                : constructResultMetaData(),
+                ? removeUndefinedDeep(constructResultMetadata())
+                : constructResultMetadata(),
         }
     }
 

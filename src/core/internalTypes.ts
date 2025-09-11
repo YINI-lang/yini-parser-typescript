@@ -24,17 +24,6 @@ export type TSourceType = 'File' | 'Inline'
 export type TSubjectType = 'None/Ignore' | TSourceType
 
 /**
- * Only for returned meta data to user.
- */
-export type TFailLevelKey =
-    // | 'ignore_errors' // 0 - Don't bail/fail on error, persist and try to recover.
-    // | 'abort_on_errors' // 1 - Stop parsing on the first error.
-    // | 'abort_on_warnings' // 2 - Stop parsing on the first warning or error.
-    | 'ignore-errors' // 0 - Don't bail/fail on error, persist and try to recover.
-    | 'errors' // 1 - Stop parsing on the first error.
-    | 'warnings-and-errors' // 2 - Stop parsing on the first warning or error.
-
-/**
  * Scalar literal, a single, indivisible piece of data:
  * string, number, boolean, and null.
  * @property {string | undefined} [tag]
@@ -149,23 +138,6 @@ export interface IParseCoreOptions {
     requireDocTerminator: 'optional' | 'warn-if-missing' | 'required'
     treatEmptyValueAsNull: 'allow' | 'allow-with-warning' | 'disallow'
     onDuplicateKey: TOnDuplicateKey
-}
-
-/**
- * User-facing options, these are external and should be more user friendly,
- * and shorter, parameter names than the (more descriptive) internal
- * engine option names.
- *
- * @note These parameters are emphasizes a bit more than the other options,
- *       therefor these are kept a bit shorter for usability-purposes.
- * @note These are the same as in the "simple positional API" function in
- *       the YINI class.
- */
-// NOTE: (!) All props MUST be optional.
-export interface IPrimaryUserParams {
-    strictMode?: boolean
-    failLevel?: TPreferredFailLevel // 'auto' | 0-'ignore-errors' | 1-'errors' | 2-'warnings-and-errors'
-    includeMetaData?: boolean // Include meta data along the returned result.
 }
 
 export interface IYiniAST extends IMetaBaseInfo {

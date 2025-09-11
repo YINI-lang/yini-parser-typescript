@@ -5,8 +5,6 @@
  * @note Internal types should go into core/internalTypes.ts.
  */
 
-import { IPrimaryUserParams, TFailLevelKey } from '../core/internalTypes'
-
 // --- Public (user-facing) Types ----------------------------------------------------------------
 
 export type TJSObject = any // NOTE: Currently must be any! Not unknown or Record<string, unknown> or anything else, since linting etc will render this as error/unknow.
@@ -24,6 +22,17 @@ export type TOnDuplicateKey =
     | 'keep-first' // Silent, first wins.
     | 'overwrite' // Silent, last wins.
     | 'error'
+
+/**
+ * Only for returned meta data to user.
+ */
+export type TFailLevelKey =
+    // | 'ignore_errors' // 0 - Don't bail/fail on error, persist and try to recover.
+    // | 'abort_on_errors' // 1 - Stop parsing on the first error.
+    // | 'abort_on_warnings' // 2 - Stop parsing on the first warning or error.
+    | 'ignore-errors' // 0 - Don't bail/fail on error, persist and try to recover.
+    | 'errors' // 1 - Stop parsing on the first error.
+    | 'warnings-and-errors' // 2 - Stop parsing on the first warning or error.
 
 export type TPreferredFailLevel = 'auto' | TFailLevelKey
 // | 'ignore-errors'
@@ -43,6 +52,23 @@ export interface IIssuePayload {
 }
 
 /**
+ * User-facing options, these are external and should be more user friendly,
+ * and shorter, parameter names than the (more descriptive) internal
+ * engine option names.
+ *
+ * @note These parameters are emphasizes a bit more than the other options,
+ *       therefor these are kept a bit shorter for usability-purposes.
+ * @note These are the same as in the "simple positional API" function in
+ *       the YINI class.
+ */
+// NOTE: (!) All props MUST be optional.
+export interface IPrimaryUserParams {
+    strictMode?: boolean
+    failLevel?: TPreferredFailLevel // 'auto' | 0-'ignore-errors' | 1-'errors' | 2-'warnings-and-errors'
+    includeMetadata?: boolean // Include meta data along the returned result.
+}
+
+/**
  * @param failLevel - Minimum severity that should cause the parse to fail.
  *   Accepts:
  *     `'ignore-errors'` - Don't bail/fail on error, persist and try to recover.
@@ -50,15 +76,15 @@ export interface IIssuePayload {
  *     `'warnings-and-errors'` - Stop parsing on the first warning or error.
  *   (Type: TPreferredFailLevel; exact behavior is implementation-defined.)
  * @param includeDiagnostics - Include diagnostics in the returned metadata.
- *   Requires: `includeMetaData = true`. Ignored otherwise.
- * @param includeMetaData - Attach a metadata object to the parse result
+ *   Requires: `includeMetadata = true`. Ignored otherwise.
+ * @param includeMetadata - Attach a metadata object to the parse result
  *   (e.g., timings, diagnostics).
  * @param includeTiming - Include timing information for parser phases in metadata.
- *   Requires: `includeMetaData = true`. Ignored otherwise.
+ *   Requires: `includeMetadata = true`. Ignored otherwise.
  * @param onDuplicateKey - Strategy/handler when encountering a duplicate key.
  *   Allowed values: `'warn-and-keep-first'` | `'warn-and-overwrite'` | `'keep-first'` (silent, first wins) | `'overwrite'` (silent, last wins) | `'error'`.
  * @param preserveUndefinedInMeta - Keep properties with value `undefined` inside
- *   the returned metadata. Requires: `includeMetaData = true`. Ignored otherwise.
+ *   the returned metadata. Requires: `includeMetadata = true`. Ignored otherwise.
  * @param requireDocTerminator - Controls whether a document terminator is required.
  *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
  * @param strictMode - Enable stricter syntax and well-formedness checks according
@@ -72,9 +98,9 @@ export interface IIssuePayload {
 // parameter names.
 // NOTE: (!) All props MUST be optional.
 export interface IAllUserOptions extends IPrimaryUserParams {
-    includeDiagnostics?: boolean // (Requires includeMetaData) Include diagnostics in meta data, when isIncludeMeta.
-    includeTiming?: boolean // (Requires includeMetaData) Include timing data of the different phases in meta data, when isIncludeMeta.
-    preserveUndefinedInMeta?: boolean // (Requires includeMetaData) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
+    includeDiagnostics?: boolean // (Requires includeMetadata) Include diagnostics in meta data, when isIncludeMeta.
+    includeTiming?: boolean // (Requires includeMetadata) Include timing data of the different phases in meta data, when isIncludeMeta.
+    preserveUndefinedInMeta?: boolean // (Requires includeMetadata) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
     suppressWarnings?: boolean // Suppress warnings in console (does not effect warnings in meta data).
     //hideWarnings?: boolean // Hide all warnings in console including in meta data.
     // rules?: {
@@ -95,7 +121,7 @@ export interface IAllUserOptions extends IPrimaryUserParams {
  *
  * @note UPDATE 'metaSchemaVersion' on any edits to the meta structure.
  */
-export interface IResultMetaData {
+export interface IResultMetadata {
     parserVersion: string
     mode: 'lenient' | 'strict'
     totalErrors: number
