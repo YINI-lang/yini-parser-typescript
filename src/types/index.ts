@@ -1,12 +1,13 @@
 /**
  * src/types/index.ts
  *
- * Public (user-facing) here only.
- * @note Internal types should go into core/internalTypes.ts.
+ * Public (user-facing) types (shapes) here only.
+ * @note Internal-only types (shapes) should go into core/internalTypes.ts.
  */
 
 // --- Public (user-facing) Types ----------------------------------------------------------------
 
+// NOTE: Currently 'any' to preserve flexibility of parse result.
 export type TJSObject = any // NOTE: Currently must be any! Not unknown or Record<string, unknown> or anything else, since linting etc will render this as error/unknow.
 
 // Human label types.
@@ -14,42 +15,35 @@ export type TPersistThreshold =
     | '0-Ignore-Errors' // 0 - Don't bail/fail on error, persist and try to recover.
     | '1-Abort-on-Errors' // 1 - Stop parsing on the first error.
     | '2-Abort-Even-on-Warnings' // 2 - Stop parsing on the first warning or error.
+
 export type TBailSensitivityLevel = 0 | 1 | 2 // Bail sensitivity level.
 
 export type TOnDuplicateKey =
-    | 'warn-and-keep-first' // Keep last with a warning.
+    | 'warn-and-keep-first' // Keep first with a warning.
     | 'warn-and-overwrite' // 'warn-and-overwrite' = 'warn-and-keep-last'
     | 'keep-first' // Silent, first wins.
     | 'overwrite' // Silent, last wins.
     | 'error'
 
-/**
- * Only for returned meta data to user.
- */
+// Keys as reported in metadata (human-readable).
 export type TFailLevelKey =
-    // | 'ignore_errors' // 0 - Don't bail/fail on error, persist and try to recover.
-    // | 'abort_on_errors' // 1 - Stop parsing on the first error.
-    // | 'abort_on_warnings' // 2 - Stop parsing on the first warning or error.
     | 'ignore-errors' // 0 - Don't bail/fail on error, persist and try to recover.
     | 'errors' // 1 - Stop parsing on the first error.
     | 'warnings-and-errors' // 2 - Stop parsing on the first warning or error.
 
 export type TPreferredFailLevel = 'auto' | TFailLevelKey
-// | 'ignore-errors'
-// | 'errors'
-// | 'warnings-and-errors'
+
+/** Version tag for the public metadata schema. */
+export type TMetaSchemaVersion = '1.1.0'
+
+/** Source of the order guarantee. */
+export type TOrderGuarantee =
+    | 'spec'
+    | 'language'
+    | 'implementation-defined'
+    | 'none'
 
 // --- Public (user-facing) Interfaces -----------------------------------------------------------
-
-//{ line: 12, column: 8, type: 'Syntax-Error', message1: 'Invalid number' }
-export interface IIssuePayload {
-    line: number | undefined // NOTE: 1-based, so line 0 does not exist, set to undefined instead.
-    column: number | undefined // NOTE: 1-based, so column 0 does not exist, set to undefined instead.
-    typeKey: string // Transformed from the corresponding type, keep it lowercase since it's shown in meta, easier for tooling.
-    message: string
-    advice: string | undefined
-    hint: string | undefined
-}
 
 /**
  * User-facing options, these are external and should be more user friendly,
@@ -63,8 +57,14 @@ export interface IIssuePayload {
  */
 // NOTE: (!) All props MUST be optional.
 export interface IPrimaryUserParams {
+    /** Enable stricter syntax and well-formedness checks. */
     strictMode?: boolean
+    /**
+     * Minimum severity that should cause parse to fail.
+     * 'auto' | 'ignore-errors' | 'errors' | 'warnings-and-errors'
+     */
     failLevel?: TPreferredFailLevel // 'auto' | 0-'ignore-errors' | 1-'errors' | 2-'warnings-and-errors'
+    /** Attach metadata to the parse result (timings, diagnostics, etc.). */
     includeMetadata?: boolean // Include meta data along the returned result.
 }
 
@@ -110,6 +110,19 @@ export interface IAllUserOptions extends IPrimaryUserParams {
     // }
 }
 
+//{ line: 12, column: 8, type: 'Syntax-Error', message1: 'Invalid number' }
+export interface IIssuePayload {
+    /** 1-based; use undefined when not applicable. */
+    line: number | undefined // NOTE: 1-based, so line 0 does not exist, set to undefined instead.
+    /** 1-based; use undefined when not applicable. */
+    column: number | undefined // NOTE: 1-based, so column 0 does not exist, set to undefined instead.
+    /** Lowercase key for easy tooling. */
+    typeKey: string // Transformed from the corresponding type, keep it lowercase since it's shown in meta, easier for tooling.
+    message: string
+    advice: string | undefined
+    hint: string | undefined
+}
+
 // --- Result Meta Interface (Public / User-facing)-------------------------
 
 /**
@@ -131,7 +144,7 @@ export interface IResultMetadata {
     runFinishedAt: string
     durationMs: number
     preservesOrder: boolean // Member/section order: platform-, implementation-, and language-specific. Not mandated by the YINI spec.
-    orderGuarantee: 'implementation-defined' // De facto yes, in this specific implementation.
+    orderGuarantee: TOrderGuarantee // De facto yes, in this specific implementation.
     orderNotes?: string
     source: {
         sourceType: string // Transformed from the type, keep it lowercase since it's shown in resulted meta, easier for tooling.
@@ -151,7 +164,7 @@ export interface IResultMetadata {
         // listCount: null | number
         sectionNamePaths: string[] | null // All key/access paths to section Headers.
     }
-    metaSchemaVersion: '1.1.0'
+    metaSchemaVersion: TMetaSchemaVersion
     diagnostics?: {
         failLevel: {
             // preferredLevel: null | 'auto' | 0 | 1 | 2 // Input level into function.
