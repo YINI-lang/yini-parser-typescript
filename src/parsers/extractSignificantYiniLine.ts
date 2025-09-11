@@ -1,7 +1,7 @@
 import { isDebug } from '../config/env'
 import { debugPrint, printObject } from '../utils/print'
 import { splitLines } from '../utils/string'
-import { stripCommentsAndAfter } from '../yiniHelpers'
+import { stripCommentsAndAfter } from '../utils/yiniHelpers'
 
 /**
  * Extract significant YINI line from YINI content (that may be surrounded by comments.).

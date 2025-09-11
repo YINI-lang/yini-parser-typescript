@@ -1,6 +1,6 @@
 import { isDebug, isDev } from '../../config/env'
+import { IAllUserOptions } from '../../types'
 import {
-    IAllUserOptions,
     IParseCoreOptions,
     TBailSensitivityLevel,
     TParserMode,

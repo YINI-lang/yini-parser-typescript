@@ -6,8 +6,7 @@
  */
 
 import { execSync } from 'child_process'
-import YINI from '../../src'
-import { TPreferredFailLevel } from '../../src/core/types'
+import YINI, { TPreferredFailLevel } from '../../src'
 import { debugPrint, toPrettyJSON } from '../../src/utils/print'
 import { parseUntilError } from '../test-helpers'
 

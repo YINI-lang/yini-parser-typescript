@@ -8,9 +8,9 @@ import {
     TObjectValue,
     TScalarValue,
     TValueLiteral,
-} from './core/types'
-import { debugPrint, printObject } from './utils/print'
-import { isEnclosedInBackticks, splitLines } from './utils/string'
+} from '../core/internalTypes'
+import { debugPrint, printObject } from './print'
+import { isEnclosedInBackticks, splitLines } from './string'
 
 const SECTION_MARKER1 = '^'
 const SECTION_MARKER2 = '<'

@@ -1,4 +1,5 @@
-import { TBailSensitivityLevel, TPreferredFailLevel } from '../internalTypes'
+import { TPreferredFailLevel } from '../../types'
+import { TBailSensitivityLevel } from '../internalTypes'
 
 type NewType = TBailSensitivityLevel
 

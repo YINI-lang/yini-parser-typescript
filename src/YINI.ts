@@ -1,12 +1,8 @@
 import { isDebug, isDev } from './config/env'
-import { ErrorDataHandler } from './core/ErrorDataHandler'
-import {
-    IAllUserOptions,
-    TJSObject,
-    TPreferredFailLevel,
-} from './core/internalTypes'
+import { ErrorDataHandler } from './core/errorDataHandler'
 import { isOptionsObjectForm } from './core/options/normalizeOptions'
 import { YiniRuntime } from './core/runtime'
+import { IAllUserOptions, TJSObject, TPreferredFailLevel } from './types'
 import { debugPrint, devPrint, printObject } from './utils/print'
 
 const DEFAULT_TAB_SIZE = 4 // De facto "modern default" (even though traditionally/historically it's 8).
@@ -84,6 +80,7 @@ export default class YINI {
      *
      * @param yiniContent      YINI code as a string (multi‑line content supported).
      * @param options Optional settings to customize parsing and/or results, useful if you need more control.
+     *        For all options, see types/IAllUserOptions.
      *
      * @param options.failLevel - Minimum severity that should cause the parse to fail.
      *   Accepts:

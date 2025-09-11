@@ -1,6 +1,6 @@
 import { isDebug } from '../config/env'
 import { debugPrint, printObject, toPrettyJSON } from '../utils/print'
-import { ErrorDataHandler } from './ErrorDataHandler'
+import { ErrorDataHandler } from './errorDataHandler'
 import { IYiniAST, IYiniSection, TValueLiteral } from './internalTypes'
 
 /**

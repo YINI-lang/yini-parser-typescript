@@ -1,4 +1,4 @@
-import { TSectionHeaderType } from '../../../src/core/types'
+import { TSectionHeaderType } from '../../../src/core/internalTypes'
 import extractHeaderParts from '../../../src/parsers/extractHeaderParts'
 import { debugPrint } from '../../../src/utils/print'
 

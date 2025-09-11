@@ -9,20 +9,16 @@
  *   - null is used where a value is missing or has not yet been computed.
  */
 
-// --- Types ----------------------------------------------------------------
+import { IAllUserOptions, TOnDuplicateKey, TPreferredFailLevel } from '../types'
+
+// --- Internal Types ----------------------------------------------------------------
 
 export type TParserMode = 'lenient' | 'strict'
-
-export type TJSObject = any // NOTE: Currently must be any! Not unknown or Record<string, unknown> or anything else, since linting etc will render this as error/unknow.
 
 export type TSourceType = 'File' | 'Inline'
 export type TSubjectType = 'None/Ignore' | TSourceType
 
 export type TBailSensitivityLevel = 0 | 1 | 2 // Bail sensitivity level.
-export type TPreferredFailLevel = 'auto' | TFailLevelKey
-// | 'ignore-errors'
-// | 'errors'
-// | 'warnings-and-errors'
 
 // Human label types.
 export type TPersistThreshold =
@@ -98,16 +94,9 @@ export type TIssueType =
     | 'Notice'
     | 'Info'
 
-export type TOnDuplicateKey =
-    | 'warn-and-keep-first' // Keep last with a warning.
-    | 'warn-and-overwrite' // 'warn-and-overwrite' = 'warn-and-keep-last'
-    | 'keep-first' // Silent, first wins.
-    | 'overwrite' // Silent, last wins.
-    | 'error'
-
 // export type TUserOptionToggle = 'off' | 'warn' | 'error'
 
-// --- Interfaces -----------------------------------------------------------
+// --- Internal Interfaces -----------------------------------------------------------
 
 interface IMetaBaseInfo {
     sourceType: TSourceType
@@ -176,26 +165,10 @@ export interface IParseCoreOptions {
  *       the YINI class.
  */
 // NOTE: (!) All props MUST be optional.
-interface IPrimaryUserParams {
+export interface IPrimaryUserParams {
     strictMode?: boolean
     failLevel?: TPreferredFailLevel // 'auto' | 0-'ignore-errors' | 1-'errors' | 2-'warnings-and-errors'
     includeMetaData?: boolean // Include meta data along the returned result.
-}
-
-// User-facing options, these are external and should be more user friendly
-// parameter names.
-// NOTE: (!) All props MUST be optional.
-export interface IAllUserOptions extends IPrimaryUserParams {
-    includeDiagnostics?: boolean // (Requires includeMetaData) Include diagnostics in meta data, when isIncludeMeta.
-    includeTiming?: boolean // (Requires includeMetaData) Include timing data of the different phases in meta data, when isIncludeMeta.
-    preserveUndefinedInMeta?: boolean // (Requires includeMetaData) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
-    suppressWarnings?: boolean // Suppress warnings in console (does not effect warnings in meta data).
-    //hideWarnings?: boolean // Hide all warnings in console including in meta data.
-    // rules?: {
-    requireDocTerminator?: 'optional' | 'warn-if-missing' | 'required'
-    treatEmptyValueAsNull?: 'allow' | 'allow-with-warning' | 'disallow'
-    onDuplicateKey?: TOnDuplicateKey
-    // }
 }
 
 export interface IYiniAST extends IMetaBaseInfo {

@@ -134,3 +134,11 @@ export const stripNLAndAfter = (line: string): string => {
 export const toLowerSnakeCase = (txt: string): string => {
     return txt.trim().toLowerCase().replace(/[-]/g, '_')
 }
+
+/**
+ * Transforms strings such as 'Id-Name' to 'id-name'.
+ * Replaces all '_' to '-', and returns rusult in lower case.
+ */
+export const toLowerKebabCase = (txt: string): string => {
+    return txt.trim().toLowerCase().replace(/[_]/g, '-')
+}

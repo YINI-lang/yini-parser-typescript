@@ -1,10 +1,9 @@
 /**
  * This file is the orchestrator that wires up the pipeline (lexer → parser →
- * astBuilder → objectBuilder, etc.)
+ * ASTBuilder → objectBuilder, etc.)
  */
 
 import { performance } from 'perf_hooks'
-import { isError } from 'util'
 import {
     CharStreams,
     CommonTokenStream,
@@ -13,14 +12,9 @@ import {
     Recognizer,
     Token,
 } from 'antlr4'
-import { isDebug, isDev, localAppEnv, localNodeEnv } from '../config/env'
-import YiniLexer from '../grammar/generated/YiniLexer'
-import YiniParser, { YiniContext } from '../grammar/generated/YiniParser'
-import { removeUndefinedDeep } from '../utils/object'
-import { debugPrint, printObject } from '../utils/print'
-import { toLowerKebabCase, toLowerSnakeCase } from '../utils/string'
-import astBuilder from './astBuilder'
-import { ErrorDataHandler } from './errorDataHandler'
+import { isDebug, isDev, localAppEnv, localNodeEnv } from './config/env'
+import ASTBuilder from './core/astBuilder'
+import { ErrorDataHandler } from './core/errorDataHandler'
 import {
     IParseCoreOptions,
     IResultMetaData,
@@ -29,10 +23,16 @@ import {
     TBailSensitivityLevel,
     TFailLevelKey,
     TPersistThreshold,
-} from './internalTypes'
-import { astToObject } from './objectBuilder'
+} from './core/internalTypes'
+import { astToObject } from './core/objectBuilder'
+import YiniLexer from './grammar/generated/YiniLexer'
+import YiniParser, { YiniContext } from './grammar/generated/YiniParser'
+import { removeUndefinedDeep } from './utils/object'
+import { debugPrint, printObject } from './utils/print'
+import { capitalizeFirst, toLowerSnakeCase } from './utils/string'
+import { isError } from './utils/system'
 
-const pkg = require('../../package.json')
+const pkg = require('../package.json')
 
 /**
  * @param line Line number as 1-based.
@@ -170,13 +170,8 @@ class MyLexerErrorListener implements ErrorListener<any> {
     }
 }
 
-/**
- *  @internal Single source of truth.
- *
- *  Entrypoint for the YINI parsing pipeline:
- *  tokenization → grammar parse → AST build → object build → result.
- */
-export const runPipeline = (
+/** Single source of truth. */
+export const _parseMain = (
     yiniContent: string,
     // coreOptions: IParseMainOptions = {
     // coreOptions: IParseCoreOptions = {
@@ -335,7 +330,7 @@ export const runPipeline = (
         timeEnd2Ms = performance.now()
     }
 
-    const builder = new astBuilder(
+    const builder = new ASTBuilder(
         errorHandler,
         coreOptions,
         runtimeInfo.sourceType,
@@ -432,8 +427,7 @@ export const runPipeline = (
             preservesOrder: true,
             orderGuarantee: 'implementation-defined',
             source: {
-                // sourceType: toLowerSnakeCase(ast.sourceType),
-                sourceType: toLowerKebabCase(ast.sourceType),
+                sourceType: toLowerSnakeCase(ast.sourceType),
                 fileName: ast.fileName,
                 hasDocumentTerminator: ast.terminatorSeen,
                 hasYiniMarker: ast.yiniMarkerSeen,

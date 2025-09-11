@@ -2,7 +2,7 @@ import {
     isValidBacktickedIdent,
     isValidSimpleIdent,
     stripCommentsAndAfter,
-} from '../../src/yiniHelpers'
+} from '../../src/utils/yiniHelpers'
 
 /**
  * stripCommentsAndAfter(..) Unit Tests.

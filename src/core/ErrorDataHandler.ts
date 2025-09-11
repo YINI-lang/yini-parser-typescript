@@ -1,5 +1,5 @@
 import { isDebug, isTestEnv } from '../config/env'
-import { YiniContext } from '../grammar/YiniParser'
+import { YiniContext } from '../grammar/generated/YiniParser'
 import { debugPrint, printObject } from '../utils/print'
 import { toLowerSnakeCase, trimTrailingNonLetters } from '../utils/string'
 import {

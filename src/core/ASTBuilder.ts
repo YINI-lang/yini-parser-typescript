@@ -29,8 +29,8 @@ import {
     Terminal_stmtContext,
     ValueContext,
     YiniContext,
-} from '../grammar/YiniParser.js'
-import YiniParserVisitor from '../grammar/YiniParserVisitor'
+} from '../grammar/generated/YiniParser.js'
+import YiniParserVisitor from '../grammar/generated/YiniParserVisitor'
 import { extractYiniLine } from '../parsers/extractSignificantYiniLine'
 import parseBooleanLiteral from '../parsers/parseBoolean'
 import parseBoolean from '../parsers/parseBoolean'
@@ -52,8 +52,8 @@ import {
     isValidSimpleIdent,
     printLiteral,
     stripCommentsAndAfter,
-} from '../yiniHelpers'
-import { ErrorDataHandler } from './ErrorDataHandler'
+} from '../utils/yiniHelpers'
+import { ErrorDataHandler } from './errorDataHandler'
 import {
     IBuildOptions,
     IParseCoreOptions,

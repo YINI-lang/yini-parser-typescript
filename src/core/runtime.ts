@@ -1,16 +1,14 @@
 import fs from 'fs'
 import { isDev } from '../config/env'
+import { IAllUserOptions, TJSObject, TPreferredFailLevel } from '../types'
 import { getFileNameExtension } from '../utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from '../utils/print'
 import { computeSha256 } from '../utils/string'
 import {
-    IAllUserOptions,
     IParseCoreOptions,
     IRuntimeInfo,
     TBailSensitivityLevel,
-    TJSObject,
     TParserMode,
-    TPreferredFailLevel,
 } from './internalTypes'
 import { mapFailLevelToBail } from './options/failLevel'
 import {
@@ -19,6 +17,7 @@ import {
     toCoreOptions,
 } from './options/normalizeOptions'
 import { getDefaultOptions } from './options/parserOptionsConstants'
+import { runPipeline } from './pipeline'
 
 /**
  * Private class representing a runtime context for a single parse call.
