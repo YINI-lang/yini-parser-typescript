@@ -69,13 +69,13 @@ export default class YINI {
      *
      * @returns The parsed YINI content.
      *
-     * By default (`includeMetaData = false`), this method returns a plain JavaScript object:
+     * By default (`includeMetadata = false`), this method returns a plain JavaScript object:
      *
      * `
      * export type ParsedObject = any
      * `
      *
-     * If `includeMetaData = true`, the return value is wrapped in a container that also
+     * If `includeMetadata = true`, the return value is wrapped in a container that also
      * includes parsing metadata:
      *
      * `
@@ -131,13 +131,13 @@ export default class YINI {
      *
      * @returns The parsed YINI content.
      *
-     * By default (`includeMetaData = false`), this method returns a plain JavaScript object:
+     * By default (`includeMetadata = false`), this method returns a plain JavaScript object:
      *
      * `
      * export type ParsedObject = any
      * `
      *
-     * If `includeMetaData = true`, the return value is wrapped in a container that also
+     * If `includeMetadata = true`, the return value is wrapped in a container that also
      * includes parsing metadata:
      *
      * `
@@ -271,13 +271,13 @@ export default class YINI {
      *
      * @returns The parsed YINI content.
      *
-     * By default (`includeMetaData = false`), this method returns a plain JavaScript object:
+     * By default (`includeMetadata = false`), this method returns a plain JavaScript object:
      *
      * `
      * export type ParsedObject = any
      * `
      *
-     * If `includeMetaData = true`, the return value is wrapped in a container that also
+     * If `includeMetadata = true`, the return value is wrapped in a container that also
      * includes parsing metadata:
      *
      * `
@@ -333,13 +333,13 @@ export default class YINI {
      *
      * @returns The parsed YINI content.
      *
-     * By default (`includeMetaData = false`), this method returns a plain JavaScript object:
+     * By default (`includeMetadata = false`), this method returns a plain JavaScript object:
      *
      * `
      * export type ParsedObject = any
      * `
      *
-     * If `includeMetaData = true`, the return value is wrapped in a container that also
+     * If `includeMetadata = true`, the return value is wrapped in a container that also
      * includes parsing metadata:
      *
      * `

@@ -1,3 +1,5 @@
+// File: src/index.ts
+
 /*
     This file is a pure barrel file.
 
@@ -41,16 +43,10 @@ import YINI from './YINI'
 // export { default as YINI } from './YINI' // NOTE: This line fail to export correctly!
 export default YINI // Public package API.
 
-// export const parse = YINI.parse
-// export const parseFile = YINI.parseFile
-// export const getTabSize = YINI.getTabSize
-// export const setTabSize = YINI.setTabSize
-export const { parse, parseFile, getTabSize, setTabSize } = {
-    parse: YINI.parse,
-    parseFile: YINI.parseFile,
-    getTabSize: YINI.getTabSize,
-    setTabSize: YINI.setTabSize,
-}
+export const parse = YINI.parse
+export const parseFile = YINI.parseFile
+export const getTabSize = YINI.getTabSize
+export const setTabSize = YINI.setTabSize
 
 /**
  * Public type exports for the YINI parser.

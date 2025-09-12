@@ -1,5 +1,6 @@
+// File: src/types/index.ts
+
 /**
- * src/types/index.ts
  *
  * Public (user-facing) types (shapes) here only.
  *
