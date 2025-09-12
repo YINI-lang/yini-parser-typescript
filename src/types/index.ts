@@ -38,13 +38,14 @@ export type TFailLevelKey =
 
 export type TPreferredFailLevel = 'auto' | TFailLevelKey
 
-// Human label types.
-export type TPersistThreshold =
+// Human/Dev label types.
+// export type TPersistThreshold =
+export type TBailSensitivityLevel =
     | '0-Ignore-Errors' // 0 - Don't bail/fail on error, persist and try to recover.
     | '1-Abort-on-Errors' // 1 - Stop parsing on the first error.
     | '2-Abort-Even-on-Warnings' // 2 - Stop parsing on the first warning or error.
 
-export type TBailSensitivityLevel = 0 | 1 | 2 // Bail sensitivity level.
+// export type TBailSensitivityLevel = 0 | 1 | 2 // Bail sensitivity level.
 
 export type TOnDuplicateKey =
     | 'warn-and-keep-first' // Keep first with a warning.
@@ -191,7 +192,7 @@ export interface IResultMetadata {
             preferredLevel: null | TPreferredFailLevel // Input level into function.
             levelUsed: TBailSensitivityLevel
             levelKey: TFailLevelKey // Mapped from the corresponding type, keep it lowercase since it's shown in meta, easier for tooling.
-            levelLabel: TPersistThreshold
+            // levelLabel: TPersistThreshold
             levelDescription: string | null
         }
         errors: { errorCount: number; payload: IIssuePayload[] }

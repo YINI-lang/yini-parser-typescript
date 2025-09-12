@@ -34,7 +34,6 @@ export const { parse, parseFile, getTabSize, setTabSize } = {
 export type {
     ParsedObject,
     YiniParseResult,
-    TPersistThreshold,
     TBailSensitivityLevel,
     TOnDuplicateKey,
     TFailLevelKey,

@@ -21,7 +21,6 @@ import {
     ParsedObject,
     TBailSensitivityLevel,
     TFailLevelKey,
-    TPersistThreshold,
     YiniParseResult,
 } from '../types'
 import { removeUndefinedDeep } from '../utils/object'
@@ -213,21 +212,21 @@ export const runPipeline = (
     debugPrint('  runtimeInfo.sourceType = ' + runtimeInfo.sourceType)
     debugPrint('    runtimeInfo.fileName = ' + runtimeInfo.fileName)
 
-    let persistThreshold: TPersistThreshold
-    switch (coreOptions.bailSensitivity) {
-        case 0:
-            persistThreshold = '0-Ignore-Errors'
-            break
-        case 1:
-            persistThreshold = '1-Abort-on-Errors'
-            break
-        default:
-            persistThreshold = '2-Abort-Even-on-Warnings'
-    }
+    // let persistThreshold: TBailSensitivityLevel
+    // switch (coreOptions.bailSensitivity) {
+    //     case '0-Ignore-Errors':
+    //         persistThreshold = '0-Ignore-Errors'
+    //         break
+    //     case 1:
+    //         persistThreshold = '1-Abort-on-Errors'
+    //         break
+    //     default:
+    //         persistThreshold = '2-Abort-Even-on-Warnings'
+    // }
 
     const errorHandler = new ErrorDataHandler(
         runtimeInfo.sourceType,
-        persistThreshold,
+        coreOptions.bailSensitivity,
         runtimeInfo.fileName,
     )
 
@@ -471,35 +470,35 @@ export const runPipeline = (
                 level: TBailSensitivityLevel,
             ): TFailLevelKey => {
                 switch (level) {
-                    case 0:
+                    case '0-Ignore-Errors':
                         return 'ignore-errors'
-                    case 1:
+                    case '1-Abort-on-Errors':
                         return 'errors'
-                    case 2:
+                    case '2-Abort-Even-on-Warnings':
                         return 'warnings-and-errors'
                 }
             }
-            const mapLevelLabel = (
-                level: TBailSensitivityLevel,
-            ): TPersistThreshold => {
-                switch (level) {
-                    case 0:
-                        return '0-Ignore-Errors'
-                    case 1:
-                        return '1-Abort-on-Errors'
-                    case 2:
-                        return '2-Abort-Even-on-Warnings'
-                }
-            }
+            // const mapLevelLabel = (
+            //     level: TBailSensitivityLevel,
+            // ): TBailSensitivityLevel => {
+            //     switch (level) {
+            //         case '0-Ignore-Errors':
+            //             return '0-Ignore-Errors'
+            //         case '1-Abort-on-Errors':
+            //             return '1-Abort-on-Errors'
+            //         case '2-Abort-Even-on-Warnings':
+            //             return '2-Abort-Even-on-Warnings'
+            //     }
+            // }
             const mapLevelDescription = (
                 level: TBailSensitivityLevel,
             ): string | null => {
                 switch (level) {
-                    case 0:
+                    case '0-Ignore-Errors':
                         return 'Continue despite errors.'
-                    case 1:
+                    case '1-Abort-on-Errors':
                         return 'Abort when errors occur.'
-                    case 2:
+                    case '2-Abort-Even-on-Warnings':
                         return 'Abort when errors or warnings occur.'
                 }
                 return null
@@ -510,7 +509,7 @@ export const runPipeline = (
                     preferredLevel: runtimeInfo.preferredBailSensitivity,
                     levelUsed: coreOptions.bailSensitivity,
                     levelKey: mapLevelKey(coreOptions.bailSensitivity),
-                    levelLabel: mapLevelLabel(coreOptions.bailSensitivity),
+                    // levelLabel: coreOptions.bailSensitivity,
                     levelDescription: <any>(
                         mapLevelDescription(coreOptions.bailSensitivity)
                     ),

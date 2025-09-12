@@ -1,6 +1,6 @@
 import { isDebug, isTestEnv } from '../config/env'
 import { YiniContext } from '../grammar/generated/YiniParser'
-import { IIssuePayload, TPersistThreshold } from '../types'
+import { IIssuePayload, TBailSensitivityLevel } from '../types'
 import { debugPrint, printObject } from '../utils/print'
 import { toLowerSnakeCase, trimTrailingNonLetters } from '../utils/string'
 import { TIssueType, TSubjectType } from './internalTypes'
@@ -26,7 +26,7 @@ interface ILocation {
  * This class handles all error/notice reporting and processes exit/throwing.
  */
 export class ErrorDataHandler {
-    private readonly persistThreshold: TPersistThreshold
+    private readonly persistThreshold: TBailSensitivityLevel
     private readonly subjectType: TSubjectType
     private readonly fileName: string | undefined
 
@@ -53,11 +53,11 @@ export class ErrorDataHandler {
      */
     constructor(
         subjectType: TSubjectType,
-        threshold: TPersistThreshold = '1-Abort-on-Errors',
+        bailSensitivityLevel: TBailSensitivityLevel = '1-Abort-on-Errors',
         fileName: string | undefined = undefined,
     ) {
         this.subjectType = subjectType
-        this.persistThreshold = threshold
+        this.persistThreshold = bailSensitivityLevel
         this.fileName = fileName
     }
 

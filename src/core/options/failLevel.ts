@@ -6,21 +6,21 @@ export function mapFailLevelToBail(
     isStrict: boolean,
     failLevel: TPreferredFailLevel,
 ): TBailSensitivityLevel {
-    let bailLevel: TBailSensitivityLevel = 0
+    let bailLevel: TBailSensitivityLevel = '0-Ignore-Errors'
 
     if (failLevel === 'auto') {
-        if (!isStrict) bailLevel = 0
-        if (isStrict) bailLevel = 1
+        if (!isStrict) bailLevel = '0-Ignore-Errors'
+        if (isStrict) bailLevel = '1-Abort-on-Errors'
     } else {
         switch (failLevel) {
             case 'ignore-errors':
-                bailLevel = 0
+                bailLevel = '0-Ignore-Errors'
                 break
             case 'errors':
-                bailLevel = 1
+                bailLevel = '1-Abort-on-Errors'
                 break
             case 'warnings-and-errors':
-                bailLevel = 2
+                bailLevel = '2-Abort-Even-on-Warnings'
                 break
         }
     }
