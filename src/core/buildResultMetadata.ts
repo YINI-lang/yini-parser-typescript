@@ -1,3 +1,5 @@
+// const pkg = require('../../package.json')
+import pkg from '../../package.json' // NOTE: Requires "resolveJsonModule": true (or "esModuleInterop": true).
 import { isDebug, isDev, localAppEnv, localNodeEnv } from '../config/env'
 import { AllUserOptions, FailLevelKey, ResultMetadata } from '../types'
 import { sortObjectKeys } from '../utils/object'
@@ -9,8 +11,6 @@ import {
     IYiniAST,
     TBailSensitivityLevel,
 } from './internalTypes'
-
-const pkg = require('../../package.json')
 
 // Helper interface just to bundle inputs for a single call at one time.
 export interface IBuildResultMetadataParams {

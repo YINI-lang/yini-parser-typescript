@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // Don't emit, just typecheck for ESLint.
+    "noEmit": true
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules" // This config does not have "**/*.test.ts" exclusion so tests (that we NEED) are part of the project for ESLint.
+  ]
+}

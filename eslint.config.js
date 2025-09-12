@@ -12,7 +12,8 @@ module.exports = [
         languageOptions: {
             parser: tsparser,
             parserOptions: {
-                project: './tsconfig.json',
+                project: ['./tsconfig.eslint.json'], // This config has removed the **/*.test.ts exclusion so tests are part of the project for ESLint.
+                tsconfigRootDir: __dirname,
             },
             // Add these lines:
             globals: {

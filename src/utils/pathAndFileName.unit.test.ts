@@ -78,7 +78,7 @@ describe('Utils-Path and File Name Unit Tests:', () => {
 
     test('9. Get correct extension from file name (with "\\" path).', () => {
         // Arrange.
-        const fixture = '\config\general.yini'
+        const fixture = '\\config\\general.yini'
         // Act.
         const result = getFileNameExtension(fixture)
         // Assert.

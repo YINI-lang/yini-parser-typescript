@@ -178,7 +178,7 @@ describe('Utils-String: stripNLAndAfter(..) Unit Tests:', () => {
         // Act.
         const result = stripNLAndAfter(fixture).trim()
         // Assert.
-        expect(result).toEqual('\`Section Name 2\`')
+        expect(result).toEqual('`Section Name 2`')
     })
 
     test('5. Strip NL-and-After test.', () => {
@@ -198,6 +198,6 @@ describe('Utils-String: stripNLAndAfter(..) Unit Tests:', () => {
         // Act.
         const result = stripNLAndAfter(fixture).trim()
         // Assert.
-        expect(result).toEqual('\`Section Name 4\`')
+        expect(result).toEqual('`Section Name 4`')
     })
 })
