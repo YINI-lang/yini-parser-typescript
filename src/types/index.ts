@@ -2,7 +2,10 @@
  * src/types/index.ts
  *
  * Public (user-facing) types (shapes) here only.
+ *
  * @note Internal-only types (shapes) should go into core/internalTypes.ts.
+ * @note These types and interface (shapes) should NOT include the 'T' and,
+ *       'I' prefixes, due to these are public user-facing.
  */
 
 // --- Public (user-facing) Types ----------------------------------------------------------------
@@ -27,6 +30,14 @@ export interface YiniParseResult {
     meta: IResultMetadata
 }
 
+// Keys as reported in metadata (human-readable).
+export type TFailLevelKey =
+    | 'ignore-errors' // 0 - Don't bail/fail on error, persist and try to recover.
+    | 'errors' // 1 - Stop parsing on the first error.
+    | 'warnings-and-errors' // 2 - Stop parsing on the first warning or error.
+
+export type TPreferredFailLevel = 'auto' | TFailLevelKey
+
 // Human label types.
 export type TPersistThreshold =
     | '0-Ignore-Errors' // 0 - Don't bail/fail on error, persist and try to recover.
@@ -41,14 +52,6 @@ export type TOnDuplicateKey =
     | 'keep-first' // Silent, first wins.
     | 'overwrite' // Silent, last wins.
     | 'error'
-
-// Keys as reported in metadata (human-readable).
-export type TFailLevelKey =
-    | 'ignore-errors' // 0 - Don't bail/fail on error, persist and try to recover.
-    | 'errors' // 1 - Stop parsing on the first error.
-    | 'warnings-and-errors' // 2 - Stop parsing on the first warning or error.
-
-export type TPreferredFailLevel = 'auto' | TFailLevelKey
 
 /** Version tag for the public metadata schema. */
 export type TMetaSchemaVersion = '1.1.0'

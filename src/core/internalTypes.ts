@@ -7,6 +7,9 @@
  *   The convention here (in this file) is:
  *   - undefined is used where a value is missing, or does not apply.
  *   - null is used where a value is missing or has not yet been computed.
+ *
+ * @note All names of **internal** types and interfaces (shapes) must be
+ * prefixed with `T` or `I`.
  */
 
 import {
