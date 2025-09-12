@@ -8,6 +8,8 @@
  *       'I' prefixes, due to these are public user-facing.
  */
 
+import { TBailSensitivityLevel } from '../core/internalTypes'
+
 // --- Public (user-facing) Types ----------------------------------------------------------------
 
 /**
@@ -27,27 +29,18 @@ export type ParsedObject = any
 export interface YiniParseResult {
     // result: TJSObject
     result: ParsedObject
-    meta: IResultMetadata
+    meta: ResultMetadata
 }
 
 // Keys as reported in metadata (human-readable).
-export type TFailLevelKey =
+export type FailLevelKey =
     | 'ignore-errors' // 0 - Don't bail/fail on error, persist and try to recover.
     | 'errors' // 1 - Stop parsing on the first error.
     | 'warnings-and-errors' // 2 - Stop parsing on the first warning or error.
 
-export type TPreferredFailLevel = 'auto' | TFailLevelKey
+export type PreferredFailLevel = 'auto' | FailLevelKey
 
-// Human/Dev label types.
-// export type TPersistThreshold =
-export type TBailSensitivityLevel =
-    | '0-Ignore-Errors' // 0 - Don't bail/fail on error, persist and try to recover.
-    | '1-Abort-on-Errors' // 1 - Stop parsing on the first error.
-    | '2-Abort-Even-on-Warnings' // 2 - Stop parsing on the first warning or error.
-
-// export type TBailSensitivityLevel = 0 | 1 | 2 // Bail sensitivity level.
-
-export type TOnDuplicateKey =
+export type OnDuplicateKey =
     | 'warn-and-keep-first' // Keep first with a warning.
     | 'warn-and-overwrite' // 'warn-and-overwrite' = 'warn-and-keep-last'
     | 'keep-first' // Silent, first wins.
@@ -55,10 +48,10 @@ export type TOnDuplicateKey =
     | 'error'
 
 /** Version tag for the public metadata schema. */
-export type TMetaSchemaVersion = '1.1.0'
+export type MetaSchemaVersion = '1.1.0'
 
 /** Source of the order guarantee. */
-export type TOrderGuarantee =
+export type OrderGuarantee =
     | 'spec'
     | 'language'
     | 'implementation-defined'
@@ -77,14 +70,14 @@ export type TOrderGuarantee =
  *       the YINI class.
  */
 // NOTE: (!) All props MUST be optional.
-export interface IPrimaryUserParams {
+export interface PrimaryUserParams {
     /** Enable stricter syntax and well-formedness checks. */
     strictMode?: boolean
     /**
      * Minimum severity that should cause parse to fail.
      * 'auto' | 'ignore-errors' | 'errors' | 'warnings-and-errors'
      */
-    failLevel?: TPreferredFailLevel // 'auto' | 0-'ignore-errors' | 1-'errors' | 2-'warnings-and-errors'
+    failLevel?: PreferredFailLevel // 'auto' | 0-'ignore-errors' | 1-'errors' | 2-'warnings-and-errors'
     /** Attach metadata to the parse result (timings, diagnostics, etc.). */
     includeMetadata?: boolean // Include meta data along the returned result.
 }
@@ -118,7 +111,7 @@ export interface IPrimaryUserParams {
 // User-facing options, these are external and should be more user friendly
 // parameter names.
 // NOTE: (!) All props MUST be optional.
-export interface IAllUserOptions extends IPrimaryUserParams {
+export interface AllUserOptions extends PrimaryUserParams {
     includeDiagnostics?: boolean // (Requires includeMetadata) Include diagnostics in meta data, when isIncludeMeta.
     includeTiming?: boolean // (Requires includeMetadata) Include timing data of the different phases in meta data, when isIncludeMeta.
     preserveUndefinedInMeta?: boolean // (Requires includeMetadata) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
@@ -127,12 +120,12 @@ export interface IAllUserOptions extends IPrimaryUserParams {
     // rules?: {
     requireDocTerminator?: 'optional' | 'warn-if-missing' | 'required'
     treatEmptyValueAsNull?: 'allow' | 'allow-with-warning' | 'disallow'
-    onDuplicateKey?: TOnDuplicateKey
+    onDuplicateKey?: OnDuplicateKey
     // }
 }
 
 //{ line: 12, column: 8, type: 'Syntax-Error', message1: 'Invalid number' }
-export interface IIssuePayload {
+export interface IssuePayload {
     /** 1-based; use undefined when not applicable. */
     line: number | undefined // NOTE: 1-based, so line 0 does not exist, set to undefined instead.
     /** 1-based; use undefined when not applicable. */
@@ -155,7 +148,7 @@ export interface IIssuePayload {
  *
  * @note UPDATE 'metaSchemaVersion' on any edits to the meta structure.
  */
-export interface IResultMetadata {
+export interface ResultMetadata {
     parserVersion: string
     mode: 'lenient' | 'strict'
     totalErrors: number
@@ -165,7 +158,7 @@ export interface IResultMetadata {
     runFinishedAt: string
     durationMs: number
     preservesOrder: boolean // Member/section order: platform-, implementation-, and language-specific. Not mandated by the YINI spec.
-    orderGuarantee: TOrderGuarantee // De facto yes, in this specific implementation.
+    orderGuarantee: OrderGuarantee // De facto yes, in this specific implementation.
     orderNotes?: string
     source: {
         sourceType: string // Transformed from the type, keep it lowercase since it's shown in resulted meta, easier for tooling.
@@ -185,20 +178,20 @@ export interface IResultMetadata {
         // listCount: null | number
         sectionNamePaths: string[] | null // All key/access paths to section Headers.
     }
-    metaSchemaVersion: TMetaSchemaVersion
+    metaSchemaVersion: MetaSchemaVersion
     diagnostics?: {
         failLevel: {
             // preferredLevel: null | 'auto' | 0 | 1 | 2 // Input level into function.
-            preferredLevel: null | TPreferredFailLevel // Input level into function.
+            preferredLevel: null | PreferredFailLevel // Input level into function.
             levelUsed: TBailSensitivityLevel
-            levelKey: TFailLevelKey // Mapped from the corresponding type, keep it lowercase since it's shown in meta, easier for tooling.
+            levelKey: FailLevelKey // Mapped from the corresponding type, keep it lowercase since it's shown in meta, easier for tooling.
             // levelLabel: TPersistThreshold
             levelDescription: string | null
         }
-        errors: { errorCount: number; payload: IIssuePayload[] }
-        warnings: { warningCount: number; payload: IIssuePayload[] }
-        notices: { noticeCount: number; payload: IIssuePayload[] }
-        infos: { infoCount: number; payload: IIssuePayload[] }
+        errors: { errorCount: number; payload: IssuePayload[] }
+        warnings: { warningCount: number; payload: IssuePayload[] }
+        notices: { noticeCount: number; payload: IssuePayload[] }
+        infos: { infoCount: number; payload: IssuePayload[] }
         environment: {
             NODE_ENV: undefined | string
             APP_ENV: undefined | string
@@ -208,7 +201,7 @@ export interface IResultMetadata {
                 flags: { isDev: boolean; isDebug: boolean }
             }
         }
-        optionsUsed: IAllUserOptions
+        optionsUsed: AllUserOptions
     }
     timing?: {
         total: null | { timeMs: number; name: string }

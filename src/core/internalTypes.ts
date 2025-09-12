@@ -12,12 +12,7 @@
  * prefixed with `T` or `I`.
  */
 
-import {
-    IAllUserOptions,
-    TBailSensitivityLevel,
-    TOnDuplicateKey,
-    TPreferredFailLevel,
-} from '../types'
+import { OnDuplicateKey, PreferredFailLevel } from '../types'
 
 // --- Internal Types ----------------------------------------------------------------
 
@@ -25,6 +20,12 @@ export type TParserMode = 'lenient' | 'strict'
 
 export type TSourceType = 'File' | 'Inline'
 export type TSubjectType = 'None/Ignore' | TSourceType
+
+// Internal Dev types.
+export type TBailSensitivityLevel =
+    | '0-Ignore-Errors' // 0 - Don't bail/fail on error, persist and try to recover.
+    | '1-Abort-on-Errors' // 1 - Stop parsing on the first error.
+    | '2-Abort-Even-on-Warnings' // 2 - Stop parsing on the first warning or error.
 
 /**
  * Scalar literal, a single, indivisible piece of data:
@@ -100,7 +101,7 @@ export interface IRuntimeInfo extends IMetaBaseInfo {
     lineCount: number | null
     fileByteSize: number | null // Only when source type is 'File'.
     timeIoMs: number | null // Only when source type is 'File'.
-    preferredBailSensitivity: null | TPreferredFailLevel
+    preferredBailSensitivity: null | PreferredFailLevel
     sha256: string | null
 }
 
@@ -140,7 +141,7 @@ export interface IParseCoreOptions {
     isAvoidWarningsInConsole: boolean // Suppress warnings in console (does not affect warnings in meta data).
     requireDocTerminator: 'optional' | 'warn-if-missing' | 'required'
     treatEmptyValueAsNull: 'allow' | 'allow-with-warning' | 'disallow'
-    onDuplicateKey: TOnDuplicateKey
+    onDuplicateKey: OnDuplicateKey
 }
 
 export interface IYiniAST extends IMetaBaseInfo {
@@ -163,5 +164,5 @@ export interface IYiniSection {
 
 export interface IBuildOptions {
     mode?: 'lenient' | 'strict' // default: lenient
-    onDuplicateKey?: TOnDuplicateKey
+    onDuplicateKey?: OnDuplicateKey
 }

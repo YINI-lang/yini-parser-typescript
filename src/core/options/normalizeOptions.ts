@@ -1,10 +1,14 @@
 import { isDebug, isDev } from '../../config/env'
-import { IAllUserOptions, TBailSensitivityLevel } from '../../types'
-import { IParseCoreOptions, TParserMode } from '../internalTypes'
+import { AllUserOptions } from '../../types'
+import {
+    IParseCoreOptions,
+    TBailSensitivityLevel,
+    TParserMode,
+} from '../internalTypes'
 
 export const toCoreOptions = (
     bailLevel: TBailSensitivityLevel,
-    userOpts: Required<IAllUserOptions>,
+    userOpts: Required<AllUserOptions>,
 ): IParseCoreOptions => {
     return {
         isStrict: userOpts.strictMode,
@@ -21,7 +25,7 @@ export const toCoreOptions = (
 }
 
 // Type guard: did the caller use the options-object form?
-export const isOptionsObjectForm = (v: unknown): v is IAllUserOptions => {
+export const isOptionsObjectForm = (v: unknown): v is AllUserOptions => {
     return (
         v != null &&
         typeof v === 'object' &&
@@ -44,13 +48,13 @@ export const isOptionsObjectForm = (v: unknown): v is IAllUserOptions => {
 // ((arg2 as any)?.strictMode ?? (arg2 as boolean | undefined)) ===
 
 export const inferModeFromArgs = (
-    arg2?: boolean | IAllUserOptions,
+    arg2?: boolean | AllUserOptions,
 ): TParserMode => {
     if (typeof arg2 === 'boolean') {
         return arg2 ? 'strict' : 'lenient'
     }
     if (arg2 && typeof arg2 === 'object') {
-        const sm = (arg2 as IAllUserOptions).strictMode
+        const sm = (arg2 as AllUserOptions).strictMode
         if (typeof sm === 'boolean') {
             return sm ? 'strict' : 'lenient'
         }

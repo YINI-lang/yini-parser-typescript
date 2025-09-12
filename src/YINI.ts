@@ -3,9 +3,9 @@ import { ErrorDataHandler } from './core/errorDataHandler'
 import { isOptionsObjectForm } from './core/options/normalizeOptions'
 import { YiniRuntime } from './core/runtime'
 import {
-    IAllUserOptions,
+    AllUserOptions,
     ParsedObject,
-    TPreferredFailLevel,
+    PreferredFailLevel,
     YiniParseResult,
 } from './types'
 import { debugPrint, devPrint, printObject } from './utils/print'
@@ -76,7 +76,7 @@ export default class YINI {
     public static parse(
         yiniContent: string,
         strictMode?: boolean,
-        failLevel?: TPreferredFailLevel,
+        failLevel?: PreferredFailLevel,
         includeMetadata?: boolean,
     ): ParsedObject | YiniParseResult
 
@@ -120,7 +120,7 @@ export default class YINI {
     // Options-object form (recommended) for power/expert users (more future-proof).
     public static parse(
         yiniContent: string,
-        options?: IAllUserOptions,
+        options?: AllUserOptions,
     ): ParsedObject | YiniParseResult
 
     // --- Single implementation --------------------------------------------
@@ -128,8 +128,8 @@ export default class YINI {
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
     public static parse(
         yiniContent: string,
-        arg2?: boolean | IAllUserOptions, // strictMode | options
-        failLevel: TPreferredFailLevel = 'auto',
+        arg2?: boolean | AllUserOptions, // strictMode | options
+        failLevel: PreferredFailLevel = 'auto',
         includeMetadata = false,
     ): ParsedObject | YiniParseResult {
         debugPrint('-> Entered static parse(..) in class YINI\n')
@@ -245,7 +245,7 @@ export default class YINI {
     public static parseFile(
         filePath: string,
         strictMode?: boolean,
-        failLevel?: TPreferredFailLevel,
+        failLevel?: PreferredFailLevel,
         includeMetadata?: boolean,
     ): ParsedObject | YiniParseResult
 
@@ -289,7 +289,7 @@ export default class YINI {
     // Options-object form (recommended) for power/expert users (more future-proof).
     public static parseFile(
         filePath: string,
-        options?: IAllUserOptions,
+        options?: AllUserOptions,
     ): ParsedObject | YiniParseResult
 
     // --- Single implementation --------------------------------------------
@@ -297,8 +297,8 @@ export default class YINI {
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
     public static parseFile(
         filePath: string,
-        arg2?: boolean | IAllUserOptions, // strictMode | options
-        failLevel: TPreferredFailLevel = 'auto',
+        arg2?: boolean | AllUserOptions, // strictMode | options
+        failLevel: PreferredFailLevel = 'auto',
         includeMetadata = false,
     ): ParsedObject | YiniParseResult {
         debugPrint('-> Entered static parseFile(..) in class YINI\n')

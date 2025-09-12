@@ -1,9 +1,13 @@
 import { isDebug, isTestEnv } from '../config/env'
 import { YiniContext } from '../grammar/generated/YiniParser'
-import { IIssuePayload, TBailSensitivityLevel } from '../types'
+import { IssuePayload } from '../types'
 import { debugPrint, printObject } from '../utils/print'
 import { toLowerSnakeCase, trimTrailingNonLetters } from '../utils/string'
-import { TIssueType, TSubjectType } from './internalTypes'
+import {
+    TBailSensitivityLevel,
+    TIssueType,
+    TSubjectType,
+} from './internalTypes'
 
 // All the issue titles are defined here to get a quick overview of all
 // titles, and to easier check that all titles match with relation to
@@ -30,10 +34,10 @@ export class ErrorDataHandler {
     private readonly subjectType: TSubjectType
     private readonly fileName: string | undefined
 
-    private errors: IIssuePayload[] = []
-    private warnings: IIssuePayload[] = []
-    private notices: IIssuePayload[] = []
-    private infos: IIssuePayload[] = []
+    private errors: IssuePayload[] = []
+    private warnings: IssuePayload[] = []
+    private notices: IssuePayload[] = []
+    private infos: IssuePayload[] = []
 
     private numFatalErrors = 0
     private numInternalErrors = 0
@@ -68,8 +72,8 @@ export class ErrorDataHandler {
         message: string,
         advice: string | undefined = undefined,
         hint: string | undefined = undefined,
-    ): IIssuePayload {
-        const issue: IIssuePayload = {
+    ): IssuePayload {
+        const issue: IssuePayload = {
             line,
             column: !column ? undefined : column,
             typeKey: toLowerSnakeCase(type),
@@ -424,19 +428,19 @@ export class ErrorDataHandler {
         return this.numInfos
     }
 
-    public getErrors(): IIssuePayload[] {
+    public getErrors(): IssuePayload[] {
         return this.errors
     }
 
-    public getWarnings(): IIssuePayload[] {
+    public getWarnings(): IssuePayload[] {
         return this.warnings
     }
 
-    public getNotices(): IIssuePayload[] {
+    public getNotices(): IssuePayload[] {
         return this.notices
     }
 
-    public getInfos(): IIssuePayload[] {
+    public getInfos(): IssuePayload[] {
         return this.infos
     }
 }

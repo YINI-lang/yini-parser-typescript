@@ -1,4 +1,4 @@
-import { IAllUserOptions } from '../../types'
+import { AllUserOptions } from '../../types'
 import { TParserMode } from '../internalTypes'
 
 export const getDefaultOptions = (mode: TParserMode) =>
@@ -6,7 +6,7 @@ export const getDefaultOptions = (mode: TParserMode) =>
 
 export type NormalizedOptions = Required<
     Pick<
-        IAllUserOptions,
+        AllUserOptions,
         | 'strictMode'
         | 'failLevel'
         | 'includeMetadata'

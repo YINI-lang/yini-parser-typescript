@@ -17,10 +17,9 @@ import { isDebug, isDev, localAppEnv, localNodeEnv } from '../config/env'
 import YiniLexer from '../grammar/generated/YiniLexer'
 import YiniParser, { YiniContext } from '../grammar/generated/YiniParser'
 import {
-    IResultMetadata,
+    FailLevelKey,
     ParsedObject,
-    TBailSensitivityLevel,
-    TFailLevelKey,
+    ResultMetadata,
     YiniParseResult,
 } from '../types'
 import { removeUndefinedDeep } from '../utils/object'
@@ -28,7 +27,12 @@ import { debugPrint, printObject } from '../utils/print'
 import { toLowerKebabCase, toLowerSnakeCase } from '../utils/string'
 import astBuilder from './astBuilder'
 import { ErrorDataHandler } from './errorDataHandler'
-import { IParseCoreOptions, IRuntimeInfo, IYiniAST } from './internalTypes'
+import {
+    IParseCoreOptions,
+    IRuntimeInfo,
+    IYiniAST,
+    TBailSensitivityLevel,
+} from './internalTypes'
 import { astToObject } from './objectBuilder'
 
 const pkg = require('../../package.json')
@@ -414,12 +418,12 @@ export const runPipeline = (
         isDebug() && console.debug(finalJSResult)
     }
 
-    const constructResultMetadata = (): IResultMetadata => {
+    const constructResultMetadata = (): ResultMetadata => {
         // --- Construct meta information -------------------------------------
         const to3 = (n: number): number => Number.parseFloat(n.toFixed(3))
 
         // Construct meta data.
-        const metadata: IResultMetadata = {
+        const metadata: ResultMetadata = {
             parserVersion: pkg.version,
             mode: coreOptions.isStrict ? 'strict' : 'lenient',
             totalErrors: errorHandler.getNumOfErrors(),
@@ -468,7 +472,7 @@ export const runPipeline = (
             // }
             const mapLevelKey = (
                 level: TBailSensitivityLevel,
-            ): TFailLevelKey => {
+            ): FailLevelKey => {
                 switch (level) {
                     case '0-Ignore-Errors':
                         return 'ignore-errors'

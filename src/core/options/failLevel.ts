@@ -1,10 +1,11 @@
-import { TBailSensitivityLevel, TPreferredFailLevel } from '../../types'
+import { PreferredFailLevel } from '../../types'
+import { TBailSensitivityLevel } from '../internalTypes'
 
 type NewType = TBailSensitivityLevel
 
 export function mapFailLevelToBail(
     isStrict: boolean,
-    failLevel: TPreferredFailLevel,
+    failLevel: PreferredFailLevel,
 ): TBailSensitivityLevel {
     let bailLevel: TBailSensitivityLevel = '0-Ignore-Errors'
 

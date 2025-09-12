@@ -34,16 +34,15 @@ export const { parse, parseFile, getTabSize, setTabSize } = {
 export type {
     ParsedObject,
     YiniParseResult,
-    TBailSensitivityLevel,
-    TOnDuplicateKey,
-    TFailLevelKey,
-    TPreferredFailLevel,
-    IPrimaryUserParams,
-    IAllUserOptions,
-    IIssuePayload,
-    TMetaSchemaVersion,
-    TOrderGuarantee,
-    IResultMetadata,
+    OnDuplicateKey,
+    FailLevelKey,
+    PreferredFailLevel,
+    PrimaryUserParams,
+    AllUserOptions,
+    IssuePayload,
+    MetaSchemaVersion,
+    OrderGuarantee,
+    ResultMetadata,
 } from './types'
 
 // debugPrint()
