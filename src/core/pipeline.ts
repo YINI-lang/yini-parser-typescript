@@ -17,12 +17,13 @@ import { isDebug, isDev, localAppEnv, localNodeEnv } from '../config/env'
 import YiniLexer from '../grammar/generated/YiniLexer'
 import YiniParser, { YiniContext } from '../grammar/generated/YiniParser'
 import {
+    AllUserOptions,
     FailLevelKey,
     ParsedObject,
     ResultMetadata,
     YiniParseResult,
 } from '../types'
-import { removeUndefinedDeep } from '../utils/object'
+import { removeUndefinedDeep, sortObjectKeys } from '../utils/object'
 import { debugPrint, printObject } from '../utils/print'
 import { toLowerKebabCase, toLowerSnakeCase } from '../utils/string'
 import astBuilder from './astBuilder'
@@ -174,25 +175,21 @@ class MyLexerErrorListener implements ErrorListener<any> {
 }
 
 /**
- *  @internal Single source of truth.
+ * @internal Single source of truth.
  *
- *  Entrypoint for the YINI parsing pipeline:
- *  tokenization → grammar parse → AST build → object build → result.
+ * Entrypoint for the YINI parsing pipeline:
+ * tokenization → grammar parse → AST build → object build → result.
+ *
+ * @param _meta_userOpts The user options from which the core options were
+ *        derived/resolved from. This object is provided only for debugging
+ *        and metadata purposes and should not be relied upon in
+ *        application logic.
  */
 export const runPipeline = (
     yiniContent: string,
-    // coreOptions: IParseMainOptions = {
-    // coreOptions: IParseCoreOptions = {
-    //     isStrict: false,
-    //     bailSensitivity: 0,
-    //     isIncludeMeta: false,
-    //     isWithDiagnostics: false,
-    //     isWithTiming: false,
-    //     isKeepUndefinedInMeta: false,
-    //     isRequireDocTerminator: false,
-    // },
     coreOptions: IParseCoreOptions,
     runtimeInfo: IRuntimeInfo,
+    _meta_userOpts: AllUserOptions,
 ): ParsedObject | YiniParseResult => {
     debugPrint()
     debugPrint('-> Entered parseMain(..) in parseEntry')
@@ -511,9 +508,8 @@ export const runPipeline = (
             metadata.diagnostics = {
                 failLevel: {
                     preferredLevel: runtimeInfo.preferredBailSensitivity,
-                    levelUsed: coreOptions.bailSensitivity,
-                    levelKey: mapLevelKey(coreOptions.bailSensitivity),
-                    // levelLabel: coreOptions.bailSensitivity,
+                    usedLevelType: coreOptions.bailSensitivity,
+                    usedLevelKey: mapLevelKey(coreOptions.bailSensitivity),
                     levelDescription: <any>(
                         mapLevelDescription(coreOptions.bailSensitivity)
                     ),
@@ -543,8 +539,8 @@ export const runPipeline = (
                         flags: { isDev: isDev(), isDebug: isDebug() },
                     },
                 },
-                optionsUsed: {
-                    // NOTE: (!) These MUST be user coreOptions.
+                effectiveOptions: sortObjectKeys({
+                    // IMPORTANT: (!) These user options MUST be mapped from coreOptions (to user options).
                     strictMode: coreOptions.isStrict,
                     failLevel: mapLevelKey(coreOptions.bailSensitivity),
                     includeMetadata: coreOptions.isIncludeMeta,
@@ -555,7 +551,8 @@ export const runPipeline = (
                     requireDocTerminator: coreOptions.requireDocTerminator,
                     treatEmptyValueAsNull: coreOptions.treatEmptyValueAsNull,
                     onDuplicateKey: coreOptions.onDuplicateKey,
-                },
+                }),
+                options: sortObjectKeys(_meta_userOpts),
             }
         }
 

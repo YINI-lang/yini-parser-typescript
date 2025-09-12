@@ -139,9 +139,14 @@ export class YiniRuntime {
         const coreOpts: IParseCoreOptions = toCoreOptions(level, userOpts)
 
         debugPrint()
-        debugPrint('==== Call parse ==========================')
-        const result = runPipeline(yiniContent, coreOpts, this.#runtime)
-        debugPrint('==== End call parse ==========================\n')
+        debugPrint('==== Call runPipeline(..) ==========================')
+        const result = runPipeline(
+            yiniContent,
+            coreOpts,
+            this.#runtime,
+            userOpts,
+        )
+        debugPrint('==== End call runPipeline ==========================\n')
 
         if (isDev()) {
             console.log()

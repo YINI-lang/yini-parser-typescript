@@ -181,11 +181,9 @@ export interface ResultMetadata {
     metaSchemaVersion: MetaSchemaVersion
     diagnostics?: {
         failLevel: {
-            // preferredLevel: null | 'auto' | 0 | 1 | 2 // Input level into function.
             preferredLevel: null | PreferredFailLevel // Input level into function.
-            levelUsed: TBailSensitivityLevel
-            levelKey: FailLevelKey // Mapped from the corresponding type, keep it lowercase since it's shown in meta, easier for tooling.
-            // levelLabel: TPersistThreshold
+            usedLevelType: TBailSensitivityLevel
+            usedLevelKey: FailLevelKey // Mapped from the corresponding type, keep it lowercase since it's shown in meta, easier for tooling.
             levelDescription: string | null
         }
         errors: { errorCount: number; payload: IssuePayload[] }
@@ -201,7 +199,8 @@ export interface ResultMetadata {
                 flags: { isDev: boolean; isDebug: boolean }
             }
         }
-        optionsUsed: AllUserOptions
+        effectiveOptions: AllUserOptions
+        options: AllUserOptions
     }
     timing?: {
         total: null | { timeMs: number; name: string }

@@ -21,6 +21,7 @@
 - **Renamed:** `includeMetaData` to `includeMetadata`.
 - Updates the codebase to consistently use the `ParsedObject` type,
 replacing the older `TJSObject` type for representing parsed YINI.
+- Improved and expanded TSDoc of several of the functions in the public API.
 
 
 ## 1.1.0-beta - 2025 Sep

@@ -67,12 +67,29 @@ export default class YINI {
      *   - `'warnings-and-errors'` : Stop parsing on the first warning **or** error.
      * @param includeMetadata    If `true`, return additional metadata (e.g. warnings, statistics) alongside the parsed object.
      *
-     * @returns A JavaScript object representing the parsed YINI content.
+     * @returns The parsed YINI content.
+     *
+     * By default (`includeMetaData = false`), this method returns a plain JavaScript object:
+     *
+     * `
+     * export type ParsedObject = any
+     * `
+     *
+     * If `includeMetaData = true`, the return value is wrapped in a container that also
+     * includes parsing metadata:
+     *
+     * `
+     * export interface YiniParseResult {
+     *   result: ParsedObject
+     *   meta: ResultMetadata
+     * }
+     * `
      */
     // --- Method overload signature ---------------------------------------
     // (With no body + not declared with arrow function.)
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
     // Easier and simpler positional form ((legacy/simple)).
+    // IMPORTANT: All param names below, except the first, must match exactly as in the interface PrimaryUserParams.
     public static parse(
         yiniContent: string,
         strictMode?: boolean,
@@ -112,7 +129,23 @@ export default class YINI {
      * @param options.treatEmptyValueAsNull - How to treat an explicitly empty value on the
      *   right-hand side of '='. Allowed values: `'allow'` | `'allow-with-warning'` | `'disallow'`.
      *
-     * @returns A JavaScript object representing the parsed YINI content.
+     * @returns The parsed YINI content.
+     *
+     * By default (`includeMetaData = false`), this method returns a plain JavaScript object:
+     *
+     * `
+     * export type ParsedObject = any
+     * `
+     *
+     * If `includeMetaData = true`, the return value is wrapped in a container that also
+     * includes parsing metadata:
+     *
+     * `
+     * export interface YiniParseResult {
+     *   result: ParsedObject
+     *   meta: ResultMetadata
+     * }
+     * `
      */
     // --- Method overload signature ---------------------------------------
     // (With no body + not declared with arrow function.)
@@ -236,12 +269,29 @@ export default class YINI {
      *   - `'warnings-and-errors'` : Stop parsing on the first warning **or** error.
      * @param includeMetadata    If `true`, return additional metadata (e.g. warnings, statistics) alongside the parsed object.
      *
-     * @returns A JavaScript object representing the parsed YINI content.
+     * @returns The parsed YINI content.
+     *
+     * By default (`includeMetaData = false`), this method returns a plain JavaScript object:
+     *
+     * `
+     * export type ParsedObject = any
+     * `
+     *
+     * If `includeMetaData = true`, the return value is wrapped in a container that also
+     * includes parsing metadata:
+     *
+     * `
+     * export interface YiniParseResult {
+     *   result: ParsedObject
+     *   meta: ResultMetadata
+     * }
+     * `
      */
     // --- Method overload signature ---------------------------------------
     // (With no body + not declared with arrow function.)
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
     // Easy and simple positional API (great for most users).
+    // IMPORTANT: All param names below, except the first, must match exactly as in the interface PrimaryUserParams.
     public static parseFile(
         filePath: string,
         strictMode?: boolean,
@@ -281,7 +331,23 @@ export default class YINI {
      * @param options.treatEmptyValueAsNull - How to treat an explicitly empty value on the
      *   right-hand side of '='. Allowed values: `'allow'` | `'allow-with-warning'` | `'disallow'`.
      *
-     * @returns A JavaScript object representing the parsed YINI content.
+     * @returns The parsed YINI content.
+     *
+     * By default (`includeMetaData = false`), this method returns a plain JavaScript object:
+     *
+     * `
+     * export type ParsedObject = any
+     * `
+     *
+     * If `includeMetaData = true`, the return value is wrapped in a container that also
+     * includes parsing metadata:
+     *
+     * `
+     * export interface YiniParseResult {
+     *   result: ParsedObject
+     *   meta: ResultMetadata
+     * }
+     * `
      */
     // --- Method overload signature ---------------------------------------
     // (With no body + not declared with arrow function.)
