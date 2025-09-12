@@ -1,5 +1,5 @@
-import { ErrorDataHandler } from '../../../src/core/errorDataHandler'
-import parseSectionHeader from '../../../src/parsers/parseSectionHeader'
+import { ErrorDataHandler } from '../core/errorDataHandler'
+import parseSectionHeader from './parseSectionHeader'
 
 /**
  * Throw error when parsing bad classic header unit tests.

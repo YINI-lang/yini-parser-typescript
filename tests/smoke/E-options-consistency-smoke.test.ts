@@ -84,9 +84,11 @@ describe('Options Consistency Smoke Tests:', () => {
             onDuplicateKey: 'warn-and-keep-first',
         }
         expect(!!result.meta).toEqual(true)
-        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)
         expect(
-            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+            toPrettyJSON(
+                sortObjectKeys(result.meta.diagnostics.effectiveOptions),
+            ),
         ).toEqual(toPrettyJSON(sortObjectKeys(correctLenientOptions)))
     })
 
@@ -118,9 +120,11 @@ describe('Options Consistency Smoke Tests:', () => {
             ...options,
         }
         expect(!!result.meta).toEqual(true)
-        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)
         expect(
-            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+            toPrettyJSON(
+                sortObjectKeys(result.meta.diagnostics.effectiveOptions),
+            ),
         ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
     })
 
@@ -152,9 +156,11 @@ describe('Options Consistency Smoke Tests:', () => {
             ...options,
         }
         expect(!!result.meta).toEqual(true)
-        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)
         expect(
-            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+            toPrettyJSON(
+                sortObjectKeys(result.meta.diagnostics.effectiveOptions),
+            ),
         ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
     })
 
@@ -186,9 +192,11 @@ describe('Options Consistency Smoke Tests:', () => {
             onDuplicateKey: 'error',
         }
         expect(!!result.meta).toEqual(true)
-        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)
         expect(
-            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+            toPrettyJSON(
+                sortObjectKeys(result.meta.diagnostics.effectiveOptions),
+            ),
         ).toEqual(toPrettyJSON(sortObjectKeys(correctLenientOptions)))
     })
 
@@ -220,9 +228,11 @@ describe('Options Consistency Smoke Tests:', () => {
             ...options,
         }
         expect(!!result.meta).toEqual(true)
-        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)
         expect(
-            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+            toPrettyJSON(
+                sortObjectKeys(result.meta.diagnostics.effectiveOptions),
+            ),
         ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
     })
 
@@ -254,9 +264,11 @@ describe('Options Consistency Smoke Tests:', () => {
             ...options,
         }
         expect(!!result.meta).toEqual(true)
-        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)
         expect(
-            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+            toPrettyJSON(
+                sortObjectKeys(result.meta.diagnostics.effectiveOptions),
+            ),
         ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
     })
 
@@ -290,9 +302,11 @@ describe('Options Consistency Smoke Tests:', () => {
             onDuplicateKey: 'warn-and-keep-first',
         }
         expect(!!result.meta).toEqual(true)
-        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)
         expect(
-            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+            toPrettyJSON(
+                sortObjectKeys(result.meta.diagnostics.effectiveOptions),
+            ),
         ).toEqual(toPrettyJSON(sortObjectKeys(correctLenientOptions)))
     })
 
@@ -326,9 +340,11 @@ describe('Options Consistency Smoke Tests:', () => {
             ...options,
         }
         expect(!!result.meta).toEqual(true)
-        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)
         expect(
-            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+            toPrettyJSON(
+                sortObjectKeys(result.meta.diagnostics.effectiveOptions),
+            ),
         ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
     })
 
@@ -362,9 +378,11 @@ describe('Options Consistency Smoke Tests:', () => {
             ...options,
         }
         expect(!!result.meta).toEqual(true)
-        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)
         expect(
-            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+            toPrettyJSON(
+                sortObjectKeys(result.meta.diagnostics.effectiveOptions),
+            ),
         ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
     })
 
@@ -398,9 +416,11 @@ describe('Options Consistency Smoke Tests:', () => {
             onDuplicateKey: 'error',
         }
         expect(!!result.meta).toEqual(true)
-        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)
         expect(
-            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+            toPrettyJSON(
+                sortObjectKeys(result.meta.diagnostics.effectiveOptions),
+            ),
         ).toEqual(toPrettyJSON(sortObjectKeys(correctLenientOptions)))
     })
 
@@ -434,9 +454,11 @@ describe('Options Consistency Smoke Tests:', () => {
             ...options,
         }
         expect(!!result.meta).toEqual(true)
-        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)
         expect(
-            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+            toPrettyJSON(
+                sortObjectKeys(result.meta.diagnostics.effectiveOptions),
+            ),
         ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
     })
 
@@ -470,9 +492,11 @@ describe('Options Consistency Smoke Tests:', () => {
             ...options,
         }
         expect(!!result.meta).toEqual(true)
-        expect(!!result.meta.diagnostics.optionsUsed).toEqual(true)
+        expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)
         expect(
-            toPrettyJSON(sortObjectKeys(result.meta.diagnostics.optionsUsed)),
+            toPrettyJSON(
+                sortObjectKeys(result.meta.diagnostics.effectiveOptions),
+            ),
         ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
     })
 })

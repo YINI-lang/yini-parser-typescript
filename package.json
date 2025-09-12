@@ -52,7 +52,7 @@
         "test": "cross-env NODE_ENV=test APP_ENV=local jest --bail --verbose --runInBand",
         "test:debug": "cross-env npm run test -- --isDebug=1",
         "test:smoke": "cross-env NODE_ENV=test APP_ENV=local jest tests/smoke --bail --verbose --runInBand",
-        "test:unit": "cross-env NODE_ENV=test APP_ENV=local jest tests/unit --bail --verbose --runInBand",
+        "test:unit": "cross-env NODE_ENV=test APP_ENV=local jest src/ --bail --verbose --runInBand",
         "test:integr": "cross-env NODE_ENV=test APP_ENV=local jest tests/integration --bail --verbose --runInBand",
         "test:issues": "cross-env NODE_ENV=test APP_ENV=local jest tests/fixed-issues --bail --verbose --runInBand",
         "test:gold": "cross-env NODE_ENV=test APP_ENV=local jest tests/golden --bail --verbose --runInBand",

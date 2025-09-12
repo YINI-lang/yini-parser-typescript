@@ -1,6 +1,5 @@
-import { TSectionHeaderType } from '../../../src/core/internalTypes'
-import extractHeaderParts from '../../../src/parsers/extractHeaderParts'
-import { debugPrint } from '../../../src/utils/print'
+import { debugPrint } from '../utils/print'
+import extractHeaderParts from './extractHeaderParts'
 
 /**
  * Extract header parts unit tests.

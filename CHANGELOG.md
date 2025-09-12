@@ -5,13 +5,13 @@
 ## 1.1.0-beta + [UPDATES] - 2025 XXX
 - **Fixed:** `parseFile()` now correctly passes through all options (e.g. `includeDiagnostics`) so they work and matches as in `parse(..)`.
 - **Fixed:** typo (`in in`) in file parsing error message.
-- **Updated**: metadata structure bumped to version 1.1.0, and below added:
+- **Updated:** metadata structure bumped to version 1.1.0, and below added:
     ```ts
     preservesOrder: true // Member/section order: platform-, implementation-, and language-specific. Not mandated by the YINI spec.
     orderGuarantee: 'implementation-defined'
     orderNotes?: string
     ```
-- **Refactored** the static public (user-facing) YINI class to use per-invocation runtime state, preventing race conditions in runtime info when multiple calls to `parse(..)` / `parseFile(..)` run in parallel.
+- **Refactored:** the static public (user-facing) YINI class to use per-invocation runtime state, preventing race conditions in runtime info when multiple calls to `parse(..)` / `parseFile(..)` run in parallel.
 - **Refactored file layout:** Moved and renamed files in `src/`
   * File `src/parseEntry.ts` renamed and moved to `src/src/pipeline.ts`, 
       - And in that file, rename the method/function `_parseEntry(..)` to `runPipeline(..)`.
@@ -22,7 +22,7 @@
 - Updates the codebase to consistently use the `ParsedObject` type,
 replacing the older `TJSObject` type for representing parsed YINI.
 - Improved and expanded TSDoc of several of the functions in the public API.
-
+- **Internal:** Unit tests are now colocated with their source code files in `src/**`. So there is 1:1 visibility between code and its unit tests, and less chance of missing coverage, etc.
 
 ## 1.1.0-beta - 2025 Sep
 ### Parser

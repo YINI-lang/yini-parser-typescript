@@ -27,16 +27,13 @@ import { removeUndefinedDeep, sortObjectKeys } from '../utils/object'
 import { debugPrint, printObject } from '../utils/print'
 import { toLowerKebabCase, toLowerSnakeCase } from '../utils/string'
 import astBuilder from './astBuilder'
-import { ErrorDataHandler } from './errorDataHandler'
 import {
-    IParseCoreOptions,
-    IRuntimeInfo,
-    IYiniAST,
-    TBailSensitivityLevel,
-} from './internalTypes'
+    buildResultMetadata,
+    IBuildResultMetadataParams,
+} from './buildResultMetadata'
+import { ErrorDataHandler } from './errorDataHandler'
+import { IParseCoreOptions, IRuntimeInfo, IYiniAST } from './internalTypes'
 import { astToObject } from './objectBuilder'
-
-const pkg = require('../../package.json')
 
 /**
  * @param line Line number as 1-based.
@@ -415,198 +412,22 @@ export const runPipeline = (
         isDebug() && console.debug(finalJSResult)
     }
 
-    const constructResultMetadata = (): ResultMetadata => {
-        // --- Construct meta information -------------------------------------
-        const to3 = (n: number): number => Number.parseFloat(n.toFixed(3))
-
-        // Construct meta data.
-        const metadata: ResultMetadata = {
-            parserVersion: pkg.version,
-            mode: coreOptions.isStrict ? 'strict' : 'lenient',
-            totalErrors: errorHandler.getNumOfErrors(),
-            totalWarnings: errorHandler.getNumOfWarnings(),
-            totalMessages: errorHandler.getNumOfAllMessages(),
-            runStartedAt,
-            runFinishedAt,
-            durationMs: to3(durationMs),
-            preservesOrder: true,
-            orderGuarantee: 'implementation-defined',
-            source: {
-                // sourceType: toLowerSnakeCase(ast.sourceType),
-                sourceType: toLowerKebabCase(ast.sourceType),
-                fileName: ast.fileName,
-                hasDocumentTerminator: ast.terminatorSeen,
-                hasYiniMarker: ast.yiniMarkerSeen,
-                lineCount: runtimeInfo.lineCount,
-                byteSize: runtimeInfo.fileByteSize,
-                sha256: runtimeInfo.sha256,
-            },
-            structure: {
-                maxDepth: ast.maxDepth,
-                sectionCount: ast.numOfSections,
-                memberCount: ast.numOfMembers,
-                keysParsedCount: null,
-                // objectCount: null,
-                // listCount: null,
-                sectionNamePaths: ast.sectionNamePaths,
-            },
-            metaSchemaVersion: '1.1.0',
-        }
-
-        // Attach optional diagnostics.
-        if (coreOptions.isWithDiagnostics) {
-            // const mapToFailLevel = (
-            //     level: TBailSensitivityLevel,
-            // ): TPreferredFailLevel => {
-            //     switch (level) {
-            //         case 0:
-            //             return 'ignore-errors'
-            //         case 1:
-            //             return 'errors'
-            //         case 2:
-            //             return 'warnings-and-errors'
-            //     }
-            // }
-            const mapLevelKey = (
-                level: TBailSensitivityLevel,
-            ): FailLevelKey => {
-                switch (level) {
-                    case '0-Ignore-Errors':
-                        return 'ignore-errors'
-                    case '1-Abort-on-Errors':
-                        return 'errors'
-                    case '2-Abort-Even-on-Warnings':
-                        return 'warnings-and-errors'
-                }
-            }
-            // const mapLevelLabel = (
-            //     level: TBailSensitivityLevel,
-            // ): TBailSensitivityLevel => {
-            //     switch (level) {
-            //         case '0-Ignore-Errors':
-            //             return '0-Ignore-Errors'
-            //         case '1-Abort-on-Errors':
-            //             return '1-Abort-on-Errors'
-            //         case '2-Abort-Even-on-Warnings':
-            //             return '2-Abort-Even-on-Warnings'
-            //     }
-            // }
-            const mapLevelDescription = (
-                level: TBailSensitivityLevel,
-            ): string | null => {
-                switch (level) {
-                    case '0-Ignore-Errors':
-                        return 'Continue despite errors.'
-                    case '1-Abort-on-Errors':
-                        return 'Abort when errors occur.'
-                    case '2-Abort-Even-on-Warnings':
-                        return 'Abort when errors or warnings occur.'
-                }
-                return null
-            }
-
-            metadata.diagnostics = {
-                failLevel: {
-                    preferredLevel: runtimeInfo.preferredBailSensitivity,
-                    usedLevelType: coreOptions.bailSensitivity,
-                    usedLevelKey: mapLevelKey(coreOptions.bailSensitivity),
-                    levelDescription: <any>(
-                        mapLevelDescription(coreOptions.bailSensitivity)
-                    ),
-                },
-                errors: {
-                    errorCount: errorHandler.getNumOfErrors(),
-                    payload: errorHandler.getErrors(),
-                },
-                warnings: {
-                    warningCount: errorHandler.getNumOfWarnings(),
-                    payload: errorHandler.getWarnings(),
-                },
-                notices: {
-                    noticeCount: errorHandler.getNumOfNotices(),
-                    payload: errorHandler.getNotices(),
-                },
-                infos: {
-                    infoCount: errorHandler.getNumOfInfos(),
-                    payload: errorHandler.getInfos(),
-                },
-                environment: {
-                    NODE_ENV: process.env.NODE_ENV,
-                    APP_ENV: process.env.APP_ENV,
-                    lib: {
-                        nodeEnv: localNodeEnv,
-                        appEnv: localAppEnv,
-                        flags: { isDev: isDev(), isDebug: isDebug() },
-                    },
-                },
-                effectiveOptions: sortObjectKeys({
-                    // IMPORTANT: (!) These user options MUST be mapped from coreOptions (to user options).
-                    strictMode: coreOptions.isStrict,
-                    failLevel: mapLevelKey(coreOptions.bailSensitivity),
-                    includeMetadata: coreOptions.isIncludeMeta,
-                    includeDiagnostics: coreOptions.isWithDiagnostics,
-                    includeTiming: coreOptions.isWithTiming,
-                    preserveUndefinedInMeta: coreOptions.isKeepUndefinedInMeta,
-                    suppressWarnings: coreOptions.isAvoidWarningsInConsole,
-                    requireDocTerminator: coreOptions.requireDocTerminator,
-                    treatEmptyValueAsNull: coreOptions.treatEmptyValueAsNull,
-                    onDuplicateKey: coreOptions.onDuplicateKey,
-                }),
-                options: sortObjectKeys(_meta_userOpts),
-            }
-        }
-
-        // Attach optional durations timing data.
-        if (coreOptions.isWithTiming) {
-            metadata.timing = {
-                total: !coreOptions.isWithTiming
-                    ? null
-                    : {
-                          timeMs: to3(durationMs), // durationMs = timeEnd4Ms - timeStartMs
-                          name:
-                              runtimeInfo.sourceType === 'Inline'
-                                  ? 'Total'
-                                  : 'Total (excluding phase0 (I/O))',
-                      },
-                phase0:
-                    !coreOptions.isWithTiming ||
-                    runtimeInfo.sourceType === 'Inline'
-                        ? undefined
-                        : {
-                              timeMs: to3(runtimeInfo.timeIoMs!),
-
-                              name: 'I/O',
-                          },
-                phase1: !coreOptions.isWithTiming
-                    ? null
-                    : {
-                          timeMs: to3(timeEnd1Ms - timeStartMs),
-
-                          name: 'Lexing',
-                      },
-                phase2: !coreOptions.isWithTiming
-                    ? null
-                    : {
-                          timeMs: to3(timeEnd2Ms - timeEnd1Ms),
-                          name: 'Parsing',
-                      },
-                phase3: !coreOptions.isWithTiming
-                    ? null
-                    : {
-                          timeMs: to3(timeEnd3Ms - timeEnd2Ms),
-                          name: 'AST Building',
-                      },
-                phase4: !coreOptions.isWithTiming
-                    ? null
-                    : {
-                          timeMs: to3(timeEnd4Ms - timeEnd3Ms),
-                          name: 'Object Building',
-                      },
-            }
-        }
-
-        return metadata
+    const params: IBuildResultMetadataParams = {
+        ast,
+        coreOptions,
+        runtimeInfo,
+        _meta_userOpts,
+        errorHandler,
+        runStartedAt,
+        runFinishedAt,
+        durationMs,
+        timeStartMs,
+        timeEnd1Ms,
+        timeEnd2Ms,
+        timeEnd3Ms,
+        timeEnd4Ms,
     }
+    const constructedMetadata: ResultMetadata = buildResultMetadata(params)
 
     debugPrint('getNumOfErrors(): ' + errorHandler.getNumOfErrors())
     if (errorHandler.getNumOfErrors()) {
@@ -621,8 +442,8 @@ export const runPipeline = (
         return {
             result: finalJSResult as any,
             meta: !coreOptions.isKeepUndefinedInMeta
-                ? removeUndefinedDeep(constructResultMetadata())
-                : constructResultMetadata(),
+                ? removeUndefinedDeep(constructedMetadata)
+                : constructedMetadata,
         } as YiniParseResult
     }
 
