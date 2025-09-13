@@ -2,10 +2,10 @@
 
 ## --dev/uppcoming--
 
-## 1.1.0-beta + [UPDATES] - 2025 XXX
+## 1.2.0-beta - 2025 Sep
 - **Fixed:** `parseFile()` now correctly passes through all options (e.g. `includeDiagnostics`) so they work and matches as in `parse(..)`.
 - **Fixed:** typo (`in in`) in file parsing error message.
-- **Updated:** metadata structure bumped to version 1.1.0, and below added:
+- **Updated:** metadata structure bumped to version 1.1.0, and below added (among other things):
     ```ts
     preservesOrder: true // Member/section order: platform-, implementation-, and language-specific. Not mandated by the YINI spec.
     orderGuarantee: 'implementation-defined'
@@ -19,9 +19,9 @@
       - And moved public (user-facing) types and interfaces into its own file `src/types/index.ts`.
   * Moved the file `src/yiniHelpers.ts` to `src/utils/yiniHelpers.ts`.
 - **Renamed:** `includeMetaData` to `includeMetadata`.
-- Updates the codebase to consistently use the `ParsedObject` type,
+- **Updated:** Codebase now consistently uses the `ParsedObject` type,
 replacing the older `TJSObject` type for representing parsed YINI.
-- Improved and expanded TSDoc of several of the functions in the public API.
+- **Docs:** Expanded and improved TSDoc of several of the functions in the public API.
 - **Internal:** Unit tests are now colocated with their source code files in `src/**`. So there is 1:1 visibility between code and its unit tests, and less chance of missing coverage, etc.
 
 ## 1.1.0-beta - 2025 Sep
