@@ -434,7 +434,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
                 null,
-                'Syntax-Error',
+                'Syntax-Warning',
                 msgWhat,
                 msgWhy,
                 msgHint,
@@ -765,22 +765,47 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         let valueNode: TValueLiteral | undefined
 
         if (!rawValue) {
-            // Empty value => Null in lenient mode, error in strict (Spec 12.3, 8.2). :contentReference[oaicite:10]{index=10}:contentReference[oaicite:11]{index=11}
-            if (!this.isStrict) {
-                valueNode = makeScalarValue('Null', null, 'Implicit null')
-            } else {
-                // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-                this.errorHandler!.pushOrBail(
-                    ctx,
-                    'Syntax-Error',
-                    `Strict mode: missing value for key '${resultKey}'`,
-                    'Expected a value but found nothing, strict mode does not allow implicit null.',
-                    "If you intend to have a null value, please specify 'null' explicitly as the value.",
-                )
+            // treatEmptyValueAsNull = 'allow' (default in lenient mode, empty value => Null in lenient mode)
+            // if (!this.isStrict) {
+            switch (this.options.treatEmptyValueAsNull) {
+                case 'allow':
+                    // Lenient mode: implicit null, no warning (treatEmptyValueAsNull = 'allow').
+                    valueNode = makeScalarValue(
+                        'Null',
+                        null,
+                        'Implicit null (empty value)',
+                    )
+                    break
+                case 'allow-with-warning':
+                    valueNode = makeScalarValue(
+                        'Null',
+                        null,
+                        'Implicit null (empty value)',
+                    )
+                    this.errorHandler!.pushOrBail(
+                        ctx,
+                        'Syntax-Warning',
+                        `Empty value treated as null for key '${resultKey}'.`,
+                        `An empty value after '=' was encountered. Per 'treatEmptyValueAsNull = allow-with-warning', it is interpreted as null.`,
+                        `If you intended null, write it explicitly: ${resultKey} = null. Otherwise provide a non-empty value or set 'treatEmptyValueAsNull' to 'disallow'.`,
+                    )
+                    break
+                case 'disallow':
+                    // treatEmptyValueAsNull = 'disallow' (default in strict mode)
+                    // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+                    this.errorHandler!.pushOrBail(
+                        ctx,
+                        'Syntax-Error',
+                        `Missing value for key '${resultKey}'.`,
+                        `Expected a value after '=' but found none. Implicit nulls are disallowed by 'treatEmptyValueAsNull = disallow'.`,
+                        `Write 'null' explicitly (${resultKey} = null) if that is intended, or provide a concrete value.`,
+                    )
+                    break
             }
         } else {
             valueNode = this.visitValue?.(valueContext) as TValueLiteral
         }
+
         debugPrint('visitMember(..): valueNode:')
         if (isDebug()) {
             printObject(valueNode)
