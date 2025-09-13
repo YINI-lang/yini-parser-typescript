@@ -27,13 +27,13 @@ import { removeUndefinedDeep, sortObjectKeys } from '../utils/object'
 import { debugPrint, printObject } from '../utils/print'
 import { toLowerKebabCase, toLowerSnakeCase } from '../utils/string'
 import astBuilder from './astBuilder'
-import {
-    buildResultMetadata,
-    IBuildResultMetadataParams,
-} from './buildResultMetadata'
 import { ErrorDataHandler } from './errorDataHandler'
 import { IParseCoreOptions, IRuntimeInfo, IYiniAST } from './internalTypes'
 import { astToObject } from './objectBuilder'
+import {
+    buildResultMetadata,
+    IBuildResultMetadataParams,
+} from './resultMetadataBuilder'
 
 /**
  * @param line Line number as 1-based.

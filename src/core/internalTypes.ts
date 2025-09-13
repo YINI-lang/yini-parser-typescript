@@ -139,10 +139,15 @@ export interface IParseCoreOptions {
     isWithTiming: boolean // (Requires isIncludeMeta) Include timing data of the different phases in meta data, when isIncludeMeta.
     isKeepUndefinedInMeta: boolean // (Requires isIncludeMeta) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
     isAvoidWarningsInConsole: boolean // Suppress warnings in console (does not affect warnings in meta data).
+    // rules?: {
     requireDocTerminator: 'optional' | 'warn-if-missing' | 'required'
     treatEmptyValueAsNull: 'allow' | 'allow-with-warning' | 'disallow'
     onDuplicateKey: OnDuplicateKey
+    // }
 }
+
+//@todo
+//interface IParseCoreRuleOptions {}
 
 export interface IYiniAST extends IMetaBaseInfo {
     root: IYiniSection // Implicit root per spec.

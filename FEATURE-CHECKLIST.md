@@ -101,7 +101,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Unique keys (per section)</td>
     <td>🔲</td>
     <td>Reformat/emit error/warning</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>Enforce per nesting level</td>
@@ -161,7 +161,7 @@ https://github.com/YINI-lang/YINI-spec
   <tr>
     <td>Throw error if parsing some garbage</td>
     <td>✅</td>
-    <td>⚠️ Incuding trying to parse nothing ("") or invalid characters, etc.</td>
+    <td>⚠️ Including trying to parse nothing ("") or invalid characters, etc.</td>
     <td>➖</td>
     <td>✅</td>
     <td>✅</td>
@@ -170,7 +170,7 @@ https://github.com/YINI-lang/YINI-spec
   <tr>
     <td>Throw error if parsing unknown file name</td>
     <td>✅</td>
-    <td>⚠️ Incuding trying to parse a blank file name (""), etc.</td>
+    <td>⚠️ Including trying to parse a blank file name (""), etc.</td>
     <td>➖</td>
     <td>✅</td>
     <td>✅</td>
@@ -349,7 +349,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>✅</td>
     <td>✅</td>
     <td>🔲</td>
-    <td><b>⚠️ Only in non-strict-mode</b></td>
+    <td><b>⚠️ Only if option.treatEmptyValueAsNull = 'allow' (default in lenient mode)</b></td>
   </tr>
   <tr>
     <td>Members without any defined section</td>
@@ -557,7 +557,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Objects</td>
     <td>🔲</td>
     <td><code>{ key: value, ... }</code></td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>Inline, supports nesting, trailing comma ignored (lenient only)
@@ -599,7 +599,7 @@ https://github.com/YINI-lang/YINI-spec
 
   <tr>
     <td>Bracketed lists ([])</td>
-    <td>✅</td>
+    <td>🔲</td>
     <td><code>key = [a, b, c]</code></td>
     <td>✅</td>
     <td>🔲</td>
@@ -656,7 +656,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
-    <td>/END required in strict mode, <b>optional</b> in lenient</td>
+    <td>⚠️ Only if option.requireDocTerminator = 'required'</td>
   </tr>
   <tr>
     <td>Lenient mode (default)</td>
@@ -670,11 +670,11 @@ https://github.com/YINI-lang/YINI-spec
   <tr>
     <td>Strict mode option</td>
     <td>🔲</td>
-    <td>Enforce all structure/terminator, etc</td>
+    <td></td>
     <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
-    <td>Terminator /END required, no trailing comma, etc</td>
+    <td></td>
   </tr>
   <tr>
     <td>Optional Bail/Abort sensitivity levels</td>
@@ -691,7 +691,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Detect multiple <code>@yini</code></td>
     <td>🔲</td>
     <td>If using multiple <code>@yini</code> should warn in lenient and cause error in strict mode</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>This requires updates in the grammar and its parser logic</td>
@@ -700,7 +700,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Meta: Count num of sections</td>
     <td>🔲</td>
     <td>Meta info</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td></td>
@@ -709,7 +709,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Meta: Count num of members</td>
     <td>🔲</td>
     <td>Meta info</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td>Member literals</td>
@@ -718,7 +718,123 @@ https://github.com/YINI-lang/YINI-spec
 
 ---
 
-### 🔲 — 11. Reserved/Advanced Features
+### 🚧 — 11. Public API & Options (AllUserOptions)
+
+<table>
+  <tr>
+    <th>Option</th>
+    <th>Status</th>
+    <th>Details</th>
+    <th>Parse</th>
+    <th>Test</th>
+    <th>Verf</th>
+    <th>Notes</th>
+  </tr>
+
+  <tr>
+    <td><code>strictMode</code></td>
+    <td>🚧</td>
+    <td>Enable strict parsing (e.g., require <code>/END</code>, disallow implicit nulls/trailing commas)</td>
+    <td>✅</td>
+    <td>🚧</td>
+    <td>🚧</td>
+    <td>Some rules still being finalized</td>
+  </tr>
+
+  <tr>
+    <td><code>failLevel</code> / preferred bail level</td>
+    <td>🚧</td>
+    <td><code>'auto' | 0 | 1 | 2</code> → ignore, abort-on-errors, abort-on-warnings</td>
+    <td>✅</td>
+    <td>🚧</td>
+    <td>🚧</td>
+    <td>Host error handler integration</td>
+  </tr>
+
+  <tr>
+    <td><code>includeMetadata</code></td>
+    <td>✅</td>
+    <td>Returns <code>{ result, meta }</code> instead of plain result</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Public API shape is stable</td>
+  </tr>
+
+  <tr>
+    <td><code>includeDiagnostics</code></td>
+    <td>🚧</td>
+    <td>Attaches diagnostics arrays/counters inside <code>meta</code> (requires <code>includeMetadata</code>)</td>
+    <td>✅</td>
+    <td>🚧</td>
+    <td>🚧</td>
+    <td>Ensure parity between <code>parse</code> and <code>parseFile</code></td>
+  </tr>
+
+  <tr>
+    <td><code>includeTiming</code></td>
+    <td>🚧</td>
+    <td>Adds per-phase timing to <code>meta.timingMs</code> (requires <code>includeMetadata</code>)</td>
+    <td>✅</td>
+    <td>🚧</td>
+    <td>🚧</td>
+    <td>Phases: lex/parse, AST+validate, build</td>
+  </tr>
+
+  <tr>
+    <td><code>preserveUndefinedInMeta</code></td>
+    <td>✅</td>
+    <td>Do not strip <code>undefined</code> properties from <code>meta</code></td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Useful for tooling</td>
+  </tr>
+
+  <tr>
+    <td><code>suppressWarnings</code></td>
+    <td>✅</td>
+    <td>Hide warnings in console logs (does not change <code>meta</code>)</td>
+    <td>✅</td>
+    <td>🚧</td>
+    <td>✅</td>
+    <td>Confirm behavior in strict/lenient</td>
+  </tr>
+
+  <tr>
+    <td><b>rules.requireDocTerminator</b></td>
+    <td>🚧</td>
+    <td><code>'optional' | 'warn' | 'error'</code> — require <code>/END</code> at EOF</td>
+    <td>✅</td>
+    <td>🚧</td>
+    <td>🚧</td>
+    <td>Overrides strict default if needed</td>
+  </tr>
+
+  <tr>
+    <td><b>rules.treatEmptyValueAsNull</b></td>
+    <td>🚧</td>
+    <td><code>'allow' | 'allow-with-warning' | 'disallow'</code></td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>🚧</td>
+    <td>Warning path implemented; verify messaging</td>
+  </tr>
+
+  <tr>
+    <td><b>rules.onDuplicateKey</b></td>
+    <td>🚧</td>
+    <td><code>'error' | 'warn-and-keep-first' | 'warn-and-overwrite' | 'keep-first' | 'overwrite'</code></td>
+    <td>✅</td>
+    <td>🚧</td>
+    <td>🚧</td>
+    <td>“overwrite” = keep last</td>
+  </tr>
+</table>
+
+---
+
+### 🔲 — 12. Reserved/Advanced Features
 <table>
   <tr>
     <th>Sub-Feature</th>

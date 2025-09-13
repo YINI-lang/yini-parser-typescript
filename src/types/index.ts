@@ -118,11 +118,9 @@ export interface AllUserOptions extends PrimaryUserParams {
     preserveUndefinedInMeta?: boolean // (Requires includeMetadata) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
     suppressWarnings?: boolean // Suppress warnings in console (does not effect warnings in meta data).
     //hideWarnings?: boolean // Hide all warnings in console including in meta data.
-    // rules?: {
     requireDocTerminator?: 'optional' | 'warn-if-missing' | 'required'
     treatEmptyValueAsNull?: 'allow' | 'allow-with-warning' | 'disallow'
     onDuplicateKey?: OnDuplicateKey
-    // }
 }
 
 //{ line: 12, column: 8, type: 'Syntax-Error', message1: 'Invalid number' }
