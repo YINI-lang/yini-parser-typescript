@@ -30,9 +30,10 @@ interface ILocation {
  * This class handles all error/notice reporting and processes exit/throwing.
  */
 export class ErrorDataHandler {
-    private readonly persistThreshold: TBailSensitivityLevel
     private readonly subjectType: TSubjectType
     private readonly fileName: string | undefined
+    private readonly persistThreshold: TBailSensitivityLevel
+    private readonly isAvoidWarningsInConsole: boolean
 
     private errors: IssuePayload[] = []
     private warnings: IssuePayload[] = []
@@ -57,12 +58,14 @@ export class ErrorDataHandler {
      */
     constructor(
         subjectType: TSubjectType,
-        bailSensitivityLevel: TBailSensitivityLevel = '1-Abort-on-Errors',
         fileName: string | undefined = undefined,
+        bailSensitivityLevel: TBailSensitivityLevel = '1-Abort-on-Errors',
+        isAvoidWarningsInConsole: boolean = false,
     ) {
         this.subjectType = subjectType
-        this.persistThreshold = bailSensitivityLevel
         this.fileName = fileName
+        this.persistThreshold = bailSensitivityLevel
+        this.isAvoidWarningsInConsole = isAvoidWarningsInConsole
     }
 
     private makeIssue(
@@ -216,8 +219,15 @@ export class ErrorDataHandler {
                         msgHint,
                     ),
                 )
-                this.emitSyntaxWarning(loc, msgWhatWithLineNum, msgWhy, msgHint)
-                console.log() // Emit an empty line before outputting message.
+                if (!this.isAvoidWarningsInConsole) {
+                    this.emitSyntaxWarning(
+                        loc,
+                        msgWhatWithLineNum,
+                        msgWhy,
+                        msgHint,
+                    )
+                    console.log() // Emit an empty line before outputting message.
+                }
                 if (this.persistThreshold === '2-Abort-Even-on-Warnings') {
                     // In test, throw an error instead of exiting.
                     throw new Error(`Syntax-Warning: ${msgWhat}`)

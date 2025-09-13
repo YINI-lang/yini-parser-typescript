@@ -224,8 +224,9 @@ export const runPipeline = (
 
     const errorHandler = new ErrorDataHandler(
         runtimeInfo.sourceType,
-        coreOptions.bailSensitivity,
         runtimeInfo.fileName,
+        coreOptions.bailSensitivity,
+        coreOptions.isAvoidWarningsInConsole,
     )
 
     if (yiniContent.trim() === '') {
