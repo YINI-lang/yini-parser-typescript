@@ -1,5 +1,5 @@
 import { isDebug, isDev } from '../../config/env'
-import { AllUserOptions } from '../../types'
+import { ParseOptions } from '../../types'
 import {
     IParseCoreOptions,
     TBailSensitivityLevel,
@@ -8,7 +8,7 @@ import {
 
 export const toCoreOptions = (
     bailLevel: TBailSensitivityLevel,
-    userOpts: Required<AllUserOptions>,
+    userOpts: Required<ParseOptions>,
 ): IParseCoreOptions => {
     return {
         isStrict: userOpts.strictMode,
@@ -25,7 +25,7 @@ export const toCoreOptions = (
 }
 
 // Type guard: did the caller use the options-object form?
-export const isOptionsObjectForm = (v: unknown): v is AllUserOptions => {
+export const isOptionsObjectForm = (v: unknown): v is ParseOptions => {
     return (
         v != null &&
         typeof v === 'object' &&
@@ -48,13 +48,13 @@ export const isOptionsObjectForm = (v: unknown): v is AllUserOptions => {
 // ((arg2 as any)?.strictMode ?? (arg2 as boolean | undefined)) ===
 
 export const inferModeFromArgs = (
-    arg2?: boolean | AllUserOptions,
+    arg2?: boolean | ParseOptions,
 ): TParserMode => {
     if (typeof arg2 === 'boolean') {
         return arg2 ? 'strict' : 'lenient'
     }
     if (arg2 && typeof arg2 === 'object') {
-        const sm = (arg2 as AllUserOptions).strictMode
+        const sm = (arg2 as ParseOptions).strictMode
         if (typeof sm === 'boolean') {
             return sm ? 'strict' : 'lenient'
         }

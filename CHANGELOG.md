@@ -1,6 +1,9 @@
 # CHANGELOG
 
 ## --dev/uppcoming--
+- Renamed some public (user facing) interfaces to be more ergonomic for end users:
+  * `AllUserOptions` to `ParseOptions`
+  * `PrimaryUserParams` to `BasicOptions`
 
 ## 1.2.0-beta - 2025 Sep
 - **Fixed:** `parseFile()` now correctly passes through all options (e.g. `includeDiagnostics`) so they work and matches as in `parse(..)`.

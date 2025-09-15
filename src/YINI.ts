@@ -3,8 +3,8 @@ import { ErrorDataHandler } from './core/errorDataHandler'
 import { isOptionsObjectForm } from './core/options/normalizeOptions'
 import { YiniRuntime } from './core/runtime'
 import {
-    AllUserOptions,
     ParsedObject,
+    ParseOptions,
     PreferredFailLevel,
     YiniParseResult,
 } from './types'
@@ -89,7 +89,7 @@ export default class YINI {
     // (With no body + not declared with arrow function.)
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
     // Easier and simpler positional form ((legacy/simple)).
-    // IMPORTANT: All param names below, except the first, must match exactly as in the interface PrimaryUserParams.
+    // IMPORTANT: All param names below, except the first, must match exactly as in the interface BasicOptions.
     public static parse(
         yiniContent: string,
         strictMode?: boolean,
@@ -102,11 +102,11 @@ export default class YINI {
      *
      * @param yiniContent      YINI code as a string (multi‑line content supported).
      * @param options Optional settings to customize parsing and/or results, useful if you need more control.
-     *        For all options, see types/IAllUserOptions.
+     *        For all options, see types/ParseOptions.
      *
      * @param options.failLevel - Minimum severity that should cause the parse to fail.
      *   Accepts:
-     *     `'ignore-errors'` - Don't bail/fail on error, persist and try to recover.
+     *     `'ignore-errors'` - Continue despite errors, persist and try to recover.
      *     `'errors'` - Stop parsing on the first error.
      *     `'warnings-and-errors'` - Stop parsing on the first warning or error.
      *   (Type: TPreferredFailLevel; exact behavior is implementation-defined.)
@@ -153,7 +153,7 @@ export default class YINI {
     // Options-object form (recommended) for power/expert users (more future-proof).
     public static parse(
         yiniContent: string,
-        options?: AllUserOptions,
+        options?: ParseOptions,
     ): ParsedObject | YiniParseResult
 
     // --- Single implementation --------------------------------------------
@@ -161,7 +161,7 @@ export default class YINI {
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
     public static parse(
         yiniContent: string,
-        arg2?: boolean | AllUserOptions, // strictMode | options
+        arg2?: boolean | ParseOptions, // strictMode | options
         failLevel: PreferredFailLevel = 'auto',
         includeMetadata = false,
     ): ParsedObject | YiniParseResult {
@@ -181,7 +181,7 @@ export default class YINI {
         // const defaultOptions = getDefaultOptions(mode)
 
         // // Normalize to a fully-required options object.
-        // let userOpts: Required<IAllUserOptions>
+        // let userOpts: Required<ParseOptions>
 
         // // Required, makes all properties in T required, no undefined.
         // if (isOptionsObjectForm(arg2)) {
@@ -291,7 +291,7 @@ export default class YINI {
     // (With no body + not declared with arrow function.)
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
     // Easy and simple positional API (great for most users).
-    // IMPORTANT: All param names below, except the first, must match exactly as in the interface PrimaryUserParams.
+    // IMPORTANT: All param names below, except the first, must match exactly as in the interface BasicOptions.
     public static parseFile(
         filePath: string,
         strictMode?: boolean,
@@ -304,11 +304,11 @@ export default class YINI {
      *
      * @param yiniFile Path to the YINI file.
      * @param options Optional settings to customize parsing and/or results, useful if you need more control.
-     *        For all options, see types/IAllUserOptions.
+     *        For all options, see types/ParseOptions.
      *
      * @param options.failLevel - Minimum severity that should cause the parse to fail.
      *   Accepts:
-     *     `'ignore-errors'` - Don't bail/fail on error, persist and try to recover.
+     *     `'ignore-errors'` - Continue despite errors, persist and try to recover.
      *     `'errors'` - Stop parsing on the first error.
      *     `'warnings-and-errors'` - Stop parsing on the first warning or error.
      *   (Type: TPreferredFailLevel; exact behavior is implementation-defined.)
@@ -355,7 +355,7 @@ export default class YINI {
     // Options-object form (recommended) for power/expert users (more future-proof).
     public static parseFile(
         filePath: string,
-        options?: AllUserOptions,
+        options?: ParseOptions,
     ): ParsedObject | YiniParseResult
 
     // --- Single implementation --------------------------------------------
@@ -363,7 +363,7 @@ export default class YINI {
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
     public static parseFile(
         filePath: string,
-        arg2?: boolean | AllUserOptions, // strictMode | options
+        arg2?: boolean | ParseOptions, // strictMode | options
         failLevel: PreferredFailLevel = 'auto',
         includeMetadata = false,
     ): ParsedObject | YiniParseResult {
@@ -384,7 +384,7 @@ export default class YINI {
         // const defaultOptions = getDefaultOptions(mode)
 
         // // Normalize to a fully-required options object.
-        // let userOpts: Required<IAllUserOptions>
+        // let userOpts: Required<ParseOptions>
 
         // // Required, makes all properties in T required, no undefined.
         // if (isOptionsObjectForm(arg2)) {

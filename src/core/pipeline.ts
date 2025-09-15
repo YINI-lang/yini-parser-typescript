@@ -17,9 +17,9 @@ import { isDebug, isDev, localAppEnv, localNodeEnv } from '../config/env'
 import YiniLexer from '../grammar/generated/YiniLexer'
 import YiniParser, { YiniContext } from '../grammar/generated/YiniParser'
 import {
-    AllUserOptions,
     FailLevelKey,
     ParsedObject,
+    ParseOptions,
     ResultMetadata,
     YiniParseResult,
 } from '../types'
@@ -186,7 +186,7 @@ export const runPipeline = (
     yiniContent: string,
     coreOptions: IParseCoreOptions,
     runtimeInfo: IRuntimeInfo,
-    _meta_userOpts: AllUserOptions,
+    _meta_userOpts: ParseOptions,
 ): ParsedObject | YiniParseResult => {
     debugPrint()
     debugPrint('-> Entered parseMain(..) in parseEntry')

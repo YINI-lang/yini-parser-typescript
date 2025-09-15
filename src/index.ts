@@ -58,7 +58,7 @@ export const setTabSize = YINI.setTabSize
  * Import these directly from the main package entry:
  *
  * ```ts
- * import type { YiniParseResult, AllUserOptions, ResultMetadata } from 'yini-parser'
+ * import type { YiniParseResult, ParseOptions, ResultMetadata } from 'yini-parser'
  * ```
  *
  * @packageDocumentation
@@ -71,8 +71,8 @@ export type {
     OnDuplicateKey,
     FailLevelKey,
     PreferredFailLevel,
-    PrimaryUserParams,
-    AllUserOptions,
+    BasicOptions,
+    ParseOptions,
     IssuePayload,
     MetaSchemaVersion,
     OrderGuarantee,

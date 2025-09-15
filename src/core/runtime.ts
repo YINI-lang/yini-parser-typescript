@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { isDev } from '../config/env'
-import { AllUserOptions, ParsedObject, PreferredFailLevel } from '../types'
+import { ParsedObject, ParseOptions, PreferredFailLevel } from '../types'
 import { getFileNameExtension } from '../utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from '../utils/print'
 import { computeSha256 } from '../utils/string'
@@ -66,14 +66,14 @@ export class YiniRuntime {
     // (With no body + not declared with arrow function.)
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
     // Options-object form (recommended) for power/expert users (more future-proof).
-    public doParse(yiniContent: string, options?: AllUserOptions): ParsedObject
+    public doParse(yiniContent: string, options?: ParseOptions): ParsedObject
 
     // --- Single implementation --------------------------------------------
     // Implementation method (not declared with arrow function) for both method overload signatures.
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
     public doParse(
         yiniContent: string,
-        arg2?: boolean | AllUserOptions, // strictMode | options
+        arg2?: boolean | ParseOptions, // strictMode | options
         failLevel: PreferredFailLevel = 'auto',
         includeMetadata = false,
     ): ParsedObject {
@@ -93,7 +93,7 @@ export class YiniRuntime {
         const defaultOptions = getDefaultOptions(mode)
 
         // Normalize to a fully-required options object.
-        let userOpts: Required<AllUserOptions>
+        let userOpts: Required<ParseOptions>
 
         // Required, makes all properties in T required, no undefined.
         if (isOptionsObjectForm(arg2)) {
@@ -175,14 +175,14 @@ export class YiniRuntime {
     // (With no body + not declared with arrow function.)
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
     // Options-object form (recommended) for power/expert users (more future-proof).
-    public doParseFile(filePath: string, options?: AllUserOptions): ParsedObject
+    public doParseFile(filePath: string, options?: ParseOptions): ParsedObject
 
     // --- Single implementation --------------------------------------------
     // Implementation method (not declared with arrow function) for both method overload signatures.
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
     public doParseFile(
         filePath: string,
-        arg2?: boolean | AllUserOptions, // strictMode | options
+        arg2?: boolean | ParseOptions, // strictMode | options
         failLevel: PreferredFailLevel = 'auto',
         includeMetadata = false,
     ): ParsedObject {
@@ -203,7 +203,7 @@ export class YiniRuntime {
         const defaultOptions = getDefaultOptions(mode)
 
         // Normalize to a fully-required options object.
-        let userOpts: Required<AllUserOptions>
+        let userOpts: Required<ParseOptions>
 
         // Required, makes all properties in T required, no undefined.
         if (isOptionsObjectForm(arg2)) {

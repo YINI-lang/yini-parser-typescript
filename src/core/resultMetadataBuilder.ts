@@ -1,7 +1,7 @@
 // const pkg = require('../../package.json')
 import pkg from '../../package.json' // NOTE: Requires "resolveJsonModule": true (or "esModuleInterop": true).
 import { isDebug, isDev, localAppEnv, localNodeEnv } from '../config/env'
-import { AllUserOptions, FailLevelKey, ResultMetadata } from '../types'
+import { FailLevelKey, ParseOptions, ResultMetadata } from '../types'
 import { sortObjectKeys } from '../utils/object'
 import { toLowerKebabCase } from '../utils/string'
 import { ErrorDataHandler } from './errorDataHandler'
@@ -17,7 +17,7 @@ export interface IBuildResultMetadataParams {
     ast: IYiniAST
     coreOptions: IParseCoreOptions
     runtimeInfo: IRuntimeInfo
-    _meta_userOpts: AllUserOptions
+    _meta_userOpts: ParseOptions
     errorHandler: ErrorDataHandler
     runStartedAt: string
     runFinishedAt: string

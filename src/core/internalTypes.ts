@@ -23,7 +23,7 @@ export type TSubjectType = 'None/Ignore' | TSourceType
 
 // Internal Dev types.
 export type TBailSensitivityLevel =
-    | '0-Ignore-Errors' // 0 - Don't bail/fail on error, persist and try to recover.
+    | '0-Ignore-Errors' // 0 - Continue despite errors, persist and try to recover.
     | '1-Abort-on-Errors' // 1 - Stop parsing on the first error.
     | '2-Abort-Even-on-Warnings' // 2 - Stop parsing on the first warning or error.
 
@@ -144,6 +144,8 @@ export interface IParseCoreOptions {
     treatEmptyValueAsNull: 'allow' | 'allow-with-warning' | 'disallow'
     onDuplicateKey: OnDuplicateKey
     // }
+    isQuiet?: boolean // Reduce output (show only errors).
+    isSilent?: boolean // Suppress all output (even errors, exit code only).
 }
 
 //@todo

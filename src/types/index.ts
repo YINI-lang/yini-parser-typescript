@@ -35,7 +35,7 @@ export interface YiniParseResult {
 
 // Keys as reported in metadata (human-readable).
 export type FailLevelKey =
-    | 'ignore-errors' // 0 - Don't bail/fail on error, persist and try to recover.
+    | 'ignore-errors' // 0 - Continue despite errors, persist and try to recover.
     | 'errors' // 1 - Stop parsing on the first error.
     | 'warnings-and-errors' // 2 - Stop parsing on the first warning or error.
 
@@ -71,7 +71,7 @@ export type OrderGuarantee =
  *       the YINI class.
  */
 // NOTE: (!) All props MUST be optional.
-export interface PrimaryUserParams {
+export interface BasicOptions {
     /** Enable stricter syntax and well-formedness checks. */
     strictMode?: boolean
     /**
@@ -86,7 +86,7 @@ export interface PrimaryUserParams {
 /**
  * @param failLevel - Minimum severity that should cause the parse to fail.
  *   Accepts:
- *     `'ignore-errors'` - Don't bail/fail on error, persist and try to recover.
+ *     `'ignore-errors'` - Continue despite errors, persist and try to recover.
  *     `'errors'` - Stop parsing on the first error.
  *     `'warnings-and-errors'` - Stop parsing on the first warning or error.
  *   (Type: TPreferredFailLevel; exact behavior is implementation-defined.)
@@ -112,7 +112,7 @@ export interface PrimaryUserParams {
 // User-facing options, these are external and should be more user friendly
 // parameter names.
 // NOTE: (!) All props MUST be optional.
-export interface AllUserOptions extends PrimaryUserParams {
+export interface ParseOptions extends BasicOptions {
     includeDiagnostics?: boolean // (Requires includeMetadata) Include diagnostics in meta data, when isIncludeMeta.
     includeTiming?: boolean // (Requires includeMetadata) Include timing data of the different phases in meta data, when isIncludeMeta.
     preserveUndefinedInMeta?: boolean // (Requires includeMetadata) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
@@ -198,8 +198,8 @@ export interface ResultMetadata {
                 flags: { isDev: boolean; isDebug: boolean }
             }
         }
-        effectiveOptions: AllUserOptions
-        options: AllUserOptions
+        effectiveOptions: ParseOptions
+        options: ParseOptions
     }
     timing?: {
         total: null | { timeMs: number; name: string }

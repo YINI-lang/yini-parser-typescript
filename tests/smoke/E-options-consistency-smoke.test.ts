@@ -5,7 +5,7 @@
 
 import path from 'path'
 import YINI from '../../src'
-import { AllUserOptions } from '../../src/types'
+import { ParseOptions } from '../../src/types'
 import { sortObjectKeys } from '../../src/utils/object'
 import { debugPrint, toPrettyJSON } from '../../src/utils/print'
 
@@ -71,7 +71,7 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const correctLenientOptions: AllUserOptions = {
+        const correctLenientOptions: ParseOptions = {
             strictMode: nonStrictMode,
             failLevel: 'ignore-errors', // 'auto' must get normalized to 'ignore-errors' (lenient mode).
             includeMetadata: mustBeTrue,
@@ -96,7 +96,7 @@ describe('Options Consistency Smoke Tests:', () => {
         // Arrange.
         const nonStrictMode = false
         const mustBeTrue = true
-        const options: AllUserOptions = {
+        const options: ParseOptions = {
             // IMPORTANT: Below values are set.
             strictMode: nonStrictMode,
             includeMetadata: mustBeTrue,
@@ -116,7 +116,7 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const preservedOptions: AllUserOptions = {
+        const preservedOptions: ParseOptions = {
             ...options,
         }
         expect(!!result.meta).toEqual(true)
@@ -132,7 +132,7 @@ describe('Options Consistency Smoke Tests:', () => {
         // Arrange.
         const nonStrictMode = false
         const mustBeTrue = true
-        const options: AllUserOptions = {
+        const options: ParseOptions = {
             // IMPORTANT: Below values are set.
             strictMode: nonStrictMode,
             includeMetadata: mustBeTrue,
@@ -152,7 +152,7 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const preservedOptions: AllUserOptions = {
+        const preservedOptions: ParseOptions = {
             ...options,
         }
         expect(!!result.meta).toEqual(true)
@@ -179,7 +179,7 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const correctLenientOptions: AllUserOptions = {
+        const correctLenientOptions: ParseOptions = {
             strictMode: isStrictMode,
             failLevel: 'errors', // 'auto' must get normalized to 'ignore-errors' (lenient mode).
             includeMetadata: mustBeTrue,
@@ -204,7 +204,7 @@ describe('Options Consistency Smoke Tests:', () => {
         // Arrange.
         const isStrictMode = true
         const mustBeTrue = true
-        const options: AllUserOptions = {
+        const options: ParseOptions = {
             // IMPORTANT: Below values are set.
             strictMode: isStrictMode,
             includeMetadata: mustBeTrue,
@@ -224,7 +224,7 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const preservedOptions: AllUserOptions = {
+        const preservedOptions: ParseOptions = {
             ...options,
         }
         expect(!!result.meta).toEqual(true)
@@ -240,7 +240,7 @@ describe('Options Consistency Smoke Tests:', () => {
         // Arrange.
         const isStrictMode = true
         const mustBeTrue = true
-        const options: AllUserOptions = {
+        const options: ParseOptions = {
             // IMPORTANT: Below values are set.
             strictMode: isStrictMode,
             includeMetadata: mustBeTrue,
@@ -260,7 +260,7 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const preservedOptions: AllUserOptions = {
+        const preservedOptions: ParseOptions = {
             ...options,
         }
         expect(!!result.meta).toEqual(true)
@@ -289,7 +289,7 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const correctLenientOptions: AllUserOptions = {
+        const correctLenientOptions: ParseOptions = {
             strictMode: nonStrictMode,
             failLevel: 'ignore-errors', // 'auto' must get normalized to 'ignore-errors' (lenient mode).
             includeMetadata: mustBeTrue,
@@ -316,7 +316,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const mustBeTrue = true
         const fileName = 'valid/strict/strict-common-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
-        const options: AllUserOptions = {
+        const options: ParseOptions = {
             // IMPORTANT: Below values are set.
             strictMode: nonStrictMode,
             includeMetadata: mustBeTrue,
@@ -336,7 +336,7 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const preservedOptions: AllUserOptions = {
+        const preservedOptions: ParseOptions = {
             ...options,
         }
         expect(!!result.meta).toEqual(true)
@@ -354,7 +354,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const mustBeTrue = true
         const fileName = 'smoke-fixtures/1-web-server-configuration.smoke.yini'
         const fullPath = path.join(baseDir, fileName)
-        const options: AllUserOptions = {
+        const options: ParseOptions = {
             // IMPORTANT: Below values are set.
             strictMode: nonStrictMode,
             includeMetadata: mustBeTrue,
@@ -374,7 +374,7 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const preservedOptions: AllUserOptions = {
+        const preservedOptions: ParseOptions = {
             ...options,
         }
         expect(!!result.meta).toEqual(true)
@@ -403,7 +403,7 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const correctLenientOptions: AllUserOptions = {
+        const correctLenientOptions: ParseOptions = {
             strictMode: isStrictMode,
             failLevel: 'errors', // 'auto' must get normalized to 'ignore-errors' (lenient mode).
             includeMetadata: mustBeTrue,
@@ -430,7 +430,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const mustBeTrue = true
         const fileName = 'valid/strict/strict-common-config-1.yini'
         const fullPath = path.join(baseDir, fileName)
-        const options: AllUserOptions = {
+        const options: ParseOptions = {
             // IMPORTANT: Below values are set.
             strictMode: isStrictMode,
             includeMetadata: mustBeTrue,
@@ -450,7 +450,7 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const preservedOptions: AllUserOptions = {
+        const preservedOptions: ParseOptions = {
             ...options,
         }
         expect(!!result.meta).toEqual(true)
@@ -468,7 +468,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const mustBeTrue = true
         const fileName = 'smoke-fixtures/1-web-server-configuration.smoke.yini'
         const fullPath = path.join(baseDir, fileName)
-        const options: AllUserOptions = {
+        const options: ParseOptions = {
             // IMPORTANT: Below values are set.
             strictMode: isStrictMode,
             includeMetadata: mustBeTrue,
@@ -488,7 +488,7 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const preservedOptions: AllUserOptions = {
+        const preservedOptions: ParseOptions = {
             ...options,
         }
         expect(!!result.meta).toEqual(true)

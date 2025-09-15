@@ -718,7 +718,7 @@ https://github.com/YINI-lang/YINI-spec
 
 ---
 
-### 🚧 — 11. Public API & Options (AllUserOptions)
+### 🚧 — 11. Public API & Options (ParseOptions)
 
 <table>
   <tr>
