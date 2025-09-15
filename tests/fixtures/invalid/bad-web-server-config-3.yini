@@ -1,0 +1,17 @@
+// Important: This file consists of 3 errors for testing.
+
+// Section named 'Server'.
+^ Server
+host = '0.0.0.0'
+port = 8080
+invalid_token            // ERROR: Unknow keyword
+enable_ssl = false
+log_file = '/var/log/server.log            // ERROR: Invalid string literal, unclosed string
+max_connections = 200
+
+    // Sub-section 'SSL' of 'Server'.
+    ^^ SSL
+    enabled = false
+    #This hash comment is INVALID, due to it's missing a WS after the hash!
+    cert_path = null
+    key_path = null

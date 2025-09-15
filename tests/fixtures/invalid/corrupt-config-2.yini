@@ -1,0 +1,8 @@
+/*
+    Important: This file consists of 2 errors.
+*/
+
+^ Section
+value = 42
+333 = "missing key name"	// (!) Invalid key!
+enableLogging = falsy            // ERROR: Invalid boolean literal 'falsy'.

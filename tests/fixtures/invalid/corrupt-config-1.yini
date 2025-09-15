@@ -1,0 +1,8 @@
+/*
+    corrupt yini
+    In strict should throw error while lenient should pass (given that bailSensitivity = 'auto').
+*/
+
+^ Section
+value = 42
+333 = "missing key name"	// (!) Invalid key!
