@@ -38,7 +38,7 @@ export const buildResultMetadata = (
     // Construct meta data.
     const metadata: ResultMetadata = {
         parserVersion: pkg.version,
-        mode: p.coreOptions.isStrict ? 'strict' : 'lenient',
+        mode: p.coreOptions.rules.mode,
         totalErrors: p.errorHandler.getNumOfErrors(),
         totalWarnings: p.errorHandler.getNumOfWarnings(),
         totalMessages: p.errorHandler.getNumOfAllMessages(),
@@ -131,16 +131,18 @@ export const buildResultMetadata = (
             },
             effectiveOptions: sortObjectKeys({
                 // IMPORTANT: (!) These user options MUST be mapped from coreOptions (to user options).
-                strictMode: p.coreOptions.isStrict,
+                strictMode:
+                    p.coreOptions.rules.mode === 'strict' ? true : false,
                 failLevel: mapLevelKey(p.coreOptions.bailSensitivity),
                 includeMetadata: p.coreOptions.isIncludeMeta,
                 includeDiagnostics: p.coreOptions.isWithDiagnostics,
                 includeTiming: p.coreOptions.isWithTiming,
                 preserveUndefinedInMeta: p.coreOptions.isKeepUndefinedInMeta,
                 suppressWarnings: p.coreOptions.isAvoidWarningsInConsole,
-                requireDocTerminator: p.coreOptions.requireDocTerminator,
-                treatEmptyValueAsNull: p.coreOptions.treatEmptyValueAsNull,
-                onDuplicateKey: p.coreOptions.onDuplicateKey,
+                requireDocTerminator: p.coreOptions.rules.requireDocTerminator,
+                treatEmptyValueAsNull:
+                    p.coreOptions.rules.treatEmptyValueAsNull,
+                onDuplicateKey: p.coreOptions.rules.onDuplicateKey,
             }),
             options: sortObjectKeys(p._meta_userOpts),
         }

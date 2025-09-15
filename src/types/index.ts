@@ -121,6 +121,8 @@ export interface ParseOptions extends BasicOptions {
     requireDocTerminator?: 'optional' | 'warn-if-missing' | 'required'
     treatEmptyValueAsNull?: 'allow' | 'allow-with-warning' | 'disallow'
     onDuplicateKey?: OnDuplicateKey
+    quiet?: boolean // Reduce output (show only errors).
+    silent?: boolean // Suppress all output (even errors, exit code only).
 }
 
 //{ line: 12, column: 8, type: 'Syntax-Error', message1: 'Invalid number' }
@@ -149,7 +151,7 @@ export interface IssuePayload {
  */
 export interface ResultMetadata {
     parserVersion: string
-    mode: 'lenient' | 'strict'
+    mode: 'lenient' | 'strict' | 'custom'
     totalErrors: number
     totalWarnings: number
     totalMessages: number

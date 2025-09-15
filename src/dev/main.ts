@@ -18,7 +18,10 @@ import {
     localAppEnv,
     localNodeEnv,
 } from '../config/env'
-import { ParsedObject, YiniParseResult } from '../types'
+import {
+    getDefaultUserOptions,
+    TNormalizedUserOptions,
+} from '../core/options/parserDefaultOptions'
 import { debugPrint, toPrettyJSON } from '../utils/print'
 import YINI from '../YINI'
 
@@ -357,12 +360,11 @@ if (isProdEnv()) {
         //     ),
         // )
 
-        const result: YiniParseResult = YINI.parseFile(
-            'comprehensive-example.yini',
-            { includeMetadata: true },
-        )
-
-        console.log(toPrettyJSON('' + result.meta))
+        // const result: YiniParseResult = YINI.parseFile(
+        //     'comprehensive-example.yini',
+        //     { includeMetadata: true },
+        // )
+        // console.log(toPrettyJSON('' + result.meta))
 
         // console.log(
         //     toPrettyJSON(
@@ -373,16 +375,24 @@ if (isProdEnv()) {
         //         }),
         //     ),
         // )
-        // const fileName = './tests/fixtures/valid/common/common-config-2.yini'
-        // YINI.parseFile(fileName, {
-        //     strictMode: false,
-        //     failLevel: 'auto',
-        //     includeMetadata: true,
-        // })
+        const fileName = './tests/fixtures/valid/common/common-config-2.yini'
+        const result = YINI.parseFile(fileName, {
+            strictMode: true,
+            treatEmptyValueAsNull: 'allow',
+            failLevel: 'auto',
+            includeMetadata: true,
+            includeDiagnostics: true,
+        })
+        console.log(result)
+
+        const parserOptions: any = getDefaultUserOptions('lenient')
+        debugPrint('parserOptions:')
+        debugPrint(parserOptions)
+
         // const fileName =
         //     './tests/fixtures/invalid/bad-user-profile-config-2.yini'
         // YINI.parseFile(fileName, {
-        //     strictMode: true,
+        //     strictMode: false,
         //     failLevel: 'auto',
         //     includeMetadata: true,
         // })

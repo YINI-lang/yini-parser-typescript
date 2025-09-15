@@ -190,7 +190,7 @@ export const runPipeline = (
 ): ParsedObject | YiniParseResult => {
     debugPrint()
     debugPrint('-> Entered parseMain(..) in parseEntry')
-    debugPrint('           isStrict mode = ' + coreOptions.isStrict)
+    debugPrint('           isStrict mode = ' + coreOptions.rules.mode)
     debugPrint('         bailSensitivity = ' + coreOptions.bailSensitivity)
     debugPrint('           isIncludeMeta = ' + coreOptions.isIncludeMeta)
     debugPrint('       isWithDiagnostics = ' + coreOptions.isWithDiagnostics)
@@ -201,11 +201,13 @@ export const runPipeline = (
     debugPrint(
         'isAvoidWarningsInConsole = ' + coreOptions.isAvoidWarningsInConsole,
     )
-    debugPrint('    requireDocTerminator = ' + coreOptions.requireDocTerminator)
     debugPrint(
-        '   treatEmptyValueAsNull = ' + coreOptions.treatEmptyValueAsNull,
+        '    requireDocTerminator = ' + coreOptions.rules.requireDocTerminator,
     )
-    debugPrint('          onDuplicateKey = ' + coreOptions.onDuplicateKey)
+    debugPrint(
+        '   treatEmptyValueAsNull = ' + coreOptions.rules.treatEmptyValueAsNull,
+    )
+    debugPrint('          onDuplicateKey = ' + coreOptions.rules.onDuplicateKey)
     debugPrint()
     debugPrint('  runtimeInfo.sourceType = ' + runtimeInfo.sourceType)
     debugPrint('    runtimeInfo.fileName = ' + runtimeInfo.fileName)
@@ -400,7 +402,7 @@ export const runPipeline = (
     isDebug() && console.debug(finalJSResult)
     debugPrint()
 
-    if (coreOptions.isStrict) {
+    if (coreOptions.rules.mode === 'strict') {
         // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
         errorHandler.pushOrBail(
             null,
@@ -432,7 +434,7 @@ export const runPipeline = (
 
     debugPrint('getNumOfErrors(): ' + errorHandler.getNumOfErrors())
     if (errorHandler.getNumOfErrors()) {
-        console.log()
+        // console.log()
         console.log(
             'Parsing is complete, but some problems were detected. Please see the errors above for details.',
         )

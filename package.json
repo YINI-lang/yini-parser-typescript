@@ -47,8 +47,9 @@
     "scripts": {
         "start": "npm run build && node dist/index.js",
         "start:debug": "npm run start -- isDebug=1",
-        "start:dev": "cross-env NODE_ENV=development APP_ENV=local ts-node src/dev/main.ts isDev=1",
-        "start:dev:debug": "cross-env npm run start:dev -- isDebug=1",
+        "start:main": "cross-env NODE_ENV=development APP_ENV=local ts-node src/dev/main.ts",
+        "start:main:dev": "cross-env npm run start:main -- isDev=1",
+        "start:main:dev:debug": "cross-env npm run start:main:dev -- isDebug=1",
         "start-w-clean": "npm run tsc && npm run clean:ts-js && npm run start:dev",
         "test": "cross-env NODE_ENV=test APP_ENV=local jest --bail --verbose --runInBand",
         "test:debug": "cross-env npm run test -- --isDebug=1",

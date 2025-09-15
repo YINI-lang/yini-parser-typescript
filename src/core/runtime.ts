@@ -16,7 +16,7 @@ import {
     isOptionsObjectForm,
     toCoreOptions,
 } from './options/normalizeOptions'
-import { getDefaultOptions } from './options/parserOptionsConstants'
+import { getDefaultUserOptions } from './options/parserDefaultOptions'
 import { runPipeline } from './pipeline'
 
 /**
@@ -90,7 +90,7 @@ export class YiniRuntime {
         }
 
         const mode: TParserMode = inferModeFromArgs(arg2)
-        const defaultOptions = getDefaultOptions(mode)
+        const defaultOptions = getDefaultUserOptions(mode)
 
         // Normalize to a fully-required options object.
         let userOpts: Required<ParseOptions>
@@ -136,7 +136,7 @@ export class YiniRuntime {
             userOpts.failLevel,
         )
 
-        const coreOpts: IParseCoreOptions = toCoreOptions(level, userOpts)
+        const coreOpts: IParseCoreOptions = toCoreOptions(userOpts, level)
 
         debugPrint()
         debugPrint('==== Call runPipeline(..) ==========================')
@@ -200,7 +200,7 @@ export class YiniRuntime {
         }
 
         const mode: TParserMode = inferModeFromArgs(arg2)
-        const defaultOptions = getDefaultOptions(mode)
+        const defaultOptions = getDefaultUserOptions(mode)
 
         // Normalize to a fully-required options object.
         let userOpts: Required<ParseOptions>

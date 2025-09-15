@@ -1,10 +1,15 @@
 import { ParseOptions } from '../../types'
 import { TParserMode } from '../internalTypes'
 
-export const getDefaultOptions = (mode: TParserMode) =>
-    mode === 'strict' ? DEFAULT_STRICT_OPTS : DEFAULT_LENIENT_OPTS
+// export const getDefaultUserOptions = (mode: TParserMode): ParseOptions =>
+// export const getDefaultUserOptions = (mode: TParserMode) =>
+//     mode === 'strict' ? DEFAULT_STRICT_OPTS : DEFAULT_LENIENT_OPTS
 
-export type NormalizedOptions = Required<
+export const getDefaultUserOptions = (mode: TParserMode) =>
+    mode === 'strict' ? { ...DEFAULT_STRICT_OPTS } : { ...DEFAULT_LENIENT_OPTS }
+
+export type TNormalizedUserOptions = Required<
+    // type TNormalizedUserOptions = Required<
     Pick<
         ParseOptions,
         | 'strictMode'
@@ -17,11 +22,13 @@ export type NormalizedOptions = Required<
         | 'requireDocTerminator'
         | 'treatEmptyValueAsNull'
         | 'onDuplicateKey'
+        | 'quiet'
+        | 'silent'
     >
 >
 
 // Base (mode-agnostic) defaults
-export const BASE_DEFAULTS: NormalizedOptions = {
+const BASE_DEFAULTS: TNormalizedUserOptions = {
     strictMode: false,
     failLevel: 'auto',
     includeMetadata: false,
@@ -32,9 +39,11 @@ export const BASE_DEFAULTS: NormalizedOptions = {
     requireDocTerminator: 'optional',
     treatEmptyValueAsNull: 'allow-with-warning',
     onDuplicateKey: 'error',
+    quiet: false,
+    silent: false,
 }
 
-export const DEFAULT_LENIENT_OPTS: NormalizedOptions = {
+const DEFAULT_LENIENT_OPTS: TNormalizedUserOptions = {
     ...BASE_DEFAULTS,
     strictMode: false,
     failLevel: 'ignore-errors',
@@ -44,7 +53,7 @@ export const DEFAULT_LENIENT_OPTS: NormalizedOptions = {
     onDuplicateKey: 'warn-and-keep-first',
 }
 
-export const DEFAULT_STRICT_OPTS: NormalizedOptions = {
+const DEFAULT_STRICT_OPTS: TNormalizedUserOptions = {
     ...BASE_DEFAULTS,
     strictMode: true,
     failLevel: 'errors',

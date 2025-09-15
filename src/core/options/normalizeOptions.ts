@@ -2,25 +2,34 @@ import { isDebug, isDev } from '../../config/env'
 import { ParseOptions } from '../../types'
 import {
     IParseCoreOptions,
+    IParseRuleOptions,
     TBailSensitivityLevel,
     TParserMode,
 } from '../internalTypes'
+import { mapFailLevelToBail } from './failLevel'
 
 export const toCoreOptions = (
-    bailLevel: TBailSensitivityLevel,
     userOpts: Required<ParseOptions>,
+    bailLevel?: TBailSensitivityLevel,
 ): IParseCoreOptions => {
+    const level: TBailSensitivityLevel =
+        bailLevel ?? mapFailLevelToBail(userOpts.strictMode, userOpts.failLevel)
+
     return {
-        isStrict: userOpts.strictMode,
-        bailSensitivity: bailLevel,
+        rules: {
+            mode: userOpts.strictMode ? 'strict' : 'lenient',
+            requireDocTerminator: userOpts.requireDocTerminator,
+            treatEmptyValueAsNull: userOpts.treatEmptyValueAsNull,
+            onDuplicateKey: userOpts.onDuplicateKey,
+        },
+        bailSensitivity: level,
         isIncludeMeta: userOpts.includeMetadata,
         isWithDiagnostics: isDev() || isDebug() || userOpts.includeDiagnostics,
         isWithTiming: isDev() || isDebug() || userOpts.includeTiming,
         isKeepUndefinedInMeta: isDebug() || userOpts.preserveUndefinedInMeta,
         isAvoidWarningsInConsole: userOpts.suppressWarnings,
-        requireDocTerminator: userOpts.requireDocTerminator,
-        treatEmptyValueAsNull: userOpts.treatEmptyValueAsNull,
-        onDuplicateKey: userOpts.onDuplicateKey,
+        isQuiet: userOpts.quiet,
+        isSilent: userOpts.silent,
     }
 }
 
@@ -40,7 +49,9 @@ export const isOptionsObjectForm = (v: unknown): v is ParseOptions => {
             'suppressWarnings' in (v as any) ||
             'requireDocTerminator' in (v as any) ||
             'treatEmptyValueAsNull' in (v as any) ||
-            'onDuplicateKey' in (v as any))
+            'onDuplicateKey' in (v as any) ||
+            'quiet' in (v as any) ||
+            'silent' in (v as any))
     )
 }
 
@@ -60,4 +71,19 @@ export const inferModeFromArgs = (
         }
     }
     return 'lenient'
+}
+
+export const inferModeFromRules = (
+    coreOptions: IParseCoreOptions,
+): 'custom' | 'strict' | 'lenient' => {
+    const rules: IParseRuleOptions = coreOptions.rules
+
+    if (rules.onDuplicateKey === 'error') {
+        if (rules.treatEmptyValueAsNull == 'disallow') {
+            return 'strict'
+        }
+
+        return 'lenient'
+    }
+    return 'custom'
 }
