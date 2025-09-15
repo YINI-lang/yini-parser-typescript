@@ -786,7 +786,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                         ctx,
                         'Syntax-Warning',
                         `Empty value treated as null for key '${resultKey}'.`,
-                        `An empty value after '=' was encountered. Per 'treatEmptyValueAsNull = allow-with-warning', it is interpreted as null.`,
+                        `An empty value after '=' was encountered. Per 'treatEmptyValueAsNull = allow-with-warning', interpreted as null.`,
                         `If you intended null, write it explicitly: ${resultKey} = null. Otherwise provide a non-empty value or set 'treatEmptyValueAsNull' to 'disallow'.`,
                     )
                     break
@@ -1197,7 +1197,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             'Syntax-Error',
             'Invalid or malformed member (key-value pair) found.',
             `Offending text: ${ctx?.getText()?.trim()}`,
-            'Members has the form: <key> = <value>, where <key> is a name/identifier and <value> is a value/literal.',
+            'Members must have the form: <key> = <value>, where <key> is a name/identifier and <value> is a value/literal.',
         )
         return null
     }
