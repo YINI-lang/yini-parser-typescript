@@ -1,6 +1,6 @@
 import { isDebug, isDev } from './config/env'
 import { ErrorDataHandler } from './core/errorDataHandler'
-import { isOptionsObjectForm } from './core/options/normalizeOptions'
+import { isOptionsObjectForm } from './core/options/optionsFunctions'
 import { YiniRuntime } from './core/runtime'
 import {
     ParsedObject,
@@ -122,8 +122,10 @@ export default class YINI {
      *   the returned metadata. Requires: `includeMetadata = true`. Ignored otherwise.
      * @param options.requireDocTerminator - Controls whether a document terminator is required.
      *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
-     * @param options.strictMode - Enable stricter syntax and well-formedness checks according
-     *   to the spec (exact rules are implementation-defined).
+     * @param options.strictMode - Sets the baseline ruleset (true = strict, false = lenient).
+     *   This is only a starting point: rule-specific options (e.g., `treatEmptyValueAsNull`,
+     *   `onDuplicateKey`, etc.) can override parts of that ruleset. If any overrides are given,
+     *   the effective mode becomes **custom** rather than purely strict/lenient.
      * @param options.suppressWarnings - Suppress warnings sent to the console/log.
      *   Does not affect warnings included in returned metadata.
      * @param options.treatEmptyValueAsNull - How to treat an explicitly empty value on the
@@ -225,7 +227,7 @@ export default class YINI {
         // )
         ////////////////
 
-        // const coreOpts: IParseCoreOptions = toCoreOptions(level, userOpts)
+        // const coreOpts: IParseCoreOptions = toCoreOptions(userOpts,level)
 
         debugPrint()
         debugPrint(
@@ -324,8 +326,10 @@ export default class YINI {
      *   the returned metadata. Requires: `includeMetadata = true`. Ignored otherwise.
      * @param options.requireDocTerminator - Controls whether a document terminator is required.
      *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
-     * @param options.strictMode - Enable stricter syntax and well-formedness checks according
-     *   to the spec (exact rules are implementation-defined).
+     * @param options.strictMode - Sets the baseline ruleset (true = strict, false = lenient).
+     *   This is only a starting point: rule-specific options (e.g., `treatEmptyValueAsNull`,
+     *   `onDuplicateKey`, etc.) can override parts of that ruleset. If any overrides are given,
+     *   the effective mode becomes **custom** rather than purely strict/lenient.
      * @param options.suppressWarnings - Suppress warnings sent to the console/log.
      *   Does not affect warnings included in returned metadata.
      * @param options.treatEmptyValueAsNull - How to treat an explicitly empty value on the

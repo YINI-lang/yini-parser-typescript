@@ -18,8 +18,16 @@ import {
     localAppEnv,
     localNodeEnv,
 } from '../config/env'
-import { ParsedObject, YiniParseResult } from '../types'
-import { debugPrint, toPrettyJSON } from '../utils/print'
+import {
+    getDefaultUserOptions,
+    TNormalizedUserOptions,
+} from '../core/options/defaultParserOptions'
+import { toCoreOptions } from '../core/options/optionsFunctions'
+import {
+    matchModeFromCoreOptions,
+    matchModeFromParseOptions,
+} from '../core/parsingRules/modeFromRulesMatcher'
+import { debugPrint, printObject, toPrettyJSON } from '../utils/print'
 import YINI from '../YINI'
 
 debugPrint()
@@ -357,12 +365,11 @@ if (isProdEnv()) {
         //     ),
         // )
 
-        const result: YiniParseResult = YINI.parseFile(
-            'comprehensive-example.yini',
-            { includeMetadata: true },
-        )
-
-        console.log(toPrettyJSON('' + result.meta))
+        // const result: YiniParseResult = YINI.parseFile(
+        //     'comprehensive-example.yini',
+        //     { includeMetadata: true },
+        // )
+        // console.log(toPrettyJSON('' + result.meta))
 
         // console.log(
         //     toPrettyJSON(
@@ -373,16 +380,37 @@ if (isProdEnv()) {
         //         }),
         //     ),
         // )
-        // const fileName = './tests/fixtures/valid/common/common-config-2.yini'
-        // YINI.parseFile(fileName, {
-        //     strictMode: false,
-        //     failLevel: 'auto',
-        //     includeMetadata: true,
-        // })
+        const fileName = './tests/fixtures/valid/common/common-config-2.yini'
+        const result = YINI.parseFile(fileName, {
+            strictMode: true,
+            treatEmptyValueAsNull: 'allow',
+            failLevel: 'auto',
+            includeMetadata: true,
+            includeDiagnostics: true,
+        })
+        printObject(result)
+
+        // let parserOptions: any = getDefaultUserOptions('lenient')
+        // debugPrint('** parserOptions: (lenient)')
+        // isDebug() && printObject(parserOptions)
+        // isDebug() &&
+        //     console.log(
+        //         'derived mode = ' + matchModeFromParseOptions(parserOptions),
+        //     )
+
+        // parserOptions = getDefaultUserOptions('strict')
+        // debugPrint('** parserOptions: (strict)')
+        // isDebug() && printObject(parserOptions)
+        // isDebug() &&
+        //     console.log(
+        //         'derived mode = ' +
+        //             matchModeFromCoreOptions(toCoreOptions(parserOptions)),
+        //     )
+
         // const fileName =
         //     './tests/fixtures/invalid/bad-user-profile-config-2.yini'
         // YINI.parseFile(fileName, {
-        //     strictMode: true,
+        //     strictMode: false,
         //     failLevel: 'auto',
         //     includeMetadata: true,
         // })

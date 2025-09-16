@@ -12,11 +12,20 @@
  * prefixed with `T` or `I`.
  */
 
-import { OnDuplicateKey, PreferredFailLevel } from '../types'
+import {
+    DocumentTerminatorRule,
+    DuplicateKeyPolicy,
+    EmptyValueRule,
+    OnDuplicateKey,
+    PreferredFailLevel,
+} from '../types'
 
 // --- Internal Types ----------------------------------------------------------------
 
+//@todo Rename to TParsingMode (to avoid confusion with grammar's (ANTLR's) "parser rules").
 export type TParserMode = 'lenient' | 'strict'
+export type TExactMode = 'custom' | TParserMode // 'custom' when no exact match (after rules have been overridden).
+//export type TExtendedMode = TParserMode | 'custom' | 'pedantic' | 'paranoid'
 
 export type TSourceType = 'File' | 'Inline'
 export type TSubjectType = 'None/Ignore' | TSourceType
@@ -132,24 +141,28 @@ export interface IRuntimeInfo extends IMetaBaseInfo {
 */
 // Internal engine option names, most if not all SHOULD be prefixed with 'is' or 'has'.
 export interface IParseCoreOptions {
-    isStrict: boolean
+    rules: IParseRuleOptions
     bailSensitivity: TBailSensitivityLevel // 0 | 1 | 2
     isIncludeMeta: boolean // Include meta data along the returned result.
     isWithDiagnostics: boolean // (Requires isIncludeMeta) Include diagnostics in meta data, when isIncludeMeta.
     isWithTiming: boolean // (Requires isIncludeMeta) Include timing data of the different phases in meta data, when isIncludeMeta.
     isKeepUndefinedInMeta: boolean // (Requires isIncludeMeta) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
-    isAvoidWarningsInConsole: boolean // Suppress warnings in console (does not affect warnings in meta data).
-    // rules?: {
-    requireDocTerminator: 'optional' | 'warn-if-missing' | 'required'
-    treatEmptyValueAsNull: 'allow' | 'allow-with-warning' | 'disallow'
-    onDuplicateKey: OnDuplicateKey
-    // }
-    isQuiet?: boolean // Reduce output (show only errors).
-    isSilent?: boolean // Suppress all output (even errors, exit code only).
+    isAvoidWarningsInConsole: boolean // Suppress warnings (make quiet) in console (does not affect warnings in meta data).
+    // isQuiet: boolean // Dup of suppressWarnings! Reduce output (show only errors).
+    isSilent: boolean // Suppress all output (even errors, exit code only).
 }
 
-//@todo
-//interface IParseCoreRuleOptions {}
+// Parsing/validation rules (these affect the grammar/semantics).
+//@todo Rename to IParsingRuleOptions (to avoid confusion with grammar's (ANTLR's) "parser rules").
+export interface IParseRuleOptions {
+    initialMode: 'custom' | TParserMode
+    // onDuplicateKey: OnDuplicateKey
+    onDuplicateKey: DuplicateKeyPolicy
+    // requireDocTerminator: 'optional' | 'warn-if-missing' | 'required'
+    requireDocTerminator: DocumentTerminatorRule
+    // treatEmptyValueAsNull: 'allow' | 'allow-with-warning' | 'disallow'
+    treatEmptyValueAsNull: EmptyValueRule
+}
 
 export interface IYiniAST extends IMetaBaseInfo {
     root: IYiniSection // Implicit root per spec.

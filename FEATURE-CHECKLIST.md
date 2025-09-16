@@ -802,6 +802,16 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
 
   <tr>
+    <td><b>rules.onDuplicateKey</b></td>
+    <td>🚧</td>
+    <td><code>'error' | 'warn-and-keep-first' | 'warn-and-overwrite' | 'keep-first' | 'overwrite'</code></td>
+    <td>✅</td>
+    <td>🚧</td>
+    <td>🚧</td>
+    <td>“overwrite” = keep last</td>
+  </tr>
+
+  <tr>
     <td><b>rules.requireDocTerminator</b></td>
     <td>🚧</td>
     <td><code>'optional' | 'warn' | 'error'</code> — require <code>/END</code> at EOF</td>
@@ -821,15 +831,6 @@ https://github.com/YINI-lang/YINI-spec
     <td>Warning path implemented; verify messaging</td>
   </tr>
 
-  <tr>
-    <td><b>rules.onDuplicateKey</b></td>
-    <td>🚧</td>
-    <td><code>'error' | 'warn-and-keep-first' | 'warn-and-overwrite' | 'keep-first' | 'overwrite'</code></td>
-    <td>✅</td>
-    <td>🚧</td>
-    <td>🚧</td>
-    <td>“overwrite” = keep last</td>
-  </tr>
 </table>
 
 ---

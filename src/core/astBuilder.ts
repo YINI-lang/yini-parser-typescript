@@ -237,8 +237,8 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         this.options = options
 
         this.errorHandler = errorHandler
-        this.isStrict = options.isStrict
-        this.onDuplicateKey = options.onDuplicateKey // Different setting depending on mode.
+        this.isStrict = options?.rules?.initialMode === 'strict'
+        this.onDuplicateKey = options?.rules?.onDuplicateKey ?? 'error' // Different setting depending on mode.
 
         // if (options.isStrict) {
         //     this.onDuplicateKey = 'error'
@@ -409,9 +409,9 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         // the '/END' terminator at the end of the document becomes required.
         if (
             !this.ast.terminatorSeen &&
-            this.options.requireDocTerminator === 'required'
+            this.options.rules.requireDocTerminator === 'required'
         ) {
-            const msgWhat = `Missing '/END' at end of document (option requireDocTerminator is ${this.options.requireDocTerminator}).`
+            const msgWhat = `Missing '/END' at end of document (option requireDocTerminator is ${this.options.rules.requireDocTerminator}).`
             const msgWhy = `The terminator '/END' (case insensitive) is required and must appear at the end of the document.`
             const msgHint = `This is option can be overriden by the option requireDocTerminator.`
 
@@ -425,9 +425,9 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             )
         } else if (
             !this.ast.terminatorSeen &&
-            this.options.requireDocTerminator === 'warn-if-missing'
+            this.options.rules.requireDocTerminator === 'warn-if-missing'
         ) {
-            const msgWhat = `Missing '/END' at end of document (option requireDocTerminator is ${this.options.requireDocTerminator}).`
+            const msgWhat = `Missing '/END' at end of document (option requireDocTerminator is ${this.options.rules.requireDocTerminator}).`
             const msgWhy = `The terminator '/END' (case insensitive) might be missing at the end of the document.`
             const msgHint = `This is option can be overriden by the option requireDocTerminator.`
 
@@ -767,7 +767,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         if (!rawValue) {
             // treatEmptyValueAsNull = 'allow' (default in lenient mode, empty value => Null in lenient mode)
             // if (!this.isStrict) {
-            switch (this.options.treatEmptyValueAsNull) {
+            switch (this.options.rules.treatEmptyValueAsNull) {
                 case 'allow':
                     // Lenient mode: implicit null, no warning (treatEmptyValueAsNull = 'allow').
                     valueNode = makeScalarValue(

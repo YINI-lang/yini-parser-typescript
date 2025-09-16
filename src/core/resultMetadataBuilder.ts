@@ -10,7 +10,9 @@ import {
     IRuntimeInfo,
     IYiniAST,
     TBailSensitivityLevel,
+    TExactMode,
 } from './internalTypes'
+import { matchModeFromCoreOptions } from './parsingRules/modeFromRulesMatcher'
 
 // Helper interface just to bundle inputs for a single call at one time.
 export interface IBuildResultMetadataParams {
@@ -38,7 +40,7 @@ export const buildResultMetadata = (
     // Construct meta data.
     const metadata: ResultMetadata = {
         parserVersion: pkg.version,
-        mode: p.coreOptions.isStrict ? 'strict' : 'lenient',
+        mode: p.coreOptions.rules.initialMode,
         totalErrors: p.errorHandler.getNumOfErrors(),
         totalWarnings: p.errorHandler.getNumOfWarnings(),
         totalMessages: p.errorHandler.getNumOfAllMessages(),
@@ -66,7 +68,7 @@ export const buildResultMetadata = (
             // listCount: null,
             sectionNamePaths: p.ast.sectionNamePaths,
         },
-        metaSchemaVersion: '1.1.0',
+        metaSchemaVersion: '1.1.1',
     }
 
     // Attach optional diagnostics.
@@ -94,6 +96,10 @@ export const buildResultMetadata = (
             }
             return null
         }
+
+        const effectiveMode: TExactMode = matchModeFromCoreOptions(
+            p.coreOptions,
+        )
 
         metadata.diagnostics = {
             failLevel: {
@@ -130,17 +136,19 @@ export const buildResultMetadata = (
                 },
             },
             effectiveOptions: sortObjectKeys({
+                effectiveMode: effectiveMode, // Appended.
                 // IMPORTANT: (!) These user options MUST be mapped from coreOptions (to user options).
-                strictMode: p.coreOptions.isStrict,
+                strictMode: effectiveMode === 'strict' ? true : false,
                 failLevel: mapLevelKey(p.coreOptions.bailSensitivity),
                 includeMetadata: p.coreOptions.isIncludeMeta,
                 includeDiagnostics: p.coreOptions.isWithDiagnostics,
                 includeTiming: p.coreOptions.isWithTiming,
                 preserveUndefinedInMeta: p.coreOptions.isKeepUndefinedInMeta,
                 suppressWarnings: p.coreOptions.isAvoidWarningsInConsole,
-                requireDocTerminator: p.coreOptions.requireDocTerminator,
-                treatEmptyValueAsNull: p.coreOptions.treatEmptyValueAsNull,
-                onDuplicateKey: p.coreOptions.onDuplicateKey,
+                requireDocTerminator: p.coreOptions.rules.requireDocTerminator,
+                treatEmptyValueAsNull:
+                    p.coreOptions.rules.treatEmptyValueAsNull,
+                onDuplicateKey: p.coreOptions.rules.onDuplicateKey,
             }),
             options: sortObjectKeys(p._meta_userOpts),
         }

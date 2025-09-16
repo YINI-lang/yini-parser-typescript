@@ -2,25 +2,37 @@ import { isDebug, isDev } from '../../config/env'
 import { ParseOptions } from '../../types'
 import {
     IParseCoreOptions,
+    IParseRuleOptions,
     TBailSensitivityLevel,
     TParserMode,
 } from '../internalTypes'
+import { mapFailLevelToBail } from './failLevel'
 
+/**
+ * Map user parse options to core options.
+ */
 export const toCoreOptions = (
-    bailLevel: TBailSensitivityLevel,
     userOpts: Required<ParseOptions>,
+    bailLevel?: TBailSensitivityLevel,
 ): IParseCoreOptions => {
+    const level: TBailSensitivityLevel =
+        bailLevel ?? mapFailLevelToBail(userOpts.strictMode, userOpts.failLevel)
+
     return {
-        isStrict: userOpts.strictMode,
-        bailSensitivity: bailLevel,
+        rules: {
+            initialMode: userOpts.strictMode ? 'strict' : 'lenient',
+            onDuplicateKey: userOpts.onDuplicateKey,
+            requireDocTerminator: userOpts.requireDocTerminator,
+            treatEmptyValueAsNull: userOpts.treatEmptyValueAsNull,
+        },
+        bailSensitivity: level,
         isIncludeMeta: userOpts.includeMetadata,
         isWithDiagnostics: isDev() || isDebug() || userOpts.includeDiagnostics,
         isWithTiming: isDev() || isDebug() || userOpts.includeTiming,
         isKeepUndefinedInMeta: isDebug() || userOpts.preserveUndefinedInMeta,
         isAvoidWarningsInConsole: userOpts.suppressWarnings,
-        requireDocTerminator: userOpts.requireDocTerminator,
-        treatEmptyValueAsNull: userOpts.treatEmptyValueAsNull,
-        onDuplicateKey: userOpts.onDuplicateKey,
+        // isQuiet: userOpts.quiet, // Dup of suppressWarnings!
+        isSilent: userOpts.silent,
     }
 }
 
@@ -38,9 +50,11 @@ export const isOptionsObjectForm = (v: unknown): v is ParseOptions => {
             'includeTiming' in (v as any) ||
             'preserveUndefinedInMeta' in (v as any) ||
             'suppressWarnings' in (v as any) ||
+            'onDuplicateKey' in (v as any) ||
             'requireDocTerminator' in (v as any) ||
             'treatEmptyValueAsNull' in (v as any) ||
-            'onDuplicateKey' in (v as any))
+            // 'quiet' in (v as any) || // Dup of suppressWarnings!
+            'silent' in (v as any))
     )
 }
 
