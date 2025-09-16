@@ -19,9 +19,9 @@ export type TNormalizedUserOptions = Required<
         | 'includeTiming'
         | 'preserveUndefinedInMeta'
         | 'suppressWarnings'
+        | 'onDuplicateKey'
         | 'requireDocTerminator'
         | 'treatEmptyValueAsNull'
-        | 'onDuplicateKey'
         | 'quiet'
         | 'silent'
     >
@@ -36,9 +36,9 @@ const BASE_DEFAULTS: TNormalizedUserOptions = {
     includeTiming: false,
     preserveUndefinedInMeta: false,
     suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
+    onDuplicateKey: 'error',
     requireDocTerminator: 'optional',
     treatEmptyValueAsNull: 'allow-with-warning',
-    onDuplicateKey: 'error',
     quiet: false,
     silent: false,
 }
@@ -49,9 +49,9 @@ const DEFAULT_LENIENT_OPTS: TNormalizedUserOptions = {
     failLevel: 'ignore-errors',
     // suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
     // Below are options for pure rules:
+    onDuplicateKey: 'warn-and-keep-first',
     requireDocTerminator: 'optional',
     treatEmptyValueAsNull: 'allow-with-warning',
-    onDuplicateKey: 'warn-and-keep-first',
 }
 
 const DEFAULT_STRICT_OPTS: TNormalizedUserOptions = {
@@ -60,7 +60,7 @@ const DEFAULT_STRICT_OPTS: TNormalizedUserOptions = {
     failLevel: 'errors',
     // suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
     // Below are options for pure rules:
+    onDuplicateKey: 'error',
     requireDocTerminator: 'optional',
     treatEmptyValueAsNull: 'disallow',
-    onDuplicateKey: 'error',
 }

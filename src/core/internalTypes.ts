@@ -17,6 +17,7 @@ import { OnDuplicateKey, PreferredFailLevel } from '../types'
 // --- Internal Types ----------------------------------------------------------------
 
 export type TParserMode = 'lenient' | 'strict'
+export type TExactMode = 'custom' | TParserMode // 'custom' when no exact match (after rules have been overridden).
 
 export type TSourceType = 'File' | 'Inline'
 export type TSubjectType = 'None/Ignore' | TSourceType
@@ -145,9 +146,9 @@ export interface IParseCoreOptions {
 // Parsing/validation rules (these affect the grammar/semantics).
 export interface IParseRuleOptions {
     initialMode: 'custom' | TParserMode
+    onDuplicateKey: OnDuplicateKey
     requireDocTerminator: 'optional' | 'warn-if-missing' | 'required'
     treatEmptyValueAsNull: 'allow' | 'allow-with-warning' | 'disallow'
-    onDuplicateKey: OnDuplicateKey
 }
 
 export interface IYiniAST extends IMetaBaseInfo {

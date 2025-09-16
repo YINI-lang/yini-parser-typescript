@@ -21,9 +21,9 @@ export const toCoreOptions = (
     return {
         rules: {
             initialMode: userOpts.strictMode ? 'strict' : 'lenient',
+            onDuplicateKey: userOpts.onDuplicateKey,
             requireDocTerminator: userOpts.requireDocTerminator,
             treatEmptyValueAsNull: userOpts.treatEmptyValueAsNull,
-            onDuplicateKey: userOpts.onDuplicateKey,
         },
         bailSensitivity: level,
         isIncludeMeta: userOpts.includeMetadata,
@@ -50,9 +50,9 @@ export const isOptionsObjectForm = (v: unknown): v is ParseOptions => {
             'includeTiming' in (v as any) ||
             'preserveUndefinedInMeta' in (v as any) ||
             'suppressWarnings' in (v as any) ||
+            'onDuplicateKey' in (v as any) ||
             'requireDocTerminator' in (v as any) ||
             'treatEmptyValueAsNull' in (v as any) ||
-            'onDuplicateKey' in (v as any) ||
             'quiet' in (v as any) ||
             'silent' in (v as any))
     )
@@ -74,19 +74,4 @@ export const inferModeFromArgs = (
         }
     }
     return 'lenient'
-}
-
-export const inferModeFromRules = (
-    coreOptions: IParseCoreOptions,
-): 'custom' | 'strict' | 'lenient' => {
-    const rules: IParseRuleOptions = coreOptions.rules
-
-    if (rules.onDuplicateKey === 'error') {
-        if (rules.treatEmptyValueAsNull == 'disallow') {
-            return 'strict'
-        }
-
-        return 'lenient'
-    }
-    return 'custom'
 }

@@ -201,13 +201,13 @@ export const runPipeline = (
     debugPrint(
         'isAvoidWarningsInConsole = ' + coreOptions.isAvoidWarningsInConsole,
     )
+    debugPrint('          onDuplicateKey = ' + coreOptions.rules.onDuplicateKey)
     debugPrint(
         '    requireDocTerminator = ' + coreOptions.rules.requireDocTerminator,
     )
     debugPrint(
         '   treatEmptyValueAsNull = ' + coreOptions.rules.treatEmptyValueAsNull,
     )
-    debugPrint('          onDuplicateKey = ' + coreOptions.rules.onDuplicateKey)
     debugPrint()
     debugPrint('  runtimeInfo.sourceType = ' + runtimeInfo.sourceType)
     debugPrint('    runtimeInfo.fileName = ' + runtimeInfo.fileName)
