@@ -1,24 +1,27 @@
 import { ParseOptions } from 'querystring'
 import { debugPrint } from '../../utils/print'
-import { inferModeFromRules, toCoreOptions } from './normalizeOptions'
+import { TParserMode } from '../internalTypes'
 import {
     getDefaultUserOptions,
     TNormalizedUserOptions,
-} from './parserDefaultOptions'
+} from './defaultParserOptions'
+import { inferModeFromRules, toCoreOptions } from './normalizeOptions'
 
 /**
  * splitLines(..) Tests.
  */
 describe('normalizeOptions Unit Tests:', () => {
-    test('1. splitLines(..) test.', () => {
+    test(`1. Default 'lenient' options should be EQ to inferModeFromRules(..) test.`, () => {
         // Arrange.
+        const mode: TParserMode = 'lenient'
         const parserOptions: TNormalizedUserOptions =
-            getDefaultUserOptions('lenient')
+            getDefaultUserOptions(mode)
         // Act.
-        const result = inferModeFromRules(toCoreOptions(parserOptions))
+        const resultMode = inferModeFromRules(toCoreOptions(parserOptions))
+        debugPrint('result = ' + resultMode)
         debugPrint('parserOptions:')
         debugPrint(parserOptions)
         // Assert.
-        expect(result).toEqual('lenient')
+        expect(resultMode).toEqual(mode)
     })
 })

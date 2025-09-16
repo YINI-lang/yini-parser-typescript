@@ -10,13 +10,13 @@ import {
     TBailSensitivityLevel,
     TParserMode,
 } from './internalTypes'
+import { getDefaultUserOptions } from './options/defaultParserOptions'
 import { mapFailLevelToBail } from './options/failLevel'
 import {
     inferModeFromArgs,
     isOptionsObjectForm,
     toCoreOptions,
 } from './options/normalizeOptions'
-import { getDefaultUserOptions } from './options/parserDefaultOptions'
 import { runPipeline } from './pipeline'
 
 /**

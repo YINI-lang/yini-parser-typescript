@@ -102,8 +102,10 @@ export interface BasicOptions {
  *   the returned metadata. Requires: `includeMetadata = true`. Ignored otherwise.
  * @param requireDocTerminator - Controls whether a document terminator is required.
  *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
- * @param strictMode - Enable stricter syntax and well-formedness checks according
- *   to the spec (exact rules are implementation-defined).
+ * @param strictMode - Sets the baseline ruleset (true = strict, false = lenient).
+ *   This is only a starting point: rule-specific options (e.g., `treatEmptyValueAsNull`,
+ *   `onDuplicateKey`, etc.) can override parts of that ruleset. If any overrides are given,
+ *   the effective mode becomes **custom** rather than purely strict/lenient.
  * @param suppressWarnings - Suppress warnings sent to the console/log.
  *   Does not affect warnings included in returned metadata.
  * @param treatEmptyValueAsNull - How to treat an explicitly empty value on the

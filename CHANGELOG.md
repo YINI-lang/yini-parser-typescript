@@ -1,9 +1,14 @@
 # CHANGELOG
 
 ## --dev/uppcoming--
-- Renamed some public (user facing) interfaces to be more ergonomic for end users:
+- **Renamed:** some public (user facing) interfaces to be more ergonomic for end users:
   * `AllUserOptions` to `ParseOptions`
   * `PrimaryUserParams` to `BasicOptions`
+- **Clarified:** the `strictMode` parameter in TSDoc: it defines the baseline
+  ruleset (true = strict, false = lenient). It's only a starting
+  point—rule-specific options (e.g., `treatEmptyValueAsNull`, `onDuplicateKey`)
+  may override parts of that ruleset. When overrides are provided, the
+  effective mode becomes custom.
 
 ## 1.2.0-beta - 2025 Sep
 - **Fixed:** `parseFile()` now correctly passes through all options (e.g. `includeDiagnostics`) so they work and matches as in `parse(..)`.

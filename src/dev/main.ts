@@ -21,8 +21,8 @@ import {
 import {
     getDefaultUserOptions,
     TNormalizedUserOptions,
-} from '../core/options/parserDefaultOptions'
-import { debugPrint, toPrettyJSON } from '../utils/print'
+} from '../core/options/defaultParserOptions'
+import { debugPrint, printObject, toPrettyJSON } from '../utils/print'
 import YINI from '../YINI'
 
 debugPrint()
@@ -386,8 +386,11 @@ if (isProdEnv()) {
         console.log(result)
 
         const parserOptions: any = getDefaultUserOptions('lenient')
-        debugPrint('parserOptions:')
-        debugPrint(parserOptions)
+        debugPrint('** parserOptions: (lenient)')
+        isDebug() && printObject(parserOptions)
+
+        debugPrint('** parserOptions: (strict)')
+        isDebug() && printObject(getDefaultUserOptions('strict'))
 
         // const fileName =
         //     './tests/fixtures/invalid/bad-user-profile-config-2.yini'

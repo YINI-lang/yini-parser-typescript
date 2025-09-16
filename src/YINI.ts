@@ -122,8 +122,10 @@ export default class YINI {
      *   the returned metadata. Requires: `includeMetadata = true`. Ignored otherwise.
      * @param options.requireDocTerminator - Controls whether a document terminator is required.
      *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
-     * @param options.strictMode - Enable stricter syntax and well-formedness checks according
-     *   to the spec (exact rules are implementation-defined).
+     * @param options.strictMode - Sets the baseline ruleset (true = strict, false = lenient).
+     *   This is only a starting point: rule-specific options (e.g., `treatEmptyValueAsNull`,
+     *   `onDuplicateKey`, etc.) can override parts of that ruleset. If any overrides are given,
+     *   the effective mode becomes **custom** rather than purely strict/lenient.
      * @param options.suppressWarnings - Suppress warnings sent to the console/log.
      *   Does not affect warnings included in returned metadata.
      * @param options.treatEmptyValueAsNull - How to treat an explicitly empty value on the
@@ -324,8 +326,10 @@ export default class YINI {
      *   the returned metadata. Requires: `includeMetadata = true`. Ignored otherwise.
      * @param options.requireDocTerminator - Controls whether a document terminator is required.
      *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
-     * @param options.strictMode - Enable stricter syntax and well-formedness checks according
-     *   to the spec (exact rules are implementation-defined).
+     * @param options.strictMode - Sets the baseline ruleset (true = strict, false = lenient).
+     *   This is only a starting point: rule-specific options (e.g., `treatEmptyValueAsNull`,
+     *   `onDuplicateKey`, etc.) can override parts of that ruleset. If any overrides are given,
+     *   the effective mode becomes **custom** rather than purely strict/lenient.
      * @param options.suppressWarnings - Suppress warnings sent to the console/log.
      *   Does not affect warnings included in returned metadata.
      * @param options.treatEmptyValueAsNull - How to treat an explicitly empty value on the
