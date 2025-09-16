@@ -5,6 +5,7 @@
 
 import path from 'path'
 import YINI from '../../src'
+import { TExactMode } from '../../src/core/internalTypes'
 import { ParseOptions } from '../../src/types'
 import { sortObjectKeys } from '../../src/utils/object'
 import { debugPrint, toPrettyJSON } from '../../src/utils/print'
@@ -46,6 +47,9 @@ const fixtureWithYiniAndTerminator = `
     
     /END
 `
+interface ParseOptionsExt extends ParseOptions {
+    effectiveMode: TExactMode
+}
 
 /**
  * Options Consistency Smoke Tests.
@@ -71,7 +75,8 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const correctLenientOptions: ParseOptions = {
+        const correctLenientOptions: ParseOptionsExt = {
+            effectiveMode: 'lenient',
             strictMode: nonStrictMode,
             failLevel: 'ignore-errors', // 'auto' must get normalized to 'ignore-errors' (lenient mode).
             includeMetadata: mustBeTrue,
@@ -96,8 +101,9 @@ describe('Options Consistency Smoke Tests:', () => {
         // Arrange.
         const nonStrictMode = false
         const mustBeTrue = true
-        const options: ParseOptions = {
+        const options: ParseOptionsExt = {
             // IMPORTANT: Below values are set.
+            effectiveMode: 'custom',
             strictMode: nonStrictMode,
             includeMetadata: mustBeTrue,
             includeDiagnostics: mustBeTrue,
@@ -116,7 +122,7 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const preservedOptions: ParseOptions = {
+        const preservedOptions: ParseOptionsExt = {
             ...options,
         }
         expect(!!result.meta).toEqual(true)
@@ -132,8 +138,9 @@ describe('Options Consistency Smoke Tests:', () => {
         // Arrange.
         const nonStrictMode = false
         const mustBeTrue = true
-        const options: ParseOptions = {
+        const options: ParseOptionsExt = {
             // IMPORTANT: Below values are set.
+            effectiveMode: 'custom',
             strictMode: nonStrictMode,
             includeMetadata: mustBeTrue,
             includeDiagnostics: mustBeTrue,
@@ -152,7 +159,7 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const preservedOptions: ParseOptions = {
+        const preservedOptions: ParseOptionsExt = {
             ...options,
         }
         expect(!!result.meta).toEqual(true)
@@ -179,7 +186,8 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const correctLenientOptions: ParseOptions = {
+        const correctLenientOptions: ParseOptionsExt = {
+            effectiveMode: 'strict',
             strictMode: isStrictMode,
             failLevel: 'errors', // 'auto' must get normalized to 'ignore-errors' (lenient mode).
             includeMetadata: mustBeTrue,
@@ -224,8 +232,10 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const preservedOptions: ParseOptions = {
+        const effectiveOptions: ParseOptionsExt = {
             ...options,
+            effectiveMode: 'custom',
+            strictMode: false,
         }
         expect(!!result.meta).toEqual(true)
         expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)
@@ -233,7 +243,7 @@ describe('Options Consistency Smoke Tests:', () => {
             toPrettyJSON(
                 sortObjectKeys(result.meta.diagnostics.effectiveOptions),
             ),
-        ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
+        ).toEqual(toPrettyJSON(sortObjectKeys(effectiveOptions)))
     })
 
     test('2.c) Parsing inline and arbitrarily options carried over correctly when (in strict mode).', () => {
@@ -260,8 +270,10 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const preservedOptions: ParseOptions = {
+        const effectiveOptions: ParseOptionsExt = {
             ...options,
+            effectiveMode: 'custom',
+            strictMode: false,
         }
         expect(!!result.meta).toEqual(true)
         expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)
@@ -269,7 +281,7 @@ describe('Options Consistency Smoke Tests:', () => {
             toPrettyJSON(
                 sortObjectKeys(result.meta.diagnostics.effectiveOptions),
             ),
-        ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
+        ).toEqual(toPrettyJSON(sortObjectKeys(effectiveOptions)))
     })
 
     test('3.a) Parsing file and options having correct default values for lenient mode.', () => {
@@ -289,7 +301,8 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const correctLenientOptions: ParseOptions = {
+        const correctLenientOptions: ParseOptionsExt = {
+            effectiveMode: 'lenient',
             strictMode: nonStrictMode,
             failLevel: 'ignore-errors', // 'auto' must get normalized to 'ignore-errors' (lenient mode).
             includeMetadata: mustBeTrue,
@@ -336,8 +349,10 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const preservedOptions: ParseOptions = {
+        const effectiveOptions: ParseOptionsExt = {
             ...options,
+            effectiveMode: 'custom',
+            strictMode: false,
         }
         expect(!!result.meta).toEqual(true)
         expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)
@@ -345,7 +360,7 @@ describe('Options Consistency Smoke Tests:', () => {
             toPrettyJSON(
                 sortObjectKeys(result.meta.diagnostics.effectiveOptions),
             ),
-        ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
+        ).toEqual(toPrettyJSON(sortObjectKeys(effectiveOptions)))
     })
 
     test('3.c) Parsing file and arbitrarily options carried over correctly when (in lenient mode).', () => {
@@ -374,8 +389,10 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const preservedOptions: ParseOptions = {
+        const effectiveOptions: ParseOptionsExt = {
             ...options,
+            effectiveMode: 'custom',
+            strictMode: false,
         }
         expect(!!result.meta).toEqual(true)
         expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)
@@ -383,7 +400,7 @@ describe('Options Consistency Smoke Tests:', () => {
             toPrettyJSON(
                 sortObjectKeys(result.meta.diagnostics.effectiveOptions),
             ),
-        ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
+        ).toEqual(toPrettyJSON(sortObjectKeys(effectiveOptions)))
     })
 
     test('4.a) Parsing file and options having correct default values for strict mode.', () => {
@@ -403,7 +420,8 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const correctLenientOptions: ParseOptions = {
+        const correctLenientOptions: ParseOptionsExt = {
+            effectiveMode: 'strict',
             strictMode: isStrictMode,
             failLevel: 'errors', // 'auto' must get normalized to 'ignore-errors' (lenient mode).
             includeMetadata: mustBeTrue,
@@ -450,8 +468,10 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const preservedOptions: ParseOptions = {
+        const effectiveOptions: ParseOptionsExt = {
             ...options,
+            effectiveMode: 'custom',
+            strictMode: false,
         }
         expect(!!result.meta).toEqual(true)
         expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)
@@ -459,7 +479,7 @@ describe('Options Consistency Smoke Tests:', () => {
             toPrettyJSON(
                 sortObjectKeys(result.meta.diagnostics.effectiveOptions),
             ),
-        ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
+        ).toEqual(toPrettyJSON(sortObjectKeys(effectiveOptions)))
     })
 
     test('4.c) Parsing file and arbitrarily options carried over correctly when (in strict mode).', () => {
@@ -488,8 +508,10 @@ describe('Options Consistency Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        const preservedOptions: ParseOptions = {
+        const effectiveOptions: ParseOptionsExt = {
             ...options,
+            effectiveMode: 'custom',
+            strictMode: false,
         }
         expect(!!result.meta).toEqual(true)
         expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)
@@ -497,6 +519,6 @@ describe('Options Consistency Smoke Tests:', () => {
             toPrettyJSON(
                 sortObjectKeys(result.meta.diagnostics.effectiveOptions),
             ),
-        ).toEqual(toPrettyJSON(sortObjectKeys(preservedOptions)))
+        ).toEqual(toPrettyJSON(sortObjectKeys(effectiveOptions)))
     })
 })
