@@ -190,7 +190,7 @@ export const runPipeline = (
 ): ParsedObject | YiniParseResult => {
     debugPrint()
     debugPrint('-> Entered parseMain(..) in parseEntry')
-    debugPrint('           isStrict mode = ' + coreOptions.rules.mode)
+    debugPrint('    isStrict initialMode = ' + coreOptions.rules.initialMode)
     debugPrint('         bailSensitivity = ' + coreOptions.bailSensitivity)
     debugPrint('           isIncludeMeta = ' + coreOptions.isIncludeMeta)
     debugPrint('       isWithDiagnostics = ' + coreOptions.isWithDiagnostics)
@@ -402,12 +402,12 @@ export const runPipeline = (
     isDebug() && console.debug(finalJSResult)
     debugPrint()
 
-    if (coreOptions.rules.mode === 'strict') {
+    if (coreOptions.rules.initialMode === 'strict') {
         // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
         errorHandler.pushOrBail(
             null,
             'Syntax-Warning',
-            'Warning: Strict mode is not yet fully implemented.',
+            'Warning: Strict initialMode is not yet fully implemented.',
             'Some validation rules may still be missing or incomplete.',
         )
     } else {

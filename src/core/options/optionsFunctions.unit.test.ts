@@ -5,7 +5,7 @@ import {
     getDefaultUserOptions,
     TNormalizedUserOptions,
 } from './defaultParserOptions'
-import { inferModeFromRules, toCoreOptions } from './normalizeOptions'
+import { inferModeFromRules, toCoreOptions } from './optionsFunctions'
 
 /**
  * splitLines(..) Tests.

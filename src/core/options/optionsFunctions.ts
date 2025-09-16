@@ -8,6 +8,9 @@ import {
 } from '../internalTypes'
 import { mapFailLevelToBail } from './failLevel'
 
+/**
+ * Map user parse options to core options.
+ */
 export const toCoreOptions = (
     userOpts: Required<ParseOptions>,
     bailLevel?: TBailSensitivityLevel,
@@ -17,7 +20,7 @@ export const toCoreOptions = (
 
     return {
         rules: {
-            mode: userOpts.strictMode ? 'strict' : 'lenient',
+            initialMode: userOpts.strictMode ? 'strict' : 'lenient',
             requireDocTerminator: userOpts.requireDocTerminator,
             treatEmptyValueAsNull: userOpts.treatEmptyValueAsNull,
             onDuplicateKey: userOpts.onDuplicateKey,

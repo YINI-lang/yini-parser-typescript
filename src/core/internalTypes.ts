@@ -144,7 +144,7 @@ export interface IParseCoreOptions {
 }
 // Parsing/validation rules (these affect the grammar/semantics).
 export interface IParseRuleOptions {
-    mode: 'custom' | TParserMode
+    initialMode: 'custom' | TParserMode
     requireDocTerminator: 'optional' | 'warn-if-missing' | 'required'
     treatEmptyValueAsNull: 'allow' | 'allow-with-warning' | 'disallow'
     onDuplicateKey: OnDuplicateKey

@@ -38,7 +38,7 @@ export const buildResultMetadata = (
     // Construct meta data.
     const metadata: ResultMetadata = {
         parserVersion: pkg.version,
-        mode: p.coreOptions.rules.mode,
+        mode: p.coreOptions.rules.initialMode,
         totalErrors: p.errorHandler.getNumOfErrors(),
         totalWarnings: p.errorHandler.getNumOfWarnings(),
         totalMessages: p.errorHandler.getNumOfAllMessages(),
@@ -132,7 +132,7 @@ export const buildResultMetadata = (
             effectiveOptions: sortObjectKeys({
                 // IMPORTANT: (!) These user options MUST be mapped from coreOptions (to user options).
                 strictMode:
-                    p.coreOptions.rules.mode === 'strict' ? true : false,
+                    p.coreOptions.rules.initialMode === 'strict' ? true : false,
                 failLevel: mapLevelKey(p.coreOptions.bailSensitivity),
                 includeMetadata: p.coreOptions.isIncludeMeta,
                 includeDiagnostics: p.coreOptions.isWithDiagnostics,

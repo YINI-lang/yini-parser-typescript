@@ -47,7 +47,8 @@ const DEFAULT_LENIENT_OPTS: TNormalizedUserOptions = {
     ...BASE_DEFAULTS,
     strictMode: false,
     failLevel: 'ignore-errors',
-    suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
+    // suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
+    // Below are options for pure rules:
     requireDocTerminator: 'optional',
     treatEmptyValueAsNull: 'allow-with-warning',
     onDuplicateKey: 'warn-and-keep-first',
@@ -57,7 +58,8 @@ const DEFAULT_STRICT_OPTS: TNormalizedUserOptions = {
     ...BASE_DEFAULTS,
     strictMode: true,
     failLevel: 'errors',
-    suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
+    // suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
+    // Below are options for pure rules:
     requireDocTerminator: 'optional',
     treatEmptyValueAsNull: 'disallow',
     onDuplicateKey: 'error',

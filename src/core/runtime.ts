@@ -16,7 +16,7 @@ import {
     inferModeFromArgs,
     isOptionsObjectForm,
     toCoreOptions,
-} from './options/normalizeOptions'
+} from './options/optionsFunctions'
 import { runPipeline } from './pipeline'
 
 /**

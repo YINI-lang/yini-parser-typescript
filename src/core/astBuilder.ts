@@ -237,7 +237,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         this.options = options
 
         this.errorHandler = errorHandler
-        this.isStrict = options?.rules?.mode === 'strict'
+        this.isStrict = options?.rules?.initialMode === 'strict'
         this.onDuplicateKey = options?.rules?.onDuplicateKey ?? 'error' // Different setting depending on mode.
 
         // if (options.isStrict) {

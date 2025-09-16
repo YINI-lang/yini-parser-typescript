@@ -1,6 +1,6 @@
 import { isDebug, isDev } from './config/env'
 import { ErrorDataHandler } from './core/errorDataHandler'
-import { isOptionsObjectForm } from './core/options/normalizeOptions'
+import { isOptionsObjectForm } from './core/options/optionsFunctions'
 import { YiniRuntime } from './core/runtime'
 import {
     ParsedObject,
