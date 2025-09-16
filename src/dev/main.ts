@@ -23,7 +23,10 @@ import {
     TNormalizedUserOptions,
 } from '../core/options/defaultParserOptions'
 import { toCoreOptions } from '../core/options/optionsFunctions'
-import { matchModeFromRules } from '../core/parsingRules/modeFromRulesMatcher'
+import {
+    matchModeFromCoreOptions,
+    matchModeFromParseOptions,
+} from '../core/parsingRules/modeFromRulesMatcher'
 import { debugPrint, printObject, toPrettyJSON } from '../utils/print'
 import YINI from '../YINI'
 
@@ -385,25 +388,24 @@ if (isProdEnv()) {
             includeMetadata: true,
             includeDiagnostics: true,
         })
-        console.log(result)
+        printObject(result)
 
-        let parserOptions: any = getDefaultUserOptions('lenient')
-        debugPrint('** parserOptions: (lenient)')
-        isDebug() && printObject(parserOptions)
-        isDebug() &&
-            console.log(
-                'derived mode = ' +
-                    matchModeFromRules(toCoreOptions(parserOptions)),
-            )
+        // let parserOptions: any = getDefaultUserOptions('lenient')
+        // debugPrint('** parserOptions: (lenient)')
+        // isDebug() && printObject(parserOptions)
+        // isDebug() &&
+        //     console.log(
+        //         'derived mode = ' + matchModeFromParseOptions(parserOptions),
+        //     )
 
-        parserOptions = getDefaultUserOptions('strict')
-        debugPrint('** parserOptions: (strict)')
-        isDebug() && printObject(parserOptions)
-        isDebug() &&
-            console.log(
-                'derived mode = ' +
-                    matchModeFromRules(toCoreOptions(parserOptions)),
-            )
+        // parserOptions = getDefaultUserOptions('strict')
+        // debugPrint('** parserOptions: (strict)')
+        // isDebug() && printObject(parserOptions)
+        // isDebug() &&
+        //     console.log(
+        //         'derived mode = ' +
+        //             matchModeFromCoreOptions(toCoreOptions(parserOptions)),
+        //     )
 
         // const fileName =
         //     './tests/fixtures/invalid/bad-user-profile-config-2.yini'

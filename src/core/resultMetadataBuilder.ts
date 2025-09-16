@@ -10,7 +10,9 @@ import {
     IRuntimeInfo,
     IYiniAST,
     TBailSensitivityLevel,
+    TExactMode,
 } from './internalTypes'
+import { matchModeFromCoreOptions } from './parsingRules/modeFromRulesMatcher'
 
 // Helper interface just to bundle inputs for a single call at one time.
 export interface IBuildResultMetadataParams {
@@ -66,7 +68,7 @@ export const buildResultMetadata = (
             // listCount: null,
             sectionNamePaths: p.ast.sectionNamePaths,
         },
-        metaSchemaVersion: '1.1.0',
+        metaSchemaVersion: '1.1.1',
     }
 
     // Attach optional diagnostics.
@@ -94,6 +96,10 @@ export const buildResultMetadata = (
             }
             return null
         }
+
+        const effectiveMode: TExactMode = matchModeFromCoreOptions(
+            p.coreOptions,
+        )
 
         metadata.diagnostics = {
             failLevel: {
@@ -130,9 +136,9 @@ export const buildResultMetadata = (
                 },
             },
             effectiveOptions: sortObjectKeys({
+                effectiveMode: effectiveMode, // Appended.
                 // IMPORTANT: (!) These user options MUST be mapped from coreOptions (to user options).
-                strictMode:
-                    p.coreOptions.rules.initialMode === 'strict' ? true : false,
+                strictMode: effectiveMode === 'strict' ? true : false,
                 failLevel: mapLevelKey(p.coreOptions.bailSensitivity),
                 includeMetadata: p.coreOptions.isIncludeMeta,
                 includeDiagnostics: p.coreOptions.isWithDiagnostics,

@@ -12,6 +12,8 @@
   may override parts of that ruleset. When overrides are provided, the
    effective mode becomes custom.
 - **New:** User facing parsing rule value types `DocumentTerminatorRule` and `EmptyValueRule`.
+- **Updated:** Metadata now includes `effectiveMode` in `meta.diagnostics.effectiveOptions`, and the metadata version has been bumped to `1.1.1`.
+  The fields `strictMode` and `effectiveOptions` in `meta.diagnostics` now correctly reflect when any rules have been overridden from the initially selected mode.
 
 
 ## 1.2.0-beta - 2025 Sep

@@ -47,7 +47,7 @@ export type FailLevelKey =
 export type PreferredFailLevel = 'auto' | FailLevelKey
 
 /** Version tag for the public metadata schema. */
-export type MetaSchemaVersion = '1.1.0'
+export type MetaSchemaVersion = '1.1.1'
 
 /** Source of the order guarantee. */
 export type OrderGuarantee =

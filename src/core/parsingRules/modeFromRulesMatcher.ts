@@ -1,3 +1,4 @@
+import { ParseOptions } from 'querystring'
 import { isDebug } from '../../config/env'
 import {
     DocumentTerminatorRule,
@@ -13,6 +14,7 @@ import {
     TExactMode,
     TParserMode,
 } from '../internalTypes'
+import { toCoreOptions } from '../options/optionsFunctions'
 
 const MODE_PROFILES: Record<TParserMode, TVec3> = {
     lenient: [0, 0, 0],
@@ -30,11 +32,16 @@ type TVec3 = readonly [number, number, number]
  */
 type TRuleScale = 0 | 1 | 2
 
+export const matchModeFromParseOptions = (
+    parserOptions: ParseOptions,
+    // ): 'custom' | 'strict' | 'lenient' => {
+): TExactMode => matchModeFromCoreOptions(toCoreOptions(parserOptions as any))
+
 /**
  * Determines the effective parse mode from the current options (option rules).
  * @returns 'custom' if no exact match exists, otherwise the matched mode.
  */
-export const matchModeFromRules = (
+export const matchModeFromCoreOptions = (
     coreOptions: IParseCoreOptions,
     // ): 'custom' | 'strict' | 'lenient' => {
 ): TExactMode => {
@@ -50,18 +57,18 @@ export const matchModeFromRules = (
         )
     }
 
-    debugPrint(
-        'coreOptions.rules.?onDuplicateKey        = ' +
-            coreOptions.rules?.onDuplicateKey,
-    )
-    debugPrint(
-        'coreOptions.rules.?requireDocTerminator  = ' +
-            coreOptions.rules?.requireDocTerminator,
-    )
-    debugPrint(
-        'coreOptions.rules.?treatEmptyValueAsNull = ' +
-            coreOptions.rules?.treatEmptyValueAsNull,
-    )
+    // debugPrint(
+    //     'coreOptions.rules.?onDuplicateKey        = ' +
+    //         coreOptions.rules?.onDuplicateKey,
+    // )
+    // debugPrint(
+    //     'coreOptions.rules.?requireDocTerminator  = ' +
+    //         coreOptions.rules?.requireDocTerminator,
+    // )
+    // debugPrint(
+    //     'coreOptions.rules.?treatEmptyValueAsNull = ' +
+    //         coreOptions.rules?.treatEmptyValueAsNull,
+    // )
 
     const rules: IParseRuleOptions = { ...coreOptions.rules }
 
@@ -92,10 +99,11 @@ const inferTParserModeExact = (
     vector: TVec3
     matchedProfile?: TParserMode // Present only when mode !== 'custom'
 } => {
-    debugPrint('-> inferTParserModeExact(..):')
-    debugPrint('rules.onDuplicateKey        = ' + rules.onDuplicateKey)
-    debugPrint('rules.requireDocTerminator  = ' + rules.requireDocTerminator)
-    debugPrint('rules.treatEmptyValueAsNull = ' + rules.treatEmptyValueAsNull)
+    // debugPrint('-> inferTParserModeExact(..):')
+    // debugPrint('rules.onDuplicateKey        = ' + rules.onDuplicateKey)
+    // debugPrint('rules.requireDocTerminator  = ' + rules.requireDocTerminator)
+    // debugPrint('rules.treatEmptyValueAsNull = ' + rules.treatEmptyValueAsNull)
+
     // Note, **each rule** is scored on a strictness scale (0 = lenient, 1 = medium, 2 = strict).
     const vector: TVec3 = [
         scoreDupl(rules.onDuplicateKey),
@@ -140,9 +148,8 @@ const scoreTerm = (v: DocumentTerminatorRule): TRuleScale => {
 const scoreEmpty = (v: EmptyValueRule): TRuleScale => {
     switch (v) {
         case 'allow':
-            return 0 // Rule in lenient mode.
         case 'allow-with-warning':
-            return 1
+            return 0 // Rule in lenient mode.
         case 'disallow':
             return 2 // Rule in strict mode.
     }
