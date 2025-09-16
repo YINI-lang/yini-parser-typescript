@@ -22,6 +22,8 @@ import {
     getDefaultUserOptions,
     TNormalizedUserOptions,
 } from '../core/options/defaultParserOptions'
+import { toCoreOptions } from '../core/options/optionsFunctions'
+import { matchModeFromRules } from '../core/parsingRules/modeFromRulesMatcher'
 import { debugPrint, printObject, toPrettyJSON } from '../utils/print'
 import YINI from '../YINI'
 
@@ -385,12 +387,23 @@ if (isProdEnv()) {
         })
         console.log(result)
 
-        const parserOptions: any = getDefaultUserOptions('lenient')
+        let parserOptions: any = getDefaultUserOptions('lenient')
         debugPrint('** parserOptions: (lenient)')
         isDebug() && printObject(parserOptions)
+        isDebug() &&
+            console.log(
+                'derived mode = ' +
+                    matchModeFromRules(toCoreOptions(parserOptions)),
+            )
 
+        parserOptions = getDefaultUserOptions('strict')
         debugPrint('** parserOptions: (strict)')
-        isDebug() && printObject(getDefaultUserOptions('strict'))
+        isDebug() && printObject(parserOptions)
+        isDebug() &&
+            console.log(
+                'derived mode = ' +
+                    matchModeFromRules(toCoreOptions(parserOptions)),
+            )
 
         // const fileName =
         //     './tests/fixtures/invalid/bad-user-profile-config-2.yini'

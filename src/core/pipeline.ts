@@ -13,7 +13,13 @@ import {
     Recognizer,
     Token,
 } from 'antlr4'
-import { isDebug, isDev, localAppEnv, localNodeEnv } from '../config/env'
+import {
+    isDebug,
+    isDev,
+    isProdEnv,
+    localAppEnv,
+    localNodeEnv,
+} from '../config/env'
 import YiniLexer from '../grammar/generated/YiniLexer'
 import YiniParser, { YiniContext } from '../grammar/generated/YiniParser'
 import {
@@ -77,6 +83,11 @@ const parsePossibleStartCol = (
         } else {
             msgHint = 'Thrown value:' + JSON.stringify(err)
         }
+
+        if (isProdEnv()) {
+            return 0
+        }
+
         errorHandler.pushOrBail(
             null,
             'Internal-Error',

@@ -10,6 +10,11 @@
  */
 
 import { TBailSensitivityLevel } from '../core/internalTypes'
+import {
+    DocumentTerminatorRules,
+    DuplicateKeyPolicies,
+    EmptyValueRules,
+} from '../core/parsingRules/rulesConstAndGuards'
 
 // --- Public (user-facing) Types ----------------------------------------------------------------
 
@@ -41,13 +46,6 @@ export type FailLevelKey =
 
 export type PreferredFailLevel = 'auto' | FailLevelKey
 
-export type OnDuplicateKey =
-    | 'warn-and-keep-first' // Keep first with a warning.
-    | 'warn-and-overwrite' // 'warn-and-overwrite' = 'warn-and-keep-last'
-    | 'keep-first' // Silent, first wins.
-    | 'overwrite' // Silent, last wins.
-    | 'error'
-
 /** Version tag for the public metadata schema. */
 export type MetaSchemaVersion = '1.1.0'
 
@@ -57,6 +55,22 @@ export type OrderGuarantee =
     | 'language'
     | 'implementation-defined'
     | 'none'
+
+// --- Public (user-facing) Parsing Rule Types -----------------------------
+
+/** @deprecated Use DuplicateKeyPolicy */
+export type OnDuplicateKey = DuplicateKeyPolicy // NOTE: Deprecated since 1.3.0-beta.
+export type DuplicateKeyPolicy = (typeof DuplicateKeyPolicies)[number]
+// export type OnDuplicateKey =
+//     | 'error'
+//     | 'warn-and-keep-first' // Keep first with a warning.
+//     | 'warn-and-overwrite' // 'warn-and-overwrite' = 'warn-and-keep-last'
+//     | 'keep-first' // Silent, first wins.
+//     | 'overwrite' // Silent, last wins.
+
+export type DocumentTerminatorRule = (typeof DocumentTerminatorRules)[number]
+
+export type EmptyValueRule = (typeof EmptyValueRules)[number]
 
 // --- Public (user-facing) Interfaces -----------------------------------------------------------
 
@@ -82,6 +96,8 @@ export interface BasicOptions {
     /** Attach metadata to the parse result (timings, diagnostics, etc.). */
     includeMetadata?: boolean // Include meta data along the returned result.
 }
+/** @deprecated Use ParseOptions */
+export interface PrimaryUserParams extends BasicOptions {} // NOTE: Deprecated since 1.3.0-beta.
 
 /**
  * @param failLevel - Minimum severity that should cause the parse to fail.
@@ -106,7 +122,7 @@ export interface BasicOptions {
  *   This is only a starting point: rule-specific options (e.g., `treatEmptyValueAsNull`,
  *   `onDuplicateKey`, etc.) can override parts of that ruleset. If any overrides are given,
  *   the effective mode becomes **custom** rather than purely strict/lenient.
- * @param suppressWarnings - Suppress warnings sent to the console/log.
+ * @param suppressWarnings - Suppress warnings (make quiet) sent to the console/log.
  *   Does not affect warnings included in returned metadata.
  * @param treatEmptyValueAsNull - How to treat an explicitly empty value on the
  *   right-hand side of '='. Allowed values: `'allow'` | `'allow-with-warning'` | `'disallow'`.
@@ -118,14 +134,18 @@ export interface ParseOptions extends BasicOptions {
     includeDiagnostics?: boolean // (Requires includeMetadata) Include diagnostics in meta data, when isIncludeMeta.
     includeTiming?: boolean // (Requires includeMetadata) Include timing data of the different phases in meta data, when isIncludeMeta.
     preserveUndefinedInMeta?: boolean // (Requires includeMetadata) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
-    suppressWarnings?: boolean // Suppress warnings in console (does not effect warnings in meta data).
+    suppressWarnings?: boolean // Suppress warnings (make quiet) in console (does not effect warnings in meta data).
     //hideWarnings?: boolean // Hide all warnings in console including in meta data.
-    requireDocTerminator?: 'optional' | 'warn-if-missing' | 'required'
-    treatEmptyValueAsNull?: 'allow' | 'allow-with-warning' | 'disallow'
     onDuplicateKey?: OnDuplicateKey
-    quiet?: boolean // Reduce output (show only errors).
+    // requireDocTerminator?: 'optional' | 'warn-if-missing' | 'required'
+    requireDocTerminator?: DocumentTerminatorRule
+    // treatEmptyValueAsNull?: 'allow' | 'allow-with-warning' | 'disallow'
+    treatEmptyValueAsNull?: EmptyValueRule
+    // quiet?: boolean // Dup of suppressWarnings! Reduce output (show only errors).
     silent?: boolean // Suppress all output (even errors, exit code only).
 }
+/** @deprecated Use ParseOptions */
+export interface AllUserOptions extends ParseOptions {} // NOTE: Deprecated since 1.3.0-beta.
 
 //{ line: 12, column: 8, type: 'Syntax-Error', message1: 'Invalid number' }
 export interface IssuePayload {

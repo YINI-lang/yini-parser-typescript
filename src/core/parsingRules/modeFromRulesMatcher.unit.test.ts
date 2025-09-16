@@ -3,14 +3,14 @@ import { TParserMode } from '../internalTypes'
 import {
     getDefaultUserOptions,
     TNormalizedUserOptions,
-} from './defaultParserOptions'
+} from '../options/defaultParserOptions'
+import { toCoreOptions } from '../options/optionsFunctions'
 import { matchModeFromRules } from './modeFromRulesMatcher'
-import { toCoreOptions } from './optionsFunctions'
 
 /**
  * splitLines(..) Tests.
  */
-describe('normalizeOptions Unit Tests:', () => {
+describe('Match Mode From Rules Unit Tests:', () => {
     test(`1. Default 'lenient' options should be EQ to matchModeFromRules(..) test.`, () => {
         // Arrange.
         const mode: TParserMode = 'lenient'

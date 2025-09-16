@@ -31,7 +31,7 @@ export const toCoreOptions = (
         isWithTiming: isDev() || isDebug() || userOpts.includeTiming,
         isKeepUndefinedInMeta: isDebug() || userOpts.preserveUndefinedInMeta,
         isAvoidWarningsInConsole: userOpts.suppressWarnings,
-        isQuiet: userOpts.quiet,
+        // isQuiet: userOpts.quiet, // Dup of suppressWarnings!
         isSilent: userOpts.silent,
     }
 }
@@ -53,7 +53,7 @@ export const isOptionsObjectForm = (v: unknown): v is ParseOptions => {
             'onDuplicateKey' in (v as any) ||
             'requireDocTerminator' in (v as any) ||
             'treatEmptyValueAsNull' in (v as any) ||
-            'quiet' in (v as any) ||
+            // 'quiet' in (v as any) || // Dup of suppressWarnings!
             'silent' in (v as any))
     )
 }

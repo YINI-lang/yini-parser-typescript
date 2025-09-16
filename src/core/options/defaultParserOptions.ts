@@ -22,7 +22,7 @@ export type TNormalizedUserOptions = Required<
         | 'onDuplicateKey'
         | 'requireDocTerminator'
         | 'treatEmptyValueAsNull'
-        | 'quiet'
+        // | 'quiet' // Dup of suppressWarnings!
         | 'silent'
     >
 >
@@ -39,7 +39,7 @@ const BASE_DEFAULTS: TNormalizedUserOptions = {
     onDuplicateKey: 'error',
     requireDocTerminator: 'optional',
     treatEmptyValueAsNull: 'allow-with-warning',
-    quiet: false,
+    // quiet: false, // Dup of suppressWarnings!
     silent: false,
 }
 

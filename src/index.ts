@@ -67,11 +67,16 @@ export const setTabSize = YINI.setTabSize
 // Re-exported public types as *types* (so they erase at runtime).
 export type {
     ParsedObject,
+    AllUserOptions,
     YiniParseResult,
     OnDuplicateKey,
+    DuplicateKeyPolicy,
+    DocumentTerminatorRule,
+    EmptyValueRule,
     FailLevelKey,
     PreferredFailLevel,
     BasicOptions,
+    PrimaryUserParams,
     ParseOptions,
     IssuePayload,
     MetaSchemaVersion,
