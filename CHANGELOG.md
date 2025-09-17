@@ -12,7 +12,9 @@
   point—rule-specific options (e.g., `treatEmptyValueAsNull`, `onDuplicateKey`)
   may override parts of that ruleset. When overrides are provided, the
    effective mode becomes custom.
-- **New:** User facing parsing rule value types `DocumentTerminatorRule` and `EmptyValueRule`.
+- **New:** Added user facing parsing rule value types `DocumentTerminatorRule` and `EmptyValueRule`.
+- **New:** Added `quiet` option, prints only errors to the console and warnings/info/etc. are not printed. This does not affect diagnostics captured in metadata.
+- **New:** Added `silent` option, no console output will be outputted at all, not even errors. Programmatic callers should rely on returned metadata, CLI users should rely on the exit code.
 - **Updated:** Metadata now includes `effectiveMode` in `meta.diagnostics.effectiveOptions`, and the metadata version has been bumped to `1.1.1`.
   The fields `strictMode` and `effectiveOptions` in `meta.diagnostics` now correctly reflect when any rules have been overridden from the initially selected mode.
 

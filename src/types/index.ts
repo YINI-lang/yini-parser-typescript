@@ -117,10 +117,10 @@ export interface PrimaryUserParams extends BasicOptions {} // NOTE: Deprecated s
  * @param options.preserveUndefinedInMeta - Keep properties with value `undefined` inside
  *   the returned metadata. Requires: `includeMetadata = true`. Ignored otherwise.
  * @param options.quiet - Show only errors, will suppress warnings and messages sent to the console/log.
- *   Does not affect warnings included in returned metadata.
+ *   Does not affect warnings included in returned metadata. Silent overrides quiet if both are enabled.
  * @param options.requireDocTerminator - Controls whether a document terminator is required.
  *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
- * @param options.silent - Suppress all output (even errors, exit code only).
+ * @param options.silent - Suppress all output (even errors, exit code only). Silent overrides quiet if both are enabled.
  * @param options.strictMode - Sets the baseline ruleset (true = strict, false = lenient).
  *   This is only a starting point: rule-specific options (e.g., `treatEmptyValueAsNull`,
  *   `onDuplicateKey`, etc.) can override parts of that ruleset. If any overrides are given,
@@ -135,15 +135,11 @@ export interface ParseOptions extends BasicOptions {
     includeDiagnostics?: boolean // (Requires includeMetadata) Include diagnostics in meta data, when isIncludeMeta.
     includeTiming?: boolean // (Requires includeMetadata) Include timing data of the different phases in meta data, when isIncludeMeta.
     preserveUndefinedInMeta?: boolean // (Requires includeMetadata) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
-    // suppressWarnings?: boolean // (!) Dup of quiet! - Suppress warnings (make quiet) in console (does not effect warnings in meta data).
-    //hideWarnings?: boolean // Hide all warnings in console including in meta data.
     onDuplicateKey?: OnDuplicateKey
-    // requireDocTerminator?: 'optional' | 'warn-if-missing' | 'required'
     requireDocTerminator?: DocumentTerminatorRule
-    // treatEmptyValueAsNull?: 'allow' | 'allow-with-warning' | 'disallow'
     treatEmptyValueAsNull?: EmptyValueRule
-    quiet?: boolean // Reduce output (show only errors, does not effect warnings and etc. in meta data).
-    silent?: boolean // Suppress all output (even errors, exit code only).
+    quiet?: boolean // Reduce output (show only errors, does not effect warnings and etc. in meta data). Silent overrides quiet if both are enabled.
+    silent?: boolean // Suppress all output (even errors, exit code only). Silent overrides quiet if both are enabled.
 }
 /** @deprecated Use ParseOptions */
 export interface AllUserOptions extends ParseOptions {} // NOTE: Deprecated since 1.3.0-beta.

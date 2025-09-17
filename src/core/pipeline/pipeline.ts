@@ -303,10 +303,10 @@ export const runPipeline = (
     debugPrint('getNumOfErrors(): ' + errorHandler.getNumOfErrors())
     if (errorHandler.getNumOfErrors()) {
         if (!coreOptions.isQuiet && !coreOptions.isSilent) {
-            console.error(
+            console.warn(
                 'Parsing is complete, but some problems were detected. Please see the errors above for details.',
             )
-            console.error(
+            console.warn(
                 'Number of errors found: ' + errorHandler.getNumOfErrors(),
             )
         }
