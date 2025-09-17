@@ -30,8 +30,7 @@ export const toCoreOptions = (
         isWithDiagnostics: isDev() || isDebug() || userOpts.includeDiagnostics,
         isWithTiming: isDev() || isDebug() || userOpts.includeTiming,
         isKeepUndefinedInMeta: isDebug() || userOpts.preserveUndefinedInMeta,
-        isAvoidWarningsInConsole: userOpts.suppressWarnings,
-        // isQuiet: userOpts.quiet, // Dup of suppressWarnings!
+        isQuiet: userOpts.quiet, // Dup of suppressWarnings!
         isSilent: userOpts.silent,
     }
 }
@@ -49,11 +48,10 @@ export const isOptionsObjectForm = (v: unknown): v is ParseOptions => {
             'includeDiagnostics' in (v as any) ||
             'includeTiming' in (v as any) ||
             'preserveUndefinedInMeta' in (v as any) ||
-            'suppressWarnings' in (v as any) ||
             'onDuplicateKey' in (v as any) ||
             'requireDocTerminator' in (v as any) ||
             'treatEmptyValueAsNull' in (v as any) ||
-            // 'quiet' in (v as any) || // Dup of suppressWarnings!
+            'quiet' in (v as any) ||
             'silent' in (v as any))
     )
 }

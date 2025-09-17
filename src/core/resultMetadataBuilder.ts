@@ -144,7 +144,7 @@ export const buildResultMetadata = (
                 includeDiagnostics: p.coreOptions.isWithDiagnostics,
                 includeTiming: p.coreOptions.isWithTiming,
                 preserveUndefinedInMeta: p.coreOptions.isKeepUndefinedInMeta,
-                suppressWarnings: p.coreOptions.isAvoidWarningsInConsole,
+                quiet: p.coreOptions.isQuiet,
                 requireDocTerminator: p.coreOptions.rules.requireDocTerminator,
                 treatEmptyValueAsNull:
                     p.coreOptions.rules.treatEmptyValueAsNull,

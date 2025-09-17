@@ -262,7 +262,8 @@ export class YiniRuntime {
         const result = this.doParse(content, {
             ...userOpts,
         })
-        if (hasNoNewlineAtEOF && !userOpts.suppressWarnings) {
+        if (hasNoNewlineAtEOF && !userOpts.quiet && !userOpts.silent) {
+            //@todo: (or maybe not, 20250917) Maybe let errorHandler emit message
             console.warn(
                 `No newline at end of file, it's recommended to end a file with a newline. File:\n"${filePath}"`,
             )

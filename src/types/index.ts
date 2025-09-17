@@ -100,31 +100,32 @@ export interface BasicOptions {
 export interface PrimaryUserParams extends BasicOptions {} // NOTE: Deprecated since 1.3.0-beta.
 
 /**
- * @param failLevel - Minimum severity that should cause the parse to fail.
+ * @param options.failLevel - Minimum severity that should cause the parse to fail.
  *   Accepts:
  *     `'ignore-errors'` - Continue despite errors, persist and try to recover.
  *     `'errors'` - Stop parsing on the first error.
  *     `'warnings-and-errors'` - Stop parsing on the first warning or error.
  *   (Type: TPreferredFailLevel; exact behavior is implementation-defined.)
- * @param includeDiagnostics - Include diagnostics in the returned metadata.
+ * @param options.includeDiagnostics - Include diagnostics in the returned metadata.
  *   Requires: `includeMetadata = true`. Ignored otherwise.
- * @param includeMetadata - Attach a metadata object to the parse result
+ * @param options.includeMetadata - Attach a metadata object to the parse result
  *   (e.g., timings, diagnostics).
- * @param includeTiming - Include timing information for parser phases in metadata.
+ * @param options.includeTiming - Include timing information for parser phases in metadata.
  *   Requires: `includeMetadata = true`. Ignored otherwise.
- * @param onDuplicateKey - Strategy/handler when encountering a duplicate key.
+ * @param options.onDuplicateKey - Strategy/handler when encountering a duplicate key.
  *   Allowed values: `'warn-and-keep-first'` | `'warn-and-overwrite'` | `'keep-first'` (silent, first wins) | `'overwrite'` (silent, last wins) | `'error'`.
- * @param preserveUndefinedInMeta - Keep properties with value `undefined` inside
+ * @param options.preserveUndefinedInMeta - Keep properties with value `undefined` inside
  *   the returned metadata. Requires: `includeMetadata = true`. Ignored otherwise.
- * @param requireDocTerminator - Controls whether a document terminator is required.
+ * @param options.quiet - Show only errors, will suppress warnings and messages sent to the console/log.
+ *   Does not affect warnings included in returned metadata.
+ * @param options.requireDocTerminator - Controls whether a document terminator is required.
  *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
- * @param strictMode - Sets the baseline ruleset (true = strict, false = lenient).
+ * @param options.silent - Suppress all output (even errors, exit code only).
+ * @param options.strictMode - Sets the baseline ruleset (true = strict, false = lenient).
  *   This is only a starting point: rule-specific options (e.g., `treatEmptyValueAsNull`,
  *   `onDuplicateKey`, etc.) can override parts of that ruleset. If any overrides are given,
  *   the effective mode becomes **custom** rather than purely strict/lenient.
- * @param suppressWarnings - Suppress warnings (make quiet) sent to the console/log.
- *   Does not affect warnings included in returned metadata.
- * @param treatEmptyValueAsNull - How to treat an explicitly empty value on the
+ * @param options.treatEmptyValueAsNull - How to treat an explicitly empty value on the
  *   right-hand side of '='. Allowed values: `'allow'` | `'allow-with-warning'` | `'disallow'`.
  */
 // User-facing options, these are external and should be more user friendly
@@ -134,14 +135,14 @@ export interface ParseOptions extends BasicOptions {
     includeDiagnostics?: boolean // (Requires includeMetadata) Include diagnostics in meta data, when isIncludeMeta.
     includeTiming?: boolean // (Requires includeMetadata) Include timing data of the different phases in meta data, when isIncludeMeta.
     preserveUndefinedInMeta?: boolean // (Requires includeMetadata) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
-    suppressWarnings?: boolean // Suppress warnings (make quiet) in console (does not effect warnings in meta data).
+    // suppressWarnings?: boolean // (!) Dup of quiet! - Suppress warnings (make quiet) in console (does not effect warnings in meta data).
     //hideWarnings?: boolean // Hide all warnings in console including in meta data.
     onDuplicateKey?: OnDuplicateKey
     // requireDocTerminator?: 'optional' | 'warn-if-missing' | 'required'
     requireDocTerminator?: DocumentTerminatorRule
     // treatEmptyValueAsNull?: 'allow' | 'allow-with-warning' | 'disallow'
     treatEmptyValueAsNull?: EmptyValueRule
-    // quiet?: boolean // Dup of suppressWarnings! Reduce output (show only errors).
+    quiet?: boolean // Dup of suppressWarnings! Reduce output (show only errors, does not effect warnings and etc. in meta data).
     silent?: boolean // Suppress all output (even errors, exit code only).
 }
 /** @deprecated Use ParseOptions */

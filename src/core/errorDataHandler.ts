@@ -33,7 +33,8 @@ export class ErrorDataHandler {
     private readonly subjectType: TSubjectType
     private readonly fileName: string | undefined
     private readonly persistThreshold: TBailSensitivityLevel
-    private readonly isAvoidWarningsInConsole: boolean
+    private readonly isQuiet: boolean
+    private readonly isSilent: boolean
 
     private errors: IssuePayload[] = []
     private warnings: IssuePayload[] = []
@@ -60,12 +61,14 @@ export class ErrorDataHandler {
         subjectType: TSubjectType,
         fileName: string | undefined = undefined,
         bailSensitivityLevel: TBailSensitivityLevel = '1-Abort-on-Errors',
-        isAvoidWarningsInConsole: boolean = false,
+        isQuiet: boolean = false, // Reduce output (show only errors, does not effect warnings and etc. in meta data).
+        isSilent: boolean = false, // Suppress all output (even errors, exit code only).
     ) {
         this.subjectType = subjectType
         this.fileName = fileName
         this.persistThreshold = bailSensitivityLevel
-        this.isAvoidWarningsInConsole = isAvoidWarningsInConsole
+        this.isQuiet = isQuiet
+        this.isSilent = isSilent
     }
 
     private makeIssue(
@@ -219,7 +222,7 @@ export class ErrorDataHandler {
                         msgHint,
                     ),
                 )
-                if (!this.isAvoidWarningsInConsole) {
+                if (!this.isQuiet) {
                     this.emitSyntaxWarning(
                         loc,
                         msgWhatWithLineNum,

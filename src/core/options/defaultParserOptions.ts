@@ -18,11 +18,11 @@ export type TNormalizedUserOptions = Required<
         | 'includeDiagnostics'
         | 'includeTiming'
         | 'preserveUndefinedInMeta'
-        | 'suppressWarnings'
+        // | 'suppressWarnings' // Delete, dup of quiet!
         | 'onDuplicateKey'
         | 'requireDocTerminator'
         | 'treatEmptyValueAsNull'
-        // | 'quiet' // Dup of suppressWarnings!
+        | 'quiet'
         | 'silent'
     >
 >
@@ -35,11 +35,11 @@ const BASE_DEFAULTS: TNormalizedUserOptions = {
     includeDiagnostics: false,
     includeTiming: false,
     preserveUndefinedInMeta: false,
-    suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
+    // suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
     onDuplicateKey: 'error',
     requireDocTerminator: 'optional',
     treatEmptyValueAsNull: 'allow-with-warning',
-    // quiet: false, // Dup of suppressWarnings!
+    quiet: false, // Suppress warnings in console (does not affect warnings in meta data).
     silent: false,
 }
 

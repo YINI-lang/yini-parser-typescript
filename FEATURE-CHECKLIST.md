@@ -792,9 +792,9 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
 
   <tr>
-    <td><code>suppressWarnings</code></td>
+    <td><code>quiet</code></td>
     <td>✅</td>
-    <td>Hide warnings in console logs (does not change <code>meta</code>)</td>
+    <td>Show only errors, will suppress warnings and messages sent to the console/log (does not change <code>meta</code>)</td>
     <td>✅</td>
     <td>🚧</td>
     <td>✅</td>

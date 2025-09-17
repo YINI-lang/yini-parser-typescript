@@ -209,9 +209,7 @@ export const runPipeline = (
     debugPrint(
         '   isKeepUndefinedInMeta = ' + coreOptions.isKeepUndefinedInMeta,
     )
-    debugPrint(
-        'isAvoidWarningsInConsole = ' + coreOptions.isAvoidWarningsInConsole,
-    )
+    debugPrint('isQuiet = ' + coreOptions.isQuiet)
     debugPrint('          onDuplicateKey = ' + coreOptions.rules.onDuplicateKey)
     debugPrint(
         '    requireDocTerminator = ' + coreOptions.rules.requireDocTerminator,
@@ -239,7 +237,7 @@ export const runPipeline = (
         runtimeInfo.sourceType,
         runtimeInfo.fileName,
         coreOptions.bailSensitivity,
-        coreOptions.isAvoidWarningsInConsole,
+        coreOptions.isQuiet,
     )
 
     if (yiniContent.trim() === '') {
