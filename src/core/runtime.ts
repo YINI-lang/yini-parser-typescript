@@ -17,7 +17,7 @@ import {
     isOptionsObjectForm,
     toCoreOptions,
 } from './options/optionsFunctions'
-import { runPipeline } from './pipeline'
+import { runPipeline } from './pipeline/pipeline'
 
 /**
  * Private class representing a runtime context for a single parse call.
