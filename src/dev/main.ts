@@ -188,27 +188,25 @@ if (isProdEnv()) {
         //     < SubTitle // NOT OK, SubTitle already exists
         //     theme2 = "special-dark"
         //         `
-        // Arrange.
 
-        const corruptYini = `
+        const errorYini = `
         ^ Section1
-        name = 'YINI Demo Service'
+        333="oops"   // invalid key => error
+        `
 
+        const warnYini = `
         ^ Section2
-        name = 'YINI Demo Service'
-
-        /END
-        /END
+        // => warning, if requireDocTerminator: 'warn-if-missing'
         `
         // console.log(
         //     toPrettyJSON(
-        YINI.parse(corruptYini, {
+        YINI.parse(errorYini + warnYini, {
+            requireDocTerminator: 'warn-if-missing',
+            failLevel: 'ignore-errors',
             strictMode: false,
-            quiet: true,
+            //quiet: true,
             // silent: true,
-            // failLevel: 'errors',
             // includeMetadata: false,
-            // requireDocTerminator: 'optional',
         })
         //     ),
         // )

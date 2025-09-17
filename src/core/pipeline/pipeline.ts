@@ -307,7 +307,10 @@ export const runPipeline = (
                 'Parsing is complete, but some problems were detected. Please see the errors above for details.',
             )
             console.warn(
-                'Number of errors found: ' + errorHandler.getNumOfErrors(),
+                'Number of errors found:   ' + errorHandler.getNumOfErrors(),
+            )
+            console.warn(
+                'Number of warnings found: ' + errorHandler.getNumOfWarnings(),
             )
         }
     }
