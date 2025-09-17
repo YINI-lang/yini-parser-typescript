@@ -16,7 +16,7 @@ import {
 } from '../../types'
 import { removeUndefinedDeep } from '../../utils/object'
 import { debugPrint, printObject } from '../../utils/print'
-import astBuilder from '../astBuilder'
+import ASTBuilder from '../astBuilder'
 import { ErrorDataHandler } from '../errorDataHandler'
 import { IParseCoreOptions, IRuntimeInfo, IYiniAST } from '../internalTypes'
 import { astToObject } from '../objectBuilder'
@@ -194,7 +194,7 @@ export const runPipeline = (
         timeEnd2Ms = performance.now()
     }
 
-    const builder = new astBuilder(
+    const builder = new ASTBuilder(
         errorHandler,
         coreOptions,
         runtimeInfo.sourceType,
@@ -274,7 +274,7 @@ export const runPipeline = (
             // IMPORTANT: If "silent" option is set, do not log anything to console!
             if (!coreOptions.isQuiet && !coreOptions.isSilent) {
                 console.warn(
-                    `Warning: The initial mode was set to strict mode, but fail level is set to 'ignore-errors'. This combination is contradictory.`,
+                    `Warning: The initial mode was set to strict mode, but fail level is set to 'ignore-errors'. This combination is contradictory and might be a mistake.`,
                 )
             }
         }
@@ -302,11 +302,14 @@ export const runPipeline = (
 
     debugPrint('getNumOfErrors(): ' + errorHandler.getNumOfErrors())
     if (errorHandler.getNumOfErrors()) {
-        // console.log()
-        console.log(
-            'Parsing is complete, but some problems were detected. Please see the errors above for details.',
-        )
-        console.log('Number of errors found: ' + errorHandler.getNumOfErrors())
+        if (!coreOptions.isQuiet && !coreOptions.isSilent) {
+            console.error(
+                'Parsing is complete, but some problems were detected. Please see the errors above for details.',
+            )
+            console.error(
+                'Number of errors found: ' + errorHandler.getNumOfErrors(),
+            )
+        }
     }
 
     if (coreOptions.isIncludeMeta) {

@@ -142,7 +142,7 @@ export interface ParseOptions extends BasicOptions {
     requireDocTerminator?: DocumentTerminatorRule
     // treatEmptyValueAsNull?: 'allow' | 'allow-with-warning' | 'disallow'
     treatEmptyValueAsNull?: EmptyValueRule
-    quiet?: boolean // Dup of suppressWarnings! Reduce output (show only errors, does not effect warnings and etc. in meta data).
+    quiet?: boolean // Reduce output (show only errors, does not effect warnings and etc. in meta data).
     silent?: boolean // Suppress all output (even errors, exit code only).
 }
 /** @deprecated Use ParseOptions */
