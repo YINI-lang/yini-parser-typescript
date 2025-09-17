@@ -95,16 +95,16 @@ export class ErrorDataHandler {
 
     /**
      * After pushing processing may continue or exit, depending on the error
-     * and/or the bail threshold (that can be optionally set my the user).
+     * and/or the bail threshold (that can be optionally set by the user).
      *
      * @note This function MIGHT result in a return, throw, or exit depending
-     * on the bail policy (set my the user).
+     * on the bail policy (set by the user).
      *
      * @param ctx
      * @param type
      * @param msgWhat Name of the specific error or what failed. E.g. "Key already exists in this section scope".
      * @param msgWhy More details and more specific info about the issue/error.
-     * @param msgHint Hint or HUMBLE description on how to fix the issue.
+     * @param msgHint Hint or HUMBLE suggestion on how to fix the issue.
      */
     public pushOrBail(
         ctx: any,
@@ -127,12 +127,16 @@ export class ErrorDataHandler {
         debugPrint('ctx.stop?.column = ' + ctx?.stop?.column)
 
         const lineNum: number | undefined = ctx?.start.line || undefined // Line (1-based).
-        const startCol: number | undefined = !ctx
-            ? undefined
-            : ++ctx.start.column // Column (0-based).
-        const endCol: number | undefined = !!ctx?.stop?.column
-            ? ++ctx.stop.column
-            : undefined // Note: Column (0-based).
+        // const startCol: number | undefined = !ctx
+        //     ? undefined
+        //     : ++ctx.start.column // Column (0-based).
+        // const endCol: number | undefined = !!ctx?.stop?.column
+        //     ? ++ctx.stop.column
+        //     : undefined // Note: Column (0-based).
+        const startCol =
+            ctx?.start?.column != null ? ctx.start.column + 1 : undefined // Note: Column (0-based).
+        const endCol =
+            ctx?.stop?.column != null ? ctx.stop.column + 1 : undefined // Note: Column (0-based).
 
         let colNum: number | undefined = startCol || endCol
         let msgWhatWithLineNum = msgWhat
@@ -164,7 +168,9 @@ export class ErrorDataHandler {
             colNum: colNum || 0, // 1-based, if n/a use 0.
         }
 
-        console.log() // Print an empty line before outputting message.
+        if (!this.isSilent) {
+            console.log() // Print an empty line before outputting message.
+        }
         switch (type) {
             case 'Internal-Error':
                 this.numInternalErrors++
@@ -179,7 +185,6 @@ export class ErrorDataHandler {
                     ),
                 )
                 this.emitInternalError(loc, msgWhatWithLineNum, msgWhy, msgHint)
-                console.log() // Emit an empty line before outputting message.
                 if (
                     this.persistThreshold === '1-Abort-on-Errors' ||
                     this.persistThreshold === '2-Abort-Even-on-Warnings'
@@ -201,7 +206,6 @@ export class ErrorDataHandler {
                     ),
                 )
                 this.emitSyntaxError(loc, msgWhatWithLineNum, msgWhy, msgHint)
-                console.log() // Emit an empty line before outputting message.
                 if (
                     this.persistThreshold === '1-Abort-on-Errors' ||
                     this.persistThreshold === '2-Abort-Even-on-Warnings'
@@ -229,7 +233,6 @@ export class ErrorDataHandler {
                         msgWhy,
                         msgHint,
                     )
-                    console.log() // Emit an empty line before outputting message.
                 }
                 if (this.persistThreshold === '2-Abort-Even-on-Warnings') {
                     // In test, throw an error instead of exiting.
@@ -249,7 +252,6 @@ export class ErrorDataHandler {
                     ),
                 )
                 this.emitNotice(loc, msgWhatWithLineNum, msgWhy, msgHint)
-                console.log() // Emit an empty line before outputting message.
                 break
             case 'Info':
                 this.numInfos++
@@ -264,9 +266,8 @@ export class ErrorDataHandler {
                     ),
                 )
                 this.emitInfo(loc, msgWhatWithLineNum, msgWhy, msgHint)
-                console.log() // Emit an empty line before outputting message.
                 break
-            default: // Including 'Internal-Error'.
+            default: // Unhandled/unknown error type → Fatal.
                 this.numFatalErrors++
                 this.errors.push(
                     this.makeIssue(
@@ -279,7 +280,6 @@ export class ErrorDataHandler {
                     ),
                 )
                 this.emitFatalError(loc, msgWhatWithLineNum, msgWhy, msgHint)
-                console.log() // Emit an empty line before outputting message.
                 // CANNOT recover fatal errors, will lead to an exit!
                 // In test, throw an error instead of exiting.
                 throw new Error(`Internal-Error: ${msgWhat}`)
@@ -318,6 +318,11 @@ export class ErrorDataHandler {
         }
     }
 
+    /*
+     * - error/warning → console.error / console.warn
+     * - notice/info → console.log / console.info
+     */
+
     private emitFatalError(
         loc: ILocation,
         msgWhat = 'Something went wrong!',
@@ -328,10 +333,13 @@ export class ErrorDataHandler {
             loc,
             issueTitle[0],
         )
-        console.error(messageHeader) // Print the issue title.
-        msgWhat && console.log(msgWhat)
-        msgWhy && console.log(msgWhy)
-        msgHint && console.log(msgHint)
+        if (!this.isSilent) {
+            console.error(messageHeader) // Print the issue title.
+            msgWhat && console.log(msgWhat)
+            msgWhy && console.log(msgWhy)
+            msgHint && console.log(msgHint)
+            console.log() // Emit an empty line before outputting message.
+        }
     }
 
     private emitInternalError(
@@ -344,10 +352,13 @@ export class ErrorDataHandler {
             loc,
             issueTitle[1],
         )
-        console.error(messageHeader) // Print the issue title.
-        msgWhat && console.log(msgWhat)
-        msgWhy && console.log(msgWhy)
-        msgHint && console.log(msgHint)
+        if (!this.isSilent) {
+            console.error(messageHeader) // Print the issue title.
+            msgWhat && console.log(msgWhat)
+            msgWhy && console.log(msgWhy)
+            msgHint && console.log(msgHint)
+            console.log() // Emit an empty line before outputting message.
+        }
     }
 
     private emitSyntaxError(
@@ -360,10 +371,13 @@ export class ErrorDataHandler {
             loc,
             issueTitle[2],
         )
-        console.error(messageHeader) // Print the issue title.
-        msgWhat && console.log(msgWhat)
-        msgWhy && console.log(msgWhy)
-        msgHint && console.log(msgHint)
+        if (!this.isSilent) {
+            console.error(messageHeader) // Print the issue title.
+            msgWhat && console.log(msgWhat)
+            msgWhy && console.log(msgWhy)
+            msgHint && console.log(msgHint)
+            console.log() // Emit an empty line before outputting message.
+        }
     }
 
     private emitSyntaxWarning(
@@ -376,10 +390,13 @@ export class ErrorDataHandler {
             loc,
             issueTitle[3],
         )
-        console.warn(messageHeader) // Print the issue title.
-        msgWhat && console.log(msgWhat)
-        msgWhy && console.log(msgWhy)
-        msgHint && console.log(msgHint)
+        if (!this.isQuiet && !this.isSilent) {
+            console.warn(messageHeader) // Print the issue title.
+            msgWhat && console.log(msgWhat)
+            msgWhy && console.log(msgWhy)
+            msgHint && console.log(msgHint)
+            console.log() // Emit an empty line before outputting message.
+        }
     }
 
     private emitNotice(
@@ -392,10 +409,13 @@ export class ErrorDataHandler {
             loc,
             issueTitle[4],
         )
-        console.warn(messageHeader) // Print the issue title.
-        msgWhat && console.log(msgWhat)
-        msgWhy && console.log(msgWhy)
-        msgHint && console.log(msgHint)
+        if (!this.isQuiet && !this.isSilent) {
+            console.log(messageHeader) // Print the issue title.
+            msgWhat && console.log(msgWhat)
+            msgWhy && console.log(msgWhy)
+            msgHint && console.log(msgHint)
+            console.log() // Emit an empty line before outputting message.
+        }
     }
 
     private emitInfo(
@@ -408,10 +428,13 @@ export class ErrorDataHandler {
             loc,
             issueTitle[5],
         )
-        console.info(messageHeader) // Print the issue title.
-        msgWhat && console.log(msgWhat)
-        msgWhy && console.log(msgWhy)
-        msgHint && console.log(msgHint)
+        if (!this.isQuiet && !this.isSilent) {
+            console.info(messageHeader) // Print the issue title.
+            msgWhat && console.log(msgWhat)
+            msgWhy && console.log(msgWhy)
+            msgHint && console.log(msgHint)
+            console.log() // Emit an empty line before outputting message.
+        }
     }
 
     public getNumOfAllMessages() {
@@ -419,7 +442,7 @@ export class ErrorDataHandler {
             this.getNumOfErrors() +
             this.getNumOfWarnings() +
             this.getNumOfNotices() +
-            this.getNumOfNotices()
+            this.getNumOfInfos()
         )
     }
 

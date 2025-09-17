@@ -797,7 +797,17 @@ https://github.com/YINI-lang/YINI-spec
     <td>Show only errors, will suppress warnings and messages sent to the console/log (does not change <code>meta</code>)</td>
     <td>✅</td>
     <td>🚧</td>
+    <td>🚧</td>
+    <td>Confirm behavior in strict/lenient</td>
+  </tr>
+
+  <tr>
+    <td><code>silent</code></td>
     <td>✅</td>
+    <td>Suppress all output (even errors, exit code only).</td>
+    <td>✅</td>
+    <td>🚧</td>
+    <td>🚧</td>
     <td>Confirm behavior in strict/lenient</td>
   </tr>
 
