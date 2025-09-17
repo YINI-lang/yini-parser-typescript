@@ -244,11 +244,12 @@ export class YiniRuntime {
 
         // this.#runtime.sourceType = 'File'
         this.#runtime.fileName = filePath
+        this.#runtime.timeIoMs = +(timeEndMs - timeStartMs).toFixed(3) // NOTE: (!) Dependent of isWithTiming.
 
         if (userOpts.includeMetadata) {
             this.#runtime.lineCount = content.split(/\r?\n/).length // Counts the lines.
             this.#runtime.fileByteSize = fileByteSize
-            this.#runtime.timeIoMs = +(timeEndMs - timeStartMs).toFixed(3)
+            // this.#runtime.timeIoMs = +(timeEndMs - timeStartMs).toFixed(3) // NOTE: (!) Dependent of isWithTiming.
             this.#runtime.preferredBailSensitivity = userOpts.failLevel
             this.#runtime.sha256 = computeSha256(content) // NOTE: Compute BEFORE any possible tampering of content.
         }

@@ -380,13 +380,10 @@ if (isProdEnv()) {
         //         }),
         //     ),
         // )
-        const fileName = './tests/fixtures/valid/common/common-config-2.yini'
+        const fileName = './tests/fixtures/invalid/corrupt-config-2.yini'
         const result = YINI.parseFile(fileName, {
             strictMode: true,
-            treatEmptyValueAsNull: 'allow',
-            failLevel: 'auto',
-            includeMetadata: true,
-            includeDiagnostics: true,
+            failLevel: 'ignore-errors',
         })
         printObject(result)
 
