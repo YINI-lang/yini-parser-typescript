@@ -2,7 +2,6 @@ import { isDebug, isDev } from '../../config/env'
 import { ParseOptions } from '../../types'
 import {
     IParseCoreOptions,
-    IParseRuleOptions,
     TBailSensitivityLevel,
     TParserMode,
 } from '../internalTypes'
@@ -55,9 +54,6 @@ export const isOptionsObjectForm = (v: unknown): v is ParseOptions => {
             'silent' in (v as any))
     )
 }
-
-// const mode: TParserMode =
-// ((arg2 as any)?.strictMode ?? (arg2 as boolean | undefined)) ===
 
 export const inferModeFromArgs = (
     arg2?: boolean | ParseOptions,
