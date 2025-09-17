@@ -1,0 +1,29 @@
+name: Semgrep
+
+on:
+    push:
+    pull_request:
+    schedule:
+        - cron: '0 4 * * 1'
+
+permissions:
+    contents: read
+    security-events: write
+
+jobs:
+    semgrep:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            # Runs anonymously (no PR annotations). For rich reporting,
+            # create a SEMGREP_APP_TOKEN repo secret and add `--sarif --output=semgrep.sarif`.
+            - uses: returntocorp/semgrep-action@v1
+              with:
+                  config: >-
+                      p/owasp-top-ten
+                      p/nodejs
+                      p/secrets
+                  generateSarif: true
+            - uses: github/codeql-action/upload-sarif@v3
+              with:
+                  sarif_file: semgrep.sarif

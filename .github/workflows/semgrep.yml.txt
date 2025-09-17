@@ -1,0 +1,6 @@
+Semgrep — pragmatic static analysis rules
+
+
+Runs rule packs (OWASP, Node.js, secrets) to catch insecure patterns and common logic bugs.
+
+Complements CodeQL with broader, pattern-based checks.
