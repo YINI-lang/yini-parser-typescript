@@ -238,6 +238,7 @@ export const runPipeline = (
         runtimeInfo.fileName,
         coreOptions.bailSensitivity,
         coreOptions.isQuiet,
+        coreOptions.isSilent,
     )
 
     if (yiniContent.trim() === '') {
@@ -419,6 +420,15 @@ export const runPipeline = (
             'Warning: Strict initialMode is not yet fully implemented.',
             'Some validation rules may still be missing or incomplete.',
         )
+
+        if (coreOptions.bailSensitivity === '0-Ignore-Errors') {
+            // IMPORTANT: If "silent" option is set, do not log anything to console!
+            if (!coreOptions.isQuiet && !coreOptions.isSilent) {
+                console.warn(
+                    `Warning: The initial mode was set to strict mode, but fail level is set to 'ignore-errors'. This combination is contradictory.`,
+                )
+            }
+        }
     } else {
         debugPrint('visitor.visit(..): finalJSResult:')
         isDebug() && console.debug(finalJSResult)
