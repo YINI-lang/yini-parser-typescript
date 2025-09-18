@@ -1,0 +1,6 @@
+Dependency Security (npm audit + lockfile-lint)
+
+- Uses npm ci --ignore-scripts: Avoids running install scripts in CI, reducing supply-chain risk.
+- npm audit checks installed packages for known CVEs.
+- lockfile-lint ensures the lockfile only pulls from HTTPS and the official registry and has valid integrity hashes.
+- Keeps CI fast and least-privileged.
