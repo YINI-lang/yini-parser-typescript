@@ -40,10 +40,11 @@ jobs:
             # Enforce lockfile hygiene to prevent pulling from non-HTTPS or non-registry sources
             # and to ensure integrity hashes are present.
             - name: Lockfile lint
-              run: npx --yes lockfile-lint \
-                  --path package-lock.json \
-                  --type npm \
-                  --validate-https \
-                  --allowed-hosts registry.npmjs.org \
-                  --empty-hostname false \
-                  --validate-integrity
+              run: |
+                  npx --yes lockfile-lint \
+                    --path package-lock.json \
+                    --type npm \
+                    --validate-https \
+                    --allowed-hosts registry.npmjs.org \
+                    --empty-hostname false \
+                    --validate-integrity
