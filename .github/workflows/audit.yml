@@ -1,5 +1,5 @@
 # .github/workflows/audit.yml
-name: Dependency Security
+name: Dependency Security (Audit)
 
 on:
     pull_request:
