@@ -9,6 +9,7 @@ on:
 
 permissions:
     contents: read
+    security-events: write # <-- needed to upload SARIF to the Security tab
 
 jobs:
     gitleaks:
@@ -19,17 +20,29 @@ jobs:
               with:
                   fetch-depth: 0
 
-            # Skip on PRs from forks (secrets aren't provided to forked workflows)
+            # Run the scan (skip on forked PRs where secrets are not available)
             - name: Gitleaks scan
               if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork }}
               uses: gitleaks/gitleaks-action@v2
+              continue-on-error: true # allow upload step to run even if leaks are found
               env:
-                  # For org repos: provide the license if present; user repos don't need it.
+                  # Only required for org repos; user repos can leave this empty
                   GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
               with:
-                  args: detect --source . --no-git --redact
+                  args: >
+                      detect --source . --no-git --redact
+                      --verbose
+                      --report-format sarif
+                      --report-path gitleaks.sarif
 
-            # (Optional) Make the skip explicit in logs for forked PRs
+            # Upload SARIF so findings appear under "Security > Code scanning alerts"
+            - name: Upload SARIF to GitHub Security
+              if: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork) && always() }}
+              uses: github/codeql-action/upload-sarif@v3
+              with:
+                  sarif_file: gitleaks.sarif
+
+            # Optional: make the skip explicit in logs for forked PRs
             - name: Skipped on forked PRs
               if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork }}
               run: echo "Skipping Gitleaks on forked PRs (no secrets available)."
