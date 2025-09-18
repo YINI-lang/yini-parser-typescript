@@ -1,3 +1,8 @@
 Gitleaks - secret scanning
 
 Scans commits for leaked secrets (API keys, tokens, credentials).
+
+- Immediate secret use: secrets are available to new jobs right after saving—no need to wait.
+- Org vs user repos: runs with a license when GITLEAKS_LICENSE exists; otherwise runs license-free (user repos).
+- Fork safety: skips on PRs from forks (secrets aren't exposed there), avoiding false failures.
+- Redacted output: --redact hides secret values in logs while still flagging problems.

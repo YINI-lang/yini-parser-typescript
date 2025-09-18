@@ -1,3 +1,4 @@
+# .github/workflows/gitleaks.yml
 name: Secret Scan (Gitleaks)
 
 on:
@@ -13,9 +14,28 @@ jobs:
     gitleaks:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
+            - name: Checkout (full history for better scanning)
+              uses: actions/checkout@v4
               with:
-                  fetch-depth: 0 # scan history on PRs
-            - uses: gitleaks/gitleaks-action@v2
+                  fetch-depth: 0
+
+            # Run when a license secret is present (typical for org repos).
+            - name: Gitleaks (with license)
+              if: ${{ secrets.GITLEAKS_LICENSE && (github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork) }}
+              uses: gitleaks/gitleaks-action@v2
+              env:
+                  GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
               with:
                   args: detect --source . --no-git --redact
+
+            # Run without license if none is provided (OK for user repos).
+            - name: Gitleaks (no license)
+              if: ${{ !secrets.GITLEAKS_LICENSE && (github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork) }}
+              uses: gitleaks/gitleaks-action@v2
+              with:
+                  args: detect --source . --no-git --redact
+
+            # Optional: Skip on forked PRs (GitHub doesn't expose secrets to forks).
+            - name: Skipped on forked PRs
+              if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork }}
+              run: echo "Skipping Gitleaks on forked PRs (no secrets available)."
