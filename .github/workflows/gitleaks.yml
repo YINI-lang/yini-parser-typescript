@@ -19,23 +19,17 @@ jobs:
               with:
                   fetch-depth: 0
 
-            # Run when a license secret is present (typical for org repos).
-            - name: Gitleaks (with license)
-              if: ${{ secrets.GITLEAKS_LICENSE && (github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork) }}
+            # Skip on PRs from forks (secrets aren't provided to forked workflows)
+            - name: Gitleaks scan
+              if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork }}
               uses: gitleaks/gitleaks-action@v2
               env:
+                  # For org repos: provide the license if present; user repos don't need it.
                   GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
               with:
                   args: detect --source . --no-git --redact
 
-            # Run without license if none is provided (OK for user repos).
-            - name: Gitleaks (no license)
-              if: ${{ !secrets.GITLEAKS_LICENSE && (github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork) }}
-              uses: gitleaks/gitleaks-action@v2
-              with:
-                  args: detect --source . --no-git --redact
-
-            # Optional: Skip on forked PRs (GitHub doesn't expose secrets to forks).
+            # (Optional) Make the skip explicit in logs for forked PRs
             - name: Skipped on forked PRs
               if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork }}
               run: echo "Skipping Gitleaks on forked PRs (no secrets available)."
