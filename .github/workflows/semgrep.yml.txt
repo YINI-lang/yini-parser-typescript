@@ -1,6 +1,6 @@
 Semgrep — pragmatic static analysis rules
 
 
-Runs rule packs (OWASP, Node.js, secrets) to catch insecure patterns and common logic bugs.
-
-Complements CodeQL with broader, pattern-based checks.
+- Runs rule packs (OWASP, Node.js, secrets) to catch insecure patterns and common logic bugs.
+- Scope for speed/noise: add --include src --include packages --exclude tests/fixtures as needed.
+- Complements CodeQL with broader, pattern-based checks.

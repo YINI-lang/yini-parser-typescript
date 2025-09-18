@@ -1,0 +1,37 @@
+# .github/workflows/semgrep.yml
+name: Semgrep (pragmatic static analysis)
+
+on:
+    push:
+    pull_request:
+    schedule:
+        - cron: '0 4 1 * *' # monthly (1st of each month at 04:00 UTC)
+
+permissions:
+    contents: read
+    security-events: write # needed to upload SARIF
+
+jobs:
+    semgrep:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            # Run Semgrep with curated rule packs; write SARIF to workspace
+            - name: Semgrep scan
+              uses: returntocorp/semgrep-action@v1
+              with:
+                  config: >
+                      p/owasp-top-ten
+                      p/nodejs
+                      p/secrets
+                  args: >-
+                      --sarif --output=semgrep.sarif
+
+            # Upload SARIF (skip on forked PRs since permissions are restricted)
+            - name: Upload SARIF to GitHub Security
+              if: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork) && hashFiles('semgrep.sarif') != '' }}
+              uses: github/codeql-action/upload-sarif@v3
+              with:
+                  sarif_file: semgrep.sarif
