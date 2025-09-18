@@ -1,0 +1,21 @@
+name: Secret Scan (Gitleaks)
+
+on:
+    push:
+    pull_request:
+    schedule:
+        - cron: '0 1 * * 1' # weekly
+
+permissions:
+    contents: read
+
+jobs:
+    gitleaks:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0 # scan history on PRs
+            - uses: gitleaks/gitleaks-action@v2
+              with:
+                  args: detect --source . --no-git --redact
