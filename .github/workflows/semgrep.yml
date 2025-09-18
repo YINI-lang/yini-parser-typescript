@@ -9,7 +9,7 @@ on:
 
 permissions:
     contents: read
-    security-events: write # needed to upload SARIF
+    security-events: write # needed for SARIF upload
 
 jobs:
     semgrep:
@@ -18,18 +18,28 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
 
-            # Run Semgrep with curated rule packs; write SARIF to workspace
-            - name: Semgrep scan
-              uses: returntocorp/semgrep-action@v1
+            - name: Setup Python
+              uses: actions/setup-python@v5
               with:
-                  config: >
-                      p/owasp-top-ten
-                      p/nodejs
-                      p/secrets
-                  args: >-
-                      --sarif --output=semgrep.sarif
+                  python-version: '3.x'
 
-            # Upload SARIF (skip on forked PRs since permissions are restricted)
+            - name: Install Semgrep CLI
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install semgrep
+
+            # Run Semgrep, write SARIF to workspace
+            - name: Semgrep scan
+              # Optional: let the job continue so the SARIF still uploads even on findings
+              continue-on-error: true
+              run: |
+                  semgrep scan \
+                    --config p/owasp-top-ten \
+                    --config p/nodejs \
+                    --config p/secrets \
+                    --sarif -o semgrep.sarif
+
+            # Upload SARIF (skip on forked PRs)
             - name: Upload SARIF to GitHub Security
               if: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork) && hashFiles('semgrep.sarif') != '' }}
               uses: github/codeql-action/upload-sarif@v3
