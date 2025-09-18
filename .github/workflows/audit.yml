@@ -1,11 +1,13 @@
-name: Dependency Security
+# .github/workflows/audit.yml
+name: Dependency Security (Audit)
 
 on:
     pull_request:
     push:
         branches: ['main']
     schedule:
-        - cron: '0 2 * * 1' # weekly
+        # Run at 02:00 UTC on the 1st of every month
+        - cron: '0 2 1 * *'
 
 permissions:
     contents: read
@@ -14,25 +16,35 @@ jobs:
     audit:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
+            - name: Checkout
+              uses: actions/checkout@v4
 
-            - uses: actions/setup-node@v4
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
               with:
                   node-version: 20
                   cache: npm
 
-            # Install w/ scripts disabled to reduce supply-chain risk
-            - run: npm ci --ignore-scripts
+            # Safer install for CI: skip postinstall scripts to reduce supply-chain risk.
+            - name: Install (no scripts)
+              run: npm ci --ignore-scripts
 
-            # npm audit (fail on high/critical; adjust to your tolerance)
-            - run: npm audit --omit=dev --audit-level=high
-              continue-on-error: true # keep job going to run lockfile lint too
+            # Check for known vulnerabilities in prod deps.
+            # Using --omit=dev keeps noise down for library projects.
+            # Using --audit-level=high avoids failing on low/moderate issues.
+            - name: npm audit (high+)
+              run: npm audit --omit=dev --audit-level=high
+              # Keep the job going so we can still lint the lockfile even if audit fails.
+              continue-on-error: true
 
-            # Lockfile lint: HTTPS registry only, no Git protocols, correct manager
-            - run: npx --yes lockfile-lint \
-                  --path package-lock.json \
-                  --type npm \
-                  --validate-https \
-                  --allowed-hosts registry.npmjs.org \
-                  --empty-hostname false \
-                  --validate-integrity
+            # Enforce lockfile hygiene to prevent pulling from non-HTTPS or non-registry sources
+            # and to ensure integrity hashes are present.
+            - name: Lockfile lint
+              run: |
+                  npx --yes lockfile-lint \
+                    --path package-lock.json \
+                    --type npm \
+                    --validate-https \
+                    --allowed-hosts registry.npmjs.org \
+                    --empty-hostname false \
+                    --validate-integrity

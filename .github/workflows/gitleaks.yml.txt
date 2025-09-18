@@ -1,0 +1,7 @@
+Gitleaks - secret scanning
+
+Scans commits for leaked secrets (API keys, tokens, credentials).
+
+- Fork safety: skips on PRs from forks (secrets aren't exposed there), avoiding false failures.
+- Redacted output: --redact hides secret values in logs while still flagging problems.
+--report-path ${{ github.workspace }}/gitleaks.sarif guarantees the report lands in the checked-out repo dir that the uploader reads from.

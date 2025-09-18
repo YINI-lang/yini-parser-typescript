@@ -1,0 +1,3 @@
+Dependabot - keep dependencies safe & fresh
+
+Automatically opens PRs to update npm dependencies and GitHub Actions.
