@@ -32,7 +32,7 @@ ci-generate:
 		-Dlanguage=TypeScript \
 		-no-listener -visitor \
 		-o $(DIR_OUTPUT) \
-		-lib "./grammar/v1.0.0-rc.3" \
+		-lib ./grammar/v1.0.0-rc.3 \
 		-Xlog \
 		$(LEXER_FILE) \
 		$(PARSER_FILE)
