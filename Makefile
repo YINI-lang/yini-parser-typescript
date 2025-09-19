@@ -29,7 +29,7 @@ ci-generate:
 		-o $(DIR_OUTPUT) \
 		$(LEXER_FILE)
 
-	echo Generates parser (with tokenVocab from generated dir)...
+	echo "Generates parser (with tokenVocab from generated dir)..."
 	java -jar $(ANTLR4) \
 		-Dlanguage=TypeScript \
 		-no-listener -visitor \
