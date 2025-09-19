@@ -3,7 +3,7 @@
 PARSER_FILE=./grammar/v1.0.0-rc.3/YiniParser.g4
 LEXER_FILE=./grammar/v1.0.0-rc.3/YiniLexer.g4
 
-ANTLR4=./libs/antlr4/antlr-4.13.2-complete.jar
+ANTLR_JAR=./libs/antlr4/antlr-4.13.2-complete.jar
 
 # Output dir for ANTLR.
 DIR_OUTPUT=./src/grammar/generated
@@ -12,12 +12,12 @@ START_RULE="yini"
 
 # NOTE: Below does not seem to work!!
 antlr-help:
-	java -jar $(ANTLR4) -help
+	java -jar $(ANTLR_JAR) -help
 
 generate:
 	@echo off
 	echo Generate sources for the grammar...
-	java -jar $(ANTLR4) \
+	java -jar $(ANTLR_JAR) \
 		-Dlanguage=TypeScript \
 		-no-listener -visitor \
 		-o $(DIR_OUTPUT) \
@@ -29,7 +29,7 @@ generate:
 ci-generate: ci-gen-lexer ci-gen-parser
 	@echo "Generation done."
 # 	echo Generate sources for the grammar...
-# 	java -Xmx1g -jar $(ANTLR4) \
+# 	java -Xmx1g -jar $(ANTLR_JAR) \
 # 		-Dlanguage=TypeScript \
 # 		-no-listener -visitor \
 # 		-o $(DIR_OUTPUT) \
@@ -44,14 +44,14 @@ ci-generate: ci-gen-lexer ci-gen-parser
 # due to CI issue with not seeing tokens in the parser.
 # ci-generate:
 # 	echo Generates lexer...
-# 	java -jar $(ANTLR4) \
+# 	java -jar $(ANTLR_JAR) \
 # 		-Dlanguage=TypeScript \
 # 		-no-listener -visitor \
 # 		-o $(DIR_OUTPUT) \
 # 		$(LEXER_FILE)
 
 # 	echo "Generates parser (with tokenVocab from generated dir)..."
-# 	java -jar $(ANTLR4) \
+# 	java -jar $(ANTLR_JAR) \
 # 		-Dlanguage=TypeScript \
 # 		-no-listener -visitor \
 # 		-o $(DIR_OUTPUT) \
@@ -59,17 +59,23 @@ ci-generate: ci-gen-lexer ci-gen-parser
 # 		$(PARSER_FILE)
 # 	echo Done.
 
+## Note: -Xexact-output-dir after output dir
 ci-gen-lexer:
-	echo Generates lexer...
-	java -Xmx1g -jar $(ANTLR4) \
+	@echo "Generates lexer (forces tokens into $(OUT_DIR))..."
+	java -Xmx1g -jar $(ANTLR_JAR) \
 		-Dlanguage=TypeScript \
 		-no-listener -visitor \
-		-o $(DIR_OUTPUT) \
+		-o $(DIR_OUTPUT) -Xexact-output-dir \
 		$(LEXER_FILE)
 
+	@echo "Contents of $(OUT_DIR):"
+	@ls -la $(OUT_DIR)
+	@test -f "$(OUT_DIR)/YiniLexer.tokens" || \
+		( echo "::error::Missing $(OUT_DIR)/YiniLexer.tokens after lexer generation"; exit 2 )
+
 ci-gen-parser:
-	echo "Generates parser (with tokenVocab from generated dir)..."
-	java -Xmx1g -jar $(ANTLR4) \
+	@echo "Generates parser (using tokenVocab from $(OUT_DIR))..."
+	java -Xmx1g -jar $(ANTLR_JAR) \
 		-Dlanguage=TypeScript \
 		-no-listener -visitor \
 		-o $(DIR_OUTPUT) \
