@@ -14,6 +14,7 @@ START_RULE="yini"
 antlr-help:
 	java -jar $(ANTLR_JAR) -help
 
+# Run this only on Windows!
 generate:
 	@echo off
 	echo Generate sources for the grammar...
@@ -26,40 +27,13 @@ generate:
 
 	echo Done.
 
+# Run this only on Linux runners!
 ci-generate: ci-gen-lexer ci-gen-parser
 	@echo "Generation done."
-# 	echo Generate sources for the grammar...
-# 	java -Xmx1g -jar $(ANTLR_JAR) \
-# 		-Dlanguage=TypeScript \
-# 		-no-listener -visitor \
-# 		-o $(DIR_OUTPUT) \
-# 		-lib $(DIR_OUTPUT) \
-# 		-Xlog \
-# 		$(LEXER_FILE) \
-# 		$(PARSER_FILE)
-		
-# 	echo Done.
 
-# Two-phase generation (lexer first, then parser with -lib),
-# due to CI issue with not seeing tokens in the parser.
-# ci-generate:
-# 	echo Generates lexer...
-# 	java -jar $(ANTLR_JAR) \
-# 		-Dlanguage=TypeScript \
-# 		-no-listener -visitor \
-# 		-o $(DIR_OUTPUT) \
-# 		$(LEXER_FILE)
-
-# 	echo "Generates parser (with tokenVocab from generated dir)..."
-# 	java -jar $(ANTLR_JAR) \
-# 		-Dlanguage=TypeScript \
-# 		-no-listener -visitor \
-# 		-o $(DIR_OUTPUT) \
-# 		-lib $(DIR_OUTPUT) \
-# 		$(PARSER_FILE)
-# 	echo Done.
-
-## Note: -Xexact-output-dir after output dir
+## Important: -Xexact-output-dir after output dir
+## (!) On Linux runners the tool can otherwise look in the grammar
+## source dir and not find it.
 ci-gen-lexer:
 	@echo "Generates lexer (forces tokens into $(OUT_DIR))..."
 	java -Xmx1g -jar $(ANTLR_JAR) \
@@ -68,10 +42,12 @@ ci-gen-lexer:
 		-o $(DIR_OUTPUT) -Xexact-output-dir \
 		$(LEXER_FILE)
 
+	@echo
 	@echo "Contents of $(OUT_DIR):"
 	@ls -la $(OUT_DIR)
 	@test -f "$(OUT_DIR)/YiniLexer.tokens" || \
 		( echo "::error::Missing $(OUT_DIR)/YiniLexer.tokens after lexer generation"; exit 2 )
+	@echo
 
 ci-gen-parser:
 	@echo "Generates parser (using tokenVocab from $(OUT_DIR))..."
