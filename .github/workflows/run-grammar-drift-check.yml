@@ -12,6 +12,10 @@ jobs:
     drift-check:
         runs-on: ubuntu-latest
 
+        env:
+            # Absolute paths anchored at the workspace.
+            OUT_DIR: ${{ github.workspace }}/src/grammar/generated
+
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
