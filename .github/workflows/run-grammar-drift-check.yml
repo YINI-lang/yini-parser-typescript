@@ -42,7 +42,7 @@ jobs:
               run: npm run clean:antlr --if-present
 
             - name: Re-generate grammar
-              run: npm run antlr
+              run: npm run ci:antlr # ci:antlr uses a two-phase generation process especially for CI (other problems seeing tokens).
 
             - name: Fail if uncommitted changes
               run: |

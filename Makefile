@@ -13,7 +13,29 @@ START_RULE="yini"
 generate:
 	@echo off
 	echo Generate sources for the grammar...
-	java -jar $(ANTLR4) -o $(DIR_OUTPUT) -Dlanguage=TypeScript $(PARSER_FILE) $(LEXER_FILE) -no-listener -visitor
+	java -jar $(ANTLR4) \
+		-o $(DIR_OUTPUT) \
+		-Dlanguage=TypeScript \
+		$(PARSER_FILE) $(LEXER_FILE) \
+		-no-listener -visitor
+	echo Done.
+# Two-phase generation (lexer first, then parser with -lib),
+# due to CI issue with not seeing tokens in the parser.
+ci-generate:
+	echo Generates lexer...
+	java -jar $(ANTLR4) \
+		-Dlanguage=TypeScript \
+		-no-listener -visitor \
+		-o $(DIR_OUTPUT) \
+		$(LEXER_FILE)
+
+	echo Generates parser (with tokenVocab from generated dir)...
+	java -jar $(ANTLR4) \
+		-Dlanguage=TypeScript \
+		-no-listener -visitor \
+		-o $(DIR_OUTPUT) \
+		-lib $(DIR_OUTPUT) \
+		$(PARSER_FILE)
 	echo Done.
 
 # Invoking a Python wrapper for ANTLR (antlr4),  which tries to automatically
