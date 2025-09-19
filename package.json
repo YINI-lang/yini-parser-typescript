@@ -70,9 +70,7 @@
         "tsc": "npx tsc -p ./tsconfig.json",
         "lint": "eslint src --ext .ts",
         "clean:ts-js": "bash scripts/clean-ts-js.sh",
-        "antlr": "make generate",
-        "ci:antlr:lexer": "make ci-gen-lexer",
-        "ci:antlr:parser": "make ci-gen-parser",
+        "antlr": "make ci-generate",
         "build": "tsc -p ./tsconfig.json",
         "prepublishOnly": "npm run lint && npm test && npm run build"
     },
