@@ -1,9 +1,8 @@
-name: Run All Tests
+name: Run All Tests (full)
 
 on:
-    pull_request:
-        # branches: ['develop', 'staging']
-        branches: ['main']
+    push: # Any push. **Post-merge** (Good for deploy / publish / generate artifacts.)
+        branches: ['main'] # To main (direct commits, or merges from PRs).
     workflow_dispatch: # allows manual run from GitHub UI
 
 jobs:
@@ -30,10 +29,19 @@ jobs:
             - name: Print Node.js version
               run: node --version
 
-            - name: Install dependencies
-              run: npm ci # npm clean-install (installs without changing package-lock.json)
+            - name: Install dependencies (no scripts)
+              run: npm ci --ignore-scripts # npm clean-install (installs without changing package-lock.json)
 
-            - name: Run Specific Test
+            - name: Typecheck
+              run: npm run typecheck --if-present
+
+            - name: Lint
+              run: npm run lint --if-present
+
+            - name: Build # So that dist/ gets updated too.
+              run: npm run build
+
+            - name: Run all test suites
               run: |
                   echo "Running test: ${{ github.event.inputs.testName }}"
                   npm run ci:test

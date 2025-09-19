@@ -66,6 +66,7 @@
         "test:esm": "node ./tests/fixtures/test-src-files/esm-smoke.js",
         "ci:test": "cross-env NODE_ENV=test APP_ENV=ci jest --verbose --runInBand",
         "ci:test:smoke": "cross-env NODE_ENV=test APP_ENV=ci jest tests/smoke --verbose --runInBand",
+        "ci:test:unit": "cross-env NODE_ENV=test APP_ENV=ci jest src/ --verbose --runInBand",
         "tsc": "npx tsc -p ./tsconfig.json",
         "lint": "eslint src --ext .ts",
         "clean:ts-js": "bash scripts/clean-ts-js.sh",
