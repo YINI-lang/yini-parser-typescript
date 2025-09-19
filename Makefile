@@ -37,6 +37,7 @@ ci-generate: ci-gen-lexer ci-gen-parser
 ci-gen-lexer:
 	@echo "Generates lexer (forces tokens into $(OUT_DIR))..."
 	java -Xmx1g -jar $(ANTLR_JAR) \
+		-Werror -long-messages \
 		-Dlanguage=TypeScript \
 		-no-listener -visitor \
 		-o $(DIR_OUTPUT) -Xexact-output-dir \
@@ -52,6 +53,7 @@ ci-gen-lexer:
 ci-gen-parser:
 	@echo "Generates parser (using tokenVocab from $(OUT_DIR))..."
 	java -Xmx1g -jar $(ANTLR_JAR) \
+		-Werror -long-messages \
 		-Dlanguage=TypeScript \
 		-no-listener -visitor \
 		-o $(DIR_OUTPUT) \
