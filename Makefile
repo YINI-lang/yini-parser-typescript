@@ -1,12 +1,12 @@
 
 
-PARSER_FILE=grammar/v1.0.0-rc.3/YiniParser.g4
-LEXER_FILE=grammar/v1.0.0-rc.3/YiniLexer.g4
+PARSER_FILE=./grammar/v1.0.0-rc.3/YiniParser.g4
+LEXER_FILE=./grammar/v1.0.0-rc.3/YiniLexer.g4
 
-ANTLR4=libs/antlr4/antlr-4.13.2-complete.jar
+ANTLR4=./libs/antlr4/antlr-4.13.2-complete.jar
 
 # Output dir for ANTLR.
-DIR_OUTPUT=src/grammar/generated
+DIR_OUTPUT=./src/grammar/generated
 
 START_RULE="yini"
 
@@ -24,10 +24,12 @@ generate:
 
 ci-generate:
 	echo Generate sources for the grammar...
-	java -jar $(ANTLR4) \
+	java -Xmx1g -jar $(ANTLR4) \
 		-Dlanguage=TypeScript \
 		-no-listener -visitor \
 		-o $(DIR_OUTPUT) \
+		-lib $(DIR_OUTPUT) \
+		-Xlog \
 		$(LEXER_FILE) \
 		$(PARSER_FILE)
 		

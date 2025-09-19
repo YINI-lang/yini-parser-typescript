@@ -55,7 +55,7 @@ jobs:
             #   run: npm run ci:antlr:parser # Uses a two-phase generation process especially for CI (other problems seeing tokens).
 
             - name: Re-generate grammar files
-              run: npm run antlr
+              run: npm run ci:antlr
 
             - name: Fail if uncommitted changes
               run: |
