@@ -1,8 +1,12 @@
-name: Publish npm package
+name: Publish npm package (provenance)
 
 on:
     release:
         types: [published]
+
+permissions:
+    contents: read
+    id-token: write # Needed for npm provenance.
 
 jobs:
     publish:
@@ -18,13 +22,20 @@ jobs:
                   node-version: '20' # Use your desired Node version
                   registry-url: 'https://registry.npmjs.org/'
 
-            - name: Install dependencies
-              run: npm ci
+            - name: Install (no scripts)
+              run: npm ci --ignore-scripts
+
+            - name: Typecheck
+              run: npm run typecheck --if-present
+
+            - name: Lint
+              run: npm run lint --if-present
 
             - name: Build package
               run: npm run build # Optional, if you have a build step
 
             - name: Publish to npm
-              run: npm publish --access public # Use --access public for public packages
+              # run: npm publish --access public # Use --access public for public packages
+              run: npm publish --provenance --access public
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

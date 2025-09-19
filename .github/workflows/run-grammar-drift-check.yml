@@ -1,0 +1,41 @@
+# Prevents "works on my machine" parser drift - CI fails if antlr changes tracked files.
+
+name: Grammar Drift Check
+
+on:
+    pull_request: # PR:s **Pre-merge** (Good for fast feedback before merge. - Secrets: Not available for PRs from forks (by default).)
+    workflow_dispatch: # allows manual run from GitHub UI
+
+jobs:
+    drift-check:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20' # adjust as needed
+                  cache: npm
+
+            - name: Print Node.js version
+              run: node --version
+
+            - name: Install dependencies (no scripts)
+              run: npm ci --ignore-scripts # npm clean-install (installs without changing package-lock.json)
+
+            - name: Clean generated
+              run: npm run clean:antlr --if-present
+
+            - name: Re-generate grammar
+              run: npm run antlr
+
+            - name: Fail if uncommitted changes
+              run: |
+                  if ! git diff --quiet; then
+                    echo "::error::Grammar artifacts are out of date. Run 'npm run clean:grammar && npm run gen:grammar' and commit."
+                    git status --porcelain
+                    exit 1
+                  fi
