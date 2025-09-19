@@ -10,6 +10,10 @@ DIR_OUTPUT=./src/grammar/generated
 
 START_RULE="yini"
 
+# NOTE: Below does not seem to work!!
+antlr-help:
+	java -jar $(ANTLR4) -help
+
 generate:
 	@echo off
 	echo Generate sources for the grammar...
@@ -28,7 +32,7 @@ ci-generate:
 		-Dlanguage=TypeScript \
 		-no-listener -visitor \
 		-o $(DIR_OUTPUT) \
-		-lib $(DIR_OUTPUT) \
+		-lib "./grammar/v1.0.0-rc.3" \
 		-Xlog \
 		$(LEXER_FILE) \
 		$(PARSER_FILE)
