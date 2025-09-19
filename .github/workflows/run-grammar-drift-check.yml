@@ -20,7 +20,7 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
 
-            # Install Java (Temurin distribution, version 21 or 17 is fine)
+            # Install Java (Temurin distribution).
             - name: Setup Java
               uses: actions/setup-java@v4
               with:
@@ -45,16 +45,8 @@ jobs:
             - name: Clean generated
               run: npm run clean:antlr --if-present
 
-            # - name: Re-generate lexer
-            #   run: npm run ci:antlr:lexer # Uses a two-phase generation process especially for CI (other problems seeing tokens).
-
-            # - name: (Debug) list generated files
-            #   run: ls -la "$OUT_DIR"
-
-            # - name: Re-generate parser
-            #   run: npm run ci:antlr:parser # Uses a two-phase generation process especially for CI (other problems seeing tokens).
-
-            # NOTE: Error with "cannot find tokens file .../YiniLexer.tokens"
+            # IMPORTANT: To avoid: Error with "cannot find tokens file .../YiniLexer.tokens"
+            # Run the ci:antlr that is customized for Linux runners.
             - name: Re-generate grammar files
               run: npm run ci:antlr
 

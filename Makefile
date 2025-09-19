@@ -1,5 +1,4 @@
 
-
 PARSER_FILE=./grammar/v1.0.0-rc.3/YiniParser.g4
 LEXER_FILE=./grammar/v1.0.0-rc.3/YiniLexer.g4
 
