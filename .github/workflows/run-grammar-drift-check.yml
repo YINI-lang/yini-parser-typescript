@@ -3,6 +3,8 @@
 name: Grammar Drift Check
 
 on:
+    push: # Any push. **Post-merge** (Good for deploy / publish / generate artifacts.)
+        branches: ['main'] # To main (direct commits, or merges from PRs).
     pull_request: # PR:s **Pre-merge** (Good for fast feedback before merge. - Secrets: Not available for PRs from forks (by default).)
     workflow_dispatch: # allows manual run from GitHub UI
 
