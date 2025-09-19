@@ -1,6 +1,6 @@
 # Currently only run unit+smoke test on a matrix of os and node versions.
 
-name: Run Regression Tests
+name: Regression Tests
 
 on:
     push: # Any push. **Post-merge** (Good for deploy / publish / generate artifacts.)

@@ -1,4 +1,4 @@
-name: Run Unit & Smoke Tests (fast)
+name: Unit & Smoke Tests (fast)
 
 on:
     pull_request: # PR:s **Pre-merge** (Good for fast feedback before merge. - Secrets: Not available for PRs from forks (by default).)

@@ -1,4 +1,4 @@
-name: Run All Tests (full)
+name: All Test Suites (full)
 
 on:
     push: # Any push. **Post-merge** (Good for deploy / publish / generate artifacts.)
