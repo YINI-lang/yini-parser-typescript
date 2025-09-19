@@ -71,7 +71,8 @@
         "lint": "eslint src --ext .ts",
         "clean:ts-js": "bash scripts/clean-ts-js.sh",
         "antlr": "make generate",
-        "ci:antlr": "make ci-generate",
+        "ci:antlr:lexer": "make ci-gen-lexer",
+        "ci:antlr:parser": "make ci-gen-parser",
         "build": "tsc -p ./tsconfig.json",
         "prepublishOnly": "npm run lint && npm test && npm run build"
     },

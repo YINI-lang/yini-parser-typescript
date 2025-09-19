@@ -45,8 +45,14 @@ jobs:
             - name: Clean generated
               run: npm run clean:antlr --if-present
 
-            - name: Re-generate grammar
-              run: npm run ci:antlr # ci:antlr uses a two-phase generation process especially for CI (other problems seeing tokens).
+            - name: Re-generate lexer
+              run: npm run ci:antlr:lexer # Uses a two-phase generation process especially for CI (other problems seeing tokens).
+
+            - name: (Debug) list generated files
+              run: ls -la "$OUT_DIR"
+
+            - name: Re-generate parser
+              run: npm run ci:antlr:parser # Uses a two-phase generation process especially for CI (other problems seeing tokens).
 
             - name: Fail if uncommitted changes
               run: |
