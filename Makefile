@@ -26,18 +26,19 @@ generate:
 
 	echo Done.
 
-ci-generate:
-	echo Generate sources for the grammar...
-	java -Xmx1g -jar $(ANTLR4) \
-		-Dlanguage=TypeScript \
-		-no-listener -visitor \
-		-o $(DIR_OUTPUT) \
-		-lib ./grammar/v1.0.0-rc.3 \
-		-Xlog \
-		$(LEXER_FILE) \
-		$(PARSER_FILE)
+ci-generate: ci-gen-lexer ci-gen-parser
+	@echo "Generation done."
+# 	echo Generate sources for the grammar...
+# 	java -Xmx1g -jar $(ANTLR4) \
+# 		-Dlanguage=TypeScript \
+# 		-no-listener -visitor \
+# 		-o $(DIR_OUTPUT) \
+# 		-lib $(DIR_OUTPUT) \
+# 		-Xlog \
+# 		$(LEXER_FILE) \
+# 		$(PARSER_FILE)
 		
-	echo Done.
+# 	echo Done.
 
 # Two-phase generation (lexer first, then parser with -lib),
 # due to CI issue with not seeing tokens in the parser.
@@ -58,22 +59,22 @@ ci-generate:
 # 		$(PARSER_FILE)
 # 	echo Done.
 
-# ci-gen-lexer:
-# 	echo Generates lexer...
-# 	java -jar $(ANTLR4) \
-# 		-Dlanguage=TypeScript \
-# 		-no-listener -visitor \
-# 		-o $(DIR_OUTPUT) \
-# 		$(LEXER_FILE)
+ci-gen-lexer:
+	echo Generates lexer...
+	java -Xmx1g -jar $(ANTLR4) \
+		-Dlanguage=TypeScript \
+		-no-listener -visitor \
+		-o $(DIR_OUTPUT) \
+		$(LEXER_FILE)
 
-# ci-gen-parser:
-# 	echo "Generates parser (with tokenVocab from generated dir)..."
-# 	java -jar $(ANTLR4) \
-# 		-Dlanguage=TypeScript \
-# 		-no-listener -visitor \
-# 		-o $(DIR_OUTPUT) \
-# 		-lib $(DIR_OUTPUT) \
-# 		$(PARSER_FILE)
+ci-gen-parser:
+	echo "Generates parser (with tokenVocab from generated dir)..."
+	java -Xmx1g -jar $(ANTLR4) \
+		-Dlanguage=TypeScript \
+		-no-listener -visitor \
+		-o $(DIR_OUTPUT) \
+		-lib $(DIR_OUTPUT) \
+		$(PARSER_FILE)
 
 # Invoking a Python wrapper for ANTLR (antlr4),  which tries to automatically
 # detect or download the latest ANTLR version from the internet via Maven.

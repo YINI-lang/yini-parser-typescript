@@ -54,6 +54,7 @@ jobs:
             # - name: Re-generate parser
             #   run: npm run ci:antlr:parser # Uses a two-phase generation process especially for CI (other problems seeing tokens).
 
+            # NOTE: Error with "cannot find tokens file .../YiniLexer.tokens"
             - name: Re-generate grammar files
               run: npm run ci:antlr
 
