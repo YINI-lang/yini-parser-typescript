@@ -16,6 +16,16 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
 
+            # Install Java (Temurin distribution, version 21 or 17 is fine)
+            - name: Setup Java
+              uses: actions/setup-java@v4
+              with:
+                  distribution: temurin
+                  java-version: '24'
+
+            - name: Print Java version
+              run: java --version
+
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
