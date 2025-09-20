@@ -17,7 +17,11 @@
 - **New:** Added `silent` option, no console output will be outputted at all, not even errors. Programmatic callers should rely on returned metadata, CLI users should rely on the exit code.
 - **Updated:** Metadata now includes `effectiveMode` in `meta.diagnostics.effectiveOptions`, and the metadata version has been bumped to `1.1.1`.
   The fields `strictMode` and `effectiveOptions` in `meta.diagnostics` now correctly reflect when any rules have been overridden from the initially selected mode.
-
+- **CI/Tooling (GitHub Actions):** Added security and quality checks:
+  - **Security:** CodeQL, dependency checke (`npm audit`) + lockfile-lint, Gitleaks (SARIF), Semgrep (SARIF).
+  - **Grammar drift check:** ANTLR-based verification to ensure generated sources are committed.
+  - **Regression tests:** run across a Node/OS matrix.
+  - **Releases:** npm publish with provenance (tag-driven).
 
 ## 1.2.0-beta - 2025 Sep
 - **Fixed:** `parseFile()` now correctly passes through all options (e.g. `includeDiagnostics`) so they work and matches as in `parse(..)`.

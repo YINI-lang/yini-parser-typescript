@@ -1,0 +1,59 @@
+# Currently only run unit+smoke test on a matrix of os and node versions.
+
+name: Regression Tests
+
+on:
+    push: # Any push. **Post-merge** (Good for deploy / publish / generate artifacts.)
+        branches: ['main'] # To main (direct commits, or merges from PRs).
+    pull_request: # PR:s **Pre-merge** (Good for fast feedback before merge. - Secrets: Not available for PRs from forks (by default).)
+    workflow_dispatch: # allows manual run from GitHub UI
+
+concurrency:
+    group: ci-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+jobs:
+    build-test:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                node: [18, 20, 22]
+                os: [ubuntu-latest, windows-latest, macos-latest]
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node }}
+                  cache: npm
+
+            - name: Install (no scripts)
+              run: npm ci --ignore-scripts
+
+            # (If you need to regenerate ANTLR artifacts to test)
+            # - name: Generate grammar
+            #   run: npm run gen:grammar
+
+            - name: Typecheck
+              run: npm run typecheck --if-present
+
+            - name: Lint
+              run: npm run lint --if-present
+
+            - name: Build
+              run: npm run build --if-present
+
+            - name: Run unit tests
+              run: |
+                  echo "Running test: ${{ github.event.inputs.testName }}"
+                  npm run ci:test:unit
+
+            - name: Run smoke tests
+              run: |
+                  echo "Running test: ${{ github.event.inputs.testName }}"
+                  npm run ci:test:smoke

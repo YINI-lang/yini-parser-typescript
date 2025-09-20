@@ -97,7 +97,9 @@ export interface BasicOptions {
     includeMetadata?: boolean // Include meta data along the returned result.
 }
 /** @deprecated Use ParseOptions */
-export interface PrimaryUserParams extends BasicOptions {} // NOTE: Deprecated since 1.3.0-beta.
+export interface PrimaryUserParams extends BasicOptions {
+    dummy: null
+} // NOTE: Deprecated since 1.3.0-beta.
 
 /**
  * @param options.failLevel - Minimum severity that should cause the parse to fail.
@@ -144,7 +146,9 @@ export interface ParseOptions extends BasicOptions {
     silent?: boolean // Suppress all output (even errors, exit code only). Silent overrides quiet if both are enabled.
 }
 /** @deprecated Use ParseOptions */
-export interface AllUserOptions extends ParseOptions {} // NOTE: Deprecated since 1.3.0-beta.
+export interface AllUserOptions extends ParseOptions {
+    dummy: null
+} // NOTE: Deprecated since 1.3.0-beta.
 
 //{ line: 12, column: 8, type: 'Syntax-Error', message1: 'Invalid number' }
 export interface IssuePayload {
