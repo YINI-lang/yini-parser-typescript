@@ -210,7 +210,7 @@ export class ErrorDataHandler {
                     this.persistThreshold === '1-Abort-on-Errors' ||
                     this.persistThreshold === '2-Abort-Even-on-Warnings'
                 ) {
-                    // In test, throw an error instead of exiting.
+                    // In test, throw an error (NOT of exiting).
                     throw new Error(`Syntax-Error: ${'' + msgWhat}`)
                 }
                 break
