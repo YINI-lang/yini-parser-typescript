@@ -17,7 +17,7 @@ YINI (Yet another INI): YINI is a configuration format designed for readability 
 
 ➡️ See full [documentation or YINI format specification](https://github.com/YINI-lang/YINI-spec)
 
-⭐ **Enjoying YINI?** If you find this project useful, please consider [starring it on GitHub](https://github.com/YINI-lang/yini-parser-typescript) — it helps others discover it!
+⭐ **Enjoying YINI?** If you like this project, click [star it on GitHub](https://github.com/YINI-lang/yini-parser-typescript) — it helps a lot, thank you!
 
 ---
 
