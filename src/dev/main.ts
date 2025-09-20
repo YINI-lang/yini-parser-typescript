@@ -200,12 +200,11 @@ if (isProdEnv()) {
         `
         // console.log(
         //     toPrettyJSON(
-        YINI.parse(errorYini + warnYini, {
-            requireDocTerminator: 'warn-if-missing',
+        YINI.parse(warnYini, {
             failLevel: 'ignore-errors',
+            requireDocTerminator: 'warn-if-missing',
             strictMode: false,
-            //quiet: true,
-            // silent: true,
+            silent: false,
             // includeMetadata: false,
         })
         //     ),

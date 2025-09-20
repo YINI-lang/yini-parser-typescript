@@ -301,16 +301,25 @@ export const runPipeline = (
     const constructedMetadata: ResultMetadata = buildResultMetadata(params)
 
     debugPrint('getNumOfErrors(): ' + errorHandler.getNumOfErrors())
-    if (errorHandler.getNumOfErrors()) {
-        if (!coreOptions.isQuiet && !coreOptions.isSilent) {
-            console.warn(
-                'Parsing is complete, but some problems were detected. Please see the errors above for details.',
+
+    // Print a summary line at the end if any errors or warnings.
+    if (!coreOptions.isQuiet && !coreOptions.isSilent) {
+        const errors: number = errorHandler.getNumOfErrors()
+        const warnings: number = errorHandler.getNumOfWarnings()
+
+        // Notes:
+        // - if any errors, print to console **ERROR**.
+        // - if no errors but warnings, print to console **WARN**.
+        // Otherwise, adds a lot more complexity to auto testing (especially options testing), etc.
+        //
+        // Also, output one concise summary line (according to "best practices").
+        if (errors) {
+            console.error(
+                `Parsing completed with ${errors} error(s), ${warnings} warning(s). Please see details above.`,
             )
+        } else if (warnings) {
             console.warn(
-                'Number of errors found:   ' + errorHandler.getNumOfErrors(),
-            )
-            console.warn(
-                'Number of warnings found: ' + errorHandler.getNumOfWarnings(),
+                `Parsing completed with ${errors} error(s), ${warnings} warning(s).`,
             )
         }
     }

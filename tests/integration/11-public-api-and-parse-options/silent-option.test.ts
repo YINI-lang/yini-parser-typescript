@@ -8,7 +8,12 @@ const errorYini = `
     333="oops"   // invalid key => error
 `
 
-const warnYini = `
+const errorStrictYini = `
+    ^ Section1
+    value =   // invalid in strict mode => error
+`
+
+const warningYini = `
     ^ Section2
     // => warning, if requireDocTerminator: 'warn-if-missing'
 `
@@ -31,11 +36,11 @@ describe(`Option 'silent' tests:`, () => {
         jest.restoreAllMocks()
     })
 
-    test('1.a) lenient mode: Prints warning and error on YINI content with error+warning.', () => {
+    test('1.a) Lenient mode: Outputs warnings and errors normally.', () => {
         // Arrange.
 
         // Act.
-        const result = YINI.parse(errorYini + warnYini, {
+        const result = YINI.parse(errorYini + warningYini, {
             failLevel: 'ignore-errors',
             requireDocTerminator: 'warn-if-missing',
             strictMode: false,
@@ -46,15 +51,15 @@ describe(`Option 'silent' tests:`, () => {
 
         // Assert.
         expect(!!result).toEqual(true)
-        expect(warnSpy).toHaveBeenCalled()
         expect(errSpy).toHaveBeenCalled()
+        expect(warnSpy).toHaveBeenCalled()
     })
 
-    test(`1.b) lenient mode: Prints warning and error, when 'silent' flag IS NOT set.`, () => {
+    test(`1.b) Lenient mode: Outputs warnings and errors normally, when 'silent' flag IS NOT set.`, () => {
         // Arrange.
 
         // Act.
-        const result = YINI.parse(errorYini + warnYini, {
+        const result = YINI.parse(errorYini + warningYini, {
             failLevel: 'ignore-errors',
             requireDocTerminator: 'warn-if-missing',
             strictMode: false,
@@ -65,15 +70,15 @@ describe(`Option 'silent' tests:`, () => {
 
         // Assert.
         expect(!!result).toEqual(true)
-        expect(warnSpy).toHaveBeenCalled()
         expect(errSpy).toHaveBeenCalled()
+        expect(warnSpy).toHaveBeenCalled()
     })
 
-    test(`1.c) lenient mode: Does NOT print warning NOR error, when 'silent' flag set.`, () => {
+    test(`1.c) Lenient mode: Does not output anything, when 'silent' flag set, on an error or warning.`, () => {
         // Arrange.
 
         // Act.
-        const result = YINI.parse(errorYini + warnYini, {
+        const result = YINI.parse(errorYini + warningYini, {
             failLevel: 'ignore-errors',
             requireDocTerminator: 'warn-if-missing',
             strictMode: false,
@@ -84,14 +89,90 @@ describe(`Option 'silent' tests:`, () => {
 
         // Assert.
         expect(!!result).toEqual(true)
-        expect(warnSpy).not.toHaveBeenCalled()
         expect(errSpy).not.toHaveBeenCalled()
+        expect(warnSpy).not.toHaveBeenCalled()
+    })
+
+    test(`2.a) Lenient mode: Does not output anything, when 'silent' flag set, on an error.`, () => {
+        // Arrange.
+
+        // Act.
+        const result = YINI.parse(errorYini, {
+            failLevel: 'ignore-errors',
+            requireDocTerminator: 'warn-if-missing',
+            strictMode: false,
+            silent: true,
+            // includeMetadata: false,
+        })
+        debugPrint(result)
+
+        // Assert.
+        expect(!!result).toEqual(true)
+        expect(errSpy).not.toHaveBeenCalled()
+        expect(warnSpy).not.toHaveBeenCalled()
+    })
+
+    test(`2.b) Lenient mode: Does not output anything, when 'silent' flag set, on an warning.`, () => {
+        // Arrange.
+
+        // Act.
+        const result = YINI.parse(warningYini, {
+            failLevel: 'ignore-errors',
+            requireDocTerminator: 'warn-if-missing',
+            strictMode: false,
+            silent: true,
+            // includeMetadata: false,
+        })
+        debugPrint(result)
+
+        // Assert.
+        expect(!!result).toEqual(true)
+        expect(errSpy).not.toHaveBeenCalled()
+        expect(warnSpy).not.toHaveBeenCalled()
+    })
+
+    test(`2.c) Lenient mode: Does output only error, when NO 'silent' flag, on an error.`, () => {
+        // Arrange.
+
+        // Act.
+        const result = YINI.parse(errorYini, {
+            failLevel: 'ignore-errors',
+            // requireDocTerminator: 'warn-if-missing',
+            strictMode: false,
+            silent: false,
+            // includeMetadata: false,
+        })
+        debugPrint(result)
+
+        // Assert.
+        expect(!!result).toEqual(true)
+        expect(errSpy).toHaveBeenCalled()
+        expect(warnSpy).not.toHaveBeenCalled()
+    })
+
+    test(`2.d) Lenient mode: Does output only warning, when NO 'silent' flag, on an warning.`, () => {
+        // Arrange.
+
+        // Act.
+        const result = YINI.parse(warningYini, {
+            failLevel: 'ignore-errors',
+            requireDocTerminator: 'warn-if-missing',
+            strictMode: false,
+            silent: false,
+            // includeMetadata: false,
+        })
+        debugPrint(result)
+
+        // Assert.
+        expect(!!result).toEqual(true)
+        expect(errSpy).not.toHaveBeenCalled()
+        expect(warnSpy).toHaveBeenCalled()
     })
 
     //@todo Add tests, for warnings +silent true/false
     //@todo Add tests, for errors +silent true/false
 
-    xtest('2. xxxxxxxxxxxxxxxx.', () => {
+    xtest('3. xxxxxxxxxxxxxxxx.', () => {
         // Arrange.
         const isStrict = true
         const invalidInStrict = `^ Title
