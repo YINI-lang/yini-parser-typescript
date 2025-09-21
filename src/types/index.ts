@@ -39,6 +39,8 @@ export interface YiniParseResult {
 }
 
 // Keys as reported in metadata (human-readable).
+// NOTE: Should control how far the parser proceeds (continue vs. bail early),
+// not whether it throws (if whould throw shall be controlled by throwOnError instead).
 export type FailLevelKey =
     | 'ignore-errors' // 0 - Continue despite errors, persist and try to recover.
     | 'errors' // 1 - Stop parsing on the first error.
@@ -131,6 +133,7 @@ export interface PrimaryUserParams extends BasicOptions {
  *   the effective mode becomes **custom** rather than purely strict/lenient.
  * @param options.treatEmptyValueAsNull - How to treat an explicitly empty value on the
  *   right-hand side of '='. Allowed values: `'allow'` | `'allow-with-warning'` | `'disallow'`.
+ * @param options.throwOnError - Will throw on first parse error encountered.
  */
 // User-facing options, these are external and should be more user friendly
 // parameter names.
@@ -144,6 +147,7 @@ export interface ParseOptions extends BasicOptions {
     treatEmptyValueAsNull?: EmptyValueRule
     quiet?: boolean // Reduce output (show only errors, does not effect warnings and etc. in meta data). Silent overrides quiet if both are enabled.
     silent?: boolean // Suppress all output (even errors, exit code only). Silent overrides quiet if both are enabled.
+    throwOnError?: boolean // Will throw on first parse error encountered.
 }
 /** @deprecated Use ParseOptions */
 export interface AllUserOptions extends ParseOptions {

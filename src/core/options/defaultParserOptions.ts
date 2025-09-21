@@ -24,6 +24,7 @@ export type TNormalizedUserOptions = Required<
         | 'treatEmptyValueAsNull'
         | 'quiet'
         | 'silent'
+        | 'throwOnError'
     >
 >
 
@@ -41,6 +42,7 @@ const BASE_DEFAULTS: TNormalizedUserOptions = {
     treatEmptyValueAsNull: 'allow-with-warning',
     quiet: false, // Suppress warnings in console (does not affect warnings in meta data).
     silent: false,
+    throwOnError: true, // Will throw on first parse error encountered.
 }
 
 const DEFAULT_LENIENT_OPTS: TNormalizedUserOptions = {

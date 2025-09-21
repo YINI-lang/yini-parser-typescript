@@ -86,6 +86,7 @@ export const runPipeline = (
         coreOptions.bailSensitivity,
         coreOptions.isQuiet,
         coreOptions.isSilent,
+        coreOptions.isThrowOnError,
     )
 
     if (yiniContent.trim() === '') {

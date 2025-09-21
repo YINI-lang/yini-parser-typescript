@@ -31,6 +31,7 @@ export const toCoreOptions = (
         isKeepUndefinedInMeta: isDebug() || userOpts.preserveUndefinedInMeta,
         isQuiet: userOpts.quiet, // Dup of suppressWarnings!
         isSilent: userOpts.silent,
+        isThrowOnError: userOpts.throwOnError,
     }
 }
 
@@ -51,7 +52,8 @@ export const isOptionsObjectForm = (v: unknown): v is ParseOptions => {
             'requireDocTerminator' in (v as any) ||
             'treatEmptyValueAsNull' in (v as any) ||
             'quiet' in (v as any) ||
-            'silent' in (v as any))
+            'silent' in (v as any) ||
+            'isThrowOnError' in (v as any))
     )
 }
 

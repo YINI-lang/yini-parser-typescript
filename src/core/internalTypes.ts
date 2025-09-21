@@ -150,6 +150,7 @@ export interface IParseCoreOptions {
     // isAvoidWarningsInConsole: boolean // (!) Dup of quiet! - Suppress warnings (make quiet) in console (does not affect warnings in meta data).
     isQuiet: boolean // Dup of suppressWarnings! Reduce output (show only errors, does not affect warnings in meta data).
     isSilent: boolean // Suppress all output (even errors, exit code only).
+    isThrowOnError: boolean // Will throw on first parse error encountered.
 }
 
 // Parsing/validation rules (these affect the grammar/semantics).

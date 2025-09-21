@@ -35,6 +35,7 @@ export class ErrorDataHandler {
     private readonly persistThreshold: TBailSensitivityLevel
     private readonly isQuiet: boolean
     private readonly isSilent: boolean
+    private readonly isThrowOnError: boolean
 
     private errors: IssuePayload[] = []
     private warnings: IssuePayload[] = []
@@ -63,12 +64,14 @@ export class ErrorDataHandler {
         bailSensitivityLevel: TBailSensitivityLevel = '1-Abort-on-Errors',
         isQuiet: boolean = false, // Reduce output (show only errors, does not effect warnings and etc. in meta data).
         isSilent: boolean = false, // Suppress all output (even errors, exit code only).
+        isThrowOnError: boolean = false, // Will throw on first parse error encountered.
     ) {
         this.subjectType = subjectType
         this.fileName = fileName
         this.persistThreshold = bailSensitivityLevel
         this.isQuiet = isQuiet
         this.isSilent = isSilent
+        this.isThrowOnError = isThrowOnError
     }
 
     private makeIssue(
@@ -189,8 +192,12 @@ export class ErrorDataHandler {
                     this.persistThreshold === '1-Abort-on-Errors' ||
                     this.persistThreshold === '2-Abort-Even-on-Warnings'
                 ) {
-                    // In test, throw an error instead of exiting.
-                    throw new Error(`Internal-Error: ${msgWhat}`)
+                    if (!this.isThrowOnError) {
+                        debugPrint('Skipped throwing')
+                    } else {
+                        // (?, not if can delete this message now (it may have been superceded), 20250921) In test, throw an error instead of exiting.
+                        throw new Error(`Internal-Error: ${msgWhat}`)
+                    }
                 }
                 break
             case 'Syntax-Error':
@@ -210,8 +217,12 @@ export class ErrorDataHandler {
                     this.persistThreshold === '1-Abort-on-Errors' ||
                     this.persistThreshold === '2-Abort-Even-on-Warnings'
                 ) {
-                    // In test, throw an error (NOT of exiting).
-                    throw new Error(`Syntax-Error: ${'' + msgWhat}`)
+                    if (!this.isThrowOnError) {
+                        debugPrint('Skipped throwing')
+                    } else {
+                        // (?, not if can delete this message now (it may have been superceded), 20250921) In test, throw an error instead of exiting.
+                        throw new Error(`Syntax-Error: ${'' + msgWhat}`)
+                    }
                 }
                 break
             case 'Syntax-Warning':
@@ -235,8 +246,12 @@ export class ErrorDataHandler {
                     )
                 }
                 if (this.persistThreshold === '2-Abort-Even-on-Warnings') {
-                    // In test, throw an error instead of exiting.
-                    throw new Error(`Syntax-Warning: ${msgWhat}`)
+                    if (!this.isThrowOnError) {
+                        debugPrint('Skipped throwing')
+                    } else {
+                        // (?, not if can delete this message now (it may have been superceded), 20250921) In test, throw an error instead of exiting.
+                        throw new Error(`Syntax-Warning: ${msgWhat}`)
+                    }
                 }
                 break
             case 'Notice':
@@ -280,8 +295,16 @@ export class ErrorDataHandler {
                     ),
                 )
                 this.emitFatalError(loc, msgWhatWithLineNum, msgWhy, msgHint)
-                // CANNOT recover fatal errors, will lead to an exit!
-                // In test, throw an error instead of exiting.
+                /*
+                    "Best practises":
+                    - ONLY on I/O failures: file not found, unreadable file, encoding errors.
+                    - ONLY on programmer/usage errors: invalid options, conflicting flags.
+                    - ONLY on internal faults: invariants broken, unexpected exceptions from dependencies.
+                */
+
+                // CANNOT recover fatal errors, will lead to an bail!
+                // In test, throw an error instead of bailing/exiting.
+                // IMPORTANT: Never exit with exit code since this is a library!
                 throw new Error(`Internal-Error: ${msgWhat}`)
         }
     }

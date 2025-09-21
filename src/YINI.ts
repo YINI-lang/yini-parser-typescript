@@ -67,7 +67,7 @@ export default class YINI {
      *   - `'warnings-and-errors'` : Stop parsing on the first warning **or** error.
      * @param includeMetadata    If `true`, return additional metadata (e.g. warnings, statistics) alongside the parsed object.
      *
-     * @returns The parsed YINI content.
+     * @returns {ParsedObject | YiniParseResult} The parsed YINI content.
      *
      * By default (`includeMetadata = false`), this method returns a plain JavaScript object:
      *
@@ -131,8 +131,11 @@ export default class YINI {
      *   the effective mode becomes **custom** rather than purely strict/lenient.
      * @param options.treatEmptyValueAsNull - How to treat an explicitly empty value on the
      *   right-hand side of '='. Allowed values: `'allow'` | `'allow-with-warning'` | `'disallow'`.
+     * @param options.throwOnError - Will throw on first parse error encountered.
+     * NOTE: Current default is `true`. The default will change to `false` in the next
+     * release. To avoid breaking changes, set this option explicitly.
      *
-     * @returns The parsed YINI content.
+     * @returns {ParsedObject | YiniParseResult} The parsed YINI content.
      *
      * By default (`includeMetadata = false`), this method returns a plain JavaScript object:
      *
@@ -272,7 +275,7 @@ export default class YINI {
      *   - `'warnings-and-errors'` : Stop parsing on the first warning **or** error.
      * @param includeMetadata    If `true`, return additional metadata (e.g. warnings, statistics) alongside the parsed object.
      *
-     * @returns The parsed YINI content.
+     * @returns {ParsedObject | YiniParseResult} The parsed YINI content.
      *
      * By default (`includeMetadata = false`), this method returns a plain JavaScript object:
      *
@@ -336,8 +339,11 @@ export default class YINI {
      *   the effective mode becomes **custom** rather than purely strict/lenient.
      * @param options.treatEmptyValueAsNull - How to treat an explicitly empty value on the
      *   right-hand side of '='. Allowed values: `'allow'` | `'allow-with-warning'` | `'disallow'`.
+     * @param options.throwOnError - Will throw on first parse error encountered.
+     * NOTE: Current default is `true`. The default will change to `false` in the next
+     * release. To avoid breaking changes, set this option explicitly.
      *
-     * @returns The parsed YINI content.
+     * @returns {ParsedObject | YiniParseResult} The parsed YINI content.
      *
      * By default (`includeMetadata = false`), this method returns a plain JavaScript object:
      *
