@@ -1,0 +1,5 @@
+name: YINI CodeQL config
+paths:
+    - src
+paths-ignore:
+    - src/grammar/generated/**
