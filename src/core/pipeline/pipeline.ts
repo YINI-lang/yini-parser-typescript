@@ -314,15 +314,32 @@ export const runPipeline = (
         // Otherwise, adds a lot more complexity to auto testing (especially options testing), etc.
         //
         // Also, output one concise summary line (according to "best practices").
-        if (errors >= 2) {
-            console.error(
-                `Parsing completed with ${errors} error(s), ${warnings} warning(s). Please see details above.`,
-            )
-        } /*else if (warnings >= 2) {
-            console.warn(
-                `Parsing completed with ${errors} error(s), ${warnings} warning(s).`,
-            )
-        }*/
+
+        if (coreOptions.bailSensitivity !== '0-Ignore-Errors') {
+            /*
+                '1-Abort-on-Errors':
+                Show summary if: errors >= 1 or warnings >= 3.
+
+                '2-Abort-Even-on-Warnings':
+                Show summary if: errors >= 1 or warnings >= 1
+            */
+
+            const numOfWarningsToTrigger =
+                coreOptions.bailSensitivity === '1-Abort-on-Errors' ? 3 : 1
+
+            if (errors) {
+                console.error(
+                    `Parsing completed with ${errors} error(s), ${warnings} warning(s). Please see details above.`,
+                )
+            } else if (
+                warnings >= numOfWarningsToTrigger &&
+                !coreOptions.isQuiet
+            ) {
+                console.warn(
+                    `Parsing completed with ${errors} error(s), ${warnings} warning(s).`,
+                )
+            }
+        }
     }
 
     if (coreOptions.isIncludeMeta) {

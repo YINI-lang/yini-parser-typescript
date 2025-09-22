@@ -91,7 +91,7 @@ export interface BasicOptions {
     /** Enable stricter syntax and well-formedness checks. */
     strictMode?: boolean
     /**
-     * Minimum severity that should cause parse to fail.
+     * Minimum severity that should cause parse to fail and stop.
      * 'auto' | 'ignore-errors' | 'errors' | 'warnings-and-errors'
      */
     failLevel?: PreferredFailLevel // 'auto' | 0-'ignore-errors' | 1-'errors' | 2-'warnings-and-errors'
@@ -104,7 +104,7 @@ export interface PrimaryUserParams extends BasicOptions {
 } // NOTE: Deprecated since 1.3.0-beta.
 
 /**
- * @param options.failLevel - Minimum severity that should cause the parse to fail.
+ * @param options.failLevel - Preferred bail sensitivity level, controls if and when parsing should stop on problems:
  *   Accepts:
  *     `'ignore-errors'` - Continue despite errors, persist and try to recover.
  *     `'errors'` - Stop parsing on the first error.

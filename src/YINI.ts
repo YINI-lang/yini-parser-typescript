@@ -60,7 +60,7 @@ export default class YINI {
      *
      * @param yiniContent        YINI code as a string (multi‑line content supported).
      * @param strictMode         If `true`, enforce strict parsing rules (e.g. require `/END`, disallow trailing commas).
-     * @param failLevel          Preferred bail sensitivity level, controls how errors and warnings are handled:
+     * @param failLevel          Preferred bail sensitivity level, controls if and when parsing should stop on problems:
      *   - `'auto'` (default)      : Auto‑select level (strict → `'errors'`, lenient → `'ignore-errors'`)
      *   - `'ignore-errors'`       : Continue parsing despite errors; log them and attempt recovery.
      *   - `'errors'`              : Stop parsing on the first error.
@@ -104,7 +104,7 @@ export default class YINI {
      * @param options Optional settings to customize parsing and/or results, useful if you need more control.
      *        For all options, see types/ParseOptions.
      *
-     * @param options.failLevel - Minimum severity that should cause the parse to fail.
+     * @param options.failLevel - Preferred bail sensitivity level, controls if and when parsing should stop on problems:
      *   Accepts:
      *     `'ignore-errors'` - Continue despite errors, persist and try to recover.
      *     `'errors'` - Stop parsing on the first error.
@@ -268,7 +268,7 @@ export default class YINI {
      *
      * @param yiniFile           Path to the YINI file.
      * @param strictMode         If `true`, enforce strict parsing rules (e.g. require `/END`, disallow trailing commas).
-     * @param failLevel          Preferred bail sensitivity level, controls how errors and warnings are handled:
+     * @param failLevel          Preferred bail sensitivity level, controls if and when parsing should stop on problems:
      *   - `'auto'` (default)      : Auto‑select level (strict → `'errors'`, lenient → `'ignore-errors'`)
      *   - `'ignore-errors'`       : Continue parsing despite errors; log them and attempt recovery.
      *   - `'errors'`              : Stop parsing on the first error.
@@ -312,7 +312,7 @@ export default class YINI {
      * @param options Optional settings to customize parsing and/or results, useful if you need more control.
      *        For all options, see types/ParseOptions.
      *
-     * @param options.failLevel - Minimum severity that should cause the parse to fail.
+     * @param options.failLevel - Preferred bail sensitivity level, controls if and when parsing should stop on problems:
      *   Accepts:
      *     `'ignore-errors'` - Continue despite errors, persist and try to recover.
      *     `'errors'` - Stop parsing on the first error.
