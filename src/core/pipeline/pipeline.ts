@@ -314,15 +314,15 @@ export const runPipeline = (
         // Otherwise, adds a lot more complexity to auto testing (especially options testing), etc.
         //
         // Also, output one concise summary line (according to "best practices").
-        if (errors) {
+        if (errors >= 2) {
             console.error(
                 `Parsing completed with ${errors} error(s), ${warnings} warning(s). Please see details above.`,
             )
-        } else if (warnings) {
+        } /*else if (warnings >= 2) {
             console.warn(
                 `Parsing completed with ${errors} error(s), ${warnings} warning(s).`,
             )
-        }
+        }*/
     }
 
     if (coreOptions.isIncludeMeta) {

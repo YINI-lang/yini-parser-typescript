@@ -42,6 +42,7 @@ const BASE_DEFAULTS: TNormalizedUserOptions = {
     treatEmptyValueAsNull: 'allow-with-warning',
     quiet: false, // Suppress warnings in console (does not affect warnings in meta data).
     silent: false,
+    //@todo: Change default throwOnError to false
     throwOnError: true, // Will throw on first parse error encountered.
 }
 
