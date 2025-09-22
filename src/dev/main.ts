@@ -188,116 +188,35 @@ if (isProdEnv()) {
         //     < SubTitle // NOT OK, SubTitle already exists
         //     theme2 = "special-dark"
         //         `
-        // Arrange.
-        /*
-        const yini = `
-        @yini
-        // Example: Strict-friendly YINI document (no trailing commas, explicit /END)
 
-        ^ App
-        name = 'YINI Demo Service'
-        version = '1.4.0'
-        description = 'Demo service for showcasing the YINI format'
-        owners = ['dev-team', 'ops-team']
+        const errorYini = `
+        ^ Section1
+        333="oops"   // invalid key => error
+        `
 
-        // String concatenation (the '+' joins adjacent STRING tokens)
---        longNote = 'This text is split across ' +
---                    'two strings and then concatenated.'
+        const warnYini = `
+        ^ Section2
+        // => warning, if requireDocTerminator: 'warn-if-missing'
+        `
+        // console.log(
+        //     toPrettyJSON(
+        YINI.parse(
+            `
+    ^ Section1
+    value =   // invalid in strict mode => error
+    `,
+            {
+                // failLevel: 'errors',
+                throwOnError: false,
+                // requireDocTerminator: 'warn-if-missing',
+                strictMode: true,
+                silent: false,
+                // includeMetadata: false,
+            },
+        )
+        //     ),
+        // )
 
-        // Case-insensitive booleans
-        enabled = YES
-        experimentalMode = off
-
-        // Numbers (ints, floats, scientific)
-        retries = 3
-        requestTimeoutMs = 2500
-        backoffFactor = 1.25
-        maxPayloadMB = 1.0e2
-
-        ^ Server
-        host = '127.0.0.1'
-        port = 8080
-        useTLS = false
-
-        ^^ CORS
-            allowedOrigins: 'https://example.com', 'https://admin.example.com'
-            allowCredentials = true
-
-        ^^ Headers
-            // Object literal with key:value pairs
-            defaults = {
-            \`X-Frame-Options\`: 'DENY',
-            \`X-Content-Type-Options\`: 'nosniff'
-            }
-
-        ^ Database
-        engine = 'postgres'
-        host = 'db.internal'
-        port = 5432
-        username = 'app_user'
-        password = 'change_me'
-        pool = {
-            min: 2,
-            max: 16
-        }
-
-        ^^ Replicas
-            // Colon-form list (values only)
-            endpoints: 'db-replica-1.internal', 'db-replica-2.internal'
-            readPreference = 'nearest'
-
-        ^ Features
-        // Mixed data types
-        betaFlags = ['new-ui', 'fast-path']
-        darkLaunch = NO
-        uploadLimitMB = 128
-
-        ^ Integrations
-        // List of objects
-        webhooks = [
-            { name: 'audit', url: 'https://hooks.example.com/audit',  active: true },
-            { name: 'metrics', url: 'https://hooks.example.com/metric', active: true }
-        ]
-
-        ^ Users
-        // Simple table-ish list using colon form
-        admins: 'alice', 'bob', 'carol'
-        reviewers: 'dave', 'erin'
-
-        ^^ Profiles
-            // Object-of-objects
-            alice = {
-            email: 'alice@example.com',
-            roles: ['admin', 'dev'],
-            mfa: true
-            }
-            bob = {
-            email: 'bob@example.com',
-            roles: ['admin'],
-            mfa: false
-            }
-
-        ^ Paths
-        logs = '/var/log/yini-demo/'
-        data = '/srv/yini-demo/data'
-
-        ^^ \`Backups\`
-            // Empty value -> null in lenient mode; in strict mode, supply explicit null:
-            lastFull = null
-            targets: '/mnt/backup1', '/mnt/backup2'
-        ^^^ Backups2
-            value = 23
-
-        ^ Security
-        allowedIPs: '10.0.0.0/24', '10.1.0.0/24'
-
-        ^ Logging
-        level = 'info'
-        format = 'json'
-        sinks = ['stdout']
-
-        /END      
-        `*/
         // const yini = `
         //     /*sdfsdf*/
         //     @yini
@@ -380,15 +299,13 @@ if (isProdEnv()) {
         //         }),
         //     ),
         // )
-        const fileName = './tests/fixtures/valid/common/common-config-2.yini'
-        const result = YINI.parseFile(fileName, {
-            strictMode: true,
-            treatEmptyValueAsNull: 'allow',
-            failLevel: 'auto',
-            includeMetadata: true,
-            includeDiagnostics: true,
-        })
-        printObject(result)
+
+        // const fileName = './tests/fixtures/invalid/corrupt-config-2.yini'
+        // const result = YINI.parseFile(fileName, {
+        //     strictMode: true,
+        //     failLevel: 'ignore-errors',
+        // })
+        // printObject(result)
 
         // let parserOptions: any = getDefaultUserOptions('lenient')
         // debugPrint('** parserOptions: (lenient)')

@@ -2,7 +2,6 @@ import { isDebug, isDev } from '../../config/env'
 import { ParseOptions } from '../../types'
 import {
     IParseCoreOptions,
-    IParseRuleOptions,
     TBailSensitivityLevel,
     TParserMode,
 } from '../internalTypes'
@@ -30,9 +29,9 @@ export const toCoreOptions = (
         isWithDiagnostics: isDev() || isDebug() || userOpts.includeDiagnostics,
         isWithTiming: isDev() || isDebug() || userOpts.includeTiming,
         isKeepUndefinedInMeta: isDebug() || userOpts.preserveUndefinedInMeta,
-        isAvoidWarningsInConsole: userOpts.suppressWarnings,
-        // isQuiet: userOpts.quiet, // Dup of suppressWarnings!
+        isQuiet: userOpts.quiet, // Dup of suppressWarnings!
         isSilent: userOpts.silent,
+        isThrowOnError: userOpts.throwOnError,
     }
 }
 
@@ -49,17 +48,14 @@ export const isOptionsObjectForm = (v: unknown): v is ParseOptions => {
             'includeDiagnostics' in (v as any) ||
             'includeTiming' in (v as any) ||
             'preserveUndefinedInMeta' in (v as any) ||
-            'suppressWarnings' in (v as any) ||
             'onDuplicateKey' in (v as any) ||
             'requireDocTerminator' in (v as any) ||
             'treatEmptyValueAsNull' in (v as any) ||
-            // 'quiet' in (v as any) || // Dup of suppressWarnings!
-            'silent' in (v as any))
+            'quiet' in (v as any) ||
+            'silent' in (v as any) ||
+            'isThrowOnError' in (v as any))
     )
 }
-
-// const mode: TParserMode =
-// ((arg2 as any)?.strictMode ?? (arg2 as boolean | undefined)) ===
 
 export const inferModeFromArgs = (
     arg2?: boolean | ParseOptions,

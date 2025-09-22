@@ -1,8 +1,15 @@
 // const pkg = require('../../package.json')
 import pkg from '../../package.json' // NOTE: Requires "resolveJsonModule": true (or "esModuleInterop": true).
-import { isDebug, isDev, localAppEnv, localNodeEnv } from '../config/env'
+import {
+    isDebug,
+    isDev,
+    isProdEnv,
+    localAppEnv,
+    localNodeEnv,
+} from '../config/env'
 import { FailLevelKey, ParseOptions, ResultMetadata } from '../types'
 import { sortObjectKeys } from '../utils/object'
+import { debugPrint, printObject } from '../utils/print'
 import { toLowerKebabCase } from '../utils/string'
 import { ErrorDataHandler } from './errorDataHandler'
 import {
@@ -35,7 +42,23 @@ export const buildResultMetadata = (
     p: IBuildResultMetadataParams,
 ): ResultMetadata => {
     // --- Construct meta information -------------------------------------
-    const to3 = (n: number): number => Number.parseFloat(n.toFixed(3))
+    const to3 = (n: number): number => {
+        if (!n) {
+            if (isProdEnv()) {
+                return 0
+            } else {
+                debugPrint('In buildResultMetadata(..): p.runtimeInfo:')
+                printObject(p.runtimeInfo)
+                debugPrint('In buildResultMetadata(..): p.coreOptions:')
+                printObject(p.coreOptions)
+                debugPrint('In buildResultMetadata(..): p.durationMs:')
+                printObject(p.durationMs)
+                // p.errorHandler.pushOrBail(null,'Internal-Error', 'to3 received undefined')
+                throw Error('to3(..) received undefined')
+            }
+        }
+        return Number.parseFloat(n.toFixed(3))
+    }
 
     // Construct meta data.
     const metadata: ResultMetadata = {
@@ -144,7 +167,7 @@ export const buildResultMetadata = (
                 includeDiagnostics: p.coreOptions.isWithDiagnostics,
                 includeTiming: p.coreOptions.isWithTiming,
                 preserveUndefinedInMeta: p.coreOptions.isKeepUndefinedInMeta,
-                suppressWarnings: p.coreOptions.isAvoidWarningsInConsole,
+                quiet: p.coreOptions.isQuiet,
                 requireDocTerminator: p.coreOptions.rules.requireDocTerminator,
                 treatEmptyValueAsNull:
                     p.coreOptions.rules.treatEmptyValueAsNull,

@@ -17,7 +17,7 @@ import {
     isOptionsObjectForm,
     toCoreOptions,
 } from './options/optionsFunctions'
-import { runPipeline } from './pipeline'
+import { runPipeline } from './pipeline/pipeline'
 
 /**
  * Private class representing a runtime context for a single parse call.
@@ -25,6 +25,10 @@ import { runPipeline } from './pipeline'
  * @note This design prevents race conditions: each call gets its own
  *       runtimeInfo and related state. Without this, multiple calls
  *       (especially in parallel) could overwrite each other's data.
+ *
+ * @note The following options MUST be respected!
+ *   quiet?: boolean // Reduce output (show only errors, does not effect warnings and etc. in meta data).
+ *   silent?: boolean // Suppress all output (even errors, exit code only).
  */
 export class YiniRuntime {
     /**
@@ -32,9 +36,7 @@ export class YiniRuntime {
      */
     #runtime: IRuntimeInfo
 
-    // constructor(sourceType: 'Inline' | 'File', seed?: Partial<IRuntimeInfo>) {
     constructor(sourceType: 'Inline' | 'File') {
-        // this.#runtime = { sourceType, fileName: undefined, ...seed }
         this.#runtime = this.makeRuntimeInfo()
         this.#runtime.sourceType = sourceType
     }
@@ -224,11 +226,15 @@ export class YiniRuntime {
         }
 
         if (getFileNameExtension(filePath).toLowerCase() !== '.yini') {
-            console.error('Invalid file extension for YINI file:')
-            console.error(`"${filePath}"`)
-            console.log(
-                'File does not have a valid ".yini" extension (case-insensitive).',
-            )
+            // IMPORTANT: If "silent" option is set, do not log anything to console!
+            if (!userOpts.silent) {
+                // In quiet-mode we still show errors (these are fine).
+                console.error('Invalid file extension for YINI file:')
+                console.error(`"${filePath}"`)
+                console.error(
+                    'File does not have a valid ".yini" extension (case-insensitive).',
+                )
+            }
             throw new Error('Error: Unexpected file extension for YINI file')
         }
 
@@ -244,11 +250,12 @@ export class YiniRuntime {
 
         // this.#runtime.sourceType = 'File'
         this.#runtime.fileName = filePath
+        this.#runtime.timeIoMs = +(timeEndMs - timeStartMs).toFixed(3) // NOTE: (!) Dependent of isWithTiming.
 
         if (userOpts.includeMetadata) {
             this.#runtime.lineCount = content.split(/\r?\n/).length // Counts the lines.
             this.#runtime.fileByteSize = fileByteSize
-            this.#runtime.timeIoMs = +(timeEndMs - timeStartMs).toFixed(3)
+            // this.#runtime.timeIoMs = +(timeEndMs - timeStartMs).toFixed(3) // NOTE: (!) Dependent of isWithTiming.
             this.#runtime.preferredBailSensitivity = userOpts.failLevel
             this.#runtime.sha256 = computeSha256(content) // NOTE: Compute BEFORE any possible tampering of content.
         }
@@ -262,10 +269,15 @@ export class YiniRuntime {
         const result = this.doParse(content, {
             ...userOpts,
         })
-        if (hasNoNewlineAtEOF && !userOpts.suppressWarnings) {
-            console.warn(
-                `No newline at end of file, it's recommended to end a file with a newline. File:\n"${filePath}"`,
-            )
+        // if (hasNoNewlineAtEOF && !userOpts.quiet && !userOpts.silent) {
+        if (hasNoNewlineAtEOF && !userOpts.quiet) {
+            // IMPORTANT: If "silent" option is set, do not log anything to console!
+            if (!userOpts.silent) {
+                //@todo: (or maybe not, 20250917) Maybe let errorHandler emit message
+                console.warn(
+                    `No newline at end of file, it's recommended to end a file with a newline. File:\n"${filePath}"`,
+                )
+            }
         }
 
         return result

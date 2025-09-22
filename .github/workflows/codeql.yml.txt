@@ -1,0 +1,4 @@
+CodeQL — deep static analysis for JS/TS
+
+Scans your code with semantic rules to find real vulnerabilities (e.g., injection, path traversal, unsafe deserialization).
+

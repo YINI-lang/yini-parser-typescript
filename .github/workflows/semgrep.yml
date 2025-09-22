@@ -1,0 +1,47 @@
+# .github/workflows/semgrep.yml
+name: Semgrep (pragmatic static analysis)
+
+on:
+    push:
+    pull_request:
+    schedule:
+        - cron: '0 4 1 * *' # monthly (1st of each month at 04:00 UTC)
+
+permissions:
+    contents: read
+    security-events: write # needed for SARIF upload
+
+jobs:
+    semgrep:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: '3.x'
+
+            - name: Install Semgrep CLI
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install semgrep
+
+            # Run Semgrep, write SARIF to workspace
+            - name: Semgrep scan
+              # Optional: let the job continue so the SARIF still uploads even on findings
+              continue-on-error: true
+              run: |
+                  semgrep scan \
+                    --config p/owasp-top-ten \
+                    --config p/nodejs \
+                    --config p/secrets \
+                    --sarif -o semgrep.sarif
+
+            # Upload SARIF (skip on forked PRs)
+            - name: Upload SARIF to GitHub Security
+              if: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork) && hashFiles('semgrep.sarif') != '' }}
+              uses: github/codeql-action/upload-sarif@v3
+              with:
+                  sarif_file: semgrep.sarif

@@ -18,12 +18,13 @@ export type TNormalizedUserOptions = Required<
         | 'includeDiagnostics'
         | 'includeTiming'
         | 'preserveUndefinedInMeta'
-        | 'suppressWarnings'
+        // | 'suppressWarnings' // Delete, dup of quiet!
         | 'onDuplicateKey'
         | 'requireDocTerminator'
         | 'treatEmptyValueAsNull'
-        // | 'quiet' // Dup of suppressWarnings!
+        | 'quiet'
         | 'silent'
+        | 'throwOnError'
     >
 >
 
@@ -35,12 +36,14 @@ const BASE_DEFAULTS: TNormalizedUserOptions = {
     includeDiagnostics: false,
     includeTiming: false,
     preserveUndefinedInMeta: false,
-    suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
+    // suppressWarnings: false, // Suppress warnings in console (does not affect warnings in meta data).
     onDuplicateKey: 'error',
     requireDocTerminator: 'optional',
     treatEmptyValueAsNull: 'allow-with-warning',
-    // quiet: false, // Dup of suppressWarnings!
+    quiet: false, // Suppress warnings in console (does not affect warnings in meta data).
     silent: false,
+    //@todo: Change default throwOnError to false
+    throwOnError: true, // Will throw on first parse error encountered.
 }
 
 const DEFAULT_LENIENT_OPTS: TNormalizedUserOptions = {
@@ -51,7 +54,7 @@ const DEFAULT_LENIENT_OPTS: TNormalizedUserOptions = {
     // Below are options for pure rules:
     onDuplicateKey: 'warn-and-keep-first',
     requireDocTerminator: 'optional',
-    treatEmptyValueAsNull: 'allow-with-warning',
+    treatEmptyValueAsNull: 'allow',
 }
 
 const DEFAULT_STRICT_OPTS: TNormalizedUserOptions = {

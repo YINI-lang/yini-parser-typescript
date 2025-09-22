@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## --dev/uppcoming--
+- **Fixed:** bug where `buildResultMetadata(..)` could occasionally produce an `undefined` error.
 - **Renamed:** some public (user facing) interfaces to be more ergonomic for end users:
   * `AllUserOptions` to `ParseOptions`
   * `PrimaryUserParams` to `BasicOptions`
@@ -11,7 +12,13 @@
   point—rule-specific options (e.g., `treatEmptyValueAsNull`, `onDuplicateKey`)
   may override parts of that ruleset. When overrides are provided, the
    effective mode becomes custom.
-- **New:** User facing parsing rule value types `DocumentTerminatorRule` and `EmptyValueRule`.
+- **New:** Added user facing parsing rule value types `DocumentTerminatorRule` and `EmptyValueRule`.
+- **New:** Added `quiet` option, prints only errors to the console and warnings/info/etc. are not printed. This does not affect diagnostics captured in metadata.
+- **New:** Added `silent` option, no console output will be outputted at all, not even errors. Programmatic callers should rely on returned metadata, CLI users should rely on the exit code.
+- **(Heads-up) New:** Added `throwOnError` option, when `true` (default) the parser throws on parse errors, when `false` errors are reported via diagnostics without throwing.
+  - **Current default:** `true`.
+  - **Planned change:** Next release will switch the default to `false`.
+  - **Action:** Set throwOnError: true (to keep throwing) or `throwOnError: false` (to adopt the future behavior) explicitly.
 - **Updated:** Metadata now includes `effectiveMode` in `meta.diagnostics.effectiveOptions`, and the metadata version has been bumped to `1.1.1`.
   The fields `strictMode` and `effectiveOptions` in `meta.diagnostics` now correctly reflect when any rules have been overridden from the initially selected mode.
 - **CI/Tooling (GitHub Actions):** Added security and quality checks:
@@ -19,6 +26,7 @@
   - **Grammar drift check:** ANTLR-based verification to ensure generated sources are committed.
   - **Regression tests:** run across a Node/OS matrix.
   - **Releases:** npm publish with provenance (tag-driven).
+- **Updated** the logic and message(s) when parser summary is shown.
 
 ## 1.2.0-beta - 2025 Sep
 - **Fixed:** `parseFile()` now correctly passes through all options (e.g. `includeDiagnostics`) so they work and matches as in `parse(..)`.

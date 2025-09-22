@@ -748,7 +748,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>✅</td>
     <td>🚧</td>
     <td>🚧</td>
-    <td>Host error handler integration</td>
+    <td>Stop parsing level</td>
   </tr>
 
   <tr>
@@ -792,13 +792,33 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
 
   <tr>
-    <td><code>suppressWarnings</code></td>
+    <td><code>quiet</code></td>
     <td>✅</td>
-    <td>Hide warnings in console logs (does not change <code>meta</code>)</td>
+    <td>Show only errors, will suppress warnings and messages sent to the console/log (does not change <code>meta</code>)</td>
     <td>✅</td>
-    <td>🚧</td>
+    <td>✅</td>
     <td>✅</td>
     <td>Confirm behavior in strict/lenient</td>
+  </tr>
+
+  <tr>
+    <td><code>silent</code></td>
+    <td>✅</td>
+    <td>Suppress all output (even errors, exit code only).</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Confirm behavior in strict/lenient</td>
+  </tr>
+
+  <tr>
+    <td><code>throwOnError</code></td>
+    <td>🔲</td>
+    <td>Throw on parse error.</td>
+    <td>✅</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td></td>
   </tr>
 
   <tr>

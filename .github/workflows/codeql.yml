@@ -1,0 +1,38 @@
+name: CodeQL
+
+on:
+    push:
+        branches: ['main']
+    pull_request:
+        branches: ['main']
+    schedule:
+        - cron: '0 3 * * 1' # weekly
+
+jobs:
+    analyze:
+        runs-on: ubuntu-latest
+        permissions:
+            security-events: write
+            actions: read
+            contents: read
+        strategy:
+            fail-fast: false
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  cache: npm
+
+            # JS pack already handles TS; no need to specify both.
+            - uses: github/codeql-action/init@v3
+              with:
+                  languages: javascript
+                  # If there is a config file to exclude some dirs, uncomment:
+                  config-file: .github/codeql/codeql-config.yml
+
+            - run: npm ci --ignore-scripts
+            - run: npm run build --if-present
+
+            - uses: github/codeql-action/analyze@v3

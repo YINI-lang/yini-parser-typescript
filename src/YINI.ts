@@ -60,14 +60,14 @@ export default class YINI {
      *
      * @param yiniContent        YINI code as a string (multi‑line content supported).
      * @param strictMode         If `true`, enforce strict parsing rules (e.g. require `/END`, disallow trailing commas).
-     * @param failLevel          Preferred bail sensitivity level, controls how errors and warnings are handled:
+     * @param failLevel          Preferred bail sensitivity level, controls if and when parsing should stop on problems:
      *   - `'auto'` (default)      : Auto‑select level (strict → `'errors'`, lenient → `'ignore-errors'`)
      *   - `'ignore-errors'`       : Continue parsing despite errors; log them and attempt recovery.
      *   - `'errors'`              : Stop parsing on the first error.
      *   - `'warnings-and-errors'` : Stop parsing on the first warning **or** error.
      * @param includeMetadata    If `true`, return additional metadata (e.g. warnings, statistics) alongside the parsed object.
      *
-     * @returns The parsed YINI content.
+     * @returns {ParsedObject | YiniParseResult} The parsed YINI content.
      *
      * By default (`includeMetadata = false`), this method returns a plain JavaScript object:
      *
@@ -104,7 +104,7 @@ export default class YINI {
      * @param options Optional settings to customize parsing and/or results, useful if you need more control.
      *        For all options, see types/ParseOptions.
      *
-     * @param options.failLevel - Minimum severity that should cause the parse to fail.
+     * @param options.failLevel - Preferred bail sensitivity level, controls if and when parsing should stop on problems:
      *   Accepts:
      *     `'ignore-errors'` - Continue despite errors, persist and try to recover.
      *     `'errors'` - Stop parsing on the first error.
@@ -120,18 +120,22 @@ export default class YINI {
      *   Allowed values: `'warn-and-keep-first'` | `'warn-and-overwrite'` | `'keep-first'` (silent, first wins) | `'overwrite'` (silent, last wins) | `'error'`.
      * @param options.preserveUndefinedInMeta - Keep properties with value `undefined` inside
      *   the returned metadata. Requires: `includeMetadata = true`. Ignored otherwise.
+     * @param options.quiet - Show only errors, will suppress warnings and messages sent to the console/log.
+     *   Does not affect warnings included in returned metadata.
      * @param options.requireDocTerminator - Controls whether a document terminator is required.
      *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
+     * @param options.silent - Suppress all output (even errors, exit code only).
      * @param options.strictMode - Sets the baseline ruleset (true = strict, false = lenient).
      *   This is only a starting point: rule-specific options (e.g., `treatEmptyValueAsNull`,
      *   `onDuplicateKey`, etc.) can override parts of that ruleset. If any overrides are given,
      *   the effective mode becomes **custom** rather than purely strict/lenient.
-     * @param options.suppressWarnings - Suppress warnings sent to the console/log.
-     *   Does not affect warnings included in returned metadata.
      * @param options.treatEmptyValueAsNull - How to treat an explicitly empty value on the
      *   right-hand side of '='. Allowed values: `'allow'` | `'allow-with-warning'` | `'disallow'`.
+     * @param options.throwOnError - Will throw on first parse error encountered.
+     * NOTE: Current default is `true`. The default will change to `false` in the next
+     * release. To avoid breaking changes, set this option explicitly.
      *
-     * @returns The parsed YINI content.
+     * @returns {ParsedObject | YiniParseResult} The parsed YINI content.
      *
      * By default (`includeMetadata = false`), this method returns a plain JavaScript object:
      *
@@ -264,14 +268,14 @@ export default class YINI {
      *
      * @param yiniFile           Path to the YINI file.
      * @param strictMode         If `true`, enforce strict parsing rules (e.g. require `/END`, disallow trailing commas).
-     * @param failLevel          Preferred bail sensitivity level, controls how errors and warnings are handled:
+     * @param failLevel          Preferred bail sensitivity level, controls if and when parsing should stop on problems:
      *   - `'auto'` (default)      : Auto‑select level (strict → `'errors'`, lenient → `'ignore-errors'`)
      *   - `'ignore-errors'`       : Continue parsing despite errors; log them and attempt recovery.
      *   - `'errors'`              : Stop parsing on the first error.
      *   - `'warnings-and-errors'` : Stop parsing on the first warning **or** error.
      * @param includeMetadata    If `true`, return additional metadata (e.g. warnings, statistics) alongside the parsed object.
      *
-     * @returns The parsed YINI content.
+     * @returns {ParsedObject | YiniParseResult} The parsed YINI content.
      *
      * By default (`includeMetadata = false`), this method returns a plain JavaScript object:
      *
@@ -308,7 +312,7 @@ export default class YINI {
      * @param options Optional settings to customize parsing and/or results, useful if you need more control.
      *        For all options, see types/ParseOptions.
      *
-     * @param options.failLevel - Minimum severity that should cause the parse to fail.
+     * @param options.failLevel - Preferred bail sensitivity level, controls if and when parsing should stop on problems:
      *   Accepts:
      *     `'ignore-errors'` - Continue despite errors, persist and try to recover.
      *     `'errors'` - Stop parsing on the first error.
@@ -324,18 +328,22 @@ export default class YINI {
      *   Allowed values: `'warn-and-keep-first'` | `'warn-and-overwrite'` | `'keep-first'` (silent, first wins) | `'overwrite'` (silent, last wins) | `'error'`.
      * @param options.preserveUndefinedInMeta - Keep properties with value `undefined` inside
      *   the returned metadata. Requires: `includeMetadata = true`. Ignored otherwise.
+     * @param options.quiet - Show only errors, will suppress warnings and messages sent to the console/log.
+     *   Does not affect warnings included in returned metadata.
      * @param options.requireDocTerminator - Controls whether a document terminator is required.
      *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
+     * @param options.silent - Suppress all output (even errors, exit code only).
      * @param options.strictMode - Sets the baseline ruleset (true = strict, false = lenient).
      *   This is only a starting point: rule-specific options (e.g., `treatEmptyValueAsNull`,
      *   `onDuplicateKey`, etc.) can override parts of that ruleset. If any overrides are given,
      *   the effective mode becomes **custom** rather than purely strict/lenient.
-     * @param options.suppressWarnings - Suppress warnings sent to the console/log.
-     *   Does not affect warnings included in returned metadata.
      * @param options.treatEmptyValueAsNull - How to treat an explicitly empty value on the
      *   right-hand side of '='. Allowed values: `'allow'` | `'allow-with-warning'` | `'disallow'`.
+     * @param options.throwOnError - Will throw on first parse error encountered.
+     * NOTE: Current default is `true`. The default will change to `false` in the next
+     * release. To avoid breaking changes, set this option explicitly.
      *
-     * @returns The parsed YINI content.
+     * @returns {ParsedObject | YiniParseResult} The parsed YINI content.
      *
      * By default (`includeMetadata = false`), this method returns a plain JavaScript object:
      *

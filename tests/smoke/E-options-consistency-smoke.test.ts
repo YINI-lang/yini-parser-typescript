@@ -83,10 +83,10 @@ describe('Options Consistency Smoke Tests:', () => {
             includeDiagnostics: mustBeTrue,
             includeTiming: false,
             preserveUndefinedInMeta: false,
-            suppressWarnings: false, // Suppress warnings in console (does not effect warnings in meta data).
+            quiet: false, // Suppress warnings in console (does not effect warnings in meta data).
             onDuplicateKey: 'warn-and-keep-first',
             requireDocTerminator: 'optional',
-            treatEmptyValueAsNull: 'allow-with-warning',
+            treatEmptyValueAsNull: 'allow',
         }
         expect(!!result.meta).toEqual(true)
         expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)
@@ -111,7 +111,7 @@ describe('Options Consistency Smoke Tests:', () => {
             failLevel: 'errors',
             includeTiming: true,
             preserveUndefinedInMeta: true,
-            suppressWarnings: false,
+            quiet: false,
             onDuplicateKey: 'overwrite',
             requireDocTerminator: 'required',
             treatEmptyValueAsNull: 'disallow',
@@ -148,7 +148,7 @@ describe('Options Consistency Smoke Tests:', () => {
             failLevel: 'ignore-errors',
             includeTiming: false,
             preserveUndefinedInMeta: false,
-            suppressWarnings: true,
+            quiet: true,
             onDuplicateKey: 'keep-first',
             requireDocTerminator: 'warn-if-missing',
             treatEmptyValueAsNull: 'allow-with-warning',
@@ -194,7 +194,7 @@ describe('Options Consistency Smoke Tests:', () => {
             includeDiagnostics: mustBeTrue,
             includeTiming: false,
             preserveUndefinedInMeta: false,
-            suppressWarnings: false, // Suppress warnings in console (does not effect warnings in meta data).
+            quiet: false, // Suppress warnings in console (does not effect warnings in meta data).
             onDuplicateKey: 'error',
             requireDocTerminator: 'optional',
             treatEmptyValueAsNull: 'disallow',
@@ -221,7 +221,7 @@ describe('Options Consistency Smoke Tests:', () => {
             failLevel: 'errors',
             includeTiming: true,
             preserveUndefinedInMeta: true,
-            suppressWarnings: false,
+            quiet: false,
             onDuplicateKey: 'overwrite',
             requireDocTerminator: 'required',
             treatEmptyValueAsNull: 'disallow',
@@ -259,7 +259,7 @@ describe('Options Consistency Smoke Tests:', () => {
             failLevel: 'ignore-errors',
             includeTiming: false,
             preserveUndefinedInMeta: false,
-            suppressWarnings: true,
+            quiet: true,
             onDuplicateKey: 'keep-first',
             requireDocTerminator: 'warn-if-missing',
             treatEmptyValueAsNull: 'allow-with-warning',
@@ -309,10 +309,10 @@ describe('Options Consistency Smoke Tests:', () => {
             includeDiagnostics: mustBeTrue,
             includeTiming: false,
             preserveUndefinedInMeta: false,
-            suppressWarnings: false, // Suppress warnings in console (does not effect warnings in meta data).
+            quiet: false, // Suppress warnings in console (does not effect warnings in meta data).
             onDuplicateKey: 'warn-and-keep-first',
             requireDocTerminator: 'optional',
-            treatEmptyValueAsNull: 'allow-with-warning',
+            treatEmptyValueAsNull: 'allow',
         }
         expect(!!result.meta).toEqual(true)
         expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)
@@ -338,7 +338,7 @@ describe('Options Consistency Smoke Tests:', () => {
             failLevel: 'errors',
             includeTiming: true,
             preserveUndefinedInMeta: true,
-            suppressWarnings: false,
+            quiet: false,
             onDuplicateKey: 'overwrite',
             requireDocTerminator: 'required',
             treatEmptyValueAsNull: 'disallow',
@@ -378,7 +378,7 @@ describe('Options Consistency Smoke Tests:', () => {
             failLevel: 'ignore-errors',
             includeTiming: false,
             preserveUndefinedInMeta: false,
-            suppressWarnings: true,
+            quiet: true,
             onDuplicateKey: 'keep-first',
             requireDocTerminator: 'warn-if-missing',
             treatEmptyValueAsNull: 'allow-with-warning',
@@ -428,7 +428,7 @@ describe('Options Consistency Smoke Tests:', () => {
             includeDiagnostics: mustBeTrue,
             includeTiming: false,
             preserveUndefinedInMeta: false,
-            suppressWarnings: false, // Suppress warnings in console (does not effect warnings in meta data).
+            quiet: false, // Suppress warnings in console (does not effect warnings in meta data).
             onDuplicateKey: 'error',
             requireDocTerminator: 'optional',
             treatEmptyValueAsNull: 'disallow',
@@ -457,7 +457,7 @@ describe('Options Consistency Smoke Tests:', () => {
             failLevel: 'errors',
             includeTiming: true,
             preserveUndefinedInMeta: true,
-            suppressWarnings: false,
+            quiet: false,
             onDuplicateKey: 'overwrite',
             requireDocTerminator: 'required',
             treatEmptyValueAsNull: 'disallow',
@@ -497,7 +497,7 @@ describe('Options Consistency Smoke Tests:', () => {
             failLevel: 'ignore-errors',
             includeTiming: false,
             preserveUndefinedInMeta: false,
-            suppressWarnings: true,
+            quiet: true,
             onDuplicateKey: 'keep-first',
             requireDocTerminator: 'warn-if-missing',
             treatEmptyValueAsNull: 'allow-with-warning',

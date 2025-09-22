@@ -148,8 +148,9 @@ const scoreTerm = (v: DocumentTerminatorRule): TRuleScale => {
 const scoreEmpty = (v: EmptyValueRule): TRuleScale => {
     switch (v) {
         case 'allow':
-        case 'allow-with-warning':
             return 0 // Rule in lenient mode.
+        case 'allow-with-warning':
+            return 1
         case 'disallow':
             return 2 // Rule in strict mode.
     }
