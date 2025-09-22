@@ -1,3 +1,5 @@
+# Note, for this CodeQL not to collide with GitHub's default
+# setting GitHub's CodeQL need to be disabled.
 name: CodeQL
 
 on:
