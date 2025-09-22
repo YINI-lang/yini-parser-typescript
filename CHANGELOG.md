@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## --dev/uppcoming--
+## 1.3.0-beta - 2025 Sep
 - **Fixed:** bug where `buildResultMetadata(..)` could occasionally produce an `undefined` error.
 - **Renamed:** some public (user facing) interfaces to be more ergonomic for end users:
   * `AllUserOptions` to `ParseOptions`
