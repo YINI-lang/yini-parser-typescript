@@ -26,7 +26,7 @@
   - **Grammar drift check:** ANTLR-based verification to ensure generated sources are committed.
   - **Regression tests:** run across a Node/OS matrix.
   - **Releases:** npm publish with provenance (tag-driven).
-- **Updated** parser summary.
+- **Updated** logic when parser summary is shown.
 
 ## 1.2.0-beta - 2025 Sep
 - **Fixed:** `parseFile()` now correctly passes through all options (e.g. `includeDiagnostics`) so they work and matches as in `parse(..)`.

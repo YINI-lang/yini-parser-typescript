@@ -201,12 +201,16 @@ if (isProdEnv()) {
         // console.log(
         //     toPrettyJSON(
         YINI.parse(
-            `^ Section1
-    value =   // invalid in strict mode => error`,
+            `
+    ^ Section1
+    value =   // invalid in strict mode => error
+    `,
             {
-                requireDocTerminator: 'warn-if-missing',
+                // failLevel: 'errors',
+                throwOnError: false,
+                // requireDocTerminator: 'warn-if-missing',
                 strictMode: true,
-                silent: true,
+                silent: false,
                 // includeMetadata: false,
             },
         )
