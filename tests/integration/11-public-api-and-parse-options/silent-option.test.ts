@@ -1,7 +1,5 @@
-import path from 'path'
 import YINI, { YiniParseResult } from '../../../src'
-import { isDebug } from '../../../src/config/env'
-import { debugPrint, printObject } from '../../../src/utils/print'
+import { debugPrint } from '../../../src/utils/print'
 
 const ERROR_DOC = `
     ^ Section1
@@ -19,7 +17,7 @@ const WARNING_DOC = `
 `
 
 /**
- * Option 'silent' tests.
+ * Option 'silent' + metadata tests.
  */
 describe(`Option 'silent' tests:`, () => {
     let errSpy: jest.SpyInstance
