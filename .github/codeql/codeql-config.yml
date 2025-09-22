@@ -3,3 +3,4 @@ paths:
     - src
 paths-ignore:
     - src/grammar/generated/**
+    - examples/**
