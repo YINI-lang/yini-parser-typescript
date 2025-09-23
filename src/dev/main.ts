@@ -198,24 +198,30 @@ if (isProdEnv()) {
         ^ Section2
         // => warning, if requireDocTerminator: 'warn-if-missing'
         `
-        // console.log(
-        //     toPrettyJSON(
-        YINI.parse(
-            `
-    ^ Section1
-    value =   // invalid in strict mode => error
+        console.log(
+            toPrettyJSON(
+                YINI.parse(
+                    `
+    ^1 User2
+    ^2 PrefsOfUser2
+    ^3 DeepSection
+    ^4 DeeperSection
+    key = "Level 4 section"
+    ^5 YetDeeperSection
+    key = "Level 5 section"
+    item = 77
     `,
-            {
-                // failLevel: 'errors',
-                throwOnError: false,
-                // requireDocTerminator: 'warn-if-missing',
-                strictMode: true,
-                silent: false,
-                // includeMetadata: false,
-            },
+                    {
+                        // failLevel: 'errors',
+                        throwOnError: false,
+                        // requireDocTerminator: 'warn-if-missing',
+                        strictMode: true,
+                        silent: false,
+                        includeMetadata: true,
+                    },
+                ),
+            ),
         )
-        //     ),
-        // )
 
         // const yini = `
         //     /*sdfsdf*/

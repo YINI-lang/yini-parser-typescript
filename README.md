@@ -320,6 +320,16 @@ console.log(config);
 
 ---
 
+## 🛠 Roadmap
+
+1. **Improve existing functionality** — Ongoing improvements to core parsing, richer diagnostics, and expanded QA for areas not yet fully covered.
+2. **Full spec compliance** — Complete support for all features in the YINI Specification v1.0.0 (and the latest RCs).
+   - Progress and current status are tracked in [FEATURE-CHECKLIST.md](https://github.com/YINI-lang/yini-parser-typescript/blob/main/FEATURE-CHECKLIST.md).
+3. **Schema validation (future)** — Possible future expansion to support schema/contract validation for stricter type-safe configs.
+4. **Ecosystem integration** - Broader and additional support for tooling, and other ecosystem projects.
+
+---
+
 ## 🤝 Contributing
 We welcome feedback, bug reports, feature requests, and code contributions!
 - [Open an Issue](https://github.com/YINI-lang/yini-parser-typescript/issues)
