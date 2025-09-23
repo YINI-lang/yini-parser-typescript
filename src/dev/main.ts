@@ -202,15 +202,15 @@ if (isProdEnv()) {
             toPrettyJSON(
                 YINI.parse(
                     `
-    ^1 User2
-    ^2 PrefsOfUser2
-    ^3 DeepSection
-    ^4 DeeperSection
-    key = "Level 4 section"
-    ^5 YetDeeperSection
-    key = "Level 5 section"
-    item = 77
-    `,
+                    ^ App
+                    title = 'My App'
+                    items = 25
+                    darkMode = true   // "ON"/"YES" also work
+
+                    ^^ Special
+                        primaryColor = #336699
+                        keywords     = [ "alpha", "beta", "release" ]
+         `,
                     {
                         // failLevel: 'errors',
                         throwOnError: false,
