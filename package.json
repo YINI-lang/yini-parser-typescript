@@ -65,7 +65,7 @@
         "test:gold:debug": "cross-env npm run test:gold -- --isDebug=1",
         "test:esm": "node ./tests/fixtures/test-src-files/esm-smoke.js",
         "test:cov": "jest --coverage",
-        "report:lcov": "jest --coverage --coverageReporters=lcov",
+        "test:cov:lcov": "jest --coverage --coverageReporters=lcov",
         "ci:test": "cross-env NODE_ENV=test APP_ENV=ci jest --verbose --runInBand",
         "ci:test:smoke": "cross-env NODE_ENV=test APP_ENV=ci jest tests/smoke --verbose --runInBand",
         "ci:test:unit": "cross-env NODE_ENV=test APP_ENV=ci jest src/ --verbose --runInBand",
