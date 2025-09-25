@@ -45,5 +45,5 @@ lerna-debug.log*
 
 *.local
 
-# Ignore generated Jest coverage report
+# Ignore generated Jest coverage (test) report.
 coverage
