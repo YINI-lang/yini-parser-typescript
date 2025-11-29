@@ -115,3 +115,10 @@ replacing the older `TJSObject` type for representing parsed YINI.
 ## 1.0.0-alpha.4 - 2025-07-20
 
 First public release.
+
+---
+
+**^YINI ≡**  
+> A simple, structured, and human-friendly configuration format.  
+
+[yini-lang.org](https://yini-lang.org) · [YINI on GitHub](https://github.com/YINI-lang)  

@@ -215,3 +215,10 @@ node dist/index.js  # runs the compiled JS
 ```bash
 ts-node src/index.ts  # runs TypeScript file directly
 ```
+
+---
+
+**^YINI ≡**  
+> A simple, structured, and human-friendly configuration format.  
+
+[yini-lang.org](https://yini-lang.org) · [YINI on GitHub](https://github.com/YINI-lang)  

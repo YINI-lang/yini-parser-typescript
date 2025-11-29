@@ -374,4 +374,7 @@ In this project on GitHub, the `libs` directory contains third party software an
 
 ---
 
-~ **YINI ≡** • [https://yini-lang.org](https://yini-lang.org)
+**^YINI ≡**  
+> A simple, structured, and human-friendly configuration format.  
+
+[yini-lang.org](https://yini-lang.org) · [YINI on GitHub](https://github.com/YINI-lang)  

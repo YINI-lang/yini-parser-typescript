@@ -26,3 +26,10 @@ Did you write a patch that fixes a bug, adds a new feature or implenting test ca
   * `feature/` for new features.
   
   **Before submitting a PR, it's a good idea to create an issue to discuss your changes—so your PR is less likely to be wasted!** 🙂
+
+---
+
+**^YINI ≡**  
+> A simple, structured, and human-friendly configuration format.  
+
+[yini-lang.org](https://yini-lang.org) · [YINI on GitHub](https://github.com/YINI-lang)  

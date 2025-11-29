@@ -33,3 +33,10 @@ The `tests` directory consists of different test types and test data files:
 Since `process.exit` is global, it will kill the whole process including the users application using this library.
 
 Instead, on error it shoud throw an error.
+
+---
+
+**^YINI ≡**  
+> A simple, structured, and human-friendly configuration format.  
+
+[yini-lang.org](https://yini-lang.org) · [YINI on GitHub](https://github.com/YINI-lang)  
