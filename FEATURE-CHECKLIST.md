@@ -11,7 +11,7 @@ https://github.com/YINI-lang/YINI-spec
   * 🚧 Partially or WIP (Work in Progress)
   * 🔲 Not started
   * ❌ Not currently
-- **Parse:** (parsing implemented)
+- **Impl.:** (parsing and logic implemented)
   * ✔️ Yes, done
   * 🚧 Partially or WIP (Work in Progress)
   * 🔲 Not started
@@ -35,7 +35,7 @@ https://github.com/YINI-lang/YINI-spec
     <th>Sub-Feature</th>
     <th>Status</th>
     <th>Details</th>
-    <th>Parse</th>
+    <th>Impl.</th>
     <th>Test</th>
     <th>Verf</th>
     <th>Notes</th>
@@ -116,7 +116,7 @@ https://github.com/YINI-lang/YINI-spec
     <th>Sub-Feature</th>
     <th>Status</th>
     <th>Details</th>
-    <th>Parse</th>
+    <th>Impl.</th>
     <th>Test</th>
     <th>Verf</th>
     <th>Notes</th>
@@ -187,7 +187,7 @@ https://github.com/YINI-lang/YINI-spec
     <th>Sub-Feature</th>
     <th>Status</th>
     <th>Details</th>
-    <th>Parse</th>
+    <th>Impl.</th>
     <th>Test</th>
     <th>Verf</th>
     <th>Notes</th>
@@ -239,7 +239,7 @@ https://github.com/YINI-lang/YINI-spec
     <th>Sub-Feature</th>
     <th>Status</th>
     <th>Details</th>
-    <th>Parse</th>
+    <th>Impl.</th>
     <th>Test</th>
     <th>Verf</th>
     <th>Notes</th>
@@ -300,7 +300,7 @@ https://github.com/YINI-lang/YINI-spec
     <th>Sub-Feature</th>
     <th>Status</th>
     <th>Details</th>
-    <th>Parse</th>
+    <th>Impl.</th>
     <th>Test</th>
     <th>Verf</th>
     <th>Notes</th>
@@ -380,7 +380,7 @@ https://github.com/YINI-lang/YINI-spec
     <th>Sub-Feature</th>
     <th>Status</th>
     <th>Details</th>
-    <th>Parse</th>
+    <th>Impl.</th>
     <th>Test</th>
     <th>Verf</th>
     <th>Notes</th>
@@ -450,7 +450,7 @@ https://github.com/YINI-lang/YINI-spec
     <th>Sub-Feature</th>
     <th>Status</th>
     <th>Details</th>
-    <th>Parse</th>
+    <th>Impl.</th>
     <th>Test</th>
     <th>Verf</th>
     <th>Notes</th>
@@ -547,7 +547,7 @@ https://github.com/YINI-lang/YINI-spec
     <th>Sub-Feature</th>
     <th>Status</th>
     <th>Details</th>
-    <th>Parse</th>
+    <th>Impl.</th>
     <th>Test</th>
     <th>Verf</th>
     <th>Notes</th>
@@ -591,7 +591,7 @@ https://github.com/YINI-lang/YINI-spec
     <th>Sub-Feature</th>
     <th>Status</th>
     <th>Details</th>
-    <th>Parse</th>
+    <th>Impl.</th>
     <th>Test</th>
     <th>Verf</th>
     <th>Notes</th>
@@ -643,7 +643,7 @@ https://github.com/YINI-lang/YINI-spec
     <th>Sub-Feature</th>
     <th>Status</th>
     <th>Details</th>
-    <th>Parse</th>
+    <th>Impl.</th>
     <th>Test</th>
     <th>Verf</th>
     <th>Notes</th>
@@ -725,7 +725,7 @@ https://github.com/YINI-lang/YINI-spec
     <th>Option</th>
     <th>Status</th>
     <th>Details</th>
-    <th>Parse</th>
+    <th>Impl.</th>
     <th>Test</th>
     <th>Verf</th>
     <th>Notes</th>
@@ -861,7 +861,7 @@ https://github.com/YINI-lang/YINI-spec
     <th>Sub-Feature</th>
     <th>Status</th>
     <th>Details</th>
-    <th>Parse</th>
+    <th>Impl.</th>
     <th>Test</th>
     <th>Verf</th>
     <th>Notes</th>
