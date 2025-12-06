@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 1.3.1-beta - 2025 Dec
+- **Updated:** all (~14) project dependencies to their latest versions, including TypeScript and packages with reported security vulnerabilities. Node type definitions remain unchanged.
+
 ## 1.3.0-beta - 2025 Sep
 - **Fixed:** bug where `buildResultMetadata(..)` could occasionally produce an `undefined` error.
 - **Renamed:** some public (user facing) interfaces to be more ergonomic for end users:
