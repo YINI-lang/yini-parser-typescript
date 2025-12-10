@@ -81,6 +81,14 @@ export class YiniRuntime {
     ): ParsedObject {
         debugPrint('-> Entered doParse(..) in YiniRuntime class\n')
 
+        if (yiniContent.startsWith('\uFEFF')) {
+            // (!) NOTE: slice(1) only because UTF-8 BOM appears as one single Unicode code characte, even though it is 3 bytes (EF BB BF) on disk.
+            yiniContent = yiniContent.slice(1)
+            devPrint(
+                'YINI.doParseFile(..): BOM was detected and stripped in UTF-8 content',
+            )
+        }
+
         // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
         if (
             isOptionsObjectForm(arg2) &&

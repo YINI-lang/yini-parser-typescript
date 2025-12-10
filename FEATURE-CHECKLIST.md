@@ -126,10 +126,10 @@ https://github.com/YINI-lang/YINI-spec
     <td>UTF-8 Encoding</td>
     <td>🔲</td>
     <td>BOM detection</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>🔲</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>Must handle with/without BOM</td>
+    <td>Must handle UTF-8 with/without BOM</td>
   </tr>
   <tr>
     <td>Shebang support</td>
