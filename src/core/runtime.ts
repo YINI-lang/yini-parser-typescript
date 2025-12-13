@@ -57,7 +57,7 @@ export class YiniRuntime {
     // (With no body + not declared with arrow function.)
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
     // Easier and simpler positional form ((legacy/simple)).
-    public doParse(
+    public runParse(
         yiniContent: string,
         strictMode?: boolean,
         failLevel?: PreferredFailLevel,
@@ -68,18 +68,18 @@ export class YiniRuntime {
     // (With no body + not declared with arrow function.)
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
     // Options-object form (recommended) for power/expert users (more future-proof).
-    public doParse(yiniContent: string, options?: ParseOptions): ParsedObject
+    public runParse(yiniContent: string, options?: ParseOptions): ParsedObject
 
     // --- Single implementation --------------------------------------------
     // Implementation method (not declared with arrow function) for both method overload signatures.
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
-    public doParse(
+    public runParse(
         yiniContent: string,
         arg2?: boolean | ParseOptions, // strictMode | options
         failLevel: PreferredFailLevel = 'auto',
         includeMetadata = false,
     ): ParsedObject {
-        debugPrint('-> Entered doParse(..) in YiniRuntime class\n')
+        debugPrint('-> Entered runParse(..) in YiniRuntime class\n')
 
         if (yiniContent.startsWith('\uFEFF')) {
             // (!) NOTE: slice(1) only because UTF-8 BOM appears as one single Unicode code characte, even though it is 3 bytes (EF BB BF) on disk.
@@ -274,7 +274,7 @@ export class YiniRuntime {
             hasNoNewlineAtEOF = true
         }
 
-        const result = this.doParse(content, {
+        const result = this.runParse(content, {
             ...userOpts,
         })
         // if (hasNoNewlineAtEOF && !userOpts.quiet && !userOpts.silent) {
