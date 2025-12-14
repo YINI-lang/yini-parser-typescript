@@ -10,9 +10,9 @@ const baseDirBOMFixtures = join(
     'generated-bom-fixtures',
 )
 
-/**
- * Must handle parse(..) UTF-8 with, and without BOM.
- */
+/* ====================================================================
+ *  A — parse(..) must handle UTF-8 with and without BOM
+ * ==================================================================== */
 describe('A-Must handle parse(..) UTF-8 with or without BOM:', () => {
     const expected = {
         App: {
@@ -110,11 +110,9 @@ name = "Demo"`
     })
 })
 
-// ====================================================================
-
-/**
- * Must handle parseFile(..) UTF-8 with, and without BOM.
- */
+/* ====================================================================
+ *  B — parseFile(..) must handle UTF-8 with and without BOM
+ * ==================================================================== */
 describe('B-Must handle parseFile(..) UTF-8 with or without BOM:', () => {
     const expected = {
         App: {

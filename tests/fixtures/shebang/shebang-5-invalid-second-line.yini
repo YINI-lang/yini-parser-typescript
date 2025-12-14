@@ -1,0 +1,4 @@
+// Invalid shebang line, it must be on the very first line.
+#!/usr/bin/env yini
+^ App
+name = "Shebang-demo"

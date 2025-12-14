@@ -1,0 +1,4 @@
+# Not a shebang line
+#!/usr/bin/env yini
+^ App
+name = "Shebang-demo"

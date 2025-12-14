@@ -189,6 +189,7 @@ if (isProdEnv()) {
         //     theme2 = "special-dark"
         //         `
 
+        /*
         const errorYini = `
         ^ Section1
         333="oops"   // invalid key => error
@@ -222,6 +223,7 @@ if (isProdEnv()) {
                 ),
             ),
         )
+        */
 
         // const yini = `
         //     /*sdfsdf*/
@@ -268,16 +270,24 @@ if (isProdEnv()) {
         // bool5 = yes
         // bool6 = no
         //         `
-        //         console.log(
-        //             toPrettyJSON(
-        //                 YINI.parse(yini, {
-        //                     strictMode: true,
-        //                     failLevel: 'auto',
-        //                     includeMetadata: false,
-        //                     requireDocTerminator: 'optional',
-        //                 }),
-        //             ),
-        //         )
+
+        //         const yiniContent = `#!/usr/bin/env yini
+        // ^ App
+        // name = "Shebang-demo"`
+        const yiniContent = `  #!/usr/bin/env yini
+^ App
+name = "Shebang-demo"`
+
+        console.log(
+            toPrettyJSON(
+                YINI.parse(yiniContent, {
+                    strictMode: true,
+                    failLevel: 'auto',
+                    includeMetadata: false,
+                    requireDocTerminator: 'optional',
+                }),
+            ),
+        )
 
         // console.log(
         //     toPrettyJSON(

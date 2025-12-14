@@ -81,12 +81,27 @@ export class YiniRuntime {
     ): ParsedObject {
         debugPrint('-> Entered runParse(..) in YiniRuntime class\n')
 
+        // Handle optional UTF-8 BOM content of file.
         if (yiniContent.startsWith('\uFEFF')) {
             // (!) NOTE: slice(1) only because UTF-8 BOM appears as one single Unicode code characte, even though it is 3 bytes (EF BB BF) on disk.
             yiniContent = yiniContent.slice(1)
             devPrint(
-                'YINI.doParseFile(..): BOM was detected and stripped in UTF-8 content',
+                'runParse(..): BOM was detected and stripped BOM in UTF-8 content',
             )
+        }
+
+        // Handle optional shebang line (if line starts with "#!").
+        if (yiniContent.startsWith('#!')) {
+            const newlineIndex = yiniContent.indexOf('\n')
+            devPrint(
+                'runParse(..): Shebang detected at first line, stripped line 1.',
+            )
+
+            if (newlineIndex < 2) {
+                throw new Error('Syntax-Error: Unexpected YINI input')
+            }
+
+            yiniContent = yiniContent.slice(newlineIndex + 1)
         }
 
         // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
@@ -160,7 +175,7 @@ export class YiniRuntime {
 
         if (isDev()) {
             console.log()
-            devPrint('YINI.parse(..): result:')
+            devPrint('runParse(..): result:')
             console.log(result)
 
             devPrint('Complete result:')
