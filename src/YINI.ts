@@ -235,14 +235,14 @@ export default class YINI {
 
         debugPrint()
         debugPrint(
-            '==== Call doParse(..) in runtime ==========================',
+            '==== Call runParse(..) in runtime ==========================',
         )
         // const result = _parseMain(yiniContent, coreOpts, _runtimeInfo)
         const runtime = new YiniRuntime('Inline')
 
         const result = isOptionsObjectForm(arg2)
-            ? runtime.doParse(yiniContent, arg2) // Overload #2: (content, options)
-            : runtime.doParse(
+            ? runtime.runParse(yiniContent, arg2) // Overload #2: (content, options)
+            : runtime.runParse(
                   // Overload #1: (content, strict?, failLevel?, includeMeta?)
                   yiniContent,
                   arg2 as boolean | undefined,
