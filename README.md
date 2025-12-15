@@ -40,7 +40,7 @@ YINI is a simple, human-friendly configuration format inspired by INI and JSON.
 - **Built for clarity:**
     * Uses a concise syntax to minimize unnecessary characters.
     * Supports commonly used configuration structures.
-- *Developed to meet practical needs, driven by curiosity and a desire **for configuration clarity, simplicity, minimalism, and flexibility**.
+- Developed to meet practical needs, driven by curiosity and a desire **for configuration clarity, simplicity, minimalism, and flexibility**.
 
 ---
 
