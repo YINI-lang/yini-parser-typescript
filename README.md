@@ -23,8 +23,6 @@ YINI (Yet another INI): YINI is a configuration format designed for readability 
 
 ## YINI Parser – (source code in TypeScript)
 
-> 🚧 This package is in **beta**. The core API is stabilizing, some more advanced features may still change. Feedback and bug reports are welcome!
-
 **YINI Parser in TypeScript** — a runtime library for Node.js.  
 A parser / reader for the [YINI configuration file format](https://github.com/YINI-lang/YINI-spec).  
 
