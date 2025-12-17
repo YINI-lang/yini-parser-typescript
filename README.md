@@ -373,6 +373,6 @@ In this project on GitHub, the `libs` directory contains third party software an
 ---
 
 **^YINI ≡**  
-> A simple, structured, and human-friendly configuration format.  
+> An INI-inspired configuration format with clear structure.  
 
 [yini-lang.org](https://yini-lang.org) · [YINI on GitHub](https://github.com/YINI-lang)  
