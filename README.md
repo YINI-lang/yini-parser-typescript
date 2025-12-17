@@ -13,7 +13,7 @@ import YINI from 'yini-parser'
 const config = YINI.parseFile('./config.yini')
 ```
 
-YINI (Yet another INI): YINI is a configuration format designed for readability and structure, inspired by INI and YAML.
+YINI: YINI is a settings/configuration format designed for structure and human-readability, inspired by INI and JSON.
 
 ➡️ See full [documentation or YINI format specification](https://github.com/YINI-lang/YINI-spec)
 

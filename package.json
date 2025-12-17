@@ -1,7 +1,7 @@
 {
     "name": "yini-parser",
     "version": "1.3.2-beta",
-    "description": "Node.js parser for YINI config format — A clean, structured configuration format with nesting, types, comments, and optional strict parsing.",
+    "description": "Node.js parser for YINI config format — A clean, structured settings/configuration format with nesting, types, comments, and optional strict parsing.",
     "keywords": [
         "yini",
         "yini-parser",
@@ -19,7 +19,7 @@
         "nodejs",
         "javascript"
     ],
-    "homepage": "https://github.com/YINI-lang/yini-parser-typescript",
+    "homepage": "https://yini-lang.org/",
     "license": "Apache-2.0",
     "files": [
         "dist/",

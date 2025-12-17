@@ -2,7 +2,8 @@
 
 ## 1.3.2-beta - 2025 Dec
 - **Added:** Implemented UTF-8 BOM support (safe U+FEFF stripping) and added complete test fixtures for BOM/no-BOM, BOM+newline, and mid-file scenarios.
-- **Added:** Implemented support for shebang (`#!`), which is ignored by the parser.
+- **Added:** Implemented support for shebang (`#!`), which is ignored by the parser and the line skipped.  
+(If the parser sees `#!` at first line, instead of breaking the parsing, the parsing will continue on the next line.)
 - **Updated:** all (~14) project dependencies to their latest versions, including TypeScript and packages with reported security vulnerabilities. Node type definitions remain unchanged.
 
 ## 1.3.0-beta - 2025 Sep
