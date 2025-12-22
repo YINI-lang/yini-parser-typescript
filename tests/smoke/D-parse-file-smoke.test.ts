@@ -49,7 +49,7 @@ describe('Parse-File Smoke Tests:', () => {
         //@todo Add tests for the other literal as well.
     })
 
-    xtest('Parse file "3-cli-application-options.*".', () => {
+    test('Parse file "3-cli-application-options.*".', () => {
         // Arrange.
         const fileName = '3-cli-application-options.smoke.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -106,7 +106,7 @@ describe('Parse-File Smoke Tests:', () => {
         //@todo Add tests for the other literal as well.
     })
 
-    xtest('Parse file "7-email-smtp-configuration.*".', () => {
+    test('Parse file "7-email-smtp-configuration.*".', () => {
         // Arrange.
         const fileName = '7-email-smtp-configuration.smoke.yini'
         const fullPath = path.join(baseDir, fileName)
