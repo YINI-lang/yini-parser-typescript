@@ -43,7 +43,7 @@ export interface YiniParseResult {
 // not whether it throws (if whould throw shall be controlled by throwOnError instead).
 export type FailLevelKey =
     | 'ignore-errors' // 0 - Continue despite errors, persist and try to recover.
-    | 'errors' // 1 - Stop parsing on the first error.
+    | 'errors' // 1 - Stop parsing on the first error (fail-fast).
     | 'warnings-and-errors' // 2 - Stop parsing on the first warning or error.
 
 export type PreferredFailLevel = 'auto' | FailLevelKey
@@ -107,7 +107,7 @@ export interface PrimaryUserParams extends BasicOptions {
  * @param options.failLevel - Preferred bail sensitivity level, controls if and when parsing should stop on problems:
  *   Accepts:
  *     `'ignore-errors'` - Continue despite errors, persist and try to recover.
- *     `'errors'` - Stop parsing on the first error.
+ *     `'errors'` - Stop parsing on the first error (fail-fast).
  *     `'warnings-and-errors'` - Stop parsing on the first warning or error.
  *   (Type: TPreferredFailLevel; exact behavior is implementation-defined.)
  * @param options.includeDiagnostics - Include diagnostics in the returned metadata.
