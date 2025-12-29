@@ -1,4 +1,4 @@
-// File: src/index.ts
+// src/index.ts
 
 /*
     This file is a pure barrel file.
@@ -63,7 +63,7 @@ export const setTabSize = YINI.setTabSize
  *
  * @packageDocumentation
  */
-// export * from './types' // NOTE: The public (user-facing) types only!
+// NOTE: The public (user-facing) types only!
 // Re-exported public types as *types* (so they erase at runtime).
 export type {
     ParsedObject,

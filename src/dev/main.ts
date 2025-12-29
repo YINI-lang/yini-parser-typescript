@@ -29,6 +29,12 @@ import {
 } from '../core/parsingRules/modeFromRulesMatcher'
 import { debugPrint, printObject, toPrettyJSON } from '../utils/print'
 import YINI from '../YINI'
+// import { defectSectionLevelJump } from './quick-test-samples/defect-inputs'
+import './quick-test-samples/valid-inputs' // validConfigComplex,
+import {
+    validConfigComplexBigA,
+    validConfigComplexBigB,
+} from './quick-test-samples/valid-inputs'
 
 debugPrint()
 debugPrint('-> Entered dev/main.ts')
@@ -278,12 +284,29 @@ if (isProdEnv()) {
 ^ App
 name = "Shebang-demo"`
 
+        console.log('--!!! MÅN1------------------------------------------')
         console.log(
             toPrettyJSON(
-                YINI.parse(yiniContent, {
+                // YINI.parse(validConfig, {
+                YINI.parse(validConfigComplexBigA, {
                     strictMode: true,
                     failLevel: 'auto',
-                    includeMetadata: false,
+                    includeMetadata: true,
+                    includeDiagnostics: false,
+                    requireDocTerminator: 'optional',
+                }),
+            ),
+        )
+
+        console.log('--!!! MÅN2------------------------------------------')
+        console.log(
+            toPrettyJSON(
+                // YINI.parse(validConfig, {
+                YINI.parse(validConfigComplexBigB, {
+                    strictMode: true,
+                    failLevel: 'auto',
+                    includeMetadata: true,
+                    includeDiagnostics: true,
                     requireDocTerminator: 'optional',
                 }),
             ),

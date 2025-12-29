@@ -6,6 +6,10 @@
 import { createHash } from 'crypto'
 import { debugPrint } from './print'
 
+export const toColRow = (size: number, label: string, value: string) => {
+    return `${label.padEnd(size)} ${value}`
+}
+
 // export const stripBOM = (input: string): string => {
 //     // (!) NOTE: slice(1) only because UTF-8 BOM appears as one single Unicode code characte, even though it is 3 bytes (EF BB BF) on disk.
 //     return input.startsWith('\uFEFF') ? input.slice(1) : input
@@ -146,4 +150,11 @@ export const toLowerSnakeCase = (txt: string): string => {
  */
 export const toLowerKebabCase = (txt: string): string => {
     return txt.trim().toLowerCase().replace(/[_]/g, '-')
+}
+
+export const removeSuffix = (str: string, suffix: string): string => {
+    if (str.endsWith(suffix)) {
+        return str.slice(0, -suffix.length)
+    }
+    return str
 }
