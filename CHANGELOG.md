@@ -2,7 +2,7 @@
 
 ## WORK: 1.3.XXX-beta - 2025 Dec
 - **Added:** 
-  - Added comprehensive smoke tests (F-5.a-c and F-6.a-c) matching YINI parsing against expected JSON output using two large, production-style configuration examples.
+  - Added comprehensive smoke tests (F-5.a-d and F-6.a-d) matching YINI parsing against expected JSON output using two large, production-style configuration examples.
     - **Corporate SaaS Platform** — [YINI](./tests/fixtures/smoke-fixtures/a-corporate-saas-platform.smoke.yini) and [JSON](./tests/fixtures/smoke-fixtures/a-corporate-saas-platform.smoke.json)
     - **High-Security Distributed Control System** — [YINI](./tests/fixtures/smoke-fixtures/b-high-security-distributed-control-system.smoke.yini) and [JSON](./tests/fixtures/smoke-fixtures/b-high-security-distributed-control-system.smoke.json)
   - Tests verify consistent results across:
@@ -10,6 +10,8 @@
     - strict mode parsing.
     - strict mode with metadata enabled.
   - These tests now serve as regression contracts for parser correctness, metadata inclusion, and cross-format consistency.
+- **Added:** Smoke test (F-7) verifying that parsing a YINI file returns metadata when `includeMetadata: true` is enabled.
+- **Added:** Smoke test (F-8) verifying that parsing a defect YINI produces diagnostics metadata given proper parse options.
 - **Fixed:** Miscellaneous smaller fixes and improvements
   
 ## 1.3.2-beta - 2025 Dec

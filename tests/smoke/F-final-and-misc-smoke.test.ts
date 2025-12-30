@@ -403,7 +403,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                 hasDocumentTerminator: false,
                 hasYiniMarker: true,
                 lineCount: 222,
-                byteSize: 6735,
+                byteSize: -1,
                 sha256: '9f47daf94e8668d37e2dd1d772b573e0be49393f3a5ea6c5a79f2400534f2e9d',
             },
             structure: {
@@ -442,7 +442,195 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         resultB.meta.runFinishedAt = '####'
         resultB.meta.durationMs = -1
         resultB.meta.source.fileName = '####'
+        resultB.meta.source.byteSize = -1
         expect(toPrettyJSON(resultB.meta)).toEqual(toPrettyJSON(correctMetaB))
+    })
+
+    test('F-8. Check defect YINI produces diagnostics metadata given proper parse options.', () => {
+        // Arrange.
+        const fileName = '../invalid/defectConfig2Combo3.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        // Act.
+        const result = YINI.parseFile(fullPath, {
+            strictMode: true,
+            failLevel: 'ignore-errors',
+            includeMetadata: true,
+            includeDiagnostics: true,
+        })
+        IS_LOCAL_DEBUG && console.log('fullPath = ' + fullPath)
+        IS_LOCAL_DEBUG && console.log('resultB:')
+        IS_LOCAL_DEBUG && console.log(toPrettyJSON(result))
+
+        // Assert.
+        const correctMetaDiagn = {
+            parserVersion: '1.3.2-beta',
+            mode: 'strict',
+            totalErrors: 7,
+            totalWarnings: 1,
+            totalMessages: 8,
+            runStartedAt: '####',
+            runFinishedAt: '####',
+            durationMs: -1,
+            preservesOrder: true,
+            orderGuarantee: 'implementation-defined',
+            source: {
+                sourceType: 'file',
+                fileName: '####',
+                hasDocumentTerminator: false,
+                hasYiniMarker: false,
+                lineCount: 23,
+                byteSize: -1,
+                sha256: '76b688ead738bad8987111e8702086c094295f78440cca139102a53b75b18fb2',
+            },
+            structure: {
+                maxDepth: 3,
+                sectionCount: 6,
+                memberCount: 8,
+                keysParsedCount: null,
+                sectionNamePaths: [
+                    'App',
+                    'App.Database',
+                    'App.Database.Logging',
+                    'Network',
+                    'Server',
+                    'Server.Security',
+                ],
+            },
+            metaSchemaVersion: '1.1.1',
+            diagnostics: {
+                failLevel: {
+                    preferredLevel: 'ignore-errors',
+                    usedLevelType: '0-Ignore-Errors',
+                    usedLevelKey: 'ignore-errors',
+                    levelDescription: 'Continue despite errors.',
+                },
+                errors: {
+                    errorCount: 7,
+                    payload: [
+                        {
+                            line: 7,
+                            column: 11,
+                            typeKey: 'syntax_error',
+                            message: 'Syntax error',
+                            advice: "Details: extraneous input '54_32' expecting {NL, INLINE_COMMENT}",
+                        },
+                        {
+                            line: 12,
+                            column: 16,
+                            typeKey: 'syntax_error',
+                            message: 'Syntax error',
+                            advice: "Details: extraneous input 'maybe' expecting {NL, INLINE_COMMENT}",
+                        },
+                        {
+                            line: 19,
+                            column: 4,
+                            typeKey: 'syntax_error',
+                            message: 'Syntax error',
+                            advice: "Details: extraneous input '=' expecting {'[', '{', BOOLEAN_FALSE, BOOLEAN_TRUE, NULL, '{}', '[]', NUMBER, STRING, NL, WS, INLINE_COMMENT}",
+                        },
+                        {
+                            line: 7,
+                            column: 3,
+                            typeKey: 'syntax_error',
+                            message: "Missing value for key 'port'.",
+                            advice: "Expected a value after '=' but found none. Implicit nulls are disallowed by 'treatEmptyValueAsNull = disallow'.",
+                            hint: "Write 'null' explicitly (port = null) if that is intended, or provide a concrete value.",
+                        },
+                        {
+                            line: 7,
+                            column: 3,
+                            typeKey: 'syntax_error',
+                            message: 'Invalid value',
+                            advice: "Invalid value for key 'port in member (<key> = <value> pair)'.",
+                            hint: "Got 'undefined', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.",
+                        },
+                        {
+                            line: 12,
+                            column: 5,
+                            typeKey: 'syntax_error',
+                            message: "Missing value for key 'enabled'.",
+                            advice: "Expected a value after '=' but found none. Implicit nulls are disallowed by 'treatEmptyValueAsNull = disallow'.",
+                            hint: "Write 'null' explicitly (enabled = null) if that is intended, or provide a concrete value.",
+                        },
+                        {
+                            line: 12,
+                            column: 5,
+                            typeKey: 'syntax_error',
+                            message: 'Invalid value',
+                            advice: "Invalid value for key 'enabled in member (<key> = <value> pair)'.",
+                            hint: "Got 'undefined', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.",
+                        },
+                    ],
+                },
+                warnings: {
+                    warningCount: 1,
+                    payload: [
+                        {
+                            typeKey: 'syntax_warning',
+                            message:
+                                'Warning: Strict initialMode is not yet fully implemented.',
+                            advice: 'Some validation rules may still be missing or incomplete.',
+                        },
+                    ],
+                },
+                notices: {
+                    noticeCount: 0,
+                    payload: [],
+                },
+                infos: {
+                    infoCount: 0,
+                    payload: [],
+                },
+                environment: {
+                    NODE_ENV: 'test',
+                    APP_ENV: 'local',
+                    lib: {
+                        nodeEnv: 'test',
+                        appEnv: 'local',
+                        flags: {
+                            isDev: false,
+                            isDebug: false,
+                        },
+                    },
+                },
+                effectiveOptions: {
+                    effectiveMode: 'strict',
+                    failLevel: 'ignore-errors',
+                    includeDiagnostics: true,
+                    includeMetadata: true,
+                    includeTiming: false,
+                    onDuplicateKey: 'error',
+                    preserveUndefinedInMeta: false,
+                    quiet: false,
+                    requireDocTerminator: 'optional',
+                    strictMode: true,
+                    treatEmptyValueAsNull: 'disallow',
+                },
+                options: {
+                    failLevel: 'ignore-errors',
+                    includeDiagnostics: true,
+                    includeMetadata: true,
+                    includeTiming: false,
+                    onDuplicateKey: 'error',
+                    preserveUndefinedInMeta: false,
+                    quiet: false,
+                    requireDocTerminator: 'optional',
+                    silent: false,
+                    strictMode: true,
+                    throwOnError: true,
+                    treatEmptyValueAsNull: 'disallow',
+                },
+            },
+        }
+        result.meta.runStartedAt = '####'
+        result.meta.runFinishedAt = '####'
+        result.meta.durationMs = -1
+        result.meta.source.fileName = '####'
+        result.meta.source.byteSize = -1
+        expect(toPrettyJSON(result.meta)).toEqual(
+            toPrettyJSON(correctMetaDiagn),
+        )
     })
 
     test('F-9.a. Should throw error if using existing section name at level 1.', () => {

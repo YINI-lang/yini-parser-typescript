@@ -21,6 +21,7 @@ import {
 import { debugPrint, printObject, toPrettyJSON } from '../utils/print'
 import YINI from '../YINI'
 import {
+    defectConfig2Combo3,
     defectConfigCombo3,
     defectSectionLevelJump,
 } from './quick-test-samples/defect-inputs'
@@ -282,11 +283,11 @@ name = "Shebang-demo"`
         console.log(
             toPrettyJSON(
                 // YINI.parse(validConfig, {
-                YINI.parse(validConfigComplexBigB, {
+                YINI.parse(defectConfig2Combo3, {
                     strictMode: true,
-                    // failLevel: 'auto',
+                    failLevel: 'ignore-errors',
                     includeMetadata: true,
-                    // includeDiagnostics: true,
+                    includeDiagnostics: true,
                     // requireDocTerminator: 'optional',
                 }),
             ),
