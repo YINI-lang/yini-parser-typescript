@@ -10,6 +10,7 @@
     - strict mode parsing.
     - strict mode with metadata enabled.
   - These tests now serve as regression contracts for parser correctness, metadata inclusion, and cross-format consistency.
+- **Fixed:** Miscellaneous smaller fixes and improvements
   
 ## 1.3.2-beta - 2025 Dec
 - **Added:** Implemented UTF-8 BOM support (safe U+FEFF stripping) and added complete test fixtures for BOM/no-BOM, BOM+newline, and mid-file scenarios.

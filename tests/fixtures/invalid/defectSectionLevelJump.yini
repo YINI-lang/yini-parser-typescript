@@ -1,0 +1,2 @@
+^^ Logging        // INVALID: section level jumps without parent
+enabled = true

@@ -1,0 +1,9 @@
+^ App
+name = "Combo defects sample"
+
+mode := "dev"            // INVALID #1: ':=' is not a valid assignment operator (must be '=')
+
+^ 2Database              // INVALID #2: section name starts with a digit (must start with A-Z/_ or be backticked)
+host = "localhost"
+
+ports = [80, 443, 8080   // INVALID #3: missing closing ']' in array literal

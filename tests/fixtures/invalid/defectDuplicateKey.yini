@@ -1,0 +1,3 @@
+^ App
+name = "Demo"
+name = "Override" // INVALID: duplicate key in same section

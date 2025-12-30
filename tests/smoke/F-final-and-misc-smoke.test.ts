@@ -81,7 +81,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         expect(metaResult.meta.structure.memberCount).toEqual(3)
     })
 
-    test('F-2. Parsing inline, and returning with meta data, with correct object.', () => {
+    test('F-2. Parsing inline, and returning with metadata, with correct object.', () => {
         // Arrange.
         const validYini = `
 
@@ -119,7 +119,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         expect(metaResult.meta.structure.memberCount).toEqual(5)
     })
 
-    test('F-3. Parsing inline in strict mode + has all commenting styles, returning with meta data, should return correct object.', () => {
+    test('F-3. Parsing inline in strict mode + has all commenting styles, returning with metadata, should return correct object.', () => {
         // Arrange.
         const validYini = `
             /*
@@ -268,6 +268,29 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         )
     })
 
+    test('F-5.d) Parse & check YINI returns metadata: a-corporate-saas-platform.', () => {
+        // Arrange.
+        const fileName = 'a-corporate-saas-platform.smoke.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        // Act.
+        const resultA = YINI.parseFile(fullPath, {
+            strictMode: true,
+            includeMetadata: true,
+        })
+        IS_LOCAL_DEBUG && console.log('fullPath = ' + fullPath)
+        IS_LOCAL_DEBUG && console.log('resultA:')
+        IS_LOCAL_DEBUG && console.log(toPrettyJSON(resultA))
+
+        // Assert.
+        expect(resultA.meta.mode).toEqual('strict')
+        expect(resultA.meta.totalErrors).toEqual(0)
+        expect(resultA.meta.preservesOrder).toEqual(true)
+        expect(resultA.meta.source).not.toEqual(undefined)
+        expect(resultA.meta.structure).not.toEqual(undefined)
+        expect(resultA.meta.metaSchemaVersion).toEqual('1.1.1')
+    })
+
     test('F-6.a) Parse & match YINI against JSON: b-high-security-distributed-control-system.', () => {
         // Arrange.
         const fileName = 'b-high-security-distributed-control-system.smoke.yini'
@@ -322,6 +345,104 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         expect(toPrettyJSON(resultB.result)).toEqual(
             toPrettyJSON(correctAnswerB),
         )
+    })
+
+    test('F-6.d) Parse & check YINI returns metadata: b-high-security-distributed-control-system.', () => {
+        // Arrange.
+        const fileName = 'b-high-security-distributed-control-system.smoke.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        // Act.
+        const resultB = YINI.parseFile(fullPath, {
+            strictMode: true,
+            includeMetadata: true,
+        })
+        IS_LOCAL_DEBUG && console.log('fullPath = ' + fullPath)
+        IS_LOCAL_DEBUG && console.log('resultB:')
+        IS_LOCAL_DEBUG && console.log(toPrettyJSON(resultB))
+
+        // Assert.
+        expect(resultB.meta.mode).toEqual('strict')
+        expect(resultB.meta.totalErrors).toEqual(0)
+        expect(resultB.meta.preservesOrder).toEqual(true)
+        expect(resultB.meta.source).not.toEqual(undefined)
+        expect(resultB.meta.structure).not.toEqual(undefined)
+        expect(resultB.meta.metaSchemaVersion).toEqual('1.1.1')
+    })
+
+    test('F-7. Parse & match YINI metadata with JS-object: b-high-security-distributed-control-system.', () => {
+        // Arrange.
+        const fileName = 'b-high-security-distributed-control-system.smoke.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        // Act.
+        const resultB = YINI.parseFile(fullPath, {
+            strictMode: true,
+            includeMetadata: true,
+            includeDiagnostics: false,
+        })
+        IS_LOCAL_DEBUG && console.log('fullPath = ' + fullPath)
+        IS_LOCAL_DEBUG && console.log('resultB:')
+        IS_LOCAL_DEBUG && console.log(toPrettyJSON(resultB))
+
+        // Assert.
+        const correctMetaB = {
+            parserVersion: '1.3.2-beta',
+            mode: 'strict',
+            totalErrors: 0,
+            totalWarnings: 1,
+            totalMessages: 1,
+            runStartedAt: '####',
+            runFinishedAt: '####',
+            durationMs: -1,
+            preservesOrder: true,
+            orderGuarantee: 'implementation-defined',
+            source: {
+                sourceType: 'file',
+                fileName: '####',
+                hasDocumentTerminator: false,
+                hasYiniMarker: true,
+                lineCount: 222,
+                byteSize: 6735,
+                sha256: '9f47daf94e8668d37e2dd1d772b573e0be49393f3a5ea6c5a79f2400534f2e9d',
+            },
+            structure: {
+                maxDepth: 4,
+                sectionCount: 22,
+                memberCount: 68,
+                keysParsedCount: null,
+                sectionNamePaths: [
+                    'App',
+                    'App.Features',
+                    'App.Limits',
+                    'App.Database',
+                    'App.Database.Credentials',
+                    'App.API',
+                    'App.API.Auth',
+                    'App.API.Auth.Clients',
+                    'Logging',
+                    'Logging.File',
+                    'Logging.Metrics',
+                    'Services',
+                    'Services.Email',
+                    'Services.Email.Credentials',
+                    'Services.Cache',
+                    'Services.Cache.Cluster',
+                    'Services.Cache.Failover',
+                    'Observability',
+                    'Observability.Exporters',
+                    'Security',
+                    'Security.Policies',
+                    'Security.Policies.Lockout',
+                ],
+            },
+            metaSchemaVersion: '1.1.1',
+        }
+        resultB.meta.runStartedAt = '####'
+        resultB.meta.runFinishedAt = '####'
+        resultB.meta.durationMs = -1
+        resultB.meta.source.fileName = '####'
+        expect(toPrettyJSON(resultB.meta)).toEqual(toPrettyJSON(correctMetaB))
     })
 
     test('F-9.a. Should throw error if using existing section name at level 1.', () => {

@@ -1,0 +1,6 @@
+^ App
+name = "My Application"
+
+^ 20-Database     // INVALID: section name must start with a letter or underscore
+host = "localhost"
+port = 5432

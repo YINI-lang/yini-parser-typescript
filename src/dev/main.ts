@@ -18,18 +18,12 @@ import {
     localAppEnv,
     localNodeEnv,
 } from '../config/env'
-import {
-    getDefaultUserOptions,
-    TNormalizedUserOptions,
-} from '../core/options/defaultParserOptions'
-import { toCoreOptions } from '../core/options/optionsFunctions'
-import {
-    matchModeFromCoreOptions,
-    matchModeFromParseOptions,
-} from '../core/parsingRules/modeFromRulesMatcher'
 import { debugPrint, printObject, toPrettyJSON } from '../utils/print'
 import YINI from '../YINI'
-// import { defectSectionLevelJump } from './quick-test-samples/defect-inputs'
+import {
+    defectConfigCombo3,
+    defectSectionLevelJump,
+} from './quick-test-samples/defect-inputs'
 import './quick-test-samples/valid-inputs' // validConfigComplex,
 import {
     validConfigComplexBigA,
@@ -284,20 +278,6 @@ if (isProdEnv()) {
 ^ App
 name = "Shebang-demo"`
 
-        // console.log('--!!!------------------------------------------')
-        // console.log(
-        //     toPrettyJSON(
-        //         // YINI.parse(validConfig, {
-        //         YINI.parse(validConfigComplexBigA, {
-        //             strictMode: true,
-        //             failLevel: 'auto',
-        //             includeMetadata: true,
-        //             includeDiagnostics: false,
-        //             requireDocTerminator: 'optional',
-        //         }),
-        //     ),
-        // )
-
         console.log('--!!!------------------------------------------')
         console.log(
             toPrettyJSON(
@@ -311,6 +291,21 @@ name = "Shebang-demo"`
                 }),
             ),
         )
+
+        // console.log('--!!!------------------------------------------')
+        // console.log(
+        //     toPrettyJSON(
+        //         // YINI.parse(validConfig, {
+        //         YINI.parse(defectConfigCombo3, {
+        //             strictMode: true,
+        //             // failLevel: 'auto',
+        //             failLevel: 'ignore-errors',
+        //             includeMetadata: true,
+        //             includeDiagnostics: true,
+        //             // requireDocTerminator: 'optional',
+        //         }),
+        //     ),
+        // )
 
         // console.log(
         //     toPrettyJSON(

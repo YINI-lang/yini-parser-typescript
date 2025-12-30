@@ -92,19 +92,19 @@ version = 1.0
 
   ^^ Database
   host = "localhost"
-  port = 54_32      // ❌ INVALID number format: underscores not allowed inside numbers
+  port = 54_32      // INVALID number format: underscores not allowed inside numbers
 
   auth = { user: "admin", pass: "secret" }
 
     ^^^ Logging
-    enabled = maybe  // ❌ INVALID boolean: only true/false/on/off/yes/no allowed
+    enabled = maybe  // INVALID boolean: only true/false/on/off/yes/no allowed
 
       ^ Network
       timeout = 30
 
 ^ Server
   host = "0.0.0.0"
-  port := 8080      // ❌ INVALID assignment operator: must use "=" not ":="
+  port := 8080      // INVALID assignment operator: must use "=" not ":="
 
     ^^ Security
       useTLS = true

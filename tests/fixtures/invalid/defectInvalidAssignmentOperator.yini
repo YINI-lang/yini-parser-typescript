@@ -1,0 +1,3 @@
+^ App
+name = 'Hello'
+txt := 'World'    // INVALID: assignment operator must be "="

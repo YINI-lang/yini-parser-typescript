@@ -12,16 +12,6 @@ import { debugPrint, devPrint, printObject } from './utils/print'
 
 const DEFAULT_TAB_SIZE = 4 // De facto "modern default" (even though traditionally/historically it's 8).
 
-// let _runtimeInfo: IRuntimeInfo = {
-//     sourceType: 'Inline',
-//     fileName: undefined,
-//     fileByteSize: null,
-//     lineCount: null,
-//     timeIoMs: null,
-//     preferredBailSensitivity: null,
-//     sha256: null,
-// }
-
 /**
  * This class is the public API, which exposes only parse(..) and
  * parseFile(..), rest of the implementation details are hidden.
@@ -173,71 +163,10 @@ export default class YINI {
     ): ParsedObject | YiniParseResult {
         debugPrint('-> Entered static parse(..) in class YINI\n')
 
-        // // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
-        // if (
-        //     isOptionsObjectForm(arg2) &&
-        //     (failLevel !== 'auto' || includeMetadata !== false)
-        // ) {
-        //     throw new TypeError(
-        //         'Invalid call: when providing an options object, do not also pass positional parameters.',
-        //     )
-        // }
-
-        // const mode: TParserMode = inferModeFromArgs(arg2)
-        // const defaultOptions = getDefaultOptions(mode)
-
-        // // Normalize to a fully-required options object.
-        // let userOpts: Required<ParseOptions>
-
-        // // Required, makes all properties in T required, no undefined.
-        // if (isOptionsObjectForm(arg2)) {
-        //     userOpts = {
-        //         ...defaultOptions, // Sets the default options.
-        //         ...arg2,
-        //     }
-        // } else {
-        //     // Positional form.
-        //     userOpts = {
-        //         ...defaultOptions, // Sets the default options.
-        //         strictMode:
-        //             (arg2 as boolean | undefined) ?? defaultOptions.strictMode,
-        //         failLevel,
-        //         includeMetadata,
-        //     }
-        // }
-
-        // if (userOpts.includeMetadata && _runtimeInfo.sourceType === 'Inline') {
-        //     const lineCount = yiniContent.split(/\r?\n/).length // Counts the lines.
-        //     const sha256 = computeSha256(yiniContent) // NOTE: Compute BEFORE any possible tampering of content.
-
-        //     _runtimeInfo.lineCount = lineCount
-        //     _runtimeInfo.preferredBailSensitivity = userOpts.failLevel
-        //     _runtimeInfo.sha256 = sha256
-        // }
-
-        // // NOTE: Important: Do not trim or mutate the yiniContent here, due
-        // // to it will mess up the line numbers in error reporting.
-
-        // if (!yiniContent) {
-        //     throw new Error('Syntax-Error: Unexpected blank YINI input')
-        // }
-        // if (!yiniContent.endsWith('\n')) {
-        //     yiniContent += '\n'
-        // }
-
-        // let level: TBailSensitivityLevel = mapFailLevelToBail(
-        //     userOpts.strictMode,
-        //     userOpts.failLevel,
-        // )
-        ////////////////
-
-        // const coreOpts: IParseCoreOptions = toCoreOptions(userOpts,level)
-
         debugPrint()
         debugPrint(
             '==== Call runParse(..) in runtime ==========================',
         )
-        // const result = _parseMain(yiniContent, coreOpts, _runtimeInfo)
         const runtime = new YiniRuntime('Inline')
 
         const result = isOptionsObjectForm(arg2)
@@ -382,81 +311,10 @@ export default class YINI {
         debugPrint('-> Entered static parseFile(..) in class YINI\n')
         debugPrint('Current directory = ' + process.cwd())
 
-        // // Runtime guard to catch illegal/ambiguous calls coming from JS or any-cast code
-        // if (
-        //     isOptionsObjectForm(arg2) &&
-        //     (failLevel !== 'auto' || includeMetadata !== false)
-        // ) {
-        //     throw new TypeError(
-        //         'Invalid call: when providing an options object, do not also pass positional parameters.',
-        //     )
-        // }
-
-        // const mode: TParserMode = inferModeFromArgs(arg2)
-        // const defaultOptions = getDefaultOptions(mode)
-
-        // // Normalize to a fully-required options object.
-        // let userOpts: Required<ParseOptions>
-
-        // // Required, makes all properties in T required, no undefined.
-        // if (isOptionsObjectForm(arg2)) {
-        //     // Options-object Form.
-        //     userOpts = {
-        //         ...defaultOptions, // Sets the default options.
-        //         ...arg2,
-        //     }
-        // } else {
-        //     // Positional form.
-        //     userOpts = {
-        //         ...defaultOptions, // Sets the default options.
-        //         strictMode:
-        //             (arg2 as boolean | undefined) ?? defaultOptions.strictMode,
-        //         failLevel,
-        //         includeMetadata,
-        //     }
-        // }
-
-        // if (getFileNameExtension(filePath).toLowerCase() !== '.yini') {
-        //     console.error('Invalid file extension for YINI file:')
-        //     console.error(`"${filePath}"`)
-        //     console.log(
-        //         'File does not have a valid ".yini" extension (case-insensitive).',
-        //     )
-        //     throw new Error('Error: Unexpected file extension for YINI file')
-        // }
-
-        // // ---- Phase 0: I/O ----
-        // const timeStartMs = performance.now()
-
-        // // let content = fs.readFileSync(filePath, 'utf8')
-        // const rawBuffer = fs.readFileSync(filePath) // Raw buffer for size.
-        // const fileByteSize = rawBuffer.byteLength // Byte size in UTF-8.
-
-        // let content = rawBuffer.toString('utf8')
-        // const timeEndMs = performance.now()
-
-        // _runtimeInfo.sourceType = 'File'
-        // _runtimeInfo.fileName = filePath
-
-        // if (userOpts.includeMetadata) {
-        //     _runtimeInfo.lineCount = content.split(/\r?\n/).length // Counts the lines.
-        //     _runtimeInfo.fileByteSize = fileByteSize
-        //     _runtimeInfo.timeIoMs = +(timeEndMs - timeStartMs).toFixed(3)
-        //     _runtimeInfo.preferredBailSensitivity = userOpts.failLevel
-        //     _runtimeInfo.sha256 = computeSha256(content) // NOTE: Compute BEFORE any possible tampering of content.
-        // }
-
-        // let hasNoNewlineAtEOF = false
-        // if (!content.endsWith('\n')) {
-        //     content += '\n'
-        //     hasNoNewlineAtEOF = true
-        // }
-
         debugPrint()
         debugPrint(
             '==== Call doParseFile(..) in runtime ==========================',
         )
-        // const result = _parseMain(yiniContent, coreOpts, _runtimeInfo)
         const runtime = new YiniRuntime('File')
 
         const result = isOptionsObjectForm(arg2)

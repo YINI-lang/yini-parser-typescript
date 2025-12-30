@@ -1,4 +1,3 @@
-// const pkg = require('../../package.json')
 import pkg from '../../package.json' // NOTE: Requires "resolveJsonModule": true (or "esModuleInterop": true).
 import {
     isDebug,

@@ -1,0 +1,8 @@
+^ App
+name = "Demo"
+
+^ Database
+host = "localhost"
+port = 5432
+
+someKey = 33__33   // INVALID: malformed numeric literal
