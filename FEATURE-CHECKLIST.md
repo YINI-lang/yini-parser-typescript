@@ -110,7 +110,7 @@ https://github.com/YINI-lang/YINI-spec
 
 ---
 
-### 🚧 — 2. File Structure & Errors
+### ✅ — 2. File Structure & Errors
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -567,7 +567,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Nested objects inside objects</td>
     <td>🔲</td>
     <td>Objects themselves are literals and can be nested</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td></td>
@@ -628,7 +628,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>Nested lists inside objects</td>
     <td>🔲</td>
     <td>Lists themselves are literals and can be nested</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
     <td></td>
