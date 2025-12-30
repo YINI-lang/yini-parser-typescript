@@ -68,7 +68,7 @@ maintainers = ["infra@nebula.io", "platform@nebula.io", "secops@nebula.io"]
 
         ^^^ Credentials
         username = "nebula_app"
-        password = "⟁-xT9!rP@2025"
+        password = "****"
         rotateEveryDays = 45
         history = [
             { rotatedAt: "2025-05-10", reason: "scheduled" },

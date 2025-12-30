@@ -13,6 +13,6 @@ config = {
     Database: {
         host: 'db.local',
         port: 5432,
-        Credentials: { password: 'secret' },
+        Credentials: { password: '****' },
     },
 }

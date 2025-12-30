@@ -133,15 +133,15 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
             version = "1.0.0"
             debug = OFF  // This is a comment.
 
-                # Database setttings.
+                # Database settings.
                 ^^ Database
                 host = "db.example.com"
                 port = 3306
                 root = { user: 'admin', password: ''}
                 user = "appuser"
-                --password = "dbpassword"  # Old, save for now.
-                //password = "dbpassword"  # Not sure yet about this pw.
-                password = "dbpassword"  # Keep this secret.
+                --password = "####"  # Old, save for now.
+                //password = "####"  # Not sure yet about this pw.
+                password = "####"  # Keep this secret.
 
                     // Commenting with slashes works too.
                     ^^^ Pool
@@ -175,7 +175,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                         password: '',
                     },
                     user: 'appuser',
-                    password: 'dbpassword',
+                    password: '####',
                     Pool: {
                         min: 2,
                         max: 10,

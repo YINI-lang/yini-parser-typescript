@@ -16,7 +16,7 @@ type = "postgres"
 host = "localhost"
 port = 5432
 username = "admin"
-password = "s3cr3t"
+password = "****"
 db_name = "myapp"
 pool = { max: 10, min: 2, idle: 10000 }
 

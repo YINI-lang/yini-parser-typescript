@@ -43,7 +43,7 @@ maintainers = ["ops@acme.com", "dev@acme.com"]
 
         ^^^ Credentials
         username = "app_user"
-        password = "super-secret"
+        password = "****"
         rotateEveryDays = 90
 
     ^^ API

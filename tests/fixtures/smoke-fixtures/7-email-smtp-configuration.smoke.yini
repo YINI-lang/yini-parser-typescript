@@ -13,7 +13,7 @@ server = 'smtp.mailserver.com'
 port = 587
 use_tls = true
 username = 'mailer'
-password = 'change_me'
+password = '****'
 
 	^2 Defaults
 	from_address = 'noreply@example.com'

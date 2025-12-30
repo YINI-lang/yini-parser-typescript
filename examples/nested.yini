@@ -23,4 +23,4 @@ host = "db.local"
 port = 5432
 
     ^^ Credentials     // Nested under Database: Database.Credentials    username = "admin"
-    password = "secret"
+    password = "####"

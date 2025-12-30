@@ -116,7 +116,7 @@ maintainers = ["ops@acme.com", "dev@acme.com"]
 
         ^^^ Credentials
         username = "app_user"
-        password = "super-secret"
+        password = "****"
         rotateEveryDays = 90
 
     ^^ API
@@ -270,7 +270,7 @@ maintainers = ["infra@nebula.io", "platform@nebula.io", "secops@nebula.io"]
 
         ^^^ Credentials
         username = "nebula_app"
-        password = "⟁-xT9!rP@2025"
+        password = "****"
         rotateEveryDays = 45
         history = [
             { rotatedAt: "2025-05-10", reason: "scheduled" },

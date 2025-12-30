@@ -27,7 +27,7 @@ debug = false
     host = "db.example.com"
     port = 5432
     username = "some_user"
-    password = "s3cret"
+    password = "****"
     poolSize = 10
 
         ^^^ Options   // Defines a sub-section "Options" under "Database".

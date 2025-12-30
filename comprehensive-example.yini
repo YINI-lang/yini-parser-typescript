@@ -163,7 +163,7 @@ object_empty = {}
 ^1 Database    # Section header using numeric shorthand (^1)
 enabled = true
 user = "root"
-password = 'secret'
+password = '****'
 roles = ["admin", "user", "guest"]
 timeout = null
 
