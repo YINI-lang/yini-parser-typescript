@@ -558,7 +558,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>🔲</td>
     <td><code>{ key: value, ... }</code></td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>Inline, supports nesting, trailing comma ignored (lenient only)
     </td>
@@ -568,7 +568,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>🔲</td>
     <td>Objects themselves are literals and can be nested</td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td></td>
   </tr>
@@ -576,8 +576,8 @@ https://github.com/YINI-lang/YINI-spec
     <td>Nested objects inside lists</td>
     <td>🔲</td>
     <td>Objects themselves are literals and can be nested</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>🔲</td>
     <td></td>
   </tr>
@@ -602,7 +602,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>🔲</td>
     <td><code>key = [a, b, c]</code></td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>Trailing comma allowed and is ignored (lenient only)</td>
   </tr>
@@ -617,10 +617,10 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>Nested lists inside lists</td>
-    <td>✅</td>
+    <td>🔲</td>
     <td>Lists themselves are literals and can be nested</td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td></td>
   </tr>
@@ -629,7 +629,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>🔲</td>
     <td>Lists themselves are literals and can be nested</td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>🔲</td>
     <td></td>
   </tr>
@@ -763,21 +763,21 @@ https://github.com/YINI-lang/YINI-spec
 
   <tr>
     <td><code>includeDiagnostics</code></td>
-    <td>🚧</td>
+    <td>✅</td>
     <td>Attaches diagnostics arrays/counters inside <code>meta</code> (requires <code>includeMetadata</code>)</td>
     <td>✅</td>
-    <td>🚧</td>
-    <td>🚧</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>Ensure parity between <code>parse</code> and <code>parseFile</code></td>
   </tr>
 
   <tr>
     <td><code>includeTiming</code></td>
-    <td>🚧</td>
+    <td>✅</td>
     <td>Adds per-phase timing to <code>meta.timingMs</code> (requires <code>includeMetadata</code>)</td>
     <td>✅</td>
-    <td>🚧</td>
-    <td>🚧</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>Phases: lex/parse, AST+validate, build</td>
   </tr>
 
