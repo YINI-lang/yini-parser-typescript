@@ -11,12 +11,13 @@
   - Complex policy logic
   - Auth & security modeling
   - Unicode in strings.
+  - Strings in double quotes.
   - Large but readable
  */
 
 ^ App
 name = "Acme Platform"      // Example Platform
-description = 'The word “Acme” has been used for over 100 years in technical and business examples.'
+description = "The word “Acme” has been used for over 100 years in technical and business examples."
 meaning = "It comes from Greek akmḗ (ἀκμή), meaning “the highest point” or “best”."
 version = "2.3.1"
 debug = OFF

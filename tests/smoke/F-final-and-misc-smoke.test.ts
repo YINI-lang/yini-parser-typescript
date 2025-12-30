@@ -262,7 +262,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         expect(toPrettyJSON(resultA)).not.toEqual(toPrettyJSON(correctAnswerB))
         expect(toPrettyJSON(resultA)).not.toEqual(toPrettyJSON(correctAnswerA))
 
-        expect(resultA.meta.source.lineCount).toEqual(127)
+        expect(resultA.meta.source.lineCount).toEqual(128)
         expect(toPrettyJSON(resultA.result)).toEqual(
             toPrettyJSON(correctAnswerA),
         )
@@ -318,7 +318,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         expect(toPrettyJSON(resultB)).not.toEqual(toPrettyJSON(correctAnswerA))
         expect(toPrettyJSON(resultB)).not.toEqual(toPrettyJSON(correctAnswerB))
 
-        expect(resultB.meta.source.lineCount).toEqual(221)
+        expect(resultB.meta.source.lineCount).toEqual(222)
         expect(toPrettyJSON(resultB.result)).toEqual(
             toPrettyJSON(correctAnswerB),
         )

@@ -80,6 +80,7 @@ export const validConfigComplex = `
   - Complex policy logic
   - Auth & security modeling
   - Unicode in strings.
+  - Strings in double quotes.
   - Large but readable
  */
 export const validConfigComplexBigA = `
@@ -89,7 +90,7 @@ export const validConfigComplexBigA = `
 
 ^ App
 name = "Acme Platform"    // Example Platform
-description = 'The word “Acme” has been used for over 100 years in technical and business examples.'
+description = "The word “Acme” has been used for over 100 years in technical and business examples."
 meaning = "It comes from Greek akmḗ (ἀκμή), meaning “the highest point” or “best”."
 version = "2.3.1"
 debug = OFF
@@ -201,16 +202,18 @@ blockedCountries = ["KP", "SD"]
 
 /*
   Example B covers:
-  - Nested arrays inside inline objects
-  - Sections & deep nesting
-  - Real-world domain structure
-  - Objects in arrays
-  - Arrays of objects
-  - Scalars of every type
-  - Complex policy logic
-  - Auth & security modeling
+  Covers:
+  - Nested arrays inside inline objects.
+  - Sections & deep nesting.
+  - Real-world domain structure.
+  - Objects in arrays.
+  - Arrays of objects.
+  - Scalars of every type.
+  - Complex policy logic.
+  - Auth & security modeling.
   - Unicode in strings.
-  - Large but readable
+  - Strings in single quotes.
+  - Large but readable.
  */
 export const validConfigComplexBigB = `
 @YINI
@@ -218,27 +221,27 @@ export const validConfigComplexBigB = `
 // Example B: High-Security Distributed Control System.
 
 ^ App
-name = "Nebula Control Suite"
-description = "A distributed operations platform for autonomous systems and edge analytics."
-meaning = "Nebula comes from Latin 'nebula' meaning mist or cloud."
-version = "5.0.0-rc.4"
+name = 'Nebula Control Suite'
+description = 'A distributed operations platform for autonomous systems and edge analytics.'
+meaning = 'Nebula comes from Latin "nebula" meaning mist or cloud.'
+version = '5.0.0-rc.4'
 debug = ON
-environment = "staging"
-maintainers = ["infra@nebula.io", "platform@nebula.io", "secops@nebula.io"]
+environment = 'staging'
+maintainers = ['infra@nebula.io', 'platform@nebula.io', 'secops@nebula.io']
 
     ^^ Features
     enableSearch = false
     enablePayments = false
     enableAnalytics = true
-    experimental = ["vector-engine", "adaptive-ui", "ai-routing"]
+    experimental = ['vector-engine', 'adaptive-ui', 'ai-routing']
 
     ^^ Limits
     maxUsers = 120000
     requestTimeoutMs = 7200
     retryPolicy = {
         maxRetries: 9,
-        backoff: "fibonacci",
-        retryOn: ["timeout", "5xx", "throttle"],
+        backoff: 'fibonacci',
+        retryOn: ['timeout', '5xx', 'throttle'],
         schedule: [
             { attempt: 1, delayMs: 80 },
             { attempt: 2, delayMs: 160 },
@@ -249,8 +252,8 @@ maintainers = ["infra@nebula.io", "platform@nebula.io", "secops@nebula.io"]
     }
 
     ^^ Database
-    engine = "cockroachdb"
-    host = "cluster.db.nebula.io"
+    engine = 'cockroachdb'
+    host = 'cluster.db.nebula.io'
     port = 26257
     ssl = true
     pool = {
@@ -258,149 +261,149 @@ maintainers = ["infra@nebula.io", "platform@nebula.io", "secops@nebula.io"]
         max: 120,
         warmup: {
             enabled: true,
-            strategy: "aggressive",
+            strategy: 'aggressive',
             steps: [10, 25, 50, 75, 100],
             healthChecks: [
-                { name: "connectivity", timeoutMs: 300 },
-                { name: "replication", maxLagMs: 200 },
-                { name: "quorum", minNodes: 3 }
+                { name: 'connectivity', timeoutMs: 300 },
+                { name: 'replication', maxLagMs: 200 },
+                { name: 'quorum', minNodes: 3 }
             ]
         }
     }
 
         ^^^ Credentials
-        username = "nebula_app"
-        password = "****"
+        username = 'nebula_app'
+        password = '****'
         rotateEveryDays = 45
         history = [
-            { rotatedAt: "2025-05-10", reason: "scheduled" },
-            { rotatedAt: "2025-03-02", reason: "key-compromise" },
-            { rotatedAt: "2024-12-15", reason: "policy-change" }
+            { rotatedAt: '2025-05-10', reason: 'scheduled' },
+            { rotatedAt: '2025-03-02', reason: 'key-compromise' },
+            { rotatedAt: '2024-12-15', reason: 'policy-change' }
         ]
 
     ^^ API
-    baseUrl = "https://api.nebula.io"
-    publicEndpoints = ["/health", "/status", "/version"]
-    internalEndpoints = ["/admin", "/metrics", "/orchestrator", "/scheduler"]
+    baseUrl = 'https://api.nebula.io'
+    publicEndpoints = ['/health', '/status', '/version']
+    internalEndpoints = ['/admin', '/metrics', '/orchestrator', '/scheduler']
 
         ^^^ Auth
-        provider = "oidc"
+        provider = 'oidc'
         tokenTTLSeconds = 5400
-        scopes = ["read", "write", "deploy", "audit"]
+        scopes = ['read', 'write', 'deploy', 'audit']
 
             ^^^^ Clients
             web = {
-                clientId: "nebula-web-prod",
-                redirectUri: "https://nebula.io/auth/callback",
-                allowedOrigins: ["https://nebula.io", "https://console.nebula.io"],
+                clientId: 'nebula-web-prod',
+                redirectUri: 'https://nebula.io/auth/callback',
+                allowedOrigins: ['https://nebula.io', 'https://console.nebula.io'],
                 secrets: [
-                    { id: "alpha", value: "QX7faP9", active: true },
-                    { id: "beta", value: "LM8KdW2", active: true },
-                    { id: "legacy", value: "OLD-KEY-DO-NOT-USE", active: false }
+                    { id: 'alpha', value: 'QX7faP9', active: true },
+                    { id: 'beta', value: 'LM8KdW2', active: true },
+                    { id: 'legacy', value: 'OLD-KEY-DO-NOT-USE', active: false }
                 ]
             }
 
             mobile = {
-                clientId: "nebula-mobile",
-                redirectUri: "nebula://auth",
+                clientId: 'nebula-mobile',
+                redirectUri: 'nebula://auth',
                 platforms: [
-                    { name: "ios", minVersion: "15.2", enabled: true },
-                    { name: "android", minVersion: "11", enabled: true },
-                    { name: "harmonyos", minVersion: "4", enabled: false }
+                    { name: 'ios', minVersion: '15.2', enabled: true },
+                    { name: 'android', minVersion: '11', enabled: true },
+                    { name: 'harmonyos', minVersion: '4', enabled: false }
                 ],
                 refreshPolicy: {
                     enabled: true,
                     limits: { perHour: 60, perDay: 600 },
                     audit: [
-                        { event: "refresh", severity: "info" },
-                        { event: "suspicious-location", severity: "warning" },
-                        { event: "credential-stuffing", severity: "critical" }
+                        { event: 'refresh', severity: 'info' },
+                        { event: 'suspicious-location', severity: 'warning' },
+                        { event: 'credential-stuffing', severity: 'critical' }
                     ]
                 }
             }
 
 ^ Logging
-level = "debug"
-format = "ndjson"
-outputs = ["stdout", "file", "syslog"]
+level = 'debug'
+format = 'ndjson'
+outputs = ['stdout', 'file', 'syslog']
 
     ^^ File
-    path = "/srv/log/nebula/nebula.log"
+    path = '/srv/log/nebula/nebula.log'
     maxSizeMB = 250
     rotate = true
     keepFiles = 30
 
     ^^ Metrics
     enabled = true
-    endpoint = "/internal/metrics"
+    endpoint = '/internal/metrics'
     sampleRate = 0.75
 
 ^ Services
 enabled = true
 
     ^^ Email
-    provider = "ses"
-    host = "email.nebula.io"
+    provider = 'ses'
+    host = 'email.nebula.io'
     port = 465
     secure = true
-    from = "system@nebula.io"
+    from = 'system@nebula.io'
 
         ^^^ Credentials
-        user = "mailer-nebula"
-        pass = "MAIL-SEC-9921"
+        user = 'mailer-nebula'
+        pass = 'MAIL-SEC-9921'
 
     ^^ Cache
-    type = "keydb"
-    host = "cache.nebula.internal"
+    type = 'keydb'
+    host = 'cache.nebula.internal'
     port = 6380
     ttlSeconds = 1800
 
         ^^^ Cluster
         nodes = [
-            { host: "cache-a.nebula", port: 6380, role: "primary", zones: ["eu-north-1a"] },
-            { host: "cache-b.nebula", port: 6380, role: "replica", zones: ["eu-north-1b"] },
-            { host: "cache-c.nebula", port: 6380, role: "replica", zones: ["eu-north-1c"] },
-            { host: "cache-d.nebula", port: 6380, role: "observer", zones: ["eu-north-1a"] }
+            { host: 'cache-a.nebula', port: 6380, role: 'primary', zones: ['eu-north-1a'] },
+            { host: 'cache-b.nebula', port: 6380, role: 'replica', zones: ['eu-north-1b'] },
+            { host: 'cache-c.nebula', port: 6380, role: 'replica', zones: ['eu-north-1c'] },
+            { host: 'cache-d.nebula', port: 6380, role: 'observer', zones: ['eu-north-1a'] }
         ]
 
         ^^^ Failover
         strategy = {
-            mode: "predictive",
+            mode: 'predictive',
             thresholds: { errorRate: 0.08, latencyMs: 180 },
             actions: [
-                { step: "drain-traffic", timeoutMs: 1500 },
-                { step: "promote-replica", timeoutMs: 2000 },
-                { step: "resync", propagate: true },
-                { step: "notify", channels: ["pagerduty", "slack", "email"] }
+                { step: 'drain-traffic', timeoutMs: 1500 },
+                { step: 'promote-replica', timeoutMs: 2000 },
+                { step: 'resync', propagate: true },
+                { step: 'notify', channels: ['pagerduty', 'slack', 'email'] }
             ]
         }
 
 ^ Observability
 tracing = true
-tracingProvider = "tempo"
+tracingProvider = 'tempo'
 traceSampleRate = 0.35
 
     ^^ Exporters
     jaeger = {
         enabled: false,
-        endpoint: "http://jaeger.internal/api/traces",
+        endpoint: 'http://jaeger.internal/api/traces',
         tags: {
-            region: "eu-north",
-            environment: "staging",
-            build: { version: "5.0.0-rc.4", commit: "c8f91d2", dirty: true }
+            region: 'eu-north',
+            environment: 'staging',
+            build: { version: '5.0.0-rc.4', commit: 'c8f91d2', dirty: true }
         }
     }
 
     prometheus = {
         enabled: true,
-        endpoint: "http://prometheus.nebula:9090",
+        endpoint: 'http://prometheus.nebula:9090',
         scrapeIntervals: [2, 5, 10, 30],
         retention: { days: 90, maxSeries: 3500000 }
     }
 
 ^ Security
-allowedIPs = ["172.16.0.0/12", "100.64.0.0/10"]
-blockedCountries = ["KP", "NG", "BY"]
+allowedIPs = ['172.16.0.0/12', '100.64.0.0/10']
+blockedCountries = ['KP', 'NG', 'BY']
 
     ^^ Policies
     passwordMinLength = 18
@@ -412,12 +415,12 @@ blockedCountries = ["KP", "NG", "BY"]
         lockoutMinutes = 60
         escalation = {
             enabled: true,
-            notify: ["security@nebula.io", "ciso@nebula.io"],
+            notify: ['security@nebula.io', 'ciso@nebula.io'],
             rules: [
-                { attempts: 3, action: "captcha" },
-                { attempts: 4, action: "temporary-block", minutes: 120 },
-                { attempts: 6, action: "account-freeze" },
-                { attempts: 9, action: "permanent-block" }
+                { attempts: 3, action: 'captcha' },
+                { attempts: 4, action: 'temporary-block', minutes: 120 },
+                { attempts: 6, action: 'account-freeze' },
+                { attempts: 9, action: 'permanent-block' }
             ]
         }
 `
