@@ -1,6 +1,7 @@
 # CHANGELOG
 
-## WORK: 1.3.XXX-beta - 2025 Dec
+## 1.3.3-beta - 2025 Dec
+This release strengthens correctness and reliability, while preserving the existing API and improving guarantees.
 - **Added:** 
   - Added comprehensive smoke tests (F-5.a-d and F-6.a-d) matching YINI parsing against expected JSON output using two large, production-style configuration examples.
     - **Corporate SaaS Platform** — [YINI](./tests/fixtures/smoke-fixtures/a-corporate-saas-platform.smoke.yini) and [JSON](./tests/fixtures/smoke-fixtures/a-corporate-saas-platform.smoke.json)

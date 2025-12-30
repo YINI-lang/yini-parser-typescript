@@ -1,4 +1,5 @@
 # YINI Parser for Node.js
+> **Readable configuration without YAML foot-guns or JSON noise.**  
 
 The official TypeScript / Node.js parser for YINI. An INI-inspired configuration format with clear nesting, explicit types, and predictable parsing.
 
@@ -17,8 +18,6 @@ const config = YINI.parseFile('./config.yini')
 
 ➡️ See full [documentation or YINI format specification](https://github.com/YINI-lang/YINI-spec)
 
-⭐ **Enjoying YINI?** If you think this project is interesting, [consider giving it a star on GitHub](https://github.com/YINI-lang/yini-parser-typescript) — it's greatly appreciated.
-
 ---
 
 ## YINI Parser – (source code in TypeScript)
@@ -26,6 +25,12 @@ const config = YINI.parseFile('./config.yini')
 A runtime parser for the official [YINI configuration file format](https://github.com/YINI-lang/YINI-spec).  
 
 The parser follows the official YINI specification and is implemented in TypeScript.
+
+---
+
+### Who is this for?
+
+YINI is designed as an ideal option for application developers, platform teams, DevOps engineers, and anyone maintaining complex configuration at scale.
 
 ---
 
@@ -100,10 +105,10 @@ These examples are also included in the npm package.
 
 ## 🙋‍♀️ Why YINI?
 - **Indentation-independent structure:** The YINI config format is indentation-independent, meaning spaces and tabs never affect meaning.
-- **Explicit nesting:** It uses clear header markers (`^`, `^^`, `^^^`) to define hierarchy (like in Markdown), without long dotted keys.
+- **Explicit nesting for easy refactoring & large configs:** It uses clear header markers (`^`, `^^`, `^^^`) to define hierarchy (like in Markdown), without long dotted keys.
 - **Multiple data types:** Supports boolean literals (`true` / `false`, `Yes` / `No`, etc), numbers, arrays (lists), and JS-style objects natively, with explicit string syntax.
 - **Comments support:** YINI supports multiple comment styles (`#`, `//`, `/* ... */`, and `;`) allowing one to document config directly in the file.
-- **Predictable parsing rules:** Well-defined rules with optional strict and lenient modes, for different use cases.
+- **Predictable parsing rules:** Fewer production surprises, well-defined rules with optional strict and lenient modes, for different use cases.
 
 ---
 
@@ -113,7 +118,15 @@ These examples are also included in the npm package.
 - Easy programmatic usage.
 - Only the `YINI` class is exported; all internal details are private.
 - Arrays/Lists (bracketed): `list = [10, 20, 30]`
-- JS-style Objects.
+- JavaScript-style objects.
+
+⭐ **Enjoying YINI?** If you think this project is interesting, [consider giving it a star on GitHub](https://github.com/YINI-lang/yini-parser-typescript) — it's greatly appreciated.
+
+---
+
+## 🧪 Stability & Guarantees
+
+This parser is continuously validated through comprehensive regression and smoke tests, ensuring deterministic parsing behavior across default, strict, and metadata-enabled modes.
 
 ---
 
@@ -195,7 +208,7 @@ const configFromFile = YINI.parseFile('./config.yini');
 4. **Ecosystem integration** - Broader and additional support for tooling, and other ecosystem projects.
 
 ### Planned & Upcoming Features
-Some advanced YINI features are still being finalized and are tracked transparently.
+Some advanced YINI features are still evolving and are tracked transparently.
 
 You can follow progress in the [YINI parser GitHub repo-FEATURE-CHECKLIST](https://github.com/YINI-lang/yini-parser-typescript/blob/main/FEATURE-CHECKLIST.md). Contributions and feature requests are welcome!
 
