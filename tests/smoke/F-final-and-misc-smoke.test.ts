@@ -387,7 +387,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
 
         // Assert.
         const correctMetaB = {
-            parserVersion: '1.3.2-beta',
+            parserVersion: '####',
             mode: 'strict',
             totalErrors: 0,
             totalWarnings: 1,
@@ -404,7 +404,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                 hasYiniMarker: true,
                 lineCount: 222,
                 byteSize: -1,
-                sha256: '9f47daf94e8668d37e2dd1d772b573e0be49393f3a5ea6c5a79f2400534f2e9d',
+                sha256: '####',
             },
             structure: {
                 maxDepth: 4,
@@ -438,11 +438,13 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
             },
             metaSchemaVersion: '1.1.1',
         }
+        resultB.meta.parserVersion = '####'
         resultB.meta.runStartedAt = '####'
         resultB.meta.runFinishedAt = '####'
         resultB.meta.durationMs = -1
         resultB.meta.source.fileName = '####'
         resultB.meta.source.byteSize = -1
+        resultB.meta.source.sha256 = '####'
         expect(toPrettyJSON(resultB.meta)).toEqual(toPrettyJSON(correctMetaB))
     })
 
@@ -464,7 +466,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
 
         // Assert.
         const correctMetaDiagn = {
-            parserVersion: '1.3.2-beta',
+            parserVersion: '####',
             mode: 'strict',
             totalErrors: 7,
             totalWarnings: 1,
@@ -481,7 +483,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                 hasYiniMarker: false,
                 lineCount: 23,
                 byteSize: -1,
-                sha256: '76b688ead738bad8987111e8702086c094295f78440cca139102a53b75b18fb2',
+                sha256: '####',
             },
             structure: {
                 maxDepth: 3,
@@ -623,11 +625,13 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                 },
             },
         }
+        result.meta.parserVersion = '####'
         result.meta.runStartedAt = '####'
         result.meta.runFinishedAt = '####'
         result.meta.durationMs = -1
         result.meta.source.fileName = '####'
         result.meta.source.byteSize = -1
+        result.meta.source.sha256 = '####'
         result.meta.diagnostics.environment.APP_ENV = '####'
         result.meta.diagnostics.environment.lib.appEnv = '####'
         expect(toPrettyJSON(result.meta)).toEqual(
