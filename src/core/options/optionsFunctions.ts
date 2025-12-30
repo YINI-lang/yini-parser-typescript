@@ -26,10 +26,13 @@ export const toCoreOptions = (
         },
         bailSensitivity: level,
         isIncludeMeta: userOpts.includeMetadata,
-        isWithDiagnostics: isDev() || isDebug() || userOpts.includeDiagnostics,
-        isWithTiming: isDev() || isDebug() || userOpts.includeTiming,
-        isKeepUndefinedInMeta: isDebug() || userOpts.preserveUndefinedInMeta,
-        isQuiet: userOpts.quiet, // Dup of suppressWarnings!
+        // isWithDiagnostics: isDev() || isDebug() || userOpts.includeDiagnostics,
+        isWithDiagnostics: userOpts.includeDiagnostics,
+        // isWithTiming: isDev() || isDebug() || userOpts.includeTiming,
+        isWithTiming: userOpts.includeTiming,
+        // isKeepUndefinedInMeta: isDebug() || userOpts.preserveUndefinedInMeta,
+        isKeepUndefinedInMeta: userOpts.preserveUndefinedInMeta,
+        isQuiet: userOpts.quiet, // Suppress warnings, etc.
         isSilent: userOpts.silent,
         isThrowOnError: userOpts.throwOnError,
     }
