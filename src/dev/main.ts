@@ -284,30 +284,30 @@ if (isProdEnv()) {
 ^ App
 name = "Shebang-demo"`
 
-        console.log('--!!! MÅN1------------------------------------------')
-        console.log(
-            toPrettyJSON(
-                // YINI.parse(validConfig, {
-                YINI.parse(validConfigComplexBigA, {
-                    strictMode: true,
-                    failLevel: 'auto',
-                    includeMetadata: true,
-                    includeDiagnostics: false,
-                    requireDocTerminator: 'optional',
-                }),
-            ),
-        )
+        // console.log('--!!!------------------------------------------')
+        // console.log(
+        //     toPrettyJSON(
+        //         // YINI.parse(validConfig, {
+        //         YINI.parse(validConfigComplexBigA, {
+        //             strictMode: true,
+        //             failLevel: 'auto',
+        //             includeMetadata: true,
+        //             includeDiagnostics: false,
+        //             requireDocTerminator: 'optional',
+        //         }),
+        //     ),
+        // )
 
-        console.log('--!!! MÅN2------------------------------------------')
+        console.log('--!!!------------------------------------------')
         console.log(
             toPrettyJSON(
                 // YINI.parse(validConfig, {
                 YINI.parse(validConfigComplexBigB, {
                     strictMode: true,
-                    failLevel: 'auto',
+                    // failLevel: 'auto',
                     includeMetadata: true,
-                    includeDiagnostics: true,
-                    requireDocTerminator: 'optional',
+                    // includeDiagnostics: true,
+                    // requireDocTerminator: 'optional',
                 }),
             ),
         )

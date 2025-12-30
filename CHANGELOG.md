@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## WORK: 1.3.XXX-beta - 2025 Dec
+- **Added:** 
+  - Added comprehensive smoke tests (F-5.a-c and F-6.a-c) matching YINI parsing against expected JSON output using two large, production-style configuration examples.
+    - **Corporate SaaS Platform** — [YINI](./tests/fixtures/smoke-fixtures/a-corporate-saas-platform.smoke.yini) and [JSON](./tests/fixtures/smoke-fixtures/a-corporate-saas-platform.smoke.json)
+    - **High-Security Distributed Control System** — [YINI](./tests/fixtures/smoke-fixtures/b-high-security-distributed-control-system.smoke.yini) and [JSON](./tests/fixtures/smoke-fixtures/b-high-security-distributed-control-system.smoke.json)
+  - Tests verify consistent results across:
+    - default parsing.
+    - strict mode parsing.
+    - strict mode with metadata enabled.
+  - These tests now serve as regression contracts for parser correctness, metadata inclusion, and cross-format consistency.
+  
 ## 1.3.2-beta - 2025 Dec
 - **Added:** Implemented UTF-8 BOM support (safe U+FEFF stripping) and added complete test fixtures for BOM/no-BOM, BOM+newline, and mid-file scenarios.
 - **Added:** Implemented support for shebang (`#!`), which is ignored by the parser and the line skipped.  
