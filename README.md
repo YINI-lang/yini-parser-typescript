@@ -27,7 +27,7 @@ npm run test
 ---
 
 ## Example of YINI code
-> A real-world YINI configuration example:  
+> A real-world YINI configuration example, showing sections, nesting, comments, and multiple data types:  
 ![YINI Config Example](./samples/config.yini.png)
 Source: [config.yini](./samples/config.yini)
 
