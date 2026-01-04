@@ -1,0 +1,36 @@
+/* YINI Settings Config File */
+
+^ Settings                         // Root application settings
+serviceId = "NebulaService"
+release   = "3.2.1"
+debugMode = false                  // on/off, yes/no also supported
+
+# Single quotes also supported
+tagline = '"Nebula" is a cloud of gas and dust in outer space.'
+
+// Nested sections don't require indentation - it's optional
+
+^^ Network                         // Sub-section of Settings
+bindAddress    = "127.0.0.1"
+bindPort       = 8080
+allowedOrigins = ["https://myapp.com", "http://localhost:3000"]
+
+^^ Capabilities                    // Sub-section of Settings
+enableSearch = yes
+experimental = ["new-ui", "streaming-api"]
+
+// Inline object/dict/map
+pools = {
+    min_units: 2, max_units: 5,    // Underscores in keys allowed
+    size_mb: 128, timeout_sec: 90
+}
+
+# This is also a valid comment style
+
+^^ `DB Config`  # Section names can contain spaces via backticks
+host = "db.internal"
+ssl  = true
+
+^^^ Security                       # Sub-section of `DB Config`
+username = "service_user"
+password = "****"

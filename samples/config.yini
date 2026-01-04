@@ -1,0 +1,27 @@
+/* This is a YINI Config Doc */
+
+^ Config    // Root section starts here
+    ^^ App                    // Sub-section of Config
+    name     = "MyApp"
+    version  = "1.2.3"
+    debug    = true           // on/off, yes/no also supported
+    pageSize = 25
+
+    ^^ UserPrefs              // Sub-section of Config
+    homePath  = "./"
+    lastFiles = ["MyDoc.txt", "Notes.md", "Todo.txt"]
+
+    ^^ Features               // Sub-section of Config
+
+    # This is also a valid comment style
+
+    enableSearch = on         # Also valid: enable_search
+    experimental = null
+    dbEngine     = 'mysql'    # Single quotes also supported
+    ratio        = 1.2
+    flags        = ["new-ui", "streaming-api"]
+    
+    cache = {                 # Inline object/dict/map
+        maxMb: 256,
+        maxHours: 0.5
+    }

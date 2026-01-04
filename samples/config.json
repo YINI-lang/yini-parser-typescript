@@ -1,0 +1,32 @@
+{
+    "Config": {
+        "App": {
+            "name": "MyApp",
+            "version": "1.2.3",
+            "debug": true,
+            "pageSize": 25
+        },
+        "UserPrefs": {
+            "homePath": "./",
+            "lastFiles": [
+                "MyDoc.txt",
+                "Notes.md",
+                "Todo.txt"
+            ]
+        },
+        "Features": {
+            "enableSearch": true,
+            "experimental": null,
+            "dbEngine": "mysql",
+            "ratio": 1.2,
+            "flags": [
+                "new-ui",
+                "streaming-api"
+            ],
+            "cache": {
+                "maxMb": 256,
+                "maxHours": 0.5
+            }
+        }
+    }
+}

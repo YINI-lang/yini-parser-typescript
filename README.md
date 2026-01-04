@@ -1,7 +1,9 @@
 # YINI Parser for Node.js
 > **Readable configuration without YAML foot-guns or JSON noise.**  
 
-The official TypeScript / Node.js parser for YINI. An INI-inspired and human-readable text format for representing structured information. It is designed to be clear, predictable, and easy for humans to read and write. It is suitable for configuration files, application settings, and general data-storage use cases.
+The official TypeScript / Node.js parser for **YINI** — an INI-inspired, human-readable text format for structured information.  
+Designed to be clear, predictable, and easy to read and write.
+Suitable for configuration files, application settings, and general data storage.  
 
 [![npm version](https://img.shields.io/npm/v/yini-parser.svg)](https://www.npmjs.com/package/yini-parser) [![All Test Suites](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml) [![All Regression Tests](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-regression-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-regression-tests.yml) [![Grammar Drift Check](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-grammar-drift-check.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-grammar-drift-check.yml)
 
@@ -16,9 +18,18 @@ import YINI from 'yini-parser'
 const config = YINI.parseFile('./config.yini')
 ```
 
+```sh
+npm run test
+```
+
 ➡️ See full [documentation or YINI format specification](https://github.com/YINI-lang/YINI-spec)
 
 ---
+
+## Example of YINI code
+> A real-world YINI configuration example:  
+![YINI Config Example](./samples/config.yini.png)
+Source: [config.yini](./samples/config.yini)
 
 ## YINI Parser – (source code in TypeScript)
 
@@ -43,8 +54,8 @@ import YINI from 'yini-parser'
 const config = YINI.parse(`
     // YINI is a simple, human-readable configuration file format.
 
-    // Note: In YINI, spaces and tabs don't change meaning - 
-    // indentation is just for readability.
+    // Note: In YINI, spaces and tabs never change meaning.
+    // Indentation is only for readability.
 
     ^ App                      // Definition of section (group) "App" 
       name     = 'My Title'    // Keys and values are written as key = value
@@ -118,7 +129,7 @@ These examples are also included in the npm package.
 - Easy programmatic usage.
 - Only the `YINI` class is exported; all internal details are private.
 - Arrays/Lists (bracketed): `list = [10, 20, 30]`
-- JavaScript-style objects.
+- JavaScript-style objects (inline maps).
 
 ⭐ **Enjoying YINI?** If you think this project is interesting, [consider giving it a star on GitHub](https://github.com/YINI-lang/yini-parser-typescript) — it's greatly appreciated.
 

@@ -1,0 +1,37 @@
+{
+    "Settings": {
+        "serviceId": "NebulaService",
+        "release": "3.2.1",
+        "debugMode": false,
+        "tagline": "\"Nebula\" is a cloud of gas and dust in outer space.",
+        "Network": {
+            "bindAddress": "127.0.0.1",
+            "bindPort": 8080,
+            "allowedOrigins": [
+                "https://myapp.com",
+                "http://localhost:3000"
+            ]
+        },
+        "Capabilities": {
+            "enableSearch": true,
+            "experimental": [
+                "new-ui",
+                "streaming-api"
+            ],
+            "pools": {
+                "min_units": 2,
+                "max_units": 5,
+                "size_mb": 128,
+                "timeout_sec": 90
+            }
+        },
+        "DB Config": {
+            "host": "db.internal",
+            "ssl": true,
+            "Security": {
+                "username": "service_user",
+                "password": "****"
+            }
+        }
+    }
+}
