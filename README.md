@@ -27,9 +27,9 @@ npm run test
 ---
 
 ## Example of YINI code
-> A real-world YINI configuration example, showing sections, nesting, comments, and multiple data types:  
-![YINI Config Example](./samples/config.yini.png)
-Source: [config.yini](./samples/config.yini)
+> A basic YINI configuration example, showing a section, nested section, comments:  
+![YINI Config Example](./samples/basic.yini.png)
+Source: [basic.yini](./samples/basic.yini)
 
 ## YINI Parser – (source code in TypeScript)
 
@@ -102,15 +102,22 @@ That's it!
 
 ---
 
-## 📂 Examples
+## Example 2
+> A real-world YINI configuration example, showing sections, nesting, comments, and multiple data types:  
+![YINI Config Example](./samples/config.yini.png)
+Source: [config.yini](./samples/config.yini)
 
-See the [examples/](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples) folder for:
+## 📂 More Examples
+
+See the [examples/](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples) directory for:
 
 - Basic YINI file with common types and comments
 - Nested sections example
 - Comparison with JSON/YAML config
 
 These examples are also included in the npm package.
+
+Even more examples can be found here: [more examples](https://yini-lang.org/yini-code-examples).
 
 ---
 

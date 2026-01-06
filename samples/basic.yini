@@ -1,0 +1,15 @@
+// A small, practical YINI config.
+
+// The App section starts here
+^ App
+name = "Demo App"
+version = 1.2
+features = ["search", "logs"]
+debug = false    // on/off, yes/no would work too
+pageSize = 25
+
+    // Another section (sub-section of App)
+    ^^ Server
+    host = "localhost"
+    port = 8080    # Can comment with # too
+    useTLS = off
