@@ -138,7 +138,7 @@ Even more examples can be found here: [more examples](https://yini-lang.org/yini
 - Arrays/Lists (bracketed): `list = [10, 20, 30]`
 - JavaScript-style objects (inline maps).
 
-⭐ **Enjoying YINI?** If you think this project is interesting, [consider giving it a star on GitHub](https://github.com/YINI-lang/yini-parser-typescript) — it's greatly appreciated.
+⭐ Don't forget to, [star on GitHub](https://github.com/YINI-lang/yini-parser-typescript) — it's greatly appreciated.
 
 ---
 
