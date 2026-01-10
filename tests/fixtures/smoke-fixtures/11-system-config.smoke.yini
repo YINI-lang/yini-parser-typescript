@@ -1,0 +1,31 @@
+/*
+  Highlights:
+  - Section header usage (`^ System`)
+  - Inline object assignment (`config = { ... }`)
+  - Deeply nested objects (`services.web`, `services.database`)
+  - Arrays of scalars (`ports`)
+  - Arrays of inline objects (`routes`, `replicas`)
+  - Mixed value types: strings, numbers, booleans, objects, arrays
+  - Real-world style config modeling (web routes + DB replica roles)
+*/
+
+^ System
+
+config = {
+  name: "production",
+  services: {
+    web: {
+      ports: [80, 443],
+      routes: [
+        { path: "/", secure: true },
+        { path: "/api", secure: false }
+      ]
+    },
+    database: {
+      replicas: [
+        { host: "db1", role: "primary" },
+        { host: "db2", role: "secondary" }
+      ]
+    }
+  }
+}

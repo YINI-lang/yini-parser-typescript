@@ -161,4 +161,20 @@ describe('Parse-File Smoke Tests:', () => {
         expect(result.base.Alerts.slack_webhook).toEqual(null)
         //@todo Add tests for the other literal as well.
     })
+
+    test('Parse file "11-system-config.*".', () => {
+        // Arrange.
+        const fileName = '11-system-config.smoke.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        // Act.
+        const result = parseFileUntilError(fullPath)
+        debugPrint(result)
+
+        // Assert.
+        expect(result.System.config.services.web.routes[0].path).toEqual('/')
+        expect(result.System.config.services.database.replicas[1].role).toEqual(
+            'secondary',
+        )
+    })
 })

@@ -167,4 +167,18 @@ describe('Parse-File Smoke Tests:', () => {
         // NOTE: Dry run parsing - enough that something is successfully returned.
         expect(!!result).toEqual(true)
     })
+
+    test('Parse file "11-system-config.*".', () => {
+        // Arrange.
+        const fileName = '11-system-config.smoke.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        // Act.
+        const result = YINI.parseFile(fullPath)
+        debugPrint(result)
+
+        // Assert.
+        // NOTE: Dry run parsing - enough that something is successfully returned.
+        expect(!!result).toEqual(true)
+    })
 })
