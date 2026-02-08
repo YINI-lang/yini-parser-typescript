@@ -109,15 +109,13 @@ Source: [config.yini](./samples/config.yini)
 
 ## 📂 More Examples
 
-See the [examples/](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples) directory for:
-
 - Basic YINI file with common types and comments
 - Nested sections example
 - Comparison with JSON/YAML config
 
 These examples are also included in the npm package.
 
-Even more examples can be found here: [more examples](https://yini-lang.org/yini-code-examples).
+Even more examples can be found here: [more examples](https://yini-lang.org/yini-code-examples?utm_source=github&utm_medium=referral&utm_campaign=yini_cli&utm_content=readme).
 
 ---
 
@@ -270,4 +268,4 @@ In this project on GitHub, the `libs` directory contains third party software an
 **^YINI ≡**  
 > An INI-inspired configuration format with clear structure.  
 
-[yini-lang.org](https://yini-lang.org) · [YINI on GitHub](https://github.com/YINI-lang)  
+[yini-lang.org](https://yini-lang.org/?utm_source=github&utm_medium=referral&utm_campaign=yini_parser_ts&utm_content=readme_footer) · [YINI on GitHub](https://github.com/YINI-lang)  
