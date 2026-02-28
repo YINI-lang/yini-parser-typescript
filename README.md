@@ -2,8 +2,6 @@
 > **Readable configuration without YAML foot-guns or JSON noise.**  
 
 The official TypeScript / Node.js parser for **YINI** — an INI-inspired, human-readable text format for structured information.  
-Designed to be clear, predictable, and easy to read and write.
-Suitable for configuration files, application settings, and general data storage.  
 
 [![npm version](https://img.shields.io/npm/v/yini-parser.svg)](https://www.npmjs.com/package/yini-parser) [![All Test Suites](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml) [![All Regression Tests](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-regression-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-regression-tests.yml) [![Grammar Drift Check](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-grammar-drift-check.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-grammar-drift-check.yml)
 
@@ -36,12 +34,6 @@ Source: [basic.yini](./samples/basic.yini)
 A runtime parser for the official [YINI configuration file format](https://github.com/YINI-lang/YINI-spec).  
 
 The parser follows the official YINI specification and is implemented in TypeScript.
-
----
-
-### Who is this for?
-
-YINI is designed as an ideal option for application developers, platform teams, DevOps engineers, and anyone maintaining complex configuration at scale.
 
 ---
 
@@ -97,7 +89,6 @@ false
 
 That's it!
 
-- ▶️ Link to [examples/](https://github.com/YINI-lang/yini-parser-typescript/tree/main/examples) files.
 - ▶️ Link to [Demo Apps](https://github.com/YINI-lang/yini-demo-apps/tree/main) with complete basic usage.
 
 ---
@@ -109,13 +100,13 @@ Source: [config.yini](./samples/config.yini)
 
 ## 📂 More Examples
 
-- Basic YINI file with common types and comments
-- Nested sections example
-- Comparison with JSON/YAML config
+- ▶️ Explore more [YINI examples](https://yini-lang.org/learn-yini/examples/?utm_source=yini-parser-ts&utm_medium=github&utm_campaign=repo-link&utm_content=readme).
 
-These examples are also included in the npm package.
+---
 
-Even more examples can be found here: [more examples](https://yini-lang.org/yini-code-examples?utm_source=github&utm_medium=referral&utm_campaign=yini_cli&utm_content=readme).
+### Who is this for?
+
+YINI is designed as an ideal option for application developers, platform teams, DevOps engineers, and anyone maintaining complex configuration at scale.
 
 ---
 
@@ -123,7 +114,7 @@ Even more examples can be found here: [more examples](https://yini-lang.org/yini
 - **Indentation-independent structure:** The YINI config format is indentation-independent, meaning spaces and tabs never affect meaning.
 - **Explicit nesting for easy refactoring & large configs:** It uses clear header markers (`^`, `^^`, `^^^`) to define hierarchy (like in Markdown), without long dotted keys.
 - **Multiple data types:** Supports boolean literals (`true` / `false`, `Yes` / `No`, etc), numbers, arrays (lists), and JS-style objects natively, with explicit string syntax.
-- **Comments support:** YINI supports multiple comment styles (`#`, `//`, `/* ... */`, and `;`) allowing one to document config directly in the file.
+- **Comments support:** YINI supports multiple comment styles (`#`, `//`, `/* ... */`, and `;`). Allows you to document configuration directly in the file.
 - **Predictable parsing rules:** Fewer production surprises, well-defined rules with optional strict and lenient modes, for different use cases.
 
 ---
@@ -136,7 +127,7 @@ Even more examples can be found here: [more examples](https://yini-lang.org/yini
 - Arrays/Lists (bracketed): `list = [10, 20, 30]`
 - JavaScript-style objects (inline maps).
 
-⭐ Don't forget to, [star on GitHub](https://github.com/YINI-lang/yini-parser-typescript) — it's greatly appreciated.
+⭐ If you find this useful, please consider starring the project on GitHub.
 
 ---
 
@@ -171,7 +162,7 @@ pnpm add yini-parser
 const YINI = require('yini-parser').default;
 // (!) If you get undefined, try:
 // (Some Node.js setups require the .default property, others don't, due to ESM/CommonJS interop quirks.)
-const YINI = require('yini-parser');
+// const YINI = require('yini-parser');
 
 // Parse from string.
 const config = YINI.parse(`
@@ -226,7 +217,7 @@ const configFromFile = YINI.parseFile('./config.yini');
 ### Planned & Upcoming Features
 Some advanced YINI features are still evolving and are tracked transparently.
 
-You can follow progress in the [YINI parser GitHub repo-FEATURE-CHECKLIST](https://github.com/YINI-lang/yini-parser-typescript/blob/main/FEATURE-CHECKLIST.md). Contributions and feature requests are welcome!
+You can follow progress in the [YINI parser FEATURE-CHECKLIST](https://github.com/YINI-lang/yini-parser-typescript/blob/main/FEATURE-CHECKLIST.md). Contributions and feature requests are welcome!
 
 ---
 
@@ -241,13 +232,13 @@ If this library is useful to you, a GitHub star helps guide future development.
 ---
 
 ## 📚 Documentation
-- [Development Setup](https://github.com/YINI-lang/yini-parser-typescript/blob/main/docs/Development-Setup.md) — How to run, test, and build the project, etc.
+- [Project Setup](https://github.com/YINI-lang/yini-parser-typescript/blob/main/docs/Project-Setup.md) — How to run, test, and build the project, etc.
 - [Conventions](https://github.com/YINI-lang/yini-parser-typescript/blob/main/docs/Conventions.md) — Project conventions, naming patterns, etc.
 
 ---
 
 ## Links
-- ➡️ [Read the YINI Specification](https://github.com/YINI-lang/YINI-spec/blob/release/YINI-Specification.md#table-of-contents)  
+- ➡️ [Read the YINI Specification](https://github.com/YINI-lang/YINI-spec/tree/production/YINI-Specification.md#table-of-contents)  
   *Full formal spec for the YINI format, including syntax and features.*
 
 - ➡️ [YINI CLI on GitHub](https://github.com/YINI-lang/yini-cli)  
@@ -255,6 +246,9 @@ If this library is useful to you, a GitHub star helps guide future development.
 
 - ➡️ [YINI Project](https://github.com/YINI-lang)  
   *YINI home on GitHub.*
+
+- ➡️ [YINI Homepage](https://yini-lang.org)  
+  *Tutorials & Docs.*
 
 ---
 
