@@ -514,8 +514,8 @@ https://github.com/YINI-lang/YINI-spec
     <td>Escapes: all 2 character sequences</td>
     <td>🔲</td>
     <td>E.g. <code>\\</code>, <code>\a</code></td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>🔲</td>
     <td></td>
   </tr>
@@ -523,8 +523,8 @@ https://github.com/YINI-lang/YINI-spec
     <td>Escapes: all 3>= character sequences</td>
     <td>🔲</td>
     <td>E.g. <code>\xhh</code>, <code>\uhhhh</code></td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>🔲</td>
     <td></td>
   </tr>
