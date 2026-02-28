@@ -467,11 +467,11 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>Classic string (C-string)</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>C'...'</code>, <code>C"..."</code>, with escapes</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>Single line, escape codes, prefixed either with C or c</td>
   </tr>
   <tr>

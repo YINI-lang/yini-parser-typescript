@@ -5,14 +5,16 @@ import { debugPrint, toPrettyJSON } from '../../../src/utils/print'
 
 /**
  * Classic (C) string literal tests.
+ *
  * Covers:
- * - Basic parsing
- * - All escape sequences
- * - Invalid escapes
- * - Case-insensitive prefix
- * - Single-line requirement
- * - Control character enforcement
- * - Concatenation
+ * - Full escape coverage (Spec 6.2.1).
+ * - Basic parsing.
+ * - All escape sequences.
+ * - Invalid escapes.
+ * - Case-insensitive prefix.
+ * - Single-line requirement.
+ * - Control character enforcement.
+ * - Concatenation (to some extent).
  */
 describe('Classic string literal tests:', () => {
     test('1.a) Should parse simple Classic string (double quotes).', () => {
@@ -100,6 +102,21 @@ describe('Classic string literal tests:', () => {
     })
 
     // ─────────────────────────────────────────────
+    // Full escape coverage (Spec 6.2.1)
+    // ─────────────────────────────────────────────
+
+    test('2.g) Should support all classic escape sequences.', () => {
+        const yini = `^ Escapes
+        value = c"\\\\ \\' \\" \\/ \\0 \\? \\a \\b \\f \\n \\r \\t \\v"
+    `
+        const result = YINI.parse(yini, true)
+
+        expect(result.Escapes.value).toEqual(
+            '\\ \' " / \0 ? \x07 \b \f \n \r \t \v',
+        )
+    })
+
+    // ─────────────────────────────────────────────
     // Invalid escapes
     // ─────────────────────────────────────────────
 
@@ -114,6 +131,34 @@ describe('Classic string literal tests:', () => {
         const yini = `^ Test
             value = c"\\o378"
         `
+        expect(() => YINI.parse(yini, true)).toThrow()
+    })
+
+    test('3.c) Invalid hex escape should throw.', () => {
+        const yini = `^ Test
+        value = c"\\x4"
+    `
+        expect(() => YINI.parse(yini, true)).toThrow()
+    })
+
+    test('3.d) Invalid unicode \\u escape should throw.', () => {
+        const yini = `^ Test
+        value = c"\\u123"
+    `
+        expect(() => YINI.parse(yini, true)).toThrow()
+    })
+
+    test('3.e) Invalid unicode \\U escape should throw.', () => {
+        const yini = `^ Test
+        value = c"\\U1234"
+    `
+        expect(() => YINI.parse(yini, true)).toThrow()
+    })
+
+    test('3.f) Invalid empty octal should throw.', () => {
+        const yini = `^ Test
+        value = c"\\o"
+    `
         expect(() => YINI.parse(yini, true)).toThrow()
     })
 

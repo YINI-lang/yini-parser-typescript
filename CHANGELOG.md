@@ -1,5 +1,28 @@
 # CHANGELOG
 
+## 1.4.0-beta - 2026 Feb
+
+### ✨ Added
+- Full implementation of **Classic (C) string literals** (`c"..."`, `C'...'`) according to specification section 6.2.
+- Complete support for all defined escape sequences:
+  - `\\`, `\'`, `\"`, `\/`
+  - `\0`, `\?`, `\a`, `\b`, `\f`, `\n`, `\r`, `\t`, `\v`
+  - `\xhh` (2-digit hex)
+  - `\uhhhh` (UTF-16)
+  - `\Uhhhhhhhh` (UTF-32)
+  - `\oOOO` (octal, up to 3 digits, range `\o0`–`\o377`)
+
+### 🔒 Improved
+- Strict validation of invalid escape sequences (e.g. `\z`, malformed `\x`, `\u`, `\U`, `\o`).
+- Enforcement of control character rules (U+0000–U+001F must be escaped in Classic strings).
+- Proper handling of Classic string concatenation (`+`) including mixed raw + classic combinations.
+
+### 🧪 Tests
+- Expanded integration test coverage for Classic strings.
+- Added validation tests for all escape types and error conditions.
+
+---
+
 ## 1.3.3-beta - 2025 Dec
 This release strengthens correctness and reliability, while preserving the existing API and improving guarantees.
 - **Added:** 

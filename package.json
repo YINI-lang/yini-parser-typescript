@@ -1,6 +1,6 @@
 {
     "name": "yini-parser",
-    "version": "1.3.3-beta",
+    "version": "1.4.0-beta",
     "description": "TypeScript/JavaScript parser for YINI — an INI-inspired configuration format with real structure, comments, nested sections and predictable parsing.",
     "keywords": [
         "yini",
