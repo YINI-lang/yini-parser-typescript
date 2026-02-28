@@ -78,6 +78,13 @@ export type TObjectValue = {
     tag: string | undefined
 }
 
+type TStringKind = 'raw' | 'classic' | 'hyper' | 'triple-raw' | 'triple-classic'
+
+export interface IParsedStringInput {
+    strKind: TStringKind
+    value: string
+}
+
 // Human label types.
 export type TSectionHeaderType =
     | undefined

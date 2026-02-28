@@ -57,6 +57,7 @@ import { ErrorDataHandler } from './errorDataHandler'
 import {
     IBuildOptions,
     IParseCoreOptions,
+    IParsedStringInput,
     IYiniAST,
     IYiniSection,
     TListValue,
@@ -271,6 +272,79 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
 
     private setDefineSectionTitle = (keyPath: string, level: number) => {
         this.mapSectionNamePaths.set(keyPath, level)
+    }
+
+    private extractStringParts(tokenText: string): IParsedStringInput {
+        // Detect prefix
+        let prefix = ''
+        let rest = tokenText
+
+        const prefixMatch = tokenText.match(/^(C|c|H|h|R|r)/)
+        if (prefixMatch) {
+            prefix = prefixMatch[1].toUpperCase()
+            rest = tokenText.slice(1)
+        }
+
+        // Triple quoted
+        if (rest.startsWith('"""')) {
+            const inner = rest.slice(3, -3)
+
+            if (prefix === 'C') {
+                return { strKind: 'triple-classic', value: inner }
+            }
+
+            return { strKind: 'triple-raw', value: inner }
+        }
+
+        // Single quoted or double quoted
+        const quote = rest[0]
+        const inner = rest.slice(1, -1)
+
+        switch (prefix) {
+            case 'C':
+                return { strKind: 'classic', value: inner }
+            case 'H':
+                return { strKind: 'hyper', value: inner }
+            case 'R':
+            case '':
+                return { strKind: 'raw', value: inner }
+            default:
+                return { strKind: 'raw', value: inner }
+        }
+    }
+
+    private extractStringKindAndValue(raw: string): IParsedStringInput {
+        const triple =
+            raw.startsWith('C"""') ||
+            raw.startsWith('c"""') ||
+            raw.startsWith('R"""') ||
+            raw.startsWith('r"""') ||
+            raw.startsWith('"""')
+
+        let prefix = ''
+        let value = ''
+        let strKind: IParsedStringInput['strKind']
+
+        if (/^[Cc]/.test(raw)) prefix = 'C'
+        else if (/^[Hh]/.test(raw)) prefix = 'H'
+        else if (/^[Rr]/.test(raw)) prefix = 'R'
+
+        if (
+            raw.startsWith('"""') ||
+            raw.startsWith('C"""') ||
+            raw.startsWith('c"""')
+        ) {
+            value = raw.replace(/^[CRcr]?"""/, '').replace(/"""$/, '')
+            strKind = prefix === 'C' ? 'triple-classic' : 'triple-raw'
+        } else {
+            value = raw.replace(/^[CHRchr]?['"]/, '').replace(/['"]$/, '')
+
+            if (prefix === 'C') strKind = 'classic'
+            else if (prefix === 'H') strKind = 'hyper'
+            else strKind = 'raw'
+        }
+
+        return { strKind, value }
     }
 
     /** Attach a section to the stack respecting up/down moves (Spec 5.3). :contentReference[oaicite:7]{index=7} */
@@ -898,19 +972,42 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    // visitString_literal?: (ctx: String_literalContext) => Result
-    visitString_literal = (ctx: String_literalContext): any => {
-        debugPrint('-> Entered visitString_literal(..)')
+    // visitString_literal = (ctx: String_literalContext): any => {
+    //     debugPrint('-> Entered visitString_literal(..)')
 
-        // STRING (string_concat)*
-        // Concatenate pieces with PLUS (Spec 6.6). Each piece is a STRING token; '+' is structural. :contentReference[oaicite:17]{index=17}
-        let text = trimQuotes(ctx.STRING().getText())
-        // for (const c of ctx.string_concat() ?? []) {
-        for (const c of ctx.string_concat_list() ?? []) {
-            debugPrint('c of ctx.string_concat():')
-            isDebug() && printObject(c)
-            text += this.visitString_concat?.(c)
+    //     // STRING (string_concat)*
+    //     // Concatenate pieces with PLUS (Spec 6.6). Each piece is a STRING token; '+' is structural. :contentReference[oaicite:17]{index=17}
+    //     // let rawText = trimQuotes(ctx.STRING().getText())
+    //     const rawText = ctx.STRING().getText() // The token text.
+    //     const parsedSP = this.extractStringParts(rawText)
+    //     if (isDebug()) {
+    //         console.log('Parsed string parts:')
+    //         printObject(parsedSP)
+    //     }
+
+    //     let text = parseStringLiteral(parsedSP)
+    //     // for (const c of ctx.string_concat() ?? []) {
+    //     for (const c of ctx.string_concat_list() ?? []) {
+    //         debugPrint('c of ctx.string_concat():')
+    //         isDebug() && printObject(c)
+    //         text += this.visitString_concat?.(c)
+    //     }
+    //     return makeScalarValue('String', text)
+    // }
+    visitString_literal = (ctx: String_literalContext): any => {
+        let text = ''
+
+        const pieces = [
+            ctx.STRING(),
+            ...(ctx.string_concat_list()?.map((c) => c.STRING()) ?? []),
+        ]
+
+        for (const token of pieces) {
+            const tokenText = token.getText()
+            const parsed = this.extractStringKindAndValue(tokenText)
+            text += parseStringLiteral(parsed)
         }
+
         return makeScalarValue('String', text)
     }
 
@@ -919,7 +1016,6 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    // visitNumber_literal?: (ctx: Number_literalContext) => Result
     visitNumber_literal = (ctx: Number_literalContext): any => {
         debugPrint('-> Entered visitNumber_literal(..)')
 
@@ -1177,10 +1273,10 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    // visitString_concat?: (ctx: String_concatContext) => Result
     visitString_concat = (ctx: String_concatContext): any => {
-        // PLUS STRING
-        return trimQuotes(ctx.STRING().getText())
+        const rawText = ctx.STRING().getText() // The token text.
+        const parsedInput = this.extractStringKindAndValue(rawText)
+        return parseStringLiteral(parsedInput)
     }
 
     /**

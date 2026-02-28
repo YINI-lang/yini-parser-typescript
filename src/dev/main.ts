@@ -277,17 +277,20 @@ if (isProdEnv()) {
         // name = "Shebang-demo"`
         const yiniContent = `  #!/usr/bin/env yini
 ^ App
-name = "Shebang-demo"`
+name = "Shebang-\\"demo"
+value = c"Hello World"
+valueA = c"\\x41"
+`
 
         console.log('--!!!------------------------------------------')
         console.log(
             toPrettyJSON(
                 // YINI.parse(validConfig, {
-                YINI.parse(defectConfig2Combo3, {
+                YINI.parse(yiniContent, {
                     strictMode: true,
-                    failLevel: 'ignore-errors',
-                    includeMetadata: true,
-                    includeDiagnostics: true,
+                    // failLevel: 'ignore-errors',
+                    // includeMetadata: true,
+                    // includeDiagnostics: true,
                     // requireDocTerminator: 'optional',
                 }),
             ),
