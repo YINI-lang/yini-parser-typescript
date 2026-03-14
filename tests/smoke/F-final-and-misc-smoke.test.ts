@@ -512,21 +512,21 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                     payload: [
                         {
                             line: 7,
-                            column: 11,
+                            column: 10,
                             typeKey: 'syntax_error',
                             message: 'Syntax error',
                             advice: "Details: extraneous input '54_32' expecting {NL, INLINE_COMMENT}",
                         },
                         {
                             line: 12,
-                            column: 16,
+                            column: 15,
                             typeKey: 'syntax_error',
                             message: 'Syntax error',
                             advice: "Details: extraneous input 'maybe' expecting {NL, INLINE_COMMENT}",
                         },
                         {
                             line: 19,
-                            column: 4,
+                            column: 9,
                             typeKey: 'syntax_error',
                             message: 'Syntax error',
                             advice: "Details: extraneous input '=' expecting {'[', '{', BOOLEAN_FALSE, BOOLEAN_TRUE, NULL, '{}', '[]', NUMBER, STRING, NL, WS, INLINE_COMMENT}",
@@ -544,7 +544,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                             column: 3,
                             typeKey: 'syntax_error',
                             message: 'Invalid value',
-                            advice: "Invalid value for key 'port in member (<key> = <value> pair)'.",
+                            advice: "Invalid value for key 'port' in member (<key> = <value> pair).",
                             hint: "Got 'undefined', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.",
                         },
                         {
@@ -560,7 +560,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                             column: 5,
                             typeKey: 'syntax_error',
                             message: 'Invalid value',
-                            advice: "Invalid value for key 'enabled in member (<key> = <value> pair)'.",
+                            advice: "Invalid value for key 'enabled' in member (<key> = <value> pair).",
                             hint: "Got 'undefined', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.",
                         },
                     ],

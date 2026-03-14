@@ -1,12 +1,14 @@
+// src/dev/main.ts
+
 /*
  * This includes of dev / debug / demo / custom-tesing code.
  *
  * https://github.com/YINI-lang/yini-parser-typescript/blob/main/docs/Project-Setup.md
  *
  * Run this code with the following commands:
- *     npm run start:dev
+ *     npm run start:main
  * or
- *     npm run start:dev:debug
+ *     npm run start:main:dev:debug
  */
 
 import {
@@ -277,24 +279,36 @@ if (isProdEnv()) {
         // name = "Shebang-demo"`
         const yiniContent = `  #!/usr/bin/env yini
 ^ App
+// val = 3e3
+// 3val = 33
 name = "Shebang-\\"demo"
 value = c"Hello World"
+badEscape = c"E:\\logs\\nebula\\app.log"
 valueA = c"\\x41"
 `
 
         console.log('--!!!------------------------------------------')
-        console.log(
-            toPrettyJSON(
-                // YINI.parse(validConfig, {
-                YINI.parse(yiniContent, {
-                    strictMode: true,
-                    // failLevel: 'ignore-errors',
-                    // includeMetadata: true,
-                    // includeDiagnostics: true,
-                    // requireDocTerminator: 'optional',
-                }),
-            ),
-        )
+        const res = YINI.parse(yiniContent, {
+            strictMode: false,
+            failLevel: 'ignore-errors',
+            // includeMetadata: true,
+            // includeDiagnostics: true,
+            // requireDocTerminator: 'optional',
+        })
+        console.log(res)
+
+        // console.log(
+        //     toPrettyJSON(
+        //         // YINI.parse(validConfig, {
+        //         YINI.parse(yiniContent, {
+        //             strictMode: true,
+        //             // failLevel: 'ignore-errors',
+        //             // includeMetadata: true,
+        //             // includeDiagnostics: true,
+        //             // requireDocTerminator: 'optional',
+        //         }),
+        //     ),
+        // )
 
         // console.log('--!!!------------------------------------------')
         // console.log(

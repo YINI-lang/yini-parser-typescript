@@ -93,7 +93,7 @@ export const runPipeline = (
         const isFileSourceType: boolean = runtimeInfo?.sourceType === 'File'
         // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
         errorHandler.pushOrBail(
-            null,
+            undefined,
             'Syntax-Error',
             'Empty YINI document.',
             `The input is blank or contains only whitespace in the ${isFileSourceType ? 'YINI file' : 'YINI inline content'}.`,
@@ -205,7 +205,7 @@ export const runPipeline = (
     if (ast.numOfMembers === 0 && ast.numOfSections === 0) {
         // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
         errorHandler.pushOrBail(
-            null,
+            undefined,
             'Syntax-Error',
             'No meaningful content.',
             `No sections or members found in the ${ast.sourceType === 'File' ? 'YINI file' : 'YINI inline content'}.`,
@@ -265,7 +265,7 @@ export const runPipeline = (
     if (coreOptions.rules.initialMode === 'strict') {
         // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
         errorHandler.pushOrBail(
-            null,
+            undefined,
             'Syntax-Warning',
             'Warning: Strict initialMode is not yet fully implemented.',
             'Some validation rules may still be missing or incomplete.',

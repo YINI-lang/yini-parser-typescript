@@ -1,6 +1,20 @@
+// src/parsers/parseString.ts
+/**
+ * This file should only:
+ * - parse string contents,
+ * - validate escapes,
+ * - and throw typed error on issues.
+ */
 import { isDebug } from '../config/env'
 import { IParsedStringInput } from '../core/internalTypes'
 import { debugPrint } from '../utils/print'
+
+export class CYiniStringParseError extends Error {
+    constructor(message: string) {
+        super(message)
+        this.name = 'YiniStringParseError'
+    }
+}
 
 const isHex = (c: string) => /^[0-9a-fA-F]$/.test(c)
 const isOctal = (c: string) => /^[0-7]$/.test(c)
@@ -18,7 +32,7 @@ const parseClassicEscapes = (input: string): string => {
             // Control character enforcement (U+0000–U+001F except tab).
             const code = ch.charCodeAt(0)
             if (code < 0x20 && ch !== '\t') {
-                throw new Error(
+                throw new CYiniStringParseError(
                     `Unescaped control character U+${code
                         .toString(16)
                         .padStart(4, '0')}`,
@@ -30,7 +44,10 @@ const parseClassicEscapes = (input: string): string => {
 
         // Escape sequence.
         const next = input[++i]
-        if (!next) throw new Error('Invalid escape sequence at end of string')
+        if (!next)
+            throw new CYiniStringParseError(
+                'Invalid escape sequence at end of string',
+            )
 
         switch (next) {
             case '\\':
@@ -76,7 +93,7 @@ const parseClassicEscapes = (input: string): string => {
             case 'x': {
                 const hex = input.slice(i + 1, i + 3)
                 if (hex.length !== 2 || ![...hex].every(isHex)) {
-                    throw new Error(`Invalid \\x escape`)
+                    throw new CYiniStringParseError(`Invalid \\x escape`)
                 }
                 result += String.fromCharCode(parseInt(hex, 16))
                 i += 2
@@ -86,7 +103,7 @@ const parseClassicEscapes = (input: string): string => {
             case 'u': {
                 const hex = input.slice(i + 1, i + 5)
                 if (hex.length !== 4 || ![...hex].every(isHex)) {
-                    throw new Error(`Invalid \\u escape`)
+                    throw new CYiniStringParseError(`Invalid \\u escape`)
                 }
                 result += String.fromCharCode(parseInt(hex, 16))
                 i += 4
@@ -96,7 +113,7 @@ const parseClassicEscapes = (input: string): string => {
             case 'U': {
                 const hex = input.slice(i + 1, i + 9)
                 if (hex.length !== 8 || ![...hex].every(isHex)) {
-                    throw new Error(`Invalid \\U escape`)
+                    throw new CYiniStringParseError(`Invalid \\U escape`)
                 }
                 const codePoint = parseInt(hex, 16)
                 result += String.fromCodePoint(codePoint)
@@ -116,24 +133,26 @@ const parseClassicEscapes = (input: string): string => {
                     j++
                 }
                 if (oct.length === 0) {
-                    throw new Error(`Invalid \\o escape`)
+                    throw new CYiniStringParseError(`Invalid \\o escape`)
                 }
                 const value = parseInt(oct, 8)
                 if (value > 0o377) {
-                    throw new Error(`Octal escape out of range`)
+                    throw new CYiniStringParseError(`Octal escape out of range`)
                 }
                 result += String.fromCharCode(value)
                 i += oct.length
 
                 if (j < input.length && /[0-9]/.test(input[j])) {
-                    throw new Error(`Invalid \\o escape`)
+                    throw new CYiniStringParseError(`Invalid \\o escape`)
                 }
 
                 break
             }
 
             default:
-                throw new Error(`Invalid escape sequence \\${next}`)
+                throw new CYiniStringParseError(
+                    `Invalid escape sequence \\${next}`,
+                )
         }
     }
 
@@ -154,7 +173,7 @@ const parseStringLiteral = ({ strKind, value }: IParsedStringInput): string => {
             return normalizeHyperWhitespace(value)
 
         default:
-            throw new Error(`Unknown string kind: ${strKind}`)
+            throw new CYiniStringParseError(`Unknown string kind: ${strKind}`)
     }
 }
 

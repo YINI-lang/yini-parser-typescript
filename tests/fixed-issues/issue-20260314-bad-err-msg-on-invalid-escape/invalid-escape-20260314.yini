@@ -1,0 +1,10 @@
+@yini
+
+^ App
+name = "Nebula Server"
+
+// Strings are raw by default, backslashes are used as-is.
+dataDir = "C:\data\nebula"
+
+^ Logging
+file = c"C:\logs\nebula\app.log"	// INCORRECT! Use of escapes!

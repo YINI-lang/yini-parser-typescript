@@ -1,5 +1,5 @@
 import { isDebug } from '../config/env'
-import { ErrorDataHandler } from '../core/errorDataHandler'
+import { ErrorDataHandler, toErrorLocation } from '../core/errorDataHandler'
 // import { TSectionHeaderType } from '../core/internalTypes'
 import { StmtContext } from '../grammar/generated/YiniParser'
 import { debugPrint } from '../utils/print'
@@ -52,7 +52,7 @@ const extractHeaderParts = (
     // Edge case: empty line.
     if (!str) {
         errorHandler!.pushOrBail(
-            ctx,
+            toErrorLocation(ctx),
             'Internal-Error',
             'Received blank argument in extractHeaderParts(..)',
             'Sorry, an unintended internal error happened.',

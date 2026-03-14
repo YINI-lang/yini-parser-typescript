@@ -35,7 +35,7 @@ export default class YINI {
     public static setTabSize(spaces: number) {
         if (spaces < 1 || spaces > 32) {
             new ErrorDataHandler('None/Ignore').pushOrBail(
-                null,
+                undefined,
                 'Fatal-Error',
                 `Invalid tab size ${spaces} is out of range.`,
                 'Tab size must be between 1 and 32 spaces.',

@@ -1,13 +1,31 @@
-import { isDebug, isTestEnv } from '../config/env'
-import { YiniContext } from '../grammar/generated/YiniParser'
+// src/core/errorDataHandler.ts
+import { isDebug } from '../config/env'
 import { IssuePayload } from '../types'
-import { debugPrint, printObject } from '../utils/print'
+import { debugPrint } from '../utils/print'
 import { toLowerSnakeCase, trimTrailingNonLetters } from '../utils/string'
 import {
+    IErrorLocationInput,
     TBailSensitivityLevel,
     TIssueType,
     TSubjectType,
 } from './internalTypes'
+
+export const toErrorLocation = (ctx: any): IErrorLocationInput | undefined => {
+    if (!ctx) return undefined
+
+    const line = ctx?.start?.line ?? ctx?.line ?? undefined
+
+    const column =
+        ctx?.start?.column != null
+            ? ctx.start.column + 1
+            : ctx?.column != null
+              ? ctx.column + 1
+              : undefined
+
+    const endColumn = ctx?.stop?.column != null ? ctx.stop.column + 1 : column
+
+    return { line, column, endColumn }
+}
 
 // All the issue titles are defined here to get a quick overview of all
 // titles, and to easier check that all titles match with relation to
@@ -102,6 +120,7 @@ export class ErrorDataHandler {
      *
      * @note This function MIGHT result in a return, throw, or exit depending
      * on the bail policy (set by the user).
+     * @note You may use the helper toErrorLocation(..) to convert ctx.
      *
      * @param ctx
      * @param type
@@ -110,46 +129,27 @@ export class ErrorDataHandler {
      * @param msgHint Hint or HUMBLE suggestion on how to fix the issue.
      */
     public pushOrBail(
-        ctx: any,
+        locInput: IErrorLocationInput | undefined,
         type: TIssueType,
         msgWhat: string,
         msgWhy: string = '',
         msgHint: string = '',
     ) {
         debugPrint('-> pushOrBail(..)')
-        debugPrint('ctx.exception?.name       =' + ctx?.exception?.name)
-        debugPrint('ctx.exception?.message    = ' + ctx?.exception?.message)
-        debugPrint(
-            'exception?.offendingToken = ' + ctx?.exception?.offendingToken,
-        )
-        debugPrint()
-        debugPrint('ctx.ruleIndex    = ' + ctx?.start.channel)
-        debugPrint('ctx.ruleIndex    = ' + ctx?.ruleIndex)
-        debugPrint('ctx.ruleContext  = ' + ctx?.ruleContext)
-        debugPrint('ctx.stop?.line   = ' + ctx?.stop?.line)
-        debugPrint('ctx.stop?.column = ' + ctx?.stop?.column)
+        debugPrint('locInput?.line =      ' + locInput?.line)
+        debugPrint('locInput?.column =    ' + locInput?.column)
+        debugPrint('locInput?.endColumn = ' + locInput?.endColumn)
 
-        const lineNum: number | undefined = ctx?.start.line || undefined // Line (1-based).
-        // const startCol: number | undefined = !ctx
-        //     ? undefined
-        //     : ++ctx.start.column // Column (0-based).
-        // const endCol: number | undefined = !!ctx?.stop?.column
-        //     ? ++ctx.stop.column
-        //     : undefined // Note: Column (0-based).
-        const startCol =
-            ctx?.start?.column != null ? ctx.start.column + 1 : undefined // Note: Column (0-based).
-        const endCol =
-            ctx?.stop?.column != null ? ctx.stop.column + 1 : undefined // Note: Column (0-based).
+        const lineNum: number | undefined = locInput?.line
+        const startCol: number | undefined = locInput?.column
+        const endCol: number | undefined = locInput?.endColumn
+        const colNum: number | undefined = startCol ?? endCol
 
-        let colNum: number | undefined = startCol || endCol
         let msgWhatWithLineNum = msgWhat
 
         if (lineNum && lineNum > 0) {
-            //@todo func that removes possible . at end
-            //msgWhatWithLineNum =
-
-            // Patch message with the offending line number.
             msgWhatWithLineNum += ' at line ' + lineNum
+
             if (colNum) {
                 msgWhatWithLineNum += ', column ' + colNum
             }
@@ -167,8 +167,8 @@ export class ErrorDataHandler {
         debugPrint()
 
         const loc: ILocation = {
-            lineNum: lineNum || 0, // 1-based, if n/a use 0.
-            colNum: colNum || 0, // 1-based, if n/a use 0.
+            lineNum: lineNum || 0,
+            colNum: colNum || 0,
         }
 
         if (!this.isSilent) {

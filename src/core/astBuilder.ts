@@ -1,6 +1,7 @@
 /**
  * Here is where we walk the parse tree (CST) and build/validate the AST.
  */
+// src/core/astBuilder.ts
 import assert from 'assert'
 import { ParseTreeVisitor, TokenStream } from 'antlr4'
 import { isDebug } from '../config/env'
@@ -38,7 +39,9 @@ import parseNullLiteral from '../parsers/parseNull'
 import parseNumberLiteral from '../parsers/parseNumber'
 // import parseNumber from '../parsers/parseNumber'
 import parseSectionHeader from '../parsers/parseSectionHeader'
-import parseStringLiteral from '../parsers/parseString'
+import parseStringLiteral, {
+    CYiniStringParseError,
+} from '../parsers/parseString'
 import { isInfinityValue, isNaNValue } from '../utils/number'
 import { debugPrint, printObject } from '../utils/print'
 import {
@@ -53,7 +56,7 @@ import {
     printLiteral,
     stripCommentsAndAfter,
 } from '../utils/yiniHelpers'
-import { ErrorDataHandler } from './errorDataHandler'
+import { ErrorDataHandler, toErrorLocation } from './errorDataHandler'
 import {
     IBuildOptions,
     IParseCoreOptions,
@@ -97,7 +100,7 @@ const makeScalarValue = (
             return { type: 'Undefined', value: undefined, tag }
         default:
             new ErrorDataHandler(_sourceType).pushOrBail(
-                null,
+                undefined,
                 'Fatal-Error',
                 `No such type in makeValue(..), type: ${type}, value: ${value}`,
                 'Something in the code is done incorrectly in order for this to happen... :S',
@@ -228,7 +231,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         if (!errorHandler) {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             new ErrorDataHandler('None/Ignore').pushOrBail(
-                null,
+                undefined,
                 'Fatal-Error',
                 'Has no ErrorDataHandler instance when calling visitYini(..)',
                 'Something in the code is done incorrectly in order for this to happen... :S',
@@ -360,7 +363,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         if (targetLevel <= 0) {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
-                ctx,
+                toErrorLocation(ctx),
                 'Syntax-Warning',
                 `Invalid section level: ${targetLevel}`,
             )
@@ -387,7 +390,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         if (this.hasDefinedSectionTitle(keyPath)) {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
-                ctx,
+                toErrorLocation(ctx),
                 'Syntax-Error',
                 'Duplicate section name',
                 `Section name: '${sectionName}' at level ${targetLevel} is already defined and cannot be redefined.`,
@@ -438,7 +441,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             switch (mode) {
                 case 'error':
                     errorHandler!.pushOrBail(
-                        ctx,
+                        toErrorLocation(ctx),
                         'Syntax-Error',
                         'Hit a duplicate key in this section and scope',
                         `Key '${key}' already exists in section '${sec.sectionName}' on level ${sec.level}.`,
@@ -446,7 +449,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                     break
                 case 'warn-and-keep-first':
                     errorHandler!.pushOrBail(
-                        ctx,
+                        toErrorLocation(ctx),
                         'Syntax-Warning',
                         `Hit a duplicate key (will keep first value) in this section and scope`,
                         `Key '${key}' already exists in section '${sec.sectionName}' on level ${sec.level}.`,
@@ -454,7 +457,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                     return // Keep first, don't overwrite.
                 case 'warn-and-overwrite':
                     errorHandler!.pushOrBail(
-                        ctx,
+                        toErrorLocation(ctx),
                         'Syntax-Warning',
                         `Overwrote a duplicate key (will keep last value) in this section and scope`,
                         `Key '${key}' was overwritten in section '${sec.sectionName}' on level ${sec.level}.`,
@@ -491,7 +494,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
 
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
-                null,
+                undefined,
                 'Syntax-Error',
                 msgWhat,
                 msgWhy,
@@ -507,7 +510,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
 
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
-                null,
+                undefined,
                 'Syntax-Warning',
                 msgWhat,
                 msgWhy,
@@ -573,7 +576,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             if (this.ast.terminatorSeen) {
                 // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                 this.errorHandler!.pushOrBail(
-                    ctx,
+                    toErrorLocation(ctx),
                     'Syntax-Warning',
                     'Hit a duplicate terminator in document',
                     `'${rawText}' already exists in this file, there must only be one terminator at the end of file ('/END'). Also note that the terminator is optional in both lenient and strict mode, unless the option 'isRequireDocTerminator' is enabled.`,
@@ -582,7 +585,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         } else {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
-                ctx,
+                toErrorLocation(ctx),
                 'Syntax-Error',
                 'Encountered unknow syntax for terminator',
                 `Got '${rawText}', but expected '/END' (case insensitive).`,
@@ -633,7 +636,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             if (sectionLevel > currentLevel + 1) {
                 // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                 this.errorHandler!.pushOrBail(
-                    ctx,
+                    toErrorLocation(ctx),
                     'Syntax-Error',
                     'Invalid section level transition',
                     `Cannot skip levels: from ${currentLevel} to ${sectionLevel}.`,
@@ -690,7 +693,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         if (this.mapSectionNamePaths.size || this._numOfMembers) {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
-                ctx,
+                toErrorLocation(ctx),
                 this.isStrict ? 'Syntax-Error' : 'Syntax-Warning',
                 `Found a directive statement in the wrong place ${this.isStrict ? '(strict mode)' : '(lenient mode)'}`,
                 `Directive '${rawText}' must appear only at the beginning of the document, before any sections or members.`,
@@ -701,7 +704,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         if (rawText.toLowerCase().startsWith('@include')) {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
-                ctx,
+                toErrorLocation(ctx),
                 'Notice',
                 `Detected unsupported directive '@include'`,
                 `This directive is not currently supported by the parser.`,
@@ -710,7 +713,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             if (this.ast.yiniMarkerSeen) {
                 // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                 this.errorHandler!.pushOrBail(
-                    ctx,
+                    toErrorLocation(ctx),
                     this.isStrict ? 'Syntax-Error' : 'Syntax-Warning',
                     `Hit a duplicate YINI Marker in document`,
                     `'${rawText}' already exists in this file, it's enough with only one YINI Marker ('@YINI').`,
@@ -719,7 +722,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         } else {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
-                ctx,
+                toErrorLocation(ctx),
                 'Syntax-Error',
                 'Encountered unknow directive statement',
                 `Got '${rawText}', but expected '@YINI' (case insensitive).`,
@@ -754,7 +757,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         if (rawText.toLowerCase().startsWith('@deprecated')) {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
-                ctx,
+                toErrorLocation(ctx),
                 'Notice',
                 `Detected unsupported annotation '@deprecated'`,
                 `This annotation is not currently supported by the parser.`,
@@ -812,7 +815,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                 if (!isValidBacktickedIdent(rawKey)) {
                     // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                     this.errorHandler!.pushOrBail(
-                        ctx,
+                        toErrorLocation(ctx),
                         'Syntax-Error',
                         `Invalid (backticked) key/identifier: '${rawKey}'`,
                         'Backticked key/identifier should be like e.g. `My section name`.',
@@ -822,7 +825,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                 if (!isValidSimpleIdent(rawKey)) {
                     // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                     this.errorHandler!.pushOrBail(
-                        ctx,
+                        toErrorLocation(ctx),
                         'Syntax-Error',
                         `Invalid key/identifier name: '${rawKey}'`,
                         `Key/identifier names must start with: A-Z, a-z, or _, unless enclosed in backticks e.g.: \`${rawKey}\` or \`My key name\`.`,
@@ -857,7 +860,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                         'Implicit null (empty value)',
                     )
                     this.errorHandler!.pushOrBail(
-                        ctx,
+                        toErrorLocation(ctx),
                         'Syntax-Warning',
                         `Empty value treated as null for key '${resultKey}'.`,
                         `An empty value after '=' was encountered. Per 'treatEmptyValueAsNull = allow-with-warning', interpreted as null.`,
@@ -868,7 +871,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                     // treatEmptyValueAsNull = 'disallow' (default in strict mode)
                     // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                     this.errorHandler!.pushOrBail(
-                        ctx,
+                        toErrorLocation(ctx),
                         'Syntax-Error',
                         `Missing value for key '${resultKey}'.`,
                         `Expected a value after '=' but found none. Implicit nulls are disallowed by 'treatEmptyValueAsNull = disallow'.`,
@@ -884,15 +887,33 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         if (isDebug()) {
             printObject(valueNode)
         }
-        // const resultType = valueLiteral?.type
-        // const resultValue = valueLiteral?.type
-        if (!valueNode || valueNode.type === 'Undefined') {
-            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+        // if (!valueNode || valueNode.type === 'Undefined') {
+        //     // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+        //     this.errorHandler!.pushOrBail(
+        //         toErrorLocation(ctx),
+        //         'Syntax-Error',
+        //         'Invalid value',
+        //         `Invalid value for key '${resultKey} in member (<key> = <value> pair)'.`,
+        //         `Got '${rawValue}', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
+        //     )
+        // }
+        if (!valueNode) {
             this.errorHandler!.pushOrBail(
-                ctx,
+                toErrorLocation(ctx),
                 'Syntax-Error',
                 'Invalid value',
-                `Invalid value for key '${resultKey} in member (<key> = <value> pair)'.`,
+                `Invalid value for key '${resultKey}' in member (<key> = <value> pair).`,
+                `Got '${rawValue}', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
+            )
+        } else if (
+            valueNode.type === 'Undefined' &&
+            valueNode.tag !== 'Invalid string literal already reported'
+        ) {
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                'Invalid value',
+                `Invalid value for key '${resultKey}' in member (<key> = <value> pair).`,
                 `Got '${rawValue}', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
             )
         }
@@ -972,28 +993,6 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    // visitString_literal = (ctx: String_literalContext): any => {
-    //     debugPrint('-> Entered visitString_literal(..)')
-
-    //     // STRING (string_concat)*
-    //     // Concatenate pieces with PLUS (Spec 6.6). Each piece is a STRING token; '+' is structural. :contentReference[oaicite:17]{index=17}
-    //     // let rawText = trimQuotes(ctx.STRING().getText())
-    //     const rawText = ctx.STRING().getText() // The token text.
-    //     const parsedSP = this.extractStringParts(rawText)
-    //     if (isDebug()) {
-    //         console.log('Parsed string parts:')
-    //         printObject(parsedSP)
-    //     }
-
-    //     let text = parseStringLiteral(parsedSP)
-    //     // for (const c of ctx.string_concat() ?? []) {
-    //     for (const c of ctx.string_concat_list() ?? []) {
-    //         debugPrint('c of ctx.string_concat():')
-    //         isDebug() && printObject(c)
-    //         text += this.visitString_concat?.(c)
-    //     }
-    //     return makeScalarValue('String', text)
-    // }
     visitString_literal = (ctx: String_literalContext): any => {
         let text = ''
 
@@ -1002,13 +1001,48 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             ...(ctx.string_concat_list()?.map((c) => c.STRING()) ?? []),
         ]
 
-        for (const token of pieces) {
-            const tokenText = token.getText()
-            const parsed = this.extractStringKindAndValue(tokenText)
-            text += parseStringLiteral(parsed)
-        }
+        try {
+            for (const token of pieces) {
+                const tokenText = token.getText()
+                const parsed = this.extractStringKindAndValue(tokenText)
+                text += parseStringLiteral(parsed)
+            }
 
-        return makeScalarValue('String', text)
+            return makeScalarValue('String', text)
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : String(err)
+
+            let msgWhat = 'Invalid string literal'
+            let msgWhy = msg
+            let msgHint = ''
+
+            if (err instanceof CYiniStringParseError) {
+                msgWhat = 'Invalid escape sequence in string'
+                msgWhy = msg
+
+                if (/Invalid escape sequence \\\\/.test(msg)) {
+                    msgHint =
+                        'Use double backslashes (\\\\) in C-strings, or use a raw string for file paths.'
+                } else if (/end of string/i.test(msg)) {
+                    msgHint =
+                        'Check that all escape sequences in the C-string are complete and valid.'
+                }
+            }
+
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                msgWhat,
+                msgWhy,
+                msgHint,
+            )
+
+            return makeScalarValue(
+                'Undefined',
+                undefined,
+                'Invalid string literal',
+            )
+        }
     }
 
     /**
@@ -1127,7 +1161,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                   if (!valueNode) {
                       // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                       this.errorHandler!.pushOrBail(
-                          ctx,
+                          toErrorLocation(ctx),
                           'Syntax-Error',
                           'Invalid list element',
                           `Invalid list element: '${elem?.getText()}'`,
@@ -1216,7 +1250,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         if (!valueNode) {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
-                ctx,
+                toErrorLocation(ctx),
                 'Syntax-Error',
                 'Invalid object entry',
                 `Invalid object entry for key '${key}'.`,
@@ -1289,7 +1323,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         debugPrint('-> Entered visitBad_member(..)')
         // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
         this.errorHandler!.pushOrBail(
-            ctx,
+            toErrorLocation(ctx),
             'Syntax-Error',
             'Invalid or malformed member (key-value pair) found.',
             `Offending text: ${ctx?.getText()?.trim()}`,
@@ -1307,7 +1341,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         debugPrint('-> Entered visitBad_meta_text(..)')
         // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
         this.errorHandler!.pushOrBail(
-            ctx,
+            toErrorLocation(ctx),
             'Syntax-Error',
             'Invalid or malformed directive or annotation statement',
             `Offending statement: ${ctx?.getText()?.trim()}`,

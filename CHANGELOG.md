@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.4.1-beta - 2026 Mar
+- **Improved:** Error reporting now provides more accurate line and column positions in parser diagnostics.
+- **Improved:** Invalid escape sequences in C-strings are now reported as proper user-facing syntax errors instead of internal/raw runtime errors.
+- **Improved:** Parser diagnostics and metadata now use clearer and more consistent error/advice wording.
+- **Fixed:** Several error paths that previously produced confusing internal stack traces or less precise locations now surface clearer parse-time messages.
+
 ## 1.4.0-beta - 2026 Feb
 
 ### ✨ Added

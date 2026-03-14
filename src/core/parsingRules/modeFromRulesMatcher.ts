@@ -50,7 +50,7 @@ export const matchModeFromCoreOptions = (
     if (!coreOptions?.rules) {
         // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
         new ErrorDataHandler('None/Ignore').pushOrBail(
-            null,
+            undefined,
             'Fatal-Error',
             `The passed input object is missing rules object.`,
             'Option might be of wrong type, it must be core options.',

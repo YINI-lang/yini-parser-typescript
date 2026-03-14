@@ -1,3 +1,5 @@
+// src/core/internalTypes.ts
+
 /**
  * Internal types ONLY, public (user-facing) type should go into src/types/index.ts.
  *
@@ -90,6 +92,12 @@ export type TSectionHeaderType =
     | undefined
     | 'Classic-Header-Marker' // Classic/repeating marker section headers (e.g. ^^ SectionName).
     | 'Numeric-Header-Marker' // Numeric shorthand section headers (e.g. ^7 SectionName).
+
+export interface IErrorLocationInput {
+    line?: number // 1-based
+    column?: number // 1-based
+    endColumn?: number // 1-based
+}
 
 // Human label types.
 export type TIssueType =
