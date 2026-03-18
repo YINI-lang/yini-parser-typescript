@@ -76,7 +76,7 @@ describe('Issue 20260314 error-msg-on-invalid-escape Tests:', () => {
         expect(allOutput).not.toMatch(/XXX/i)
     })
 
-    test('1.c) (inline) Should report syntax error (incl. line and column) for invalid escape in a C-String.', () => {
+    test('1.c) (inline) Should report syntax error (incl. line and column): For invalid escape in a C-String.', () => {
         try {
             YINI.parse(invalidEscaping, { strictMode: false })
         } catch (err: any) {
@@ -87,7 +87,7 @@ describe('Issue 20260314 error-msg-on-invalid-escape Tests:', () => {
         }
     })
 
-    test('1.d) (inline) Should report error for invalid escape but still continue parsing.', () => {
+    test('1.d) (inline) Should report error for: Invalid escape but still continue parsing.', () => {
         const errorSpy = jest
             .spyOn(console, 'error')
             .mockImplementation(() => {})
@@ -106,8 +106,8 @@ describe('Issue 20260314 error-msg-on-invalid-escape Tests:', () => {
             ...logSpy.mock.calls.flat(),
         ].join('\n')
 
-        expect(allOutput).toMatch(/invalid value/i)
-        expect(allOutput).toMatch(/badEscape|file/i)
+        expect(allOutput).toMatch(/line/i)
+        expect(allOutput).toMatch(/invalid escape/i)
         expect(allOutput).not.toMatch(/XXX/i)
 
         errorSpy.mockRestore()

@@ -1005,7 +1005,19 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             for (const token of pieces) {
                 const tokenText = token.getText()
                 const parsed = this.extractStringKindAndValue(tokenText)
-                text += parseStringLiteral(parsed)
+                // text += parseStringLiteral(parsed)
+                let txt = ''
+                try {
+                    text += parseStringLiteral(parsed)
+                } catch (err) {
+                    const msg = '' + (<any>err)?.message
+                    this.errorHandler!.pushOrBail(
+                        toErrorLocation(ctx),
+                        'Syntax-Error',
+                        'Parse error in string',
+                        `${msg}`,
+                    )
+                }
             }
 
             return makeScalarValue('String', text)
@@ -1310,7 +1322,20 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     visitString_concat = (ctx: String_concatContext): any => {
         const rawText = ctx.STRING().getText() // The token text.
         const parsedInput = this.extractStringKindAndValue(rawText)
-        return parseStringLiteral(parsedInput)
+        // return parseStringLiteral(parsedInput)
+
+        let txt = ''
+        try {
+            txt = parseStringLiteral(parsedInput)
+        } catch (err) {
+            const msg = '' + (<any>err)?.message
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                'Parse error in string',
+                `${msg}`,
+            )
+        }
     }
 
     /**

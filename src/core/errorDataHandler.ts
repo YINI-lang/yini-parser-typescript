@@ -145,17 +145,17 @@ export class ErrorDataHandler {
         const endCol: number | undefined = locInput?.endColumn
         const colNum: number | undefined = startCol ?? endCol
 
-        let msgWhatWithLineNum = msgWhat
+        let msgWhatInclLineNum = msgWhat
 
         if (lineNum && lineNum > 0) {
-            msgWhatWithLineNum += ' at line ' + lineNum
+            msgWhatInclLineNum += ' at line ' + lineNum
 
             if (colNum) {
-                msgWhatWithLineNum += ', column ' + colNum
+                msgWhatInclLineNum += ', column ' + colNum
             }
 
             if (process.env.NODE_ENV === 'test') {
-                msgWhatWithLineNum += `\nAt line: ${lineNum}, column(s): ${startCol}-${endCol}`
+                msgWhatInclLineNum += `\nAt line: ${lineNum}, column(s): ${startCol}-${endCol}`
             }
         }
 
@@ -167,8 +167,8 @@ export class ErrorDataHandler {
         debugPrint()
 
         const loc: ILocation = {
-            lineNum: lineNum || 0,
-            colNum: colNum || 0,
+            lineNum: lineNum || 0, // 1-based, if n/a use 0.
+            colNum: colNum || 0, // 1-based, if n/a use 0.
         }
 
         if (!this.isSilent) {
@@ -187,7 +187,7 @@ export class ErrorDataHandler {
                         msgHint,
                     ),
                 )
-                this.emitInternalError(loc, msgWhatWithLineNum, msgWhy, msgHint)
+                this.emitInternalError(loc, msgWhatInclLineNum, msgWhy, msgHint)
                 if (
                     this.persistThreshold === '1-Abort-on-Errors' ||
                     this.persistThreshold === '2-Abort-Even-on-Warnings'
@@ -195,7 +195,9 @@ export class ErrorDataHandler {
                     if (!this.isThrowOnError) {
                         debugPrint('Skipped throwing')
                     } else {
-                        // (?, not if can delete this message now (it may have been superceded), 20250921) In test, throw an error instead of exiting.
+                        msgWhat && console.log(msgWhat)
+                        msgWhy && console.log(msgWhy)
+                        msgHint && console.log(msgHint)
                         throw new Error(`Internal-Error: ${msgWhat}`)
                     }
                 }
@@ -212,7 +214,7 @@ export class ErrorDataHandler {
                         msgHint,
                     ),
                 )
-                this.emitSyntaxError(loc, msgWhatWithLineNum, msgWhy, msgHint)
+                this.emitSyntaxError(loc, msgWhatInclLineNum, msgWhy, msgHint)
                 if (
                     this.persistThreshold === '1-Abort-on-Errors' ||
                     this.persistThreshold === '2-Abort-Even-on-Warnings'
@@ -220,7 +222,9 @@ export class ErrorDataHandler {
                     if (!this.isThrowOnError) {
                         debugPrint('Skipped throwing')
                     } else {
-                        // (?, not if can delete this message now (it may have been superceded), 20250921) In test, throw an error instead of exiting.
+                        msgWhat && console.log(msgWhat)
+                        msgWhy && console.log(msgWhy)
+                        msgHint && console.log(msgHint)
                         throw new Error(`Syntax-Error: ${'' + msgWhat}`)
                     }
                 }
@@ -240,7 +244,7 @@ export class ErrorDataHandler {
                 if (!this.isQuiet) {
                     this.emitSyntaxWarning(
                         loc,
-                        msgWhatWithLineNum,
+                        msgWhatInclLineNum,
                         msgWhy,
                         msgHint,
                     )
@@ -249,7 +253,9 @@ export class ErrorDataHandler {
                     if (!this.isThrowOnError) {
                         debugPrint('Skipped throwing')
                     } else {
-                        // (?, not if can delete this message now (it may have been superceded), 20250921) In test, throw an error instead of exiting.
+                        msgWhat && console.log(msgWhat)
+                        msgWhy && console.log(msgWhy)
+                        msgHint && console.log(msgHint)
                         throw new Error(`Syntax-Warning: ${msgWhat}`)
                     }
                 }
@@ -266,7 +272,7 @@ export class ErrorDataHandler {
                         msgHint,
                     ),
                 )
-                this.emitNotice(loc, msgWhatWithLineNum, msgWhy, msgHint)
+                this.emitNotice(loc, msgWhatInclLineNum, msgWhy, msgHint)
                 break
             case 'Info':
                 this.numInfos++
@@ -280,7 +286,7 @@ export class ErrorDataHandler {
                         msgHint,
                     ),
                 )
-                this.emitInfo(loc, msgWhatWithLineNum, msgWhy, msgHint)
+                this.emitInfo(loc, msgWhatInclLineNum, msgWhy, msgHint)
                 break
             default: // Unhandled/unknown error type → Fatal.
                 this.numFatalErrors++
@@ -294,7 +300,7 @@ export class ErrorDataHandler {
                         msgHint,
                     ),
                 )
-                this.emitFatalError(loc, msgWhatWithLineNum, msgWhy, msgHint)
+                this.emitFatalError(loc, msgWhatInclLineNum, msgWhy, msgHint)
                 /*
                     "Best practises":
                     - ONLY on I/O failures: file not found, unreadable file, encoding errors.

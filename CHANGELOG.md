@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.4.2-beta - 2026 Mar
+- **Fixed:** Error messages now include line and column information again. This was unintentionally missing after the previous update.
+- **Added:** Test cases to help ensure line and column information is preserved in future updates.
+
 ## 1.4.1-beta - 2026 Mar
 - **Improved:** Error reporting now provides more accurate line and column positions in parser diagnostics.
 - **Improved:** Invalid escape sequences in C-strings are now reported as proper user-facing syntax errors instead of internal/raw runtime errors.

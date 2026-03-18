@@ -65,6 +65,7 @@ export const runPipeline = (
         '   treatEmptyValueAsNull = ' + coreOptions.rules.treatEmptyValueAsNull,
     )
     debugPrint()
+    debugPrint('coreOptions.isThrowOnError = ' + coreOptions.isThrowOnError)
     debugPrint('  runtimeInfo.sourceType = ' + runtimeInfo.sourceType)
     debugPrint('    runtimeInfo.fileName = ' + runtimeInfo.fileName)
 
