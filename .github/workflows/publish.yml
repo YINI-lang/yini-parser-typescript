@@ -36,6 +36,6 @@ jobs:
 
             - name: Publish to npm
               # run: npm publish --access public # Use --access public for public packages
-              run: npm publish --provenance --access public
+              run: npm publish --provenance --tag beta --access public
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
