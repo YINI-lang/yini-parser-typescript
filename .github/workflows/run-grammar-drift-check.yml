@@ -33,7 +33,7 @@ jobs:
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: '20' # adjust as needed
+                  node-version: '24' # adjust as needed
                   cache: npm
 
             - name: Print Node.js version
