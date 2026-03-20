@@ -9,7 +9,7 @@
       ```
    - **1. b)** Run below, locally before going to the publishing step: 
       ```bash
-      npm publish --dry-run
+      npm publish --dry-run --tag beta --access public
       ```
 
 2. Then:
