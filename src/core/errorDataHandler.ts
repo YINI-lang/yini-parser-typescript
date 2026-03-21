@@ -319,11 +319,13 @@ export class ErrorDataHandler {
                 // In test, throw an error instead of bailing/exiting.
                 // IMPORTANT: Never exit with exit code since this is a library!
 
-                const thrownMsg = msgWhy
-                    ? `Internal-Error: ${msgWhatInclLineNum}. ${msgWhy}`
-                    : `Internal-Error: ${msgWhatInclLineNum}`
+                {
+                    const thrownMsg = msgWhy
+                        ? `Internal-Error: ${msgWhatInclLineNum}. ${msgWhy}`
+                        : `Internal-Error: ${msgWhatInclLineNum}`
 
-                throw new Error(thrownMsg)
+                    throw new Error(thrownMsg)
+                }
         }
     }
 
