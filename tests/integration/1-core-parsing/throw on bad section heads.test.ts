@@ -1,9 +1,5 @@
-import path from 'path'
-import YINI from '../../../src'
-import { debugPrint } from '../../../src/utils/print'
+// tests/integration/1-core-parsing/throw on bad section heads.test.ts
 import { parseUntilError } from '../../test-helpers'
-
-const DIR_OF_FIXTURES = '../../fixtures/valid/level-two-deep'
 
 /**
  * Throw error when parsing bad section heads tests.
@@ -14,7 +10,7 @@ describe('Throw error when parsing bad section head tests:', () => {
     test('1. Should throw error if starting with section (with a member) ^^.', () => {
         // Arrange.
         const fixture = `
-        ^^ InvalidHeader // INVALID: Must start with atleast one 1-level section.
+        ^^ InvalidHeader // INVALID: Must start with at least one 1-level section.
         value = 3
         /END
         `
@@ -23,6 +19,18 @@ describe('Throw error when parsing bad section head tests:', () => {
         expect(() => {
             parseUntilError(fixture)
         }).toThrow()
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/line/i)
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/column/i)
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/section|level|header/i)
     })
 
     test('2. Should throw error if jumping from section (with a member) ^ -> ^^^.', () => {
@@ -40,12 +48,24 @@ describe('Throw error when parsing bad section head tests:', () => {
         expect(() => {
             parseUntilError(fixture)
         }).toThrow()
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/line/i)
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/column/i)
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/section|level|header/i)
     })
 
     test('3. Should throw error if starting with section (without members) ^^.', () => {
         // Arrange.
         const fixture = `
-        ^^ InvalidHeader // INVALID: Must start with atleast one 1-level section.
+        ^^ InvalidHeader // INVALID: Must start with at least one 1-level section.
         /END
         `
 
@@ -53,6 +73,18 @@ describe('Throw error when parsing bad section head tests:', () => {
         expect(() => {
             parseUntilError(fixture)
         }).toThrow()
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/line/i)
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/column/i)
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/section|level|header/i)
     })
 
     test('4. Should throw error if jumping from section (without members) ^ -> ^^^.', () => {
@@ -68,12 +100,24 @@ describe('Throw error when parsing bad section head tests:', () => {
         expect(() => {
             parseUntilError(fixture)
         }).toThrow()
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/line/i)
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/column/i)
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/section|level|header/i)
     })
 
     test('5. Should throw error if starting with section (with a member) ^^^.', () => {
         // Arrange.
         const fixture = `
-        ^^^ InvalidHeader // INVALID: Must start with atleast one 1-level section.
+        ^^^ InvalidHeader // INVALID: Must start with at least one 1-level section.
         strValue = "5"
         /END
         `
@@ -82,6 +126,18 @@ describe('Throw error when parsing bad section head tests:', () => {
         expect(() => {
             parseUntilError(fixture)
         }).toThrow()
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/line/i)
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/column/i)
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/section|level|header/i)
     })
 
     test('6. Should throw error if jumping from section (with a member) ^^ -> ^^^^.', () => {
@@ -101,12 +157,24 @@ describe('Throw error when parsing bad section head tests:', () => {
         expect(() => {
             parseUntilError(fixture)
         }).toThrow()
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/line/i)
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/column/i)
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/section|level|header/i)
     })
 
     test('7. Should throw error if starting with section (without members) ^^^.', () => {
         // Arrange.
         const fixture = `
-        ^^^ InvalidHeader // INVALID: Must start with atleast one 1-level section.
+        ^^^ InvalidHeader // INVALID: Must start with at least one 1-level section.
         /END
         `
 
@@ -114,6 +182,18 @@ describe('Throw error when parsing bad section head tests:', () => {
         expect(() => {
             parseUntilError(fixture)
         }).toThrow()
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/line/i)
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/column/i)
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/section|level|header/i)
     })
 
     test('8. Should throw error if jumping from section (without members) ^^ -> ^^^^.', () => {
@@ -130,12 +210,24 @@ describe('Throw error when parsing bad section head tests:', () => {
         expect(() => {
             parseUntilError(fixture)
         }).toThrow()
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/line/i)
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/column/i)
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/section|level|header/i)
     })
 
     test('9. Should throw error if starting with section (without members) ^^ (prev. line is a comment).', () => {
         // Arrange.
         const fixture = `
-        // BELOW IS INVALID: Must start with atleast one 1-level section.
+        // BELOW IS INVALID: Must start with at least one 1-level section.
         ^^ InvalidHeader
         /END
         `
@@ -144,6 +236,18 @@ describe('Throw error when parsing bad section head tests:', () => {
         expect(() => {
             parseUntilError(fixture)
         }).toThrow()
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/line/i)
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/column/i)
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/section|level|header/i)
     })
 
     test('10. Should throw error if jumping from section (without members) ^^ -> ^^^^.', () => {
@@ -160,6 +264,18 @@ describe('Throw error when parsing bad section head tests:', () => {
         expect(() => {
             parseUntilError(fixture)
         }).toThrow()
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/line/i)
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/column/i)
+
+        expect(() => {
+            parseUntilError(fixture)
+        }).toThrow(/section|level|header/i)
     })
 
     test('11. Should throw error if mixing section header types.', () => {
@@ -174,6 +290,18 @@ describe('Throw error when parsing bad section head tests:', () => {
         expect(() => {
             parseUntilError(invalidYini)
         }).toThrow()
+
+        expect(() => {
+            parseUntilError(invalidYini)
+        }).toThrow(/line/i)
+
+        expect(() => {
+            parseUntilError(invalidYini)
+        }).toThrow(/column/i)
+
+        expect(() => {
+            parseUntilError(invalidYini)
+        }).toThrow(/section|level|header/i)
     })
 
     test('12. Should throw error if mixing section header types.', () => {
@@ -194,5 +322,17 @@ describe('Throw error when parsing bad section head tests:', () => {
         expect(() => {
             parseUntilError(invalidYini)
         }).toThrow()
+
+        expect(() => {
+            parseUntilError(invalidYini)
+        }).toThrow(/line/i)
+
+        expect(() => {
+            parseUntilError(invalidYini)
+        }).toThrow(/column/i)
+
+        expect(() => {
+            parseUntilError(invalidYini)
+        }).toThrow(/section|level|header/i)
     })
 })

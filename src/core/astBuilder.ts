@@ -835,24 +835,56 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         }
 
         const resultKey = trimBackticks(rawKey)
+        const rawMemberText = ctx.getText()
         const rawValue = ctx.value?.()?.getText()
         debugPrint(`visitMember(..): rawValue = ` + ctx.value?.()?.getText())
+        debugPrint(`visitMember(..): rawMemberText = ` + rawMemberText)
+
+        /* NOTE:
+            ctx.value() can be missing after parser recovery, even when the user did type something after ""=".
+
+            Example:
+                port = 54_32
+
+            ANTLR may reject 54_32, and then ctx.value() may not exist in the AST as you expect.
+            So rawValue alone is not enough to know whether this was:
+                * truly empty: port =
+                * malformed: port = 54_32
+                * rawMemberText lets one inspect the whole member text.
+         */
 
         let valueContext = ctx.value?.()
         let valueNode: TValueLiteral | undefined
 
-        if (!rawValue) {
-            // treatEmptyValueAsNull = 'allow' (default in lenient mode, empty value => Null in lenient mode)
-            // if (!this.isStrict) {
+        const hasEquals = rawMemberText.includes('=')
+        // const hasTextAfterEquals = hasEquals
+        //     ? rawMemberText.split('=').slice(1).join('=').trim().length > 0
+        //     : false
+        const eqIndex = rawMemberText.indexOf('=')
+        const hasTextAfterEquals =
+            eqIndex >= 0 && rawMemberText.slice(eqIndex + 1).trim().length > 0
+
+        if (!valueContext || !rawValue) {
+            // Case 1: there is text after '=' but parser could not form a valid value.
+            // Parser-level syntax error has likely already been reported.
+            if (hasTextAfterEquals) {
+                return makeScalarValue(
+                    'Undefined',
+                    undefined,
+                    'Parser syntax error already reported',
+                )
+            }
+
+            // Case 2: truly empty value.
             switch (this.options.rules.treatEmptyValueAsNull) {
                 case 'allow':
-                    // Lenient mode: implicit null, no warning (treatEmptyValueAsNull = 'allow').
                     valueNode = makeScalarValue(
                         'Null',
                         null,
                         'Implicit null (empty value)',
                     )
                     break
+
                 case 'allow-with-warning':
                     valueNode = makeScalarValue(
                         'Null',
@@ -867,36 +899,31 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                         `If you intended null, write it explicitly: ${resultKey} = null. Otherwise provide a non-empty value or set 'treatEmptyValueAsNull' to 'disallow'.`,
                     )
                     break
+
                 case 'disallow':
-                    // treatEmptyValueAsNull = 'disallow' (default in strict mode)
-                    // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                     this.errorHandler!.pushOrBail(
                         toErrorLocation(ctx),
                         'Syntax-Error',
-                        `Missing value for key '${resultKey}'.`,
+                        `Missing value for key '${resultKey}'`,
                         `Expected a value after '=' but found none. Implicit nulls are disallowed by 'treatEmptyValueAsNull = disallow'.`,
                         `Write 'null' explicitly (${resultKey} = null) if that is intended, or provide a concrete value.`,
                     )
-                    break
+
+                    return makeScalarValue(
+                        'Undefined',
+                        undefined,
+                        'Missing value already reported',
+                    )
             }
         } else {
-            valueNode = this.visitValue?.(valueContext) as TValueLiteral
+            valueNode = this.visitValue(valueContext) as TValueLiteral
         }
 
         debugPrint('visitMember(..): valueNode:')
         if (isDebug()) {
             printObject(valueNode)
         }
-        // if (!valueNode || valueNode.type === 'Undefined') {
-        //     // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-        //     this.errorHandler!.pushOrBail(
-        //         toErrorLocation(ctx),
-        //         'Syntax-Error',
-        //         'Invalid value',
-        //         `Invalid value for key '${resultKey} in member (<key> = <value> pair)'.`,
-        //         `Got '${rawValue}', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
-        //     )
-        // }
+        /*
         if (!valueNode) {
             this.errorHandler!.pushOrBail(
                 toErrorLocation(ctx),
@@ -916,20 +943,50 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                 `Invalid value for key '${resultKey}' in member (<key> = <value> pair).`,
                 `Got '${rawValue}', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
             )
+        }*/
+        if (!valueNode) {
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                'Invalid value',
+                `Invalid value for key '${resultKey}' in member (<key> = <value> pair).`,
+                `Got '${rawValue}', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
+            )
+        } else if (
+            valueNode.type === 'Undefined' &&
+            valueNode.tag !== 'Invalid string literal already reported' &&
+            valueNode.tag !== 'Missing value already reported' &&
+            valueNode.tag !== 'Parser syntax error already reported'
+        ) {
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                'Invalid value',
+                `Invalid value for key '${resultKey}' in member (<key> = <value> pair).`,
+                `Got '${rawValue}', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
+            )
         }
 
+        // It keeps the sentinel tags useful for control flow inside visitMember(..),
+        // but prevents them from leaking into the final parsed structure.
         const current = this.sectionStack[this.sectionStack.length - 1]
-        if (valueNode !== undefined) {
+        const shouldSkipMemberInsertion =
+            valueNode?.type === 'Undefined' &&
+            (valueNode.tag === 'Invalid string literal already reported' ||
+                valueNode.tag === 'Missing value already reported' ||
+                valueNode.tag === 'Parser syntax error already reported')
+
+        if (!shouldSkipMemberInsertion && valueNode !== undefined) {
             this.putMember(
                 this.errorHandler!,
                 ctx,
                 current,
                 resultKey,
                 valueNode,
-                // this.ast,
                 this.onDuplicateKey,
             )
         }
+
         return valueNode
     }
 
@@ -993,6 +1050,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
+    /*
     visitString_literal = (ctx: String_literalContext): any => {
         let text = ''
 
@@ -1005,11 +1063,10 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             for (const token of pieces) {
                 const tokenText = token.getText()
                 const parsed = this.extractStringKindAndValue(tokenText)
-                // text += parseStringLiteral(parsed)
-                let txt = ''
+
                 try {
                     text += parseStringLiteral(parsed)
-                } catch (err) {
+                } catch (err: unknown) {
                     const msg = '' + (<any>err)?.message
                     this.errorHandler!.pushOrBail(
                         toErrorLocation(ctx),
@@ -1055,6 +1112,58 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                 'Invalid string literal',
             )
         }
+    }
+    */
+    visitString_literal = (ctx: String_literalContext): any => {
+        let text = ''
+
+        const pieces = [
+            ctx.STRING(),
+            ...(ctx.string_concat_list()?.map((c) => c.STRING()) ?? []),
+        ]
+
+        for (const token of pieces) {
+            const tokenText = token.getText()
+            const parsed = this.extractStringKindAndValue(tokenText)
+
+            try {
+                text += parseStringLiteral(parsed)
+            } catch (err: unknown) {
+                const msg = err instanceof Error ? err.message : String(err)
+
+                let msgWhat = 'Parse error in string'
+                let msgWhy = msg
+                let msgHint = ''
+
+                if (err instanceof CYiniStringParseError) {
+                    if (/Invalid escape sequence/i.test(msg)) {
+                        msgWhat = 'Invalid escape sequence in string'
+                        msgHint =
+                            'Use double backslashes (\\\\) in C-strings, or use a raw string if escapes are not needed.'
+                    } else if (/end of string/i.test(msg)) {
+                        msgWhat = 'Incomplete escape sequence in string'
+                        msgHint =
+                            'Check that all escape sequences in the C-string are complete and valid.'
+                    }
+                }
+
+                this.errorHandler!.pushOrBail(
+                    toErrorLocation(ctx),
+                    'Syntax-Error',
+                    msgWhat,
+                    msgWhy,
+                    msgHint,
+                )
+
+                return makeScalarValue(
+                    'Undefined',
+                    undefined,
+                    'Invalid string literal already reported',
+                )
+            }
+        }
+
+        return makeScalarValue('String', text)
     }
 
     /**
@@ -1319,6 +1428,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
+    /*
     visitString_concat = (ctx: String_concatContext): any => {
         const rawText = ctx.STRING().getText() // The token text.
         const parsedInput = this.extractStringKindAndValue(rawText)
@@ -1335,6 +1445,27 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                 'Parse error in string',
                 `${msg}`,
             )
+        }
+    }
+    */
+    //@ todo (?) Check that this function actually works, not sure this function is finished.
+    visitString_concat = (ctx: String_concatContext): any => {
+        const rawText = ctx.STRING().getText()
+        const parsedInput = this.extractStringKindAndValue(rawText)
+
+        try {
+            return parseStringLiteral(parsedInput)
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : String(err)
+
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                'Parse error in string',
+                msg,
+            )
+
+            return undefined
         }
     }
 

@@ -10,8 +10,7 @@
  * These tests focus on user-facing parse failures, not exact full diagnostics.
  */
 
-import YINI from '../../../src'
-import { debugPrint } from '../../../src/utils/print'
+// tests/integration/1-core-parsing/common-syntax-error-and-message.test.ts
 import { parseAndCatchWithConsole } from '../../test-helpers'
 
 type TBadCase = {
@@ -102,16 +101,14 @@ describe('Common Syntax Error and Message Tests:', () => {
             // Act.
             const { err, stderrLines, stdoutLines } =
                 parseAndCatchWithConsole(yini)
+            const allOutput = [...stderrLines, ...stdoutLines].join('\n')
 
             // Assert.
             expect(err.message).toMatch(/syntax-error|syntax error/i)
 
-            expect(stderrLines.join('\n')).toMatch(/syntax error/i)
-            expect(stdoutLines.join('\n')).toMatch(/line/i)
-
-            // Column is also strongly preferred.
-            // Keep this enabled if your current thrown messages include it.
-            expect(stdoutLines.join('\n')).toMatch(/column/i)
+            expect(allOutput).toMatch(/syntax error/i)
+            expect(allOutput).toMatch(/line\s+\d+/i)
+            expect(allOutput).toMatch(/column\s+\d+/i)
         },
     )
 
@@ -124,12 +121,14 @@ path = c"F:\\logs\\nebula\\app.log"
 
         // Act.
         const { err, stderrLines, stdoutLines } = parseAndCatchWithConsole(yini)
+        const allOutput = [...stderrLines, ...stdoutLines].join('\n')
 
         // Assert.
         expect(err.message).toMatch(/syntax-error|syntax error/i)
 
-        expect(stdoutLines.join('\n')).toMatch(/escape/i)
-        expect(stdoutLines.join('\n')).toMatch(/line/i)
+        expect(allOutput).toMatch(/escape/i)
+        expect(allOutput).toMatch(/line\s+\d+/i)
+        expect(allOutput).toMatch(/column\s+\d+/i)
     })
 
     test('2. Should report syntax error with line number for: Invalid assignment operator.', () => {
@@ -141,10 +140,13 @@ name := "demo"
 
         // Act.
         const { err, stderrLines, stdoutLines } = parseAndCatchWithConsole(yini)
+        const allOutput = [...stderrLines, ...stdoutLines].join('\n')
 
         // Assert.
         expect(err.message).toMatch(/syntax-error|syntax error/i)
 
-        expect(stderrLines.join('\n')).toMatch(/line/i)
+        expect(allOutput).toMatch(/syntax error/i)
+        expect(allOutput).toMatch(/line\s+\d+/i)
+        expect(allOutput).toMatch(/column\s+\d+/i)
     })
 })

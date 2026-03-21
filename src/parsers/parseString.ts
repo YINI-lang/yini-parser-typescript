@@ -151,7 +151,7 @@ const parseClassicEscapes = (input: string): string => {
 
             default:
                 throw new CYiniStringParseError(
-                    `Invalid escape sequence \\${next}`,
+                    `Invalid escape sequence "\\${next}"`,
                 )
         }
     }
