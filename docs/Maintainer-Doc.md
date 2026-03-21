@@ -16,14 +16,24 @@
    * Check and update `CHANGELOG.md` so it's update with the latest changes.
    * Update the version in `package.json`.
 
-3. Make a release on GitHub
+3. Just to make sure:
+   a. Install and update package-lock.json by running:
+      ```bash
+      npm i
+      ```
+   b. And also build to be sure:
+      ```bash
+      npm run build
+      ```
+
+4. Make a release on GitHub
    * Go to **Releases** tab in the repo (`yini-parser-typescript`, https://github.com/YINI-lang/yini-parser-typescript).
    * 
    * Click **"Draft a new release"**, pick your tag, version, etc.
    * 
    * Click Publish release.
 
-4. Done, should have been publish to NPM Registry. ([www.npmjs.com](https://www.npmjs.com/))
+5. Done, should have been publish to NPM Registry. ([www.npmjs.com](https://www.npmjs.com/))
 
 ---
 

@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 1.4.xxxxx-beta - 2026 Mar
+## 1.4.3-beta - 2026 Mar
 - **Fixed:** Error messages and thrown parse errors now include correct line and column information again.
 - **Improved:** Syntax and string-related parse errors are now clearer and more consistent.
 - **Improved:** Reduced some duplicate follow-up errors during recovery after invalid input.
