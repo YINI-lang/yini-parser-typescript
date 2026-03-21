@@ -841,6 +841,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         let valueContext = ctx.value?.()
         let valueNode: TValueLiteral | undefined
 
+        /*
         if (!rawValue) {
             // treatEmptyValueAsNull = 'allow' (default in lenient mode, empty value => Null in lenient mode)
             // if (!this.isStrict) {
@@ -882,21 +883,56 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         } else {
             valueNode = this.visitValue?.(valueContext) as TValueLiteral
         }
+        */
+        if (!valueContext || !rawValue) {
+            switch (this.options.rules.treatEmptyValueAsNull) {
+                case 'allow':
+                    valueNode = makeScalarValue(
+                        'Null',
+                        null,
+                        'Implicit null (empty value)',
+                    )
+                    break
+
+                case 'allow-with-warning':
+                    valueNode = makeScalarValue(
+                        'Null',
+                        null,
+                        'Implicit null (empty value)',
+                    )
+                    this.errorHandler!.pushOrBail(
+                        toErrorLocation(ctx),
+                        'Syntax-Warning',
+                        `Empty value treated as null for key '${resultKey}'.`,
+                        `An empty value after '=' was encountered. Per 'treatEmptyValueAsNull = allow-with-warning', interpreted as null.`,
+                        `If you intended null, write it explicitly: ${resultKey} = null. Otherwise provide a non-empty value or set 'treatEmptyValueAsNull' to 'disallow'.`,
+                    )
+                    break
+
+                case 'disallow':
+                    this.errorHandler!.pushOrBail(
+                        toErrorLocation(ctx),
+                        'Syntax-Error',
+                        `Missing value for key '${resultKey}'.`,
+                        `Expected a value after '=' but found none. Implicit nulls are disallowed by 'treatEmptyValueAsNull = disallow'.`,
+                        `Write 'null' explicitly (${resultKey} = null) if that is intended, or provide a concrete value.`,
+                    )
+
+                    return makeScalarValue(
+                        'Undefined',
+                        undefined,
+                        'Missing value already reported',
+                    )
+            }
+        } else {
+            valueNode = this.visitValue(valueContext) as TValueLiteral
+        }
 
         debugPrint('visitMember(..): valueNode:')
         if (isDebug()) {
             printObject(valueNode)
         }
-        // if (!valueNode || valueNode.type === 'Undefined') {
-        //     // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-        //     this.errorHandler!.pushOrBail(
-        //         toErrorLocation(ctx),
-        //         'Syntax-Error',
-        //         'Invalid value',
-        //         `Invalid value for key '${resultKey} in member (<key> = <value> pair)'.`,
-        //         `Got '${rawValue}', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
-        //     )
-        // }
+        /*
         if (!valueNode) {
             this.errorHandler!.pushOrBail(
                 toErrorLocation(ctx),
@@ -908,6 +944,27 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         } else if (
             valueNode.type === 'Undefined' &&
             valueNode.tag !== 'Invalid string literal already reported'
+        ) {
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                'Invalid value',
+                `Invalid value for key '${resultKey}' in member (<key> = <value> pair).`,
+                `Got '${rawValue}', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
+            )
+        }*/
+        if (!valueNode) {
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                'Invalid value',
+                `Invalid value for key '${resultKey}' in member (<key> = <value> pair).`,
+                `Got '${rawValue}', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
+            )
+        } else if (
+            valueNode.type === 'Undefined' &&
+            valueNode.tag !== 'Invalid string literal already reported' &&
+            valueNode.tag !== 'Missing value already reported'
         ) {
             this.errorHandler!.pushOrBail(
                 toErrorLocation(ctx),

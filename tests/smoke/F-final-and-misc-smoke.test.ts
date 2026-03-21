@@ -468,9 +468,9 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         const correctMetaDiagn = {
             parserVersion: '####',
             mode: 'strict',
-            totalErrors: 7,
+            totalErrors: 5,
             totalWarnings: 1,
-            totalMessages: 8,
+            totalMessages: 6,
             runStartedAt: '####',
             runFinishedAt: '####',
             durationMs: -1,
@@ -508,7 +508,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                     levelDescription: 'Continue despite errors.',
                 },
                 errors: {
-                    errorCount: 7,
+                    errorCount: 5,
                     payload: [
                         {
                             line: 7,
@@ -540,28 +540,12 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                             hint: "Write 'null' explicitly (port = null) if that is intended, or provide a concrete value.",
                         },
                         {
-                            line: 7,
-                            column: 3,
-                            typeKey: 'syntax_error',
-                            message: 'Invalid value',
-                            advice: "Invalid value for key 'port' in member (<key> = <value> pair).",
-                            hint: "Got 'undefined', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.",
-                        },
-                        {
                             line: 12,
                             column: 5,
                             typeKey: 'syntax_error',
                             message: "Missing value for key 'enabled'.",
                             advice: "Expected a value after '=' but found none. Implicit nulls are disallowed by 'treatEmptyValueAsNull = disallow'.",
                             hint: "Write 'null' explicitly (enabled = null) if that is intended, or provide a concrete value.",
-                        },
-                        {
-                            line: 12,
-                            column: 5,
-                            typeKey: 'syntax_error',
-                            message: 'Invalid value',
-                            advice: "Invalid value for key 'enabled' in member (<key> = <value> pair).",
-                            hint: "Got 'undefined', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.",
                         },
                     ],
                 },
