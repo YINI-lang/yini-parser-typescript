@@ -835,56 +835,44 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         }
 
         const resultKey = trimBackticks(rawKey)
+        const rawMemberText = ctx.getText()
         const rawValue = ctx.value?.()?.getText()
         debugPrint(`visitMember(..): rawValue = ` + ctx.value?.()?.getText())
+        debugPrint(`visitMember(..): rawMemberText = ` + rawMemberText)
+
+        /* NOTE:
+            ctx.value() can be missing after parser recovery, even when the user did type something after ""=".
+
+            Example:
+                port = 54_32
+
+            ANTLR may reject 54_32, and then ctx.value() may not exist in the AST as you expect.
+            So rawValue alone is not enough to know whether this was:
+                * truly empty: port =
+                * malformed: port = 54_32
+                * rawMemberText lets one inspect the whole member text.
+         */
 
         let valueContext = ctx.value?.()
         let valueNode: TValueLiteral | undefined
 
-        /*
-        if (!rawValue) {
-            // treatEmptyValueAsNull = 'allow' (default in lenient mode, empty value => Null in lenient mode)
-            // if (!this.isStrict) {
-            switch (this.options.rules.treatEmptyValueAsNull) {
-                case 'allow':
-                    // Lenient mode: implicit null, no warning (treatEmptyValueAsNull = 'allow').
-                    valueNode = makeScalarValue(
-                        'Null',
-                        null,
-                        'Implicit null (empty value)',
-                    )
-                    break
-                case 'allow-with-warning':
-                    valueNode = makeScalarValue(
-                        'Null',
-                        null,
-                        'Implicit null (empty value)',
-                    )
-                    this.errorHandler!.pushOrBail(
-                        toErrorLocation(ctx),
-                        'Syntax-Warning',
-                        `Empty value treated as null for key '${resultKey}'.`,
-                        `An empty value after '=' was encountered. Per 'treatEmptyValueAsNull = allow-with-warning', interpreted as null.`,
-                        `If you intended null, write it explicitly: ${resultKey} = null. Otherwise provide a non-empty value or set 'treatEmptyValueAsNull' to 'disallow'.`,
-                    )
-                    break
-                case 'disallow':
-                    // treatEmptyValueAsNull = 'disallow' (default in strict mode)
-                    // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-                    this.errorHandler!.pushOrBail(
-                        toErrorLocation(ctx),
-                        'Syntax-Error',
-                        `Missing value for key '${resultKey}'.`,
-                        `Expected a value after '=' but found none. Implicit nulls are disallowed by 'treatEmptyValueAsNull = disallow'.`,
-                        `Write 'null' explicitly (${resultKey} = null) if that is intended, or provide a concrete value.`,
-                    )
-                    break
-            }
-        } else {
-            valueNode = this.visitValue?.(valueContext) as TValueLiteral
-        }
-        */
+        const hasEquals = rawMemberText.includes('=')
+        const hasTextAfterEquals = hasEquals
+            ? rawMemberText.split('=').slice(1).join('=').trim().length > 0
+            : false
+
         if (!valueContext || !rawValue) {
+            // Case 1: there is text after '=' but parser could not form a valid value.
+            // Parser-level syntax error has likely already been reported.
+            if (hasTextAfterEquals) {
+                return makeScalarValue(
+                    'Undefined',
+                    undefined,
+                    'Parser syntax error already reported',
+                )
+            }
+
+            // Case 2: truly empty value.
             switch (this.options.rules.treatEmptyValueAsNull) {
                 case 'allow':
                     valueNode = makeScalarValue(
@@ -964,7 +952,8 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         } else if (
             valueNode.type === 'Undefined' &&
             valueNode.tag !== 'Invalid string literal already reported' &&
-            valueNode.tag !== 'Missing value already reported'
+            valueNode.tag !== 'Missing value already reported' &&
+            valueNode.tag !== 'Parser syntax error already reported'
         ) {
             this.errorHandler!.pushOrBail(
                 toErrorLocation(ctx),
