@@ -857,9 +857,12 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         let valueNode: TValueLiteral | undefined
 
         const hasEquals = rawMemberText.includes('=')
-        const hasTextAfterEquals = hasEquals
-            ? rawMemberText.split('=').slice(1).join('=').trim().length > 0
-            : false
+        // const hasTextAfterEquals = hasEquals
+        //     ? rawMemberText.split('=').slice(1).join('=').trim().length > 0
+        //     : false
+        const eqIndex = rawMemberText.indexOf('=')
+        const hasTextAfterEquals =
+            eqIndex >= 0 && rawMemberText.slice(eqIndex + 1).trim().length > 0
 
         if (!valueContext || !rawValue) {
             // Case 1: there is text after '=' but parser could not form a valid value.
@@ -901,7 +904,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                     this.errorHandler!.pushOrBail(
                         toErrorLocation(ctx),
                         'Syntax-Error',
-                        `Missing value for key '${resultKey}'.`,
+                        `Missing value for key '${resultKey}'`,
                         `Expected a value after '=' but found none. Implicit nulls are disallowed by 'treatEmptyValueAsNull = disallow'.`,
                         `Write 'null' explicitly (${resultKey} = null) if that is intended, or provide a concrete value.`,
                     )
@@ -964,18 +967,26 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             )
         }
 
+        // It keeps the sentinel tags useful for control flow inside visitMember(..),
+        // but prevents them from leaking into the final parsed structure.
         const current = this.sectionStack[this.sectionStack.length - 1]
-        if (valueNode !== undefined) {
+        const shouldSkipMemberInsertion =
+            valueNode?.type === 'Undefined' &&
+            (valueNode.tag === 'Invalid string literal already reported' ||
+                valueNode.tag === 'Missing value already reported' ||
+                valueNode.tag === 'Parser syntax error already reported')
+
+        if (!shouldSkipMemberInsertion && valueNode !== undefined) {
             this.putMember(
                 this.errorHandler!,
                 ctx,
                 current,
                 resultKey,
                 valueNode,
-                // this.ast,
                 this.onDuplicateKey,
             )
         }
+
         return valueNode
     }
 
