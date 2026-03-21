@@ -993,6 +993,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
+    /*
     visitString_literal = (ctx: String_literalContext): any => {
         let text = ''
 
@@ -1005,9 +1006,10 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             for (const token of pieces) {
                 const tokenText = token.getText()
                 const parsed = this.extractStringKindAndValue(tokenText)
+
                 try {
                     text += parseStringLiteral(parsed)
-                } catch (err) {
+                } catch (err: unknown) {
                     const msg = '' + (<any>err)?.message
                     this.errorHandler!.pushOrBail(
                         toErrorLocation(ctx),
@@ -1053,6 +1055,58 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                 'Invalid string literal',
             )
         }
+    }
+    */
+    visitString_literal = (ctx: String_literalContext): any => {
+        let text = ''
+
+        const pieces = [
+            ctx.STRING(),
+            ...(ctx.string_concat_list()?.map((c) => c.STRING()) ?? []),
+        ]
+
+        for (const token of pieces) {
+            const tokenText = token.getText()
+            const parsed = this.extractStringKindAndValue(tokenText)
+
+            try {
+                text += parseStringLiteral(parsed)
+            } catch (err: unknown) {
+                const msg = err instanceof Error ? err.message : String(err)
+
+                let msgWhat = 'Parse error in string'
+                let msgWhy = msg
+                let msgHint = ''
+
+                if (err instanceof CYiniStringParseError) {
+                    if (/Invalid escape sequence/i.test(msg)) {
+                        msgWhat = 'Invalid escape sequence in string'
+                        msgHint =
+                            'Use double backslashes (\\\\) in C-strings, or use a raw string if escapes are not needed.'
+                    } else if (/end of string/i.test(msg)) {
+                        msgWhat = 'Incomplete escape sequence in string'
+                        msgHint =
+                            'Check that all escape sequences in the C-string are complete and valid.'
+                    }
+                }
+
+                this.errorHandler!.pushOrBail(
+                    toErrorLocation(ctx),
+                    'Syntax-Error',
+                    msgWhat,
+                    msgWhy,
+                    msgHint,
+                )
+
+                return makeScalarValue(
+                    'Undefined',
+                    undefined,
+                    'Invalid string literal already reported',
+                )
+            }
+        }
+
+        return makeScalarValue('String', text)
     }
 
     /**
@@ -1317,6 +1371,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
+    /*
     visitString_concat = (ctx: String_concatContext): any => {
         const rawText = ctx.STRING().getText() // The token text.
         const parsedInput = this.extractStringKindAndValue(rawText)
@@ -1333,6 +1388,27 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                 'Parse error in string',
                 `${msg}`,
             )
+        }
+    }
+    */
+    //@ todo (?) Check that this function actually works, not sure this function is finished.
+    visitString_concat = (ctx: String_concatContext): any => {
+        const rawText = ctx.STRING().getText()
+        const parsedInput = this.extractStringKindAndValue(rawText)
+
+        try {
+            return parseStringLiteral(parsedInput)
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : String(err)
+
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                'Parse error in string',
+                msg,
+            )
+
+            return undefined
         }
     }
 
