@@ -10,6 +10,7 @@
  * These tests focus on user-facing parse failures, not exact full diagnostics.
  */
 
+// tests/integration/1-core-parsing/common-syntax-error-and-message.test.ts
 import YINI from '../../../src'
 import { debugPrint } from '../../../src/utils/print'
 import { parseAndCatchWithConsole } from '../../test-helpers'

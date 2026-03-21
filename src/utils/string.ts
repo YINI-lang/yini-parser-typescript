@@ -158,3 +158,7 @@ export const removeSuffix = (str: string, suffix: string): string => {
     }
     return str
 }
+
+export const ensurePeriod = (text: string): string => {
+    return text.endsWith('.') ? text : text + '.'
+}

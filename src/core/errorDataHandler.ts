@@ -2,7 +2,11 @@
 import { isDebug } from '../config/env'
 import { IssuePayload } from '../types'
 import { debugPrint } from '../utils/print'
-import { toLowerSnakeCase, trimTrailingNonLetters } from '../utils/string'
+import {
+    ensurePeriod,
+    toLowerSnakeCase,
+    trimTrailingNonLetters,
+} from '../utils/string'
 import {
     IErrorLocationInput,
     TBailSensitivityLevel,
@@ -104,7 +108,7 @@ export class ErrorDataHandler {
             line,
             column: !column ? undefined : column,
             typeKey: toLowerSnakeCase(type),
-            message,
+            message: ensurePeriod(message),
             advice: advice || undefined, // Note, this will render ''-values as undfined and omit these in console outputs.
             hint: hint || undefined, // Note, this will render ''-values as undfined and omit these in console outputs.
         }
