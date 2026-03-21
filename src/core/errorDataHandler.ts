@@ -195,10 +195,11 @@ export class ErrorDataHandler {
                     if (!this.isThrowOnError) {
                         debugPrint('Skipped throwing')
                     } else {
-                        msgWhat && console.log(msgWhat)
-                        msgWhy && console.log(msgWhy)
-                        msgHint && console.log(msgHint)
-                        throw new Error(`Internal-Error: ${msgWhat}`)
+                        const thrownMsg = msgWhy
+                            ? `Internal-Error: ${msgWhatInclLineNum}. ${msgWhy}`
+                            : `Internal-Error: ${msgWhatInclLineNum}`
+
+                        throw new Error(thrownMsg)
                     }
                 }
                 break
@@ -222,10 +223,11 @@ export class ErrorDataHandler {
                     if (!this.isThrowOnError) {
                         debugPrint('Skipped throwing')
                     } else {
-                        msgWhat && console.log(msgWhat)
-                        msgWhy && console.log(msgWhy)
-                        msgHint && console.log(msgHint)
-                        throw new Error(`Syntax-Error: ${'' + msgWhat}`)
+                        const thrownMsg = msgWhy
+                            ? `Syntax-Error: ${msgWhatInclLineNum}. ${msgWhy}`
+                            : `Syntax-Error: ${msgWhatInclLineNum}`
+
+                        throw new Error(thrownMsg)
                     }
                 }
                 break
@@ -253,10 +255,11 @@ export class ErrorDataHandler {
                     if (!this.isThrowOnError) {
                         debugPrint('Skipped throwing')
                     } else {
-                        msgWhat && console.log(msgWhat)
-                        msgWhy && console.log(msgWhy)
-                        msgHint && console.log(msgHint)
-                        throw new Error(`Syntax-Warning: ${msgWhat}`)
+                        const thrownMsg = msgWhy
+                            ? `Syntax-Error: ${msgWhatInclLineNum}. ${msgWhy}`
+                            : `Syntax-Error: ${msgWhatInclLineNum}`
+
+                        throw new Error(thrownMsg)
                     }
                 }
                 break
@@ -311,7 +314,12 @@ export class ErrorDataHandler {
                 // CANNOT recover fatal errors, will lead to an bail!
                 // In test, throw an error instead of bailing/exiting.
                 // IMPORTANT: Never exit with exit code since this is a library!
-                throw new Error(`Internal-Error: ${msgWhat}`)
+
+                const thrownMsg = msgWhy
+                    ? `Internal-Error: ${msgWhatInclLineNum}. ${msgWhy}`
+                    : `Internal-Error: ${msgWhatInclLineNum}`
+
+                throw new Error(thrownMsg)
         }
     }
 

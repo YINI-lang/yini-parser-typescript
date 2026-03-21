@@ -1005,8 +1005,6 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             for (const token of pieces) {
                 const tokenText = token.getText()
                 const parsed = this.extractStringKindAndValue(tokenText)
-                // text += parseStringLiteral(parsed)
-                let txt = ''
                 try {
                     text += parseStringLiteral(parsed)
                 } catch (err) {

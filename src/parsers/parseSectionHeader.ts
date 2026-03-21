@@ -117,9 +117,7 @@ const parseSectionHeader = (
             errorHandler.pushOrBail(
                 toErrorLocation(ctx),
                 'Syntax-Error',
-                'Invalid name in this section header, section name: "' +
-                    strSectionName +
-                    '"',
+                'Invalid section header name "' + strSectionName + '"',
                 'Section name should be backticked like e.g. `My section name`.',
             )
         }
@@ -139,9 +137,7 @@ const parseSectionHeader = (
             errorHandler.pushOrBail(
                 toErrorLocation(ctx),
                 'Syntax-Error',
-                'Invalid name in this section header, section name: "' +
-                    strSectionName +
-                    '"',
+                'Invalid section header name "' + strSectionName + '"',
                 'Section name must start with: A-Z, a-z, or _, unless enclosed in backticks e.g. `' +
                     strSectionName +
                     '`, `My section name`.',
