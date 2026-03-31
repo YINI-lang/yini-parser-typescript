@@ -59,8 +59,8 @@ terminal_stmt
 
 stmt
   : eol				// BlankOrComment
-  | SECTION_HEAD	// SectionHeader
   | BAD_SECTION_HEAD_W_DOT_NAME	// If detected, should show error.
+  | SECTION_HEAD	// SectionHeader
   | assignment		// key = value
   | meta_stmt       // Note: The implementing parser is responsible for enforcing YINI marker constraints.
   | bad_member      // BadMember

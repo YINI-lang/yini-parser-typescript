@@ -613,10 +613,10 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             return this.visitMeta_stmt?.(child)
 
         debugPrint('S1')
-        // const badHeaderWDotName = ctx.BAD_SECTION_HEAD_W_DOT_NAME()?.getText()
-        // if (badHeaderWDotName) {
-        //     console.log('QQQQQQQQ = ' + badHeaderWDotName)
-        // }
+        const badHeaderWDotName = ctx.BAD_SECTION_HEAD_W_DOT_NAME()?.getText()
+        if (badHeaderWDotName) {
+            console.log('QQQQQQQQ = ' + badHeaderWDotName)
+        }
 
         let header = ctx.SECTION_HEAD()?.getText().trim() || ''
         // debugPrint('S2, lineAlt: >>>' + lineAlt + '<<<')

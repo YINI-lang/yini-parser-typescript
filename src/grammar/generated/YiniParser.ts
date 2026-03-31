@@ -21,8 +21,8 @@ export default class YiniParser extends Parser {
 	public static readonly YINI_TOKEN = 1;
 	public static readonly INCLUDE_TOKEN = 2;
 	public static readonly DEPRECATED_TOKEN = 3;
-	public static readonly SECTION_HEAD = 4;
-	public static readonly BAD_SECTION_HEAD_W_DOT_NAME = 5;
+	public static readonly BAD_SECTION_HEAD_W_DOT_NAME = 4;
+	public static readonly SECTION_HEAD = 5;
 	public static readonly TERMINAL_TOKEN = 6;
 	public static readonly SS = 7;
 	public static readonly CARET = 8;
@@ -108,8 +108,8 @@ export default class YiniParser extends Parser {
 	public static readonly symbolicNames: (string | null)[] = [ null, "YINI_TOKEN", 
                                                              "INCLUDE_TOKEN", 
                                                              "DEPRECATED_TOKEN", 
-                                                             "SECTION_HEAD", 
                                                              "BAD_SECTION_HEAD_W_DOT_NAME", 
+                                                             "SECTION_HEAD", 
                                                              "TERMINAL_TOKEN", 
                                                              "SS", "CARET", 
                                                              "GT", "LT", 
@@ -373,14 +373,14 @@ export default class YiniParser extends Parser {
 				this.enterOuterAlt(localctx, 2);
 				{
 				this.state = 86;
-				this.match(YiniParser.SECTION_HEAD);
+				this.match(YiniParser.BAD_SECTION_HEAD_W_DOT_NAME);
 				}
 				break;
 			case 5:
 				this.enterOuterAlt(localctx, 3);
 				{
 				this.state = 87;
-				this.match(YiniParser.BAD_SECTION_HEAD_W_DOT_NAME);
+				this.match(YiniParser.SECTION_HEAD);
 				}
 				break;
 			case 31:
@@ -1774,11 +1774,11 @@ export class StmtContext extends ParserRuleContext {
 	public eol(): EolContext {
 		return this.getTypedRuleContext(EolContext, 0) as EolContext;
 	}
-	public SECTION_HEAD(): TerminalNode {
-		return this.getToken(YiniParser.SECTION_HEAD, 0);
-	}
 	public BAD_SECTION_HEAD_W_DOT_NAME(): TerminalNode {
 		return this.getToken(YiniParser.BAD_SECTION_HEAD_W_DOT_NAME, 0);
+	}
+	public SECTION_HEAD(): TerminalNode {
+		return this.getToken(YiniParser.SECTION_HEAD, 0);
 	}
 	public assignment(): AssignmentContext {
 		return this.getTypedRuleContext(AssignmentContext, 0) as AssignmentContext;
