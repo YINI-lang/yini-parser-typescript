@@ -11,7 +11,6 @@ import {
     Bad_memberContext,
     Bad_meta_textContext,
     Boolean_literalContext,
-    Colon_list_declContext,
     DirectiveContext,
     ElementsContext,
     EolContext,
@@ -610,14 +609,15 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         if (ruleName.includes('EolContext')) return this.visitEol?.(child)
         if (ruleName.includes('AssignmentContext'))
             return this.visitAssignment?.(child)
-        if (ruleName.includes('Colon_list_declContext'))
-            return this.visitColon_list_decl?.(child)
         if (ruleName.includes('Meta_stmtContext'))
             return this.visitMeta_stmt?.(child)
 
         debugPrint('S1')
-        // let headerAlt = child.getText?.() ?? ''
-        // let header = ctx.SECTION_HEAD()?.getText().trim() || ''
+        // const badHeaderWDotName = ctx.BAD_SECTION_HEAD_W_DOT_NAME()?.getText()
+        // if (badHeaderWDotName) {
+        //     console.log('QQQQQQQQ = ' + badHeaderWDotName)
+        // }
+
         let header = ctx.SECTION_HEAD()?.getText().trim() || ''
         // debugPrint('S2, lineAlt: >>>' + lineAlt + '<<<')
         debugPrint('S2, header: >>>' + header + '<<<')
@@ -1389,39 +1389,35 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     }
 
     /**
-     * Visit a parse tree produced by `YiniParser.colon_list_decl`.
-     * @param ctx the parse tree
-     * @grammarRule KEY WS? COLON (eol | WS+)* elements (eol | WS+)* eol
-     * @return the visitor result
+     * @note Colon list not supported any more since YINI Spec Package v1.0.0.rc4
      */
-    // visitColon_list_decl?: (ctx: ListAfterColonContext) => Result
-    visitColon_list_decl = (ctx: Colon_list_declContext): any => {
-        debugPrint('-> Entered visitColon_list_decl(..)')
+    // visitColon_list_decl = (ctx: Colon_list_declContext): any => {
+    //     debugPrint('-> Entered visitColon_list_decl(..)')
 
-        const key = ctx.getChild(0).getText()
-        debugPrint(`visitColon_list_decl(..): key = '${key}'`)
+    //     const key = ctx.getChild(0).getText()
+    //     debugPrint(`visitColon_list_decl(..): key = '${key}'`)
 
-        const elems = this.visitElements(ctx.elements())
-        const value = makeListValue(elems, 'From colon-list')
-        const current = this.sectionStack[this.sectionStack.length - 1]
+    //     const elems = this.visitElements(ctx.elements())
+    //     const value = makeListValue(elems, 'From colon-list')
+    //     const current = this.sectionStack[this.sectionStack.length - 1]
 
-        // putMember(current, key, list, this.ast, this.onDuplicateKey)
-        this.putMember(
-            this.errorHandler!,
-            ctx,
-            current,
-            key,
-            value,
-            // this.ast,
-            this.onDuplicateKey,
-        )
-        debugPrint('<- About to exit visitColon_list_decl(..)...')
-        if (isDebug()) {
-            console.log('List literal: (from a Colon-list)')
-            printObject(value)
-        }
-        return value
-    }
+    //     // putMember(current, key, list, this.ast, this.onDuplicateKey)
+    //     this.putMember(
+    //         this.errorHandler!,
+    //         ctx,
+    //         current,
+    //         key,
+    //         value,
+    //         // this.ast,
+    //         this.onDuplicateKey,
+    //     )
+    //     debugPrint('<- About to exit visitColon_list_decl(..)...')
+    //     if (isDebug()) {
+    //         console.log('List literal: (from a Colon-list)')
+    //         printObject(value)
+    //     }
+    //     return value
+    // }
 
     /**
      * Visit a parse tree produced by `YiniParser.string_concat`.

@@ -73,16 +73,17 @@ if (isProdEnv()) {
 ^ App
 // val = 3e3
 // 3val = 33
-name = "Shebang-\\"demo"
+// name = "Shebang-\\"demo"
 value = c"Hello World"
 badEscape = c"E:\\logs\\nebula\\app.log"
-valueA = c"\\x41"
+\`value\`.B = "dfdfgd"
+value.A = "gdfgdf"
 `
 
         console.log('--start0------------------------------------------')
         const res0 = YINI.parse(yiniContent, {
             strictMode: false,
-            failLevel: 'ignore-errors',
+            // failLevel: 'ignore-errors',
             // includeMetadata: true,
             // includeDiagnostics: true,
             // requireDocTerminator: 'optional',
@@ -91,91 +92,41 @@ valueA = c"\\x41"
         console.log(res0)
         console.log('--end------------------------------------------\n')
 
-        console.log('--start2------------------------------------------')
-        const res2 = YINI.parse(defectConfig2Combo3, {
-            strictMode: true,
-            failLevel: 'ignore-errors',
-            // includeMetadata: true,
-            // includeDiagnostics: true,
-            // requireDocTerminator: 'optional',
-        })
-        console.log('res2:')
-        console.log(res2)
-        console.log('--end------------------------------------------\n')
+        // console.log('--start2------------------------------------------')
+        // const res2 = YINI.parse(defectConfig2Combo3, {
+        //     strictMode: true,
+        //     failLevel: 'ignore-errors',
+        // includeMetadata: true,
+        // includeDiagnostics: true,
+        // requireDocTerminator: 'optional',
+        // })
+        // console.log('res2:')
+        // console.log(res2)
+        // console.log('--end------------------------------------------\n')
 
-        console.log('--start3------------------------------------------')
-        const res3 = YINI.parse(defectConfigCombo3, {
-            strictMode: false,
-            failLevel: 'ignore-errors',
-            // includeMetadata: true,
-            // includeDiagnostics: true,
-            // requireDocTerminator: 'optional',
-        })
-        console.log('res3:')
-        console.log(res3)
-        console.log('--end------------------------------------------\n')
+        // console.log('--start3------------------------------------------')
+        // const res3 = YINI.parse(defectConfigCombo3, {
+        //     strictMode: false,
+        //     failLevel: 'ignore-errors',
+        // includeMetadata: true,
+        // includeDiagnostics: true,
+        // requireDocTerminator: 'optional',
+        // })
+        // console.log('res3:')
+        // console.log(res3)
+        // console.log('--end------------------------------------------\n')
 
-        console.log('--start4------------------------------------------')
-        const res4 = YINI.parse(defectConfigCombo3, {
-            strictMode: true,
-            failLevel: 'ignore-errors',
-            // includeMetadata: true,
-            // includeDiagnostics: true,
-            // requireDocTerminator: 'optional',
-        })
-        console.log('res4:')
-        console.log(res4)
-        console.log('--end------------------------------------------\n')
-
-        console.log('--start5------------------------------------------')
-        const res5 = YINI.parse(defectConfig2Combo3, {
-            strictMode: false,
-            // failLevel: 'ignore-errors',
-            // includeMetadata: true,
-            // includeDiagnostics: true,
-            // requireDocTerminator: 'optional',
-        })
-        console.log('res5:')
-        console.log(res5)
-        console.log('--end------------------------------------------\n')
-
-        console.log('--start6------------------------------------------')
-        const res6 = YINI.parse(defectConfig2Combo3, {
-            strictMode: true,
-            // failLevel: 'ignore-errors',
-            // includeMetadata: true,
-            // includeDiagnostics: true,
-            // requireDocTerminator: 'optional',
-        })
-        console.log('res6:')
-        console.log(res6)
-        console.log('--end------------------------------------------\n')
-
-        console.log('--start7------------------------------------------')
-        const res7 = YINI.parse(defectConfig2Combo3, {
-            throwOnError: true,
-            //strictMode: false,
-            // failLevel: 'ignore-errors',
-            // includeMetadata: true,
-            // includeDiagnostics: true,
-            // requireDocTerminator: 'optional',
-        })
-        console.log('res7:')
-        console.log(res7)
-        console.log('--end------------------------------------------\n')
-
-        console.log('--start8------------------------------------------')
-        const res8 = YINI.parse(defectConfig2Combo3, {
-            strictMode: true,
-            throwOnError: true,
-            // failLevel: 'ignore-errors',
-            // includeMetadata: true,
-            // includeDiagnostics: true,
-            // requireDocTerminator: 'optional',
-        })
-        console.log('res8:')
-        console.log(res8)
-        console.log('--end------------------------------------------\n')
+        // console.log('--start4------------------------------------------')
+        // const res4 = YINI.parse(defectConfigCombo3, {
+        //     strictMode: true,
+        //     failLevel: 'ignore-errors',
+        // includeMetadata: true,
+        // includeDiagnostics: true,
+        // requireDocTerminator: 'optional',
+        // })
+        // console.log('res4:')
+        // console.log(res4)
+        // console.log('--end------------------------------------------\n')
 
         // console.log(
         //     toPrettyJSON(
