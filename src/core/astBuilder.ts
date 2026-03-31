@@ -606,6 +606,12 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         const child: any = ctx.getChild(0)
         const ruleName = child?.constructor?.name ?? ''
 
+        debugPrint('S0')
+        const badHeaderWDotName = ctx.BAD_SECTION_HEAD_W_DOT_NAME()?.getText()
+        if (badHeaderWDotName) {
+            console.log('QQQQQQQQ = ' + badHeaderWDotName)
+        }
+
         if (ruleName.includes('EolContext')) return this.visitEol?.(child)
         if (ruleName.includes('AssignmentContext'))
             return this.visitAssignment?.(child)
@@ -613,7 +619,6 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             return this.visitMeta_stmt?.(child)
 
         debugPrint('S1')
-        const badHeaderWDotName = ctx.BAD_SECTION_HEAD_W_DOT_NAME()?.getText()
         if (badHeaderWDotName) {
             console.log('QQQQQQQQ = ' + badHeaderWDotName)
         }
