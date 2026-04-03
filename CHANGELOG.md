@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 1.4.3 - 2026 Apr
+- **Fixed:** Rebuilt the project and reduced reported vulnerabilities from 4 to 0.
+  
 ## 1.4.3-beta - 2026 Mar
 - **Fixed:** Error messages and thrown parse errors now include correct line and column information again.
 - **Improved:** Syntax and string-related parse errors are now clearer and more consistent.
