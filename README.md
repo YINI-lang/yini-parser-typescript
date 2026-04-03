@@ -149,10 +149,16 @@ This parser is continuously validated through comprehensive regression and smoke
 - ➡️ [YINI Homepage](https://yini-lang.org)  
   *Tutorials, guides, and examples.*
 
+- ➡️ [Read the YINI Specification](https://yini-lang.org/refs/specification)  
+  *Full syntax and format reference.*
+
 - ➡️ [YINI CLI on GitHub](https://github.com/YINI-lang/yini-cli)  
   *CLI tooling for working with YINI files.*
 
-- ➡️ [YINI Project](https://github.com/YINI-lang)  
+- ➡️ [Demo Apps](https://github.com/YINI-lang/yini-demo-apps/tree/main)  
+  *Complete basic usage examples.*
+
+- ➡️ [YINI-lang Project](https://github.com/YINI-lang)  
   *Repositories and related ecosystem projects.*
 
 ---
