@@ -35,7 +35,7 @@ jobs:
               run: npm run build # Optional, if you have a build step
 
             - name: Publish to npm
-              # run: npm publish --access public # Use --access public for public packages
-              run: npm publish --provenance --tag beta --access public
+              # run: npm publish --provenance --tag beta --access public # Use this if a beta release.
+              run: npm publish --provenance --access public
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
