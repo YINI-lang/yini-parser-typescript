@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## 1.4.3 - 2026 Apr
+- **Promoted** YINI Parser TypeScript is now considered stable (non-beta) after iterative beta releases and refinements.
 - **Fixed:** Rebuilt the project and reduced reported vulnerabilities from 4 to 0.
   
 ## 1.4.3-beta - 2026 Mar
