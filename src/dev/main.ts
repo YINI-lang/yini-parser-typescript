@@ -80,29 +80,29 @@ badEscape = c"E:\\logs\\nebula\\app.log"
 value.A = "gdfgdf"
 `
 
-        console.log('--start0------------------------------------------')
-        const res0 = YINI.parse(yiniContent, {
-            strictMode: false,
-            // failLevel: 'ignore-errors',
-            // includeMetadata: true,
-            // includeDiagnostics: true,
-            // requireDocTerminator: 'optional',
-        })
-        console.log('res0:')
-        console.log(res0)
-        console.log('--end------------------------------------------\n')
-
-        // console.log('--start2------------------------------------------')
-        // const res2 = YINI.parse(defectConfig2Combo3, {
-        //     strictMode: true,
-        //     failLevel: 'ignore-errors',
-        // includeMetadata: true,
-        // includeDiagnostics: true,
-        // requireDocTerminator: 'optional',
+        // console.log('--start0------------------------------------------')
+        // const res0 = YINI.parse(yiniContent, {
+        //     strictMode: false,
+        //     // failLevel: 'ignore-errors',
+        //     // includeMetadata: true,
+        //     // includeDiagnostics: true,
+        //     // requireDocTerminator: 'optional',
         // })
-        // console.log('res2:')
-        // console.log(res2)
+        // console.log('res0:')
+        // console.log(res0)
         // console.log('--end------------------------------------------\n')
+
+        console.log('--start2------------------------------------------')
+        const res2 = YINI.parse(defectConfig2Combo3, {
+            strictMode: true,
+            failLevel: 'ignore-errors',
+            includeMetadata: true,
+            includeDiagnostics: true,
+            requireDocTerminator: 'optional',
+        })
+        console.log('res2:')
+        printObject(res2)
+        console.log('--end------------------------------------------\n')
 
         // console.log('--start3------------------------------------------')
         // const res3 = YINI.parse(defectConfigCombo3, {

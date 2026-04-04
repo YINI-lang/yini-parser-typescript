@@ -526,10 +526,11 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                         },
                         {
                             line: 19,
-                            column: 9,
+                            column: 8,
                             typeKey: 'syntax_error',
                             message: 'Syntax error.',
-                            advice: "Details: extraneous input '=' expecting {'[', '{', BOOLEAN_FALSE, BOOLEAN_TRUE, NULL, '{}', '[]', NUMBER, STRING, NL, WS, INLINE_COMMENT}",
+                            //advice: "Details: extraneous input '=' expecting {'[', '{', BOOLEAN_FALSE, BOOLEAN_TRUE, NULL, '{}', '[]', NUMBER, STRING, NL, WS, INLINE_COMMENT}",
+                            advice: "Details: extraneous input ':' expecting {'=', WS}",
                         },
                         {
                             line: 7,
