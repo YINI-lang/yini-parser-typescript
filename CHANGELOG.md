@@ -1,7 +1,14 @@
 # CHANGELOG
 
+## 1.4.3 + UPDATES - 2026 Aprxxx
+- **Improved:** Refined the public parser API by fixing `throwOnError` option detection, clarifying behavior in the documentation, and standardizing parameter naming.
+- **Expanded:** Significantly improved integration test coverage for error recovery, throw behavior, and null handling across both lenient and strict modes.
+- **Improved:** Fixed and re-enabled previously skipped smoke tests:
+  - `tests/fixtures/smoke-fixtures/8-api-keys-integration.smoke.yini`
+  - `tests/fixtures/smoke-fixtures/9-app-preferences.smoke.yini`
+  
 ## 1.4.3 - 2026 Apr
-- **Promoted** YINI Parser TypeScript is now considered stable (non-beta) after iterative beta releases and refinements.
+- **Promoted:** YINI Parser TypeScript is now considered stable (non-beta) after iterative beta releases and refinements.
 - **Fixed:** Rebuilt the project and reduced reported vulnerabilities from 4 to 0.
   
 ## 1.4.3-beta - 2026 Mar

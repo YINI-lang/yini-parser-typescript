@@ -344,21 +344,21 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>(Implicit) Null</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>Empty value</td>
     <td>✅</td>
     <td>✅</td>
-    <td>🔲</td>
-    <td><b>⚠️ Only if option.treatEmptyValueAsNull = 'allow' (default in lenient mode)</b></td>
+    <td>✅</td>
+    <td><b>⚠️ Only if option.treatEmptyValueAsNull = 'allow' (This is default in lenient mode, disallow in strict mode)</b></td>
   </tr>
   <tr>
     <td>Members without any defined section</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>key = 123</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td><b>⚠️ (Implicit) Base object</b></td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td><b>⚠️ (Implicit) Base object with the name `"base"</b></td>
   </tr>
   <tr>
     <td>Multiple 1-level sections</td>
@@ -843,12 +843,12 @@ https://github.com/YINI-lang/YINI-spec
 
   <tr>
     <td><b>rules.treatEmptyValueAsNull</b></td>
-    <td>🚧</td>
+    <td>✅</td>
     <td><code>'allow' | 'allow-with-warning' | 'disallow'</code></td>
     <td>✅</td>
     <td>✅</td>
-    <td>🚧</td>
-    <td>Warning path implemented; verify messaging</td>
+    <td>✅</td>
+    <td></td>
   </tr>
 
 </table>

@@ -1,3 +1,4 @@
+// src/core/objectBuilder.ts
 import { isDebug } from '../config/env'
 import { debugPrint, printObject, toPrettyJSON } from '../utils/print'
 import { ErrorDataHandler } from './errorDataHandler'
@@ -12,48 +13,48 @@ import { IYiniAST, IYiniSection, TValueLiteral } from './internalTypes'
  *
  * @note All `tag` fields MUST be ignored.
  */
-export const astToObject = (
-    ast: IYiniAST,
-    errorHandler: ErrorDataHandler,
-    // ): ParsedObject => {
-): Record<string, unknown> => {
-    debugPrint('-> constructFinalObject(..)')
-    // return sectionChildrenToObject(ast.root)
+// export const astToObject = (
+//     ast: IYiniAST,
+//     errorHandler: ErrorDataHandler,
+//     // ): ParsedObject => {
+// ): Record<string, unknown> => {
+//     debugPrint('-> constructFinalObject(..)')
+//     // return sectionChildrenToObject(ast.root)
 
-    const out: Record<string, unknown> = {}
-    for (const child of ast.root.children) {
-        define(out, child.sectionName, sectionToObject(child))
-    }
-    return out
-}
-
-/** Convert only the children of a section into an object keyed by sectionName. */
-// function sectionChildrenToObject(
-//     section: YiniSection,
-// ): Record<string, unknown> {
 //     const out: Record<string, unknown> = {}
-//     for (const child of section.children) {
-//         out[child.sectionName] = sectionToObject(child)
+//     for (const child of ast.root.children) {
+//         define(out, child.sectionName, sectionToObject(child))
 //     }
 //     return out
 // }
+export const astToObject = (
+    ast: IYiniAST,
+    errorHandler: ErrorDataHandler,
+): Record<string, unknown> => {
+    debugPrint('-> constructFinalObject(..)')
 
-/** Convert a section (its members + nested sections) to a plain object. */
-// function sectionToObject(node: YiniSection): Record<string, unknown> {
-//     const obj: Record<string, unknown> = {}
+    const out: Record<string, unknown> = {}
 
-//     // Members → properties
-//     for (const [key, val] of node.members.entries()) {
-//         obj[key] = literalToJS(val)
-//     }
+    // In lenient mode, expose top-level members outside any explicit
+    // section under an implicit public section named "base".
+    if (!ast.isStrict && ast.root.members.size > 0) {
+        const base: Record<string, unknown> = {}
 
-//     // Nested sections → nested objects keyed by sectionName
-//     for (const child of node.children) {
-//         obj[child.sectionName] = sectionToObject(child)
-//     }
+        for (const [key, val] of ast.root.members) {
+            define(base, key, literalToJS(val))
+        }
 
-//     return obj
-// }
+        define(out, 'base', base)
+    }
+
+    // Explicit top-level sections are always mounted directly on result.
+    for (const child of ast.root.children) {
+        define(out, child.sectionName, sectionToObject(child))
+    }
+
+    return out
+}
+
 /**
  * Convert a section (members + nested sections) to a plain
  * object, preserving order.

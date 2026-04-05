@@ -1,7 +1,9 @@
 /*
 
 Features:
-  - No (explicit) section
+  - No (explicit) section => everything under "base"
+      | In lenient mode, if members appear outside any explicit section, they
+      | are exposed under an implicit section named base in the parsed result.
   - Lists (bracketed and colon)
   - Strings, booleans, numbers
   - File paths (with \)

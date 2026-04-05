@@ -1344,7 +1344,8 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         debugPrint('-> Entered visitObject_members(..)')
         debugPrint('entries.length = ' + ctx?.object_member_list().length)
 
-        const entries: Array<{ k: string; v: TValueLiteral }> = []
+        // const entries: Array<{ k: string; v: TValueLiteral }> = []
+        const entries: Record<string, TValueLiteral> = {}
         ctx.object_member_list().forEach((member) => {
             const { key, value }: any = this.visitObject_member(member)
             debugPrint('   key = ' + key)
