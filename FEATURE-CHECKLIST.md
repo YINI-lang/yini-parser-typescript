@@ -351,25 +351,25 @@ https://github.com/YINI-lang/YINI-spec
     <td>✅</td>
     <td><b>⚠️ Only if option.treatEmptyValueAsNull = 'allow' (This is default in lenient mode, disallow in strict mode)</b></td>
   </tr>
-  <tr>
-    <td>Members without any defined section</td>
-    <td>✅</td>
-    <td>key = 123</td>
-    <td>✅</td>
-    <td>✅</td>
-    <td>✅</td>
-    <td><b>⚠️ (Implicit) Base object with the name `"base"</b></td>
-  </tr>
-  <tr>
-    <td>Multiple 1-level sections</td>
-    <td>🔲</td>
-    <td><code>^ Title1
- ^ Title2</code></td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td><b>⚠️ (Implicit) Base object</b></td>
-  </tr>
+<tr>
+  <td>Members outside any explicit section</td>
+  <td>✅</td>
+  <td><code>key = 123</code></td>
+  <td>✅</td>
+  <td>✅</td>
+  <td>✅</td>
+  <td><b>⚠️ Mounted directly on the parsed result, or under an implicit <code>base</code> object if required by the implementation</b></td>
+</tr>
+<tr>
+  <td>Multiple top-level sections</td>
+  <td>✅</td>
+  <td><code>^ Title1
+^ Title2</code></td>
+  <td>✅</td>
+  <td>✅</td>
+  <td>✅</td>
+  <td><b>⚠️ Mounted directly on the parsed result as separate top-level objects</b></td>
+</tr>
 </table>
 
 ---

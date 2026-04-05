@@ -76,7 +76,7 @@ fragment SECTION_MARKER_BASIC_REPEAT
 // Shorthand: a single marker followed by a positive integer (1 or larger).
 // Examples: ^7, <12, §100
 fragment SECTION_MARKER_SHORTHAND
-    : (CARET | LT | SS) [1-9] DIGIT*
+    : (CARET | LT | SS) [1-9] DIGIT* HSPACE
     ;
 
 fragment SECTION_MARKER_INVALID

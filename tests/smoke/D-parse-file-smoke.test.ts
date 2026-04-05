@@ -148,7 +148,7 @@ describe('Parse-File Smoke Tests:', () => {
         expect(result.CacheFolder).toEqual(null)
     })
 
-    xtest('Parse file "10-logging-monitoring.*".', () => {
+    test('Parse file "10-logging-monitoring.*".', () => {
         // Arrange.
         const fileName = '10-logging-monitoring.smoke.yini'
         const fullPath = path.join(baseDir, fileName)

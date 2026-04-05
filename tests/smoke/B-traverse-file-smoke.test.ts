@@ -153,7 +153,7 @@ describe('Parse-File Smoke Tests:', () => {
     })
 
     //@todo Enable test (after can parse lists)
-    xtest('Parse file "10-logging-monitoring.*".', () => {
+    test('Parse file "10-logging-monitoring.*".', () => {
         // Arrange.
         const fileName = '10-logging-monitoring.smoke.yini'
         const fullPath = path.join(baseDir, fileName)
