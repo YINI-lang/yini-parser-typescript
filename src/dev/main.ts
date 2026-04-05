@@ -78,31 +78,51 @@ value = c"Hello World"
 badEscape = c"E:\\logs\\nebula\\app.log"
 \`value\`.B = "dfdfgd"
 value.A = "gdfgdf"
+
+num1 = 10
+num2 = null
+num3 = Null
+num4 = NULL
+num5 = nULL
+num6 = 
+num20 = 20
 `
 
         // console.log('--start0------------------------------------------')
-        // const res0 = YINI.parse(yiniContent, {
-        //     strictMode: false,
-        //     // failLevel: 'ignore-errors',
-        //     // includeMetadata: true,
-        //     // includeDiagnostics: true,
-        //     // requireDocTerminator: 'optional',
-        // })
-        // console.log('res0:')
-        // console.log(res0)
+        const res0 = YINI.parse(yiniContent, {
+            strictMode: false,
+            // failLevel: 'ignore-errors',
+            // includeMetadata: true,
+            // includeDiagnostics: true,
+            // requireDocTerminator: 'optional',
+        })
+        console.log('res0:')
+        console.log(res0)
         // console.log('--end------------------------------------------\n')
 
-        console.log('--start2------------------------------------------')
-        const res2 = YINI.parse(defectConfig2Combo3, {
+        // console.log('--start1------------------------------------------')
+        const res1 = YINI.parse(yiniContent, {
             strictMode: true,
-            failLevel: 'ignore-errors',
-            includeMetadata: true,
-            includeDiagnostics: true,
-            requireDocTerminator: 'optional',
+            // failLevel: 'ignore-errors',
+            // includeMetadata: true,
+            // includeDiagnostics: true,
+            // requireDocTerminator: 'optional',
         })
-        console.log('res2:')
-        printObject(res2)
-        console.log('--end------------------------------------------\n')
+        console.log('res1:')
+        console.log(res1)
+        // console.log('--end------------------------------------------\n')
+
+        // console.log('--start2------------------------------------------')
+        // const res2 = YINI.parse(defectConfig2Combo3, {
+        //     strictMode: true,
+        //     failLevel: 'ignore-errors',
+        //     includeMetadata: true,
+        //     includeDiagnostics: true,
+        //     requireDocTerminator: 'optional',
+        // })
+        // console.log('res2:')
+        // printObject(res2)
+        // console.log('--end------------------------------------------\n')
 
         // console.log('--start3------------------------------------------')
         // const res3 = YINI.parse(defectConfigCombo3, {

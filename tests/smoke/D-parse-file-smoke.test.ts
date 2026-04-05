@@ -120,7 +120,7 @@ describe('Parse-File Smoke Tests:', () => {
         //@todo Add tests for the other literal as well.
     })
 
-    xtest('Parse file "8-api-keys-integration.*".', () => {
+    test('Parse file "8-api-keys-integration.*".', () => {
         // Arrange.
         const fileName = '8-api-keys-integration.smoke.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -134,7 +134,7 @@ describe('Parse-File Smoke Tests:', () => {
         //@todo Add tests for the other literal as well.
     })
 
-    xtest('Parse file "9-app-preferences.*".', () => {
+    test('Parse file "9-app-preferences.*".', () => {
         // Arrange.
         const fileName = '9-app-preferences.smoke.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -145,7 +145,6 @@ describe('Parse-File Smoke Tests:', () => {
 
         // Assert.
         expect(result.base.CacheFolder).toEqual(null)
-        //@todo Add tests for the other literal as well.
     })
 
     xtest('Parse file "10-logging-monitoring.*".', () => {

@@ -32,7 +32,6 @@ import {
 } from '../grammar/generated/YiniParser.js'
 import YiniParserVisitor from '../grammar/generated/YiniParserVisitor'
 import { extractYiniLine } from '../parsers/extractSignificantYiniLine'
-import parseBooleanLiteral from '../parsers/parseBoolean'
 import parseBoolean from '../parsers/parseBoolean'
 import parseNullLiteral from '../parsers/parseNull'
 import parseNumberLiteral from '../parsers/parseNumber'
@@ -1241,8 +1240,14 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     // visitNull_literal?: (ctx: Null_literalContext) => Result
     visitNull_literal = (ctx: Null_literalContext): any => {
         debugPrint('-> Entered visitNull_literal(..)')
-        debugPrint('raw = ' + ctx.getText())
-        return makeScalarValue('Null', null, 'Explicit Null')
+        // debugPrint('raw = ' + ctx.getText())
+        // return makeScalarValue('Null', null, 'Explicit Null')
+        const raw = ctx.getText()
+        debugPrint('raw:    "' + raw + '"')
+        const parsed = parseNullLiteral(raw)
+        debugPrint('parsed: "' + parsed + '"')
+        // Case-insensitive true/false/on/off/yes/no (Spec section, 8.1).
+        return makeScalarValue('Null', parsed, 'Explicit Null')
     }
 
     /**
@@ -1365,7 +1370,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         const rawValue = ctx.value().getText()
         const valueNode: TValueLiteral = ctx.value()
             ? this.visitValue(ctx.value())
-            : makeScalarValue('Null', 'Implicit Null')
+            : makeScalarValue('Null', null, 'Implicit Null')
 
         debugPrint('  rawKey = ' + rawKey)
         debugPrint('     key = ' + key)

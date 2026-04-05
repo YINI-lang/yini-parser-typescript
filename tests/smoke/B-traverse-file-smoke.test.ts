@@ -123,8 +123,7 @@ describe('Parse-File Smoke Tests:', () => {
         expect(!!result).toEqual(true)
     })
 
-    //@todo Enable test (after can parse colon based lists).
-    xtest('Parse file "8-api-keys-integration.*".', () => {
+    test('Parse file "8-api-keys-integration.*".', () => {
         // Arrange.
         const fileName = '8-api-keys-integration.smoke.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -139,7 +138,7 @@ describe('Parse-File Smoke Tests:', () => {
     })
 
     //@todo Enable test (after can parse with no section defined, implicit base object).
-    xtest('Parse file "9-app-preferences.*".', () => {
+    test('Parse file "9-app-preferences.*".', () => {
         // Arrange.
         const fileName = '9-app-preferences.smoke.yini'
         const fullPath = path.join(baseDir, fileName)
