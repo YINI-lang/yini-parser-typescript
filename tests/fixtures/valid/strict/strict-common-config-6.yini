@@ -12,34 +12,36 @@
         ^^^ = sub-sub-section (child of previous sub-section)
 */
 
-^ App                 // Defines a top-level section named "App".
-name = "ExampleApp Web"
-version = "1.2.3"
-debug = false
+^ Top
 
-    ^^ Logging        // Defines a sub-section "Logging" under "App".
-    level = "info"
-    file = "logs/app.log"
-    maxSize = 1048576
+    ^^ App                 // Defines a top-level section named "App".
+    name = "ExampleApp Web"
+    version = "1.2.3"
+    debug = false
 
-    ^^ Database       // Defines a sub-section "Database" under "App".
-    type = "postgres"
-    host = "db.example.com"
-    port = 5432
-    username = "some_user"
-    password = "****"
-    poolSize = 10
+        ^^^ Logging        // Defines a sub-section "Logging" under "App".
+        level = "info"
+        file = "logs/app.log"
+        maxSize = 1048576
 
-        ^^^ Options   // Defines a sub-section "Options" under "Database".
-        ssl = true
-        connectionTimeout = 30
+        ^^^ Database       // Defines a sub-section "Database" under "App".
+        type = "postgres"
+        host = "db.example.com"
+        port = 5432
+        username = "some_user"
+        password = "****"
+        poolSize = 10
 
-    ^^ Features       // Defines a sub-section "Features" under "App".
-    enableSignup = true
-    betaBanner = false
+            ^^^^ Options   // Defines a sub-section "Options" under "Database".
+            ssl = true
+            connectionTimeout = 30
 
-^ Env                 // Defines another top-level section named "Env".
-NODE_ENV = "production"
-TIMEZONE = "Europe/Gothenburg"
+        ^^^ Features       // Defines a sub-section "Features" under "App".
+        enableSignup = true
+        betaBanner = false
+
+    ^^ Env                 // Defines another top-level section named "Env".
+    NODE_ENV = "production"
+    TIMEZONE = "Europe/Gothenburg"
 
 /END

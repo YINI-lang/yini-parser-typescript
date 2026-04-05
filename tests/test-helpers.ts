@@ -29,11 +29,11 @@ export const parseUntilError = (
  * set to 1 ('Abort-on-Errors' mode).
  */
 export const parseFileUntilError = (
-    content: string,
+    path: string,
     isStrictMode = false,
     isIncludeMeta = false,
 ) => {
-    const result = YINI.parseFile(content, {
+    const result = YINI.parseFile(path, {
         strictMode: isStrictMode,
         failLevel: 'errors',
         includeMetadata: isIncludeMeta,

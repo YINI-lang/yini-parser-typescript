@@ -229,13 +229,13 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         expect(toPrettyJSON(resultA)).toEqual(toPrettyJSON(correctAnswerA))
     })
 
-    test('F-5.b) Parse & match YINI against JSON (strict): a-corporate-saas-platform.', () => {
+    test('F-5.b) Parse & match YINI against JSON (lenient): a-corporate-saas-platform.', () => {
         // Arrange.
         const fileName = 'a-corporate-saas-platform.smoke.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const resultA = YINI.parseFile(fullPath, { strictMode: true })
+        const resultA = YINI.parseFile(fullPath, { strictMode: false })
         IS_LOCAL_DEBUG && console.log('fullPath = ' + fullPath)
         IS_LOCAL_DEBUG && console.log('resultA:')
         IS_LOCAL_DEBUG && console.log(toPrettyJSON(resultA))
@@ -245,14 +245,14 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         expect(toPrettyJSON(resultA)).toEqual(toPrettyJSON(correctAnswerA))
     })
 
-    test('F-5.c) Parse & match YINI against JSON (strict+meta): a-corporate-saas-platform.', () => {
+    test('F-5.c) Parse & match YINI against JSON (lenient+meta): a-corporate-saas-platform.', () => {
         // Arrange.
         const fileName = 'a-corporate-saas-platform.smoke.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
         const resultA = YINI.parseFile(fullPath, {
-            strictMode: true,
+            strictMode: false,
             includeMetadata: true,
         })
         IS_LOCAL_DEBUG && console.log('fullPath = ' + fullPath)
@@ -269,14 +269,14 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         )
     })
 
-    test('F-5.d) Parse & check YINI returns metadata: a-corporate-saas-platform.', () => {
+    test('F-5.d) Parse & check YINI returns metadata (lenient): a-corporate-saas-platform.', () => {
         // Arrange.
         const fileName = 'a-corporate-saas-platform.smoke.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
         const resultA = YINI.parseFile(fullPath, {
-            strictMode: true,
+            strictMode: false,
             includeMetadata: true,
         })
         IS_LOCAL_DEBUG && console.log('fullPath = ' + fullPath)
@@ -284,7 +284,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         IS_LOCAL_DEBUG && console.log(toPrettyJSON(resultA))
 
         // Assert.
-        expect(resultA.meta.mode).toEqual('strict')
+        expect(resultA.meta.mode).toEqual('lenient')
         expect(resultA.meta.totalErrors).toEqual(0)
         expect(resultA.meta.preservesOrder).toEqual(true)
         expect(resultA.meta.source).not.toEqual(undefined)
@@ -308,13 +308,13 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         expect(toPrettyJSON(resultB)).toEqual(toPrettyJSON(correctAnswerB))
     })
 
-    test('F-6.b) Parse & match YINI against JSON (strict): b-high-security-distributed-control-system.', () => {
+    test('F-6.b) Parse & match YINI against JSON (lenient): b-high-security-distributed-control-system.', () => {
         // Arrange.
         const fileName = 'b-high-security-distributed-control-system.smoke.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
-        const resultB = YINI.parseFile(fullPath, { strictMode: true })
+        const resultB = YINI.parseFile(fullPath, { strictMode: false })
         IS_LOCAL_DEBUG && console.log('fullPath = ' + fullPath)
         IS_LOCAL_DEBUG && console.log('resultB:')
         IS_LOCAL_DEBUG && console.log(toPrettyJSON(resultB))
@@ -324,14 +324,14 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         expect(toPrettyJSON(resultB)).toEqual(toPrettyJSON(correctAnswerB))
     })
 
-    test('F-6.c) Parse & match YINI against JSON (strict+meta): b-high-security-distributed-control-system.', () => {
+    test('F-6.c) Parse & match YINI against JSON (lenient+meta): b-high-security-distributed-control-system.', () => {
         // Arrange.
         const fileName = 'b-high-security-distributed-control-system.smoke.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
         const resultB = YINI.parseFile(fullPath, {
-            strictMode: true,
+            strictMode: false,
             includeMetadata: true,
         })
         IS_LOCAL_DEBUG && console.log('fullPath = ' + fullPath)
@@ -348,14 +348,14 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         )
     })
 
-    test('F-6.d) Parse & check YINI returns metadata: b-high-security-distributed-control-system.', () => {
+    test('F-6.d) Parse & check YINI returns metadata (lenient): b-high-security-distributed-control-system.', () => {
         // Arrange.
         const fileName = 'b-high-security-distributed-control-system.smoke.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
         const resultB = YINI.parseFile(fullPath, {
-            strictMode: true,
+            strictMode: false,
             includeMetadata: true,
         })
         IS_LOCAL_DEBUG && console.log('fullPath = ' + fullPath)
@@ -363,7 +363,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         IS_LOCAL_DEBUG && console.log(toPrettyJSON(resultB))
 
         // Assert.
-        expect(resultB.meta.mode).toEqual('strict')
+        expect(resultB.meta.mode).toEqual('lenient')
         expect(resultB.meta.totalErrors).toEqual(0)
         expect(resultB.meta.preservesOrder).toEqual(true)
         expect(resultB.meta.source).not.toEqual(undefined)
@@ -371,14 +371,14 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         expect(resultB.meta.metaSchemaVersion).toEqual('1.1.1')
     })
 
-    test('F-7. Parse & match YINI metadata with JS-object: b-high-security-distributed-control-system.', () => {
+    test('F-7. Parse & match YINI metadata with JS-object (lenient): b-high-security-distributed-control-system.', () => {
         // Arrange.
         const fileName = 'b-high-security-distributed-control-system.smoke.yini'
         const fullPath = path.join(baseDir, fileName)
 
         // Act.
         const resultB = YINI.parseFile(fullPath, {
-            strictMode: true,
+            strictMode: false,
             includeMetadata: true,
             includeDiagnostics: false,
         })
@@ -389,10 +389,10 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         // Assert.
         const correctMetaB = {
             parserVersion: '####',
-            mode: 'strict',
+            mode: 'lenient',
             totalErrors: 0,
-            totalWarnings: 1,
-            totalMessages: 1,
+            totalWarnings: 0,
+            totalMessages: 0,
             runStartedAt: '####',
             runFinishedAt: '####',
             durationMs: -1,
@@ -439,6 +439,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
             },
             metaSchemaVersion: '1.1.1',
         }
+
         resultB.meta.parserVersion = '####'
         resultB.meta.runStartedAt = '####'
         resultB.meta.runFinishedAt = '####'
@@ -446,6 +447,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         resultB.meta.source.fileName = '####'
         resultB.meta.source.byteSize = -1
         resultB.meta.source.sha256 = '####'
+
         expect(toPrettyJSON(resultB.meta)).toEqual(toPrettyJSON(correctMetaB))
     })
 
@@ -469,9 +471,9 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         const correctMetaDiagn = {
             parserVersion: '####',
             mode: 'strict',
-            totalErrors: 5,
+            totalErrors: 6,
             totalWarnings: 1,
-            totalMessages: 6,
+            totalMessages: 7,
             runStartedAt: '####',
             runFinishedAt: '####',
             durationMs: -1,
@@ -509,7 +511,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                     levelDescription: 'Continue despite errors.',
                 },
                 errors: {
-                    errorCount: 5,
+                    errorCount: 6,
                     payload: [
                         {
                             line: 7,
@@ -548,6 +550,13 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                             message: "Missing value for key 'enabled'.",
                             advice: "Expected a value after '=' but found none. Implicit nulls are disallowed by 'treatEmptyValueAsNull = disallow'.",
                             hint: "Write 'null' explicitly (enabled = null) if that is intended, or provide a concrete value.",
+                        },
+                        {
+                            typeKey: 'syntax_error',
+                            message:
+                                'Strict mode requires exactly one explicit top-level section.',
+                            advice: 'Found 3 explicit top-level sections.',
+                            hint: 'Wrap the document in exactly one explicit top-level section and nest any additional sections beneath it.',
                         },
                     ],
                 },

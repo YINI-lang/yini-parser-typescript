@@ -1,3 +1,2 @@
 ^ BadInteger
 badInt = --1     # NOT a valid integer literal
-/END
