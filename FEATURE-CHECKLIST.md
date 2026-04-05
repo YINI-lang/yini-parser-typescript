@@ -663,18 +663,18 @@ https://github.com/YINI-lang/YINI-spec
     <td>🔲</td>
     <td>Allows trailing commas, blank/null values, etc</td>
     <td>✅</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
     <td></td>
   </tr>
   <tr>
-    <td>Strict mode option</td>
-    <td>🔲</td>
-    <td></td>
+    <td><code>Strict mode</code></td>
+    <td>🚧</td>
+    <td>Enable strict parsing (e.g., require <code>/END</code>, disallow implicit nulls/trailing commas)<br/>There must be exactly one explicit top-level section.</td>
     <td>✅</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td></td>
+    <td>🚧</td>
+    <td>🚧</td>
+    <td>Some rules still being finalized</td>
   </tr>
   <tr>
     <td>Optional Bail/Abort sensitivity levels</td>
@@ -733,21 +733,21 @@ https://github.com/YINI-lang/YINI-spec
 
   <tr>
     <td><code>strictMode</code></td>
-    <td>🚧</td>
-    <td>Enable strict parsing (e.g., require <code>/END</code>, disallow implicit nulls/trailing commas)</td>
     <td>✅</td>
-    <td>🚧</td>
-    <td>🚧</td>
-    <td>Some rules still being finalized</td>
+    <td>Enable strict parsing<td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td></td>
   </tr>
 
   <tr>
     <td><code>failLevel</code> / preferred bail level</td>
-    <td>🚧</td>
+    <td>✅</td>
     <td><code>'auto' | 0 | 1 | 2</code> → ignore, abort-on-errors, abort-on-warnings</td>
     <td>✅</td>
-    <td>🚧</td>
-    <td>🚧</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>Stop parsing level</td>
   </tr>
 
@@ -813,11 +813,11 @@ https://github.com/YINI-lang/YINI-spec
 
   <tr>
     <td><code>throwOnError</code></td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>Throw on parse error.</td>
     <td>✅</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
     <td></td>
   </tr>
 

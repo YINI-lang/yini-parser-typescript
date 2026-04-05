@@ -267,6 +267,34 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
 
     // --- Private helper methods --------------------------------
 
+    private validateStrictTopLevelStructure() {
+        if (!this.isStrict) return
+
+        const numTopLevelSections = this.ast.root.children.length
+        const numTopLevelMembers = this.ast.root.members.size
+
+        if (numTopLevelMembers > 0) {
+            this.errorHandler!.pushOrBail(
+                undefined,
+                'Syntax-Error',
+                'Top-level members are not allowed in strict mode.',
+                'Members were found outside the single required explicit top-level section.',
+                'Move all top-level members into the explicit top-level section, or parse the document in lenient mode.',
+            )
+        }
+
+        // Exactly one explicit top-level section in strict mode.
+        if (numTopLevelSections !== 1) {
+            this.errorHandler!.pushOrBail(
+                undefined,
+                'Syntax-Error',
+                'Strict mode requires exactly one explicit top-level section.',
+                `Found ${numTopLevelSections} explicit top-level section${numTopLevelSections === 1 ? '' : 's'}.`,
+                'Wrap the document in exactly one explicit top-level section and nest any additional sections beneath it.',
+            )
+        }
+    }
+
     private hasDefinedSectionTitle = (keyPath: string): boolean => {
         return this.mapSectionNamePaths?.has(keyPath)
     }
@@ -478,6 +506,9 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     // Public entry
     public buildAST(ctx: YiniContext): IYiniAST {
         this.visitYini?.(ctx)
+
+        // Strict-mode structural validation.
+        this.validateStrictTopLevelStructure()
 
         // The document terminator is optional by default.
         // If the option `isRequireDocTerminator` is set to true,

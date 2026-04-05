@@ -5,6 +5,7 @@
  * fit in earlier groups.
  */
 
+// tests/smoke/F-final-and-misc-smoke.test.ts
 import { execSync } from 'child_process'
 import path from 'path'
 import YINI, { PreferredFailLevel } from '../../src'

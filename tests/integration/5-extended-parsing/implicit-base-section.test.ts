@@ -196,7 +196,7 @@ describe('Implicit base section tests', () => {
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(yini, { strictMode: true })
+            YINI.parse(yini, { strictMode: true, throwOnError: true })
         }).toThrow()
     })
 
@@ -204,23 +204,29 @@ describe('Implicit base section tests', () => {
         // Arrange.
         const yini = `
             ^ App
-            title = "Hello"
+                ^^ Main
+                title = "Hello"
 
-            ^ Server
-            host = "localhost"
-        `
+                ^^ Server
+                host = "localhost"
+            `
 
         const expected = {
             App: {
-                title: 'Hello',
-            },
-            Server: {
-                host: 'localhost',
+                Main: {
+                    title: 'Hello',
+                },
+                Server: {
+                    host: 'localhost',
+                },
             },
         }
 
         // Act.
-        const result = YINI.parse(yini, { strictMode: true })
+        const result = YINI.parse(yini, {
+            strictMode: true,
+            throwOnError: true,
+        })
         debugPrint('result:')
         debugPrint(result)
 
