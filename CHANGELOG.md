@@ -1,12 +1,13 @@
 # CHANGELOG
 
 ## 1.4.3 + UPDATES - 2026 Apr xxx
-- **Improved:** Refined the public parser API by fixing `throwOnError` option detection, clarifying option behavior in the documentation, and standardizing parameter naming.
-- **Fixed:** Corrected `throwOnError` and fail-level interaction so parse errors throw consistently when configured.
-- **Improved:** Tightened handling of empty values and explicit `null`, with clearer lenient vs. strict behavior.
-- **Added:** Expanded validation and tests for section headers, including shorthand markers, backticked names, and rejection of invalid dotted section names.
-- **Improved:** Refined handling of members outside explicit sections in lenient mode and added stricter validation of top-level structure in strict mode.
-- **Expanded:** Significantly improved integration and smoke test coverage for error recovery, throw behavior, null handling, fixture parsing, and section/header edge cases.
+- **Improved:** Refined how members outside explicit sections are handled in lenient mode, and added stricter checks for top-level structure in strict mode.
+- **Added:** By default, strict mode requires exactly one explicit top-level section.
+- **Improved:** Clarified and tightened how empty values and explicit `null` are handled in lenient and strict mode.
+- **Improved:** Fixed `throwOnError` option detection, clarified the related documentation, and cleaned up public parameter names.
+- **Fixed:** Made `throwOnError` work consistently together with the selected fail level.
+- **Added:** Expanded validation and tests for section headers, including shorthand markers, backticked names, and invalid dotted section names.
+- **Expanded:** Improved integration and smoke test coverage for error recovery, throw behavior, null handling, fixture parsing, and section/header edge cases.
 - **Updated:** Added and validated a new large smoke/golden fixture:
   - `tests/fixtures/smoke-fixtures/c-industrial-monitoring-and-automation-platform.smoke.yini`
 - **Improved:** Fixed and re-enabled previously skipped smoke tests:
