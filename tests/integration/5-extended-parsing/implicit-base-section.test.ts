@@ -21,11 +21,11 @@ describe('Implicit base section tests', () => {
         `
 
         const expected = {
-            base: {
-                name: 'Demo App',
-                port: 8080,
-                darkMode: true,
-            },
+            // base: {
+            name: 'Demo App',
+            port: 8080,
+            darkMode: true,
+            // },
         }
 
         // Act.
@@ -45,10 +45,10 @@ describe('Implicit base section tests', () => {
         `
 
         const expected = {
-            base: {
-                CacheFolder: null,
-                CacheFolder2: null,
-            },
+            // base: {
+            CacheFolder: null,
+            CacheFolder2: null,
+            // },
         }
 
         // Act.
@@ -102,10 +102,10 @@ describe('Implicit base section tests', () => {
         `
 
         const expected = {
-            base: {
-                name: 'Demo App',
-                port: 8080,
-            },
+            // base: {
+            name: 'Demo App',
+            port: 8080,
+            // },
             App: {
                 title: 'Hello',
             },
@@ -136,9 +136,9 @@ describe('Implicit base section tests', () => {
         `
 
         const expected = {
-            base: {
-                name: 'Demo App',
-            },
+            // base: {
+            name: 'Demo App',
+            // },
             App: {
                 version: '1.0.0',
                 Features: {
@@ -237,13 +237,13 @@ describe('Implicit base section tests', () => {
         `
 
         const expected = {
-            base: {
-                items: [1, 2, 3],
-                settings: {
-                    enabled: true,
-                    retries: 3,
-                },
+            // base: {
+            items: [1, 2, 3],
+            settings: {
+                enabled: true,
+                retries: 3,
             },
+            // },
         }
 
         // Act.
