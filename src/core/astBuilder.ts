@@ -11,7 +11,6 @@ import {
     Bad_memberContext,
     Bad_meta_textContext,
     Boolean_literalContext,
-    Colon_list_declContext,
     DirectiveContext,
     ElementsContext,
     EolContext,
@@ -33,7 +32,6 @@ import {
 } from '../grammar/generated/YiniParser.js'
 import YiniParserVisitor from '../grammar/generated/YiniParserVisitor'
 import { extractYiniLine } from '../parsers/extractSignificantYiniLine'
-import parseBooleanLiteral from '../parsers/parseBoolean'
 import parseBoolean from '../parsers/parseBoolean'
 import parseNullLiteral from '../parsers/parseNull'
 import parseNumberLiteral from '../parsers/parseNumber'
@@ -269,6 +267,34 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
 
     // --- Private helper methods --------------------------------
 
+    private validateStrictTopLevelStructure() {
+        if (!this.isStrict) return
+
+        const numTopLevelSections = this.ast.root.children.length
+        const numTopLevelMembers = this.ast.root.members.size
+
+        if (numTopLevelMembers > 0) {
+            this.errorHandler!.pushOrBail(
+                undefined,
+                'Syntax-Error',
+                'Top-level members are not allowed in strict mode.',
+                'Members were found outside the single required explicit top-level section.',
+                'Move all top-level members into the explicit top-level section, or parse the document in lenient mode.',
+            )
+        }
+
+        // Exactly one explicit top-level section in strict mode.
+        if (numTopLevelSections !== 1) {
+            this.errorHandler!.pushOrBail(
+                undefined,
+                'Syntax-Error',
+                'Strict mode requires exactly one explicit top-level section.',
+                `Found ${numTopLevelSections} explicit top-level section${numTopLevelSections === 1 ? '' : 's'}.`,
+                'Wrap the document in exactly one explicit top-level section and nest any additional sections beneath it.',
+            )
+        }
+    }
+
     private hasDefinedSectionTitle = (keyPath: string): boolean => {
         return this.mapSectionNamePaths?.has(keyPath)
     }
@@ -481,6 +507,9 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     public buildAST(ctx: YiniContext): IYiniAST {
         this.visitYini?.(ctx)
 
+        // Strict-mode structural validation.
+        this.validateStrictTopLevelStructure()
+
         // The document terminator is optional by default.
         // If the option `isRequireDocTerminator` is set to true,
         // the '/END' terminator at the end of the document becomes required.
@@ -607,17 +636,20 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         const child: any = ctx.getChild(0)
         const ruleName = child?.constructor?.name ?? ''
 
+        // debugPrint('S0')
+        // const badHeaderWDotName = ctx.BAD_SECTION_HEAD_W_DOT_NAME()?.getText()
+        // if (badHeaderWDotName) {
+        //     console.log('QQQQQQQQ = ' + badHeaderWDotName)
+        // }
+
         if (ruleName.includes('EolContext')) return this.visitEol?.(child)
         if (ruleName.includes('AssignmentContext'))
             return this.visitAssignment?.(child)
-        if (ruleName.includes('Colon_list_declContext'))
-            return this.visitColon_list_decl?.(child)
         if (ruleName.includes('Meta_stmtContext'))
             return this.visitMeta_stmt?.(child)
 
         debugPrint('S1')
-        // let headerAlt = child.getText?.() ?? ''
-        // let header = ctx.SECTION_HEAD()?.getText().trim() || ''
+
         let header = ctx.SECTION_HEAD()?.getText().trim() || ''
         // debugPrint('S2, lineAlt: >>>' + lineAlt + '<<<')
         debugPrint('S2, header: >>>' + header + '<<<')
@@ -1239,8 +1271,14 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     // visitNull_literal?: (ctx: Null_literalContext) => Result
     visitNull_literal = (ctx: Null_literalContext): any => {
         debugPrint('-> Entered visitNull_literal(..)')
-        debugPrint('raw = ' + ctx.getText())
-        return makeScalarValue('Null', null, 'Explicit Null')
+        // debugPrint('raw = ' + ctx.getText())
+        // return makeScalarValue('Null', null, 'Explicit Null')
+        const raw = ctx.getText()
+        debugPrint('raw:    "' + raw + '"')
+        const parsed = parseNullLiteral(raw)
+        debugPrint('parsed: "' + parsed + '"')
+        // Case-insensitive true/false/on/off/yes/no (Spec section, 8.1).
+        return makeScalarValue('Null', parsed, 'Explicit Null')
     }
 
     /**
@@ -1337,7 +1375,8 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         debugPrint('-> Entered visitObject_members(..)')
         debugPrint('entries.length = ' + ctx?.object_member_list().length)
 
-        const entries: Array<{ k: string; v: TValueLiteral }> = []
+        // const entries: Array<{ k: string; v: TValueLiteral }> = []
+        const entries: Record<string, TValueLiteral> = {}
         ctx.object_member_list().forEach((member) => {
             const { key, value }: any = this.visitObject_member(member)
             debugPrint('   key = ' + key)
@@ -1363,7 +1402,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         const rawValue = ctx.value().getText()
         const valueNode: TValueLiteral = ctx.value()
             ? this.visitValue(ctx.value())
-            : makeScalarValue('Null', 'Implicit Null')
+            : makeScalarValue('Null', null, 'Implicit Null')
 
         debugPrint('  rawKey = ' + rawKey)
         debugPrint('     key = ' + key)
@@ -1389,39 +1428,35 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     }
 
     /**
-     * Visit a parse tree produced by `YiniParser.colon_list_decl`.
-     * @param ctx the parse tree
-     * @grammarRule KEY WS? COLON (eol | WS+)* elements (eol | WS+)* eol
-     * @return the visitor result
+     * @note Colon list not supported any more since YINI Spec Package v1.0.0.rc4
      */
-    // visitColon_list_decl?: (ctx: ListAfterColonContext) => Result
-    visitColon_list_decl = (ctx: Colon_list_declContext): any => {
-        debugPrint('-> Entered visitColon_list_decl(..)')
+    // visitColon_list_decl = (ctx: Colon_list_declContext): any => {
+    //     debugPrint('-> Entered visitColon_list_decl(..)')
 
-        const key = ctx.getChild(0).getText()
-        debugPrint(`visitColon_list_decl(..): key = '${key}'`)
+    //     const key = ctx.getChild(0).getText()
+    //     debugPrint(`visitColon_list_decl(..): key = '${key}'`)
 
-        const elems = this.visitElements(ctx.elements())
-        const value = makeListValue(elems, 'From colon-list')
-        const current = this.sectionStack[this.sectionStack.length - 1]
+    //     const elems = this.visitElements(ctx.elements())
+    //     const value = makeListValue(elems, 'From colon-list')
+    //     const current = this.sectionStack[this.sectionStack.length - 1]
 
-        // putMember(current, key, list, this.ast, this.onDuplicateKey)
-        this.putMember(
-            this.errorHandler!,
-            ctx,
-            current,
-            key,
-            value,
-            // this.ast,
-            this.onDuplicateKey,
-        )
-        debugPrint('<- About to exit visitColon_list_decl(..)...')
-        if (isDebug()) {
-            console.log('List literal: (from a Colon-list)')
-            printObject(value)
-        }
-        return value
-    }
+    //     // putMember(current, key, list, this.ast, this.onDuplicateKey)
+    //     this.putMember(
+    //         this.errorHandler!,
+    //         ctx,
+    //         current,
+    //         key,
+    //         value,
+    //         // this.ast,
+    //         this.onDuplicateKey,
+    //     )
+    //     debugPrint('<- About to exit visitColon_list_decl(..)...')
+    //     if (isDebug()) {
+    //         console.log('List literal: (from a Colon-list)')
+    //         printObject(value)
+    //     }
+    //     return value
+    // }
 
     /**
      * Visit a parse tree produced by `YiniParser.string_concat`.

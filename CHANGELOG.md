@@ -1,7 +1,20 @@
 # CHANGELOG
 
+## 1.4.3 + UPDATES - 2026 Apr xxx
+- **Improved:** Refined the public parser API by fixing `throwOnError` option detection, clarifying option behavior in the documentation, and standardizing parameter naming.
+- **Fixed:** Corrected `throwOnError` and fail-level interaction so parse errors throw consistently when configured.
+- **Improved:** Tightened handling of empty values and explicit `null`, with clearer lenient vs. strict behavior.
+- **Added:** Expanded validation and tests for section headers, including shorthand markers, backticked names, and rejection of invalid dotted section names.
+- **Improved:** Refined handling of members outside explicit sections in lenient mode and added stricter validation of top-level structure in strict mode.
+- **Expanded:** Significantly improved integration and smoke test coverage for error recovery, throw behavior, null handling, fixture parsing, and section/header edge cases.
+- **Updated:** Added and validated a new large smoke/golden fixture:
+  - `tests/fixtures/smoke-fixtures/c-industrial-monitoring-and-automation-platform.smoke.yini`
+- **Improved:** Fixed and re-enabled previously skipped smoke tests:
+  - `tests/fixtures/smoke-fixtures/8-api-keys-integration.smoke.yini`
+  - `tests/fixtures/smoke-fixtures/9-app-preferences.smoke.yini`
+
 ## 1.4.3 - 2026 Apr
-- **Promoted** YINI Parser TypeScript is now considered stable (non-beta) after iterative beta releases and refinements.
+- **Promoted:** YINI Parser TypeScript is now considered stable (non-beta) after iterative beta releases and refinements.
 - **Fixed:** Rebuilt the project and reduced reported vulnerabilities from 4 to 0.
   
 ## 1.4.3-beta - 2026 Mar

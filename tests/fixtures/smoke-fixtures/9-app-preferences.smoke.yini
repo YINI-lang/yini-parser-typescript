@@ -1,7 +1,9 @@
 /*
 
 Features:
-  - No (explicit) section
+  - No (explicit) section => everything under "base"
+      | In lenient mode, if members appear outside any explicit section, they
+      | are exposed under an implicit section named base in the parsed result.
   - Lists (bracketed and colon)
   - Strings, booleans, numbers
   - File paths (with \)
@@ -17,8 +19,9 @@ RecentFiles = [
   "\home\user\docs\report.docx",
   "\home\user\docs\notes.txt",
 ]
-FileFilters: "*.docx", "*.txt", "*.md"    # This is a colon list.
+FileFilters = ["*.docx", "*.txt", "*.md"]
 CacheFolder = Null
+CacheFolder2 =    // NOTE: Empty values are allowed in lenient mode and disallowed in strict mode.
 
 ; Backup Preferences
 Backup = True

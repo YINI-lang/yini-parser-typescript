@@ -13,9 +13,9 @@ import { debugPrint, devPrint, printObject } from './utils/print'
 const DEFAULT_TAB_SIZE = 4 // De facto "modern default" (even though traditionally/historically it's 8).
 
 /**
- * This class is the public API, which exposes only parse(..) and
- * parseFile(..), rest of the implementation details are hidden.
- * @note Only parse and parseFile are public.
+ * This class is the main public API. It exposes `parse(..)` and `parseFile(..)`
+ * as the primary entry points, while the implementation details remain internal.
+ * @note The public parsing API is exposed through `parse(..)` and `parseFile(..)`.
  */
 export default class YINI {
     // @todo In future move/change this to not be a global and suffer from possible race conditions, possibly move this into YiniRuntime class.
@@ -114,16 +114,14 @@ export default class YINI {
      *   Does not affect warnings included in returned metadata.
      * @param options.requireDocTerminator - Controls whether a document terminator is required.
      *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
-     * @param options.silent - Suppress all output (even errors, exit code only).
+     * @param options.silent - Suppress all console output, including errors and warnings.
      * @param options.strictMode - Sets the baseline ruleset (true = strict, false = lenient).
      *   This is only a starting point: rule-specific options (e.g., `treatEmptyValueAsNull`,
      *   `onDuplicateKey`, etc.) can override parts of that ruleset. If any overrides are given,
      *   the effective mode becomes **custom** rather than purely strict/lenient.
      * @param options.treatEmptyValueAsNull - How to treat an explicitly empty value on the
      *   right-hand side of '='. Allowed values: `'allow'` | `'allow-with-warning'` | `'disallow'`.
-     * @param options.throwOnError - Will throw on first parse error encountered.
-     * NOTE: Current default is `true`. The default will change to `false` in the next
-     * release. To avoid breaking changes, set this option explicitly.
+     * @param options.throwOnError - Throw when a parse issue reaches the active bail threshold (for example, on errors if `failLevel = 'errors'`).
      *
      * @returns {ParsedObject | YiniParseResult} The parsed YINI content.
      *
@@ -195,7 +193,7 @@ export default class YINI {
     /**
      * Parse a YINI file into a JavaScript object.
      *
-     * @param yiniFile           Path to the YINI file.
+     * @param filePath           Path to the YINI file.
      * @param strictMode         If `true`, enforce strict parsing rules (e.g. require `/END`, disallow trailing commas).
      * @param failLevel          Preferred bail sensitivity level, controls if and when parsing should stop on problems:
      *   - `'auto'` (default)      : Auto‑select level (strict → `'errors'`, lenient → `'ignore-errors'`)
@@ -237,7 +235,7 @@ export default class YINI {
     /**
      * Parse a YINI file into a JavaScript object, using an options object for configuration.
      *
-     * @param yiniFile Path to the YINI file.
+     * @param filePath Path to the YINI file.
      * @param options Optional settings to customize parsing and/or results, useful if you need more control.
      *        For all options, see types/ParseOptions.
      *
@@ -261,16 +259,14 @@ export default class YINI {
      *   Does not affect warnings included in returned metadata.
      * @param options.requireDocTerminator - Controls whether a document terminator is required.
      *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
-     * @param options.silent - Suppress all output (even errors, exit code only).
+     * @param options.silent - Suppress all console output, including errors and warnings.
      * @param options.strictMode - Sets the baseline ruleset (true = strict, false = lenient).
      *   This is only a starting point: rule-specific options (e.g., `treatEmptyValueAsNull`,
      *   `onDuplicateKey`, etc.) can override parts of that ruleset. If any overrides are given,
      *   the effective mode becomes **custom** rather than purely strict/lenient.
      * @param options.treatEmptyValueAsNull - How to treat an explicitly empty value on the
      *   right-hand side of '='. Allowed values: `'allow'` | `'allow-with-warning'` | `'disallow'`.
-     * @param options.throwOnError - Will throw on first parse error encountered.
-     * NOTE: Current default is `true`. The default will change to `false` in the next
-     * release. To avoid breaking changes, set this option explicitly.
+     * @param options.throwOnError - Throw when a parse issue reaches the active bail threshold (for example, on errors if `failLevel = 'errors'`).
      *
      * @returns {ParsedObject | YiniParseResult} The parsed YINI content.
      *

@@ -120,7 +120,7 @@ describe('Parse-File Smoke Tests:', () => {
         //@todo Add tests for the other literal as well.
     })
 
-    xtest('Parse file "8-api-keys-integration.*".', () => {
+    test('Parse file "8-api-keys-integration.*".', () => {
         // Arrange.
         const fileName = '8-api-keys-integration.smoke.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -134,7 +134,7 @@ describe('Parse-File Smoke Tests:', () => {
         //@todo Add tests for the other literal as well.
     })
 
-    xtest('Parse file "9-app-preferences.*".', () => {
+    test('Parse file "9-app-preferences.*".', () => {
         // Arrange.
         const fileName = '9-app-preferences.smoke.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -144,11 +144,11 @@ describe('Parse-File Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        expect(result.base.CacheFolder).toEqual(null)
-        //@todo Add tests for the other literal as well.
+        // expect(result.base.CacheFolder).toEqual(null)
+        expect(result.CacheFolder).toEqual(null)
     })
 
-    xtest('Parse file "10-logging-monitoring.*".', () => {
+    test('Parse file "10-logging-monitoring.*".', () => {
         // Arrange.
         const fileName = '10-logging-monitoring.smoke.yini'
         const fullPath = path.join(baseDir, fileName)
@@ -158,8 +158,8 @@ describe('Parse-File Smoke Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        expect(result.base.Alerts.slack_webhook).toEqual(null)
-        //@todo Add tests for the other literal as well.
+        // expect(result.base.Alerts.slack_webhook).toEqual(null)
+        expect(result.Alerts.slack_webhook).toEqual(null)
     })
 
     test('Parse file "11-system-config.*".', () => {

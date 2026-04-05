@@ -13,11 +13,11 @@ Features:
 */
 
 ^ Integrations
-google = { api_key = "AIzaSy...", enabled = true }	# Google
-stripe = { secret = "sk_test_...", enabled = false }	# Stripe
-github = { token = null, enabled = false }		# GitHub
+google = { api_key: "AIzaSy...", enabled: true }	# Google
+stripe = { secret: "sk_test_...", enabled: false }	# Stripe
+github = { token: null, enabled: false }		# GitHub
 
 ^ Webhooks
 enabled = true
---urls: "https://oldwebhook.site/abc123", "https://hooks.example.com/events"  // OLD webhook!
-urls: "https://webhook.site/abc123", "https://hooks.example.com/events"
+--urls: "https://oldwebhook.site/abc123", "https://hooks.example.com/events"  // INCORRECT syntax!
+urls = ["https://webhook.site/abc123", "https://hooks.example.com/events"]

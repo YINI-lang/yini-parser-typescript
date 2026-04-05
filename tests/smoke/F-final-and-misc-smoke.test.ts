@@ -1,46 +1,27 @@
 /**
- * Final & Miscellaneous/Complementary Smoke Tests.
+ * Final & miscellaneous smoke tests.
  *
- * Last round of smoke tests, including any "miscellaneous" / "complementary" cases that does not
- * fit in earlier groups.
+ * Covers smaller inline parsing cases, metadata checks, diagnostics,
+ * duplicate section detection, and fail-level behavior.
  */
 
+// tests/smoke/F-final-and-misc-smoke.test.ts
 import { execSync } from 'child_process'
-import path from 'path'
 import YINI, { PreferredFailLevel } from '../../src'
 import { debugPrint, toPrettyJSON } from '../../src/utils/print'
-import correctAnswerA from '../fixtures/smoke-fixtures/a-corporate-saas-platform.smoke.json'
-import correctAnswerB from '../fixtures/smoke-fixtures/b-high-security-distributed-control-system.smoke.json'
 import { parseUntilError } from '../test-helpers'
 
-const IS_LOCAL_DEBUG = false
-
-const DIR_OF_FIXTURES = '../fixtures/smoke-fixtures'
-
-// @ts-ignore
-// import * as testCJS from '../fixtures/test-src-files/test-cjs'
-
 /**
- * Final, Miscellaneous & Complementary Smoke Tests.
+ * Final, miscellaneous & complementary smoke tests.
  */
-describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
-    // Dir with smoke fixtures.
-    const baseDir = path.join(__dirname, DIR_OF_FIXTURES)
-
-    beforeAll(() => {})
-
-    test('F-1.a) Parsing inline, in default lenient mode, with correct object.', () => {
+describe('Final, miscellaneous & complementary smoke tests', () => {
+    test('F-1.a) Should parse a simple inline document in lenient mode.', () => {
         // Arrange.
         const validYini = `^ App
             title = 'My App Title'
             items = 25
             isDarkTheme = true`
 
-        // Act.
-        const result = parseUntilError(validYini)
-        debugPrint(result)
-
-        // Assert.
         const answer = {
             App: {
                 title: 'My App Title',
@@ -48,11 +29,16 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                 isDarkTheme: true,
             },
         }
+
+        // Act.
+        const result = parseUntilError(validYini)
+
+        // Assert.
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(answer))
         expect(result.meta).toEqual(undefined)
     })
 
-    test('F-1.b) Parsing inline, in default lenient mode, with correct object.', () => {
+    test('F-1.b) Should parse a simple inline document in strict mode with metadata.', () => {
         // Arrange.
         const validYini = `^ App
             title = 'My App Title'
@@ -60,11 +46,6 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
             isDarkTheme = true
             /END`
 
-        // Act.
-        const metaResult = parseUntilError(validYini, true, true)
-        debugPrint(metaResult)
-
-        // Assert.
         const answer = {
             App: {
                 title: 'My App Title',
@@ -72,6 +53,11 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                 isDarkTheme: true,
             },
         }
+
+        // Act.
+        const metaResult = parseUntilError(validYini, true, true)
+
+        // Assert.
         expect(toPrettyJSON(metaResult.result)).toEqual(toPrettyJSON(answer))
         expect(metaResult.meta.mode).toEqual('strict')
         expect(metaResult.meta.source.hasDocumentTerminator).toEqual(true)
@@ -81,7 +67,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         expect(metaResult.meta.structure.memberCount).toEqual(3)
     })
 
-    test('F-2. Parsing inline, and returning with metadata, with correct object.', () => {
+    test('F-2) Should parse inline YINI and return metadata in lenient mode.', () => {
         // Arrange.
         const validYini = `
 
@@ -92,13 +78,9 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
 
             ^ Database
             host = 'localhost'
-            port = 5432    
+            port = 5432
         `
-        // Act.
-        const metaResult = parseUntilError(validYini, false, true)
-        debugPrint(metaResult)
 
-        // Assert.
         const answer = {
             General: {
                 title: 'My Prog Title',
@@ -110,6 +92,11 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                 port: 5432,
             },
         }
+
+        // Act.
+        const metaResult = parseUntilError(validYini, false, true)
+
+        // Assert.
         expect(toPrettyJSON(metaResult.result)).toEqual(toPrettyJSON(answer))
         expect(metaResult.meta.mode).toEqual('lenient')
         expect(metaResult.meta.source.hasDocumentTerminator).toEqual(false)
@@ -119,7 +106,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         expect(metaResult.meta.structure.memberCount).toEqual(5)
     })
 
-    test('F-3. Parsing inline in strict mode + has all commenting styles, returning with metadata, should return correct object.', () => {
+    test('F-3) Should parse a strict inline document with comments and nested sections.', () => {
         // Arrange.
         const validYini = `
             /*
@@ -157,11 +144,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
             
             /END
         `
-        // Act.
-        const metaResult = parseUntilError(validYini, true, true)
-        debugPrint(metaResult)
 
-        // Assert.
         const answer = {
             App: {
                 name: 'Nested Example',
@@ -189,6 +172,11 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                 },
             },
         }
+
+        // Act.
+        const metaResult = parseUntilError(validYini, true, true)
+
+        // Assert.
         expect(toPrettyJSON(metaResult.result)).toEqual(toPrettyJSON(answer))
         expect(metaResult.meta.mode).toEqual('strict')
         expect(metaResult.meta.source.hasDocumentTerminator).toEqual(true)
@@ -198,7 +186,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         expect(metaResult.meta.structure.memberCount).toEqual(14)
     })
 
-    test('F-4. Parsing inline, but should throw error due to bad use of #.', () => {
+    test('F-4) Should throw on invalid inline # comment usage.', () => {
         // Arrange.
         const invalidYini = `^ App
             title = 'My App Title'
@@ -212,265 +200,25 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         }).toThrow()
     })
 
-    test('F-5.a) Parse & match YINI against JSON: a-corporate-saas-platform.', () => {
+    test('F-5) Should return diagnostics metadata for a defect file with ignore-errors.', () => {
         // Arrange.
-        const fileName = 'a-corporate-saas-platform.smoke.yini'
-        const fullPath = path.join(baseDir, fileName)
-
-        // Act.
-        const resultA = YINI.parseFile(fullPath)
-        IS_LOCAL_DEBUG && console.log('fullPath = ' + fullPath)
-        IS_LOCAL_DEBUG && console.log('resultA:')
-        IS_LOCAL_DEBUG && console.log(toPrettyJSON(resultA))
-
-        // Assert.
-        expect(toPrettyJSON(resultA)).not.toEqual(toPrettyJSON(correctAnswerB))
-        expect(toPrettyJSON(resultA)).toEqual(toPrettyJSON(correctAnswerA))
-    })
-
-    test('F-5.b) Parse & match YINI against JSON (strict): a-corporate-saas-platform.', () => {
-        // Arrange.
-        const fileName = 'a-corporate-saas-platform.smoke.yini'
-        const fullPath = path.join(baseDir, fileName)
-
-        // Act.
-        const resultA = YINI.parseFile(fullPath, { strictMode: true })
-        IS_LOCAL_DEBUG && console.log('fullPath = ' + fullPath)
-        IS_LOCAL_DEBUG && console.log('resultA:')
-        IS_LOCAL_DEBUG && console.log(toPrettyJSON(resultA))
-
-        // Assert.
-        expect(toPrettyJSON(resultA)).not.toEqual(toPrettyJSON(correctAnswerB))
-        expect(toPrettyJSON(resultA)).toEqual(toPrettyJSON(correctAnswerA))
-    })
-
-    test('F-5.c) Parse & match YINI against JSON (strict+meta): a-corporate-saas-platform.', () => {
-        // Arrange.
-        const fileName = 'a-corporate-saas-platform.smoke.yini'
-        const fullPath = path.join(baseDir, fileName)
-
-        // Act.
-        const resultA = YINI.parseFile(fullPath, {
-            strictMode: true,
-            includeMetadata: true,
-        })
-        IS_LOCAL_DEBUG && console.log('fullPath = ' + fullPath)
-        IS_LOCAL_DEBUG && console.log('resultA:')
-        IS_LOCAL_DEBUG && console.log(toPrettyJSON(resultA))
-
-        // Assert.
-        expect(toPrettyJSON(resultA)).not.toEqual(toPrettyJSON(correctAnswerB))
-        expect(toPrettyJSON(resultA)).not.toEqual(toPrettyJSON(correctAnswerA))
-
-        expect(resultA.meta.source.lineCount).toEqual(128)
-        expect(toPrettyJSON(resultA.result)).toEqual(
-            toPrettyJSON(correctAnswerA),
-        )
-    })
-
-    test('F-5.d) Parse & check YINI returns metadata: a-corporate-saas-platform.', () => {
-        // Arrange.
-        const fileName = 'a-corporate-saas-platform.smoke.yini'
-        const fullPath = path.join(baseDir, fileName)
-
-        // Act.
-        const resultA = YINI.parseFile(fullPath, {
-            strictMode: true,
-            includeMetadata: true,
-        })
-        IS_LOCAL_DEBUG && console.log('fullPath = ' + fullPath)
-        IS_LOCAL_DEBUG && console.log('resultA:')
-        IS_LOCAL_DEBUG && console.log(toPrettyJSON(resultA))
-
-        // Assert.
-        expect(resultA.meta.mode).toEqual('strict')
-        expect(resultA.meta.totalErrors).toEqual(0)
-        expect(resultA.meta.preservesOrder).toEqual(true)
-        expect(resultA.meta.source).not.toEqual(undefined)
-        expect(resultA.meta.structure).not.toEqual(undefined)
-        expect(resultA.meta.metaSchemaVersion).toEqual('1.1.1')
-    })
-
-    test('F-6.a) Parse & match YINI against JSON: b-high-security-distributed-control-system.', () => {
-        // Arrange.
-        const fileName = 'b-high-security-distributed-control-system.smoke.yini'
-        const fullPath = path.join(baseDir, fileName)
-
-        // Act.
-        const resultB = YINI.parseFile(fullPath)
-        IS_LOCAL_DEBUG && console.log('fullPath = ' + fullPath)
-        IS_LOCAL_DEBUG && console.log('resultB:')
-        IS_LOCAL_DEBUG && console.log(toPrettyJSON(resultB))
-
-        // Assert.
-        expect(toPrettyJSON(resultB)).not.toEqual(toPrettyJSON(correctAnswerA))
-        expect(toPrettyJSON(resultB)).toEqual(toPrettyJSON(correctAnswerB))
-    })
-
-    test('F-6.b) Parse & match YINI against JSON (strict): b-high-security-distributed-control-system.', () => {
-        // Arrange.
-        const fileName = 'b-high-security-distributed-control-system.smoke.yini'
-        const fullPath = path.join(baseDir, fileName)
-
-        // Act.
-        const resultB = YINI.parseFile(fullPath, { strictMode: true })
-        IS_LOCAL_DEBUG && console.log('fullPath = ' + fullPath)
-        IS_LOCAL_DEBUG && console.log('resultB:')
-        IS_LOCAL_DEBUG && console.log(toPrettyJSON(resultB))
-
-        // Assert.
-        expect(toPrettyJSON(resultB)).not.toEqual(toPrettyJSON(correctAnswerA))
-        expect(toPrettyJSON(resultB)).toEqual(toPrettyJSON(correctAnswerB))
-    })
-
-    test('F-6.c) Parse & match YINI against JSON (strict+meta): b-high-security-distributed-control-system.', () => {
-        // Arrange.
-        const fileName = 'b-high-security-distributed-control-system.smoke.yini'
-        const fullPath = path.join(baseDir, fileName)
-
-        // Act.
-        const resultB = YINI.parseFile(fullPath, {
-            strictMode: true,
-            includeMetadata: true,
-        })
-        IS_LOCAL_DEBUG && console.log('fullPath = ' + fullPath)
-        IS_LOCAL_DEBUG && console.log('resultB:')
-        IS_LOCAL_DEBUG && console.log(toPrettyJSON(resultB))
-
-        // Assert.
-        expect(toPrettyJSON(resultB)).not.toEqual(toPrettyJSON(correctAnswerA))
-        expect(toPrettyJSON(resultB)).not.toEqual(toPrettyJSON(correctAnswerB))
-
-        expect(resultB.meta.source.lineCount).toEqual(222)
-        expect(toPrettyJSON(resultB.result)).toEqual(
-            toPrettyJSON(correctAnswerB),
-        )
-    })
-
-    test('F-6.d) Parse & check YINI returns metadata: b-high-security-distributed-control-system.', () => {
-        // Arrange.
-        const fileName = 'b-high-security-distributed-control-system.smoke.yini'
-        const fullPath = path.join(baseDir, fileName)
-
-        // Act.
-        const resultB = YINI.parseFile(fullPath, {
-            strictMode: true,
-            includeMetadata: true,
-        })
-        IS_LOCAL_DEBUG && console.log('fullPath = ' + fullPath)
-        IS_LOCAL_DEBUG && console.log('resultB:')
-        IS_LOCAL_DEBUG && console.log(toPrettyJSON(resultB))
-
-        // Assert.
-        expect(resultB.meta.mode).toEqual('strict')
-        expect(resultB.meta.totalErrors).toEqual(0)
-        expect(resultB.meta.preservesOrder).toEqual(true)
-        expect(resultB.meta.source).not.toEqual(undefined)
-        expect(resultB.meta.structure).not.toEqual(undefined)
-        expect(resultB.meta.metaSchemaVersion).toEqual('1.1.1')
-    })
-
-    test('F-7. Parse & match YINI metadata with JS-object: b-high-security-distributed-control-system.', () => {
-        // Arrange.
-        const fileName = 'b-high-security-distributed-control-system.smoke.yini'
-        const fullPath = path.join(baseDir, fileName)
-
-        // Act.
-        const resultB = YINI.parseFile(fullPath, {
-            strictMode: true,
-            includeMetadata: true,
-            includeDiagnostics: false,
-        })
-        IS_LOCAL_DEBUG && console.log('fullPath = ' + fullPath)
-        IS_LOCAL_DEBUG && console.log('resultB:')
-        IS_LOCAL_DEBUG && console.log(toPrettyJSON(resultB))
-
-        // Assert.
-        const correctMetaB = {
-            parserVersion: '####',
-            mode: 'strict',
-            totalErrors: 0,
-            totalWarnings: 1,
-            totalMessages: 1,
-            runStartedAt: '####',
-            runFinishedAt: '####',
-            durationMs: -1,
-            preservesOrder: true,
-            orderGuarantee: 'implementation-defined',
-            source: {
-                sourceType: 'file',
-                fileName: '####',
-                hasDocumentTerminator: false,
-                hasYiniMarker: true,
-                lineCount: 222,
-                byteSize: -1,
-                sha256: '####',
+        const result = YINI.parseFile(
+            'tests/fixtures/invalid/defectConfig2Combo3.yini',
+            {
+                strictMode: true,
+                failLevel: 'ignore-errors',
+                includeMetadata: true,
+                includeDiagnostics: true,
             },
-            structure: {
-                maxDepth: 4,
-                sectionCount: 22,
-                memberCount: 68,
-                keysParsedCount: null,
-                sectionNamePaths: [
-                    'App',
-                    'App.Features',
-                    'App.Limits',
-                    'App.Database',
-                    'App.Database.Credentials',
-                    'App.API',
-                    'App.API.Auth',
-                    'App.API.Auth.Clients',
-                    'Logging',
-                    'Logging.File',
-                    'Logging.Metrics',
-                    'Services',
-                    'Services.Email',
-                    'Services.Email.Credentials',
-                    'Services.Cache',
-                    'Services.Cache.Cluster',
-                    'Services.Cache.Failover',
-                    'Observability',
-                    'Observability.Exporters',
-                    'Security',
-                    'Security.Policies',
-                    'Security.Policies.Lockout',
-                ],
-            },
-            metaSchemaVersion: '1.1.1',
-        }
-        resultB.meta.parserVersion = '####'
-        resultB.meta.runStartedAt = '####'
-        resultB.meta.runFinishedAt = '####'
-        resultB.meta.durationMs = -1
-        resultB.meta.source.fileName = '####'
-        resultB.meta.source.byteSize = -1
-        resultB.meta.source.sha256 = '####'
-        expect(toPrettyJSON(resultB.meta)).toEqual(toPrettyJSON(correctMetaB))
-    })
-
-    test('F-8. Check defect YINI produces diagnostics metadata given proper parse options.', () => {
-        // Arrange.
-        const fileName = '../invalid/defectConfig2Combo3.yini'
-        const fullPath = path.join(baseDir, fileName)
-
-        // Act.
-        const result = YINI.parseFile(fullPath, {
-            strictMode: true,
-            failLevel: 'ignore-errors',
-            includeMetadata: true,
-            includeDiagnostics: true,
-        })
-        IS_LOCAL_DEBUG && console.log('fullPath = ' + fullPath)
-        IS_LOCAL_DEBUG && console.log('resultB:')
-        IS_LOCAL_DEBUG && console.log(toPrettyJSON(result))
+        )
 
         // Assert.
         const correctMetaDiagn = {
             parserVersion: '####',
             mode: 'strict',
-            totalErrors: 5,
+            totalErrors: 6,
             totalWarnings: 1,
-            totalMessages: 6,
+            totalMessages: 7,
             runStartedAt: '####',
             runFinishedAt: '####',
             durationMs: -1,
@@ -508,7 +256,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                     levelDescription: 'Continue despite errors.',
                 },
                 errors: {
-                    errorCount: 5,
+                    errorCount: 6,
                     payload: [
                         {
                             line: 7,
@@ -526,10 +274,10 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                         },
                         {
                             line: 19,
-                            column: 9,
+                            column: 8,
                             typeKey: 'syntax_error',
                             message: 'Syntax error.',
-                            advice: "Details: extraneous input '=' expecting {'[', '{', BOOLEAN_FALSE, BOOLEAN_TRUE, NULL, '{}', '[]', NUMBER, STRING, NL, WS, INLINE_COMMENT}",
+                            advice: "Details: extraneous input ':' expecting {'=', WS}",
                         },
                         {
                             line: 7,
@@ -546,6 +294,13 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                             message: "Missing value for key 'enabled'.",
                             advice: "Expected a value after '=' but found none. Implicit nulls are disallowed by 'treatEmptyValueAsNull = disallow'.",
                             hint: "Write 'null' explicitly (enabled = null) if that is intended, or provide a concrete value.",
+                        },
+                        {
+                            typeKey: 'syntax_error',
+                            message:
+                                'Strict mode requires exactly one explicit top-level section.',
+                            advice: 'Found 3 explicit top-level sections.',
+                            hint: 'Wrap the document in exactly one explicit top-level section and nest any additional sections beneath it.',
                         },
                     ],
                 },
@@ -609,6 +364,7 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                 },
             },
         }
+
         result.meta.parserVersion = '####'
         result.meta.runStartedAt = '####'
         result.meta.runFinishedAt = '####'
@@ -618,30 +374,30 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
         result.meta.source.sha256 = '####'
         result.meta.diagnostics.environment.APP_ENV = '####'
         result.meta.diagnostics.environment.lib.appEnv = '####'
+
         expect(toPrettyJSON(result.meta)).toEqual(
             toPrettyJSON(correctMetaDiagn),
         )
     })
 
-    test('F-9.a. Should throw error if using existing section name at level 1.', () => {
+    test('F-6.a) Should throw on duplicate section name at level 1.', () => {
         // Arrange.
         const invalidYini = `
             < SubTitle
             theme = "special-dark"
             notifications = ON
 
-            < SubTitle // NOT OK, SubTitle already exists
+            < SubTitle
             theme2 = "special-dark"
         `
 
         // Act & Assert.
         expect(() => {
             parseUntilError(invalidYini)
-            debugPrint(invalidYini)
         }).toThrow()
     })
 
-    test('F-9.b. Should throw error if using existing section name at level 1.', () => {
+    test('F-6.b) Should throw on duplicate section name at level 1 with prior section.', () => {
         // Arrange.
         const invalidYini = `
             < Title
@@ -652,86 +408,76 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
             theme = "special-dark"
             notifications = ON
 
-            < SubTitle // NOT OK, SubTitle already exists
+            < SubTitle
             theme2 = "special-dark"
         `
 
         // Act & Assert.
         expect(() => {
             parseUntilError(invalidYini)
-            debugPrint(invalidYini)
         }).toThrow()
     })
 
-    test('F-9.c. Should throw error if using existing section name at level 2.', () => {
+    test('F-6.c) Should throw on duplicate section name at level 2.', () => {
         // Arrange.
         const invalidYini = `
             ^ Title
             username = 'tester three'
             isSysOp = NO
 
-                ^^  SubSection
+                ^^ SubSection
                 theme = "special-dark"
                 notifications = ON
 
-                ^^ SubSection // NOT OK, SubSection already exists
+                ^^ SubSection
                 theme2 = "special-dark"
         `
 
         // Act & Assert.
         expect(() => {
             parseUntilError(invalidYini)
-            debugPrint(invalidYini)
         }).toThrow()
     })
 
-    // Skipping dual build for cjs and esm for now
-    xtest('F-10. Has Default in CommonJS (in "dist/").', () => {
+    xtest('F-7) Has default export in CommonJS build.', () => {
         // const hasDefault = testCJS.hasDefaultInCommonJS()
         // expect(hasDefault).toEqual(true)
     })
 
-    // Skipping dual build for cjs and esm for now
-    xtest('F-11. Does import work in ESM (from "dist/esm").', () => {
+    xtest('F-8) Does import work in ESM build.', () => {
         execSync('node ./tests/fixtures/test-src-files/esm-smoke.js', {
             stdio: 'inherit',
         })
     })
 
-    test('F-20. Should throw parsing a corrupt Yini with bailSensitivity 2 = "Abort-Even-on-Warnings".', () => {
+    test('F-20) Should throw when fail level is warnings-and-errors.', () => {
         // Arrange.
         const failLevel: PreferredFailLevel = 'warnings-and-errors'
         const corruptYini = `
             ^ App
             title = 'MyAppTitle'
             items = 25
-            items = 90  // (!) Redefinition!
+            items = 90  // duplicate
             isDarkTheme = true
         `
 
         // Act & Assert.
         expect(() => {
-            const result = YINI.parse(corruptYini, false, failLevel)
-            debugPrint(corruptYini)
+            YINI.parse(corruptYini, false, failLevel)
         }).toThrow()
     })
 
-    test('F-21. Should succeed parsing a corrupt Yini with bailSensitivity 0 = "Ignore-Errors".', () => {
+    test('F-21) Should succeed when fail level is ignore-errors.', () => {
         // Arrange.
         const failLevel: PreferredFailLevel = 'ignore-errors'
         const corruptYini = `
             ^ App
             title = 'MyAppTitle'
             items = 25
-            items = 90  // (!) Redefinition!
+            items = 90  // duplicate
             isDarkTheme = true
         `
 
-        // Act.
-        const result = YINI.parse(corruptYini, false, failLevel)
-        debugPrint(result)
-
-        // Assert.
         const answer = {
             App: {
                 title: 'MyAppTitle',
@@ -739,6 +485,11 @@ describe('Final, Miscellaneous & Complementary Smoke Tests:', () => {
                 isDarkTheme: true,
             },
         }
+
+        // Act.
+        const result = YINI.parse(corruptYini, false, failLevel)
+
+        // Assert.
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(answer))
         expect(result.meta).toEqual(undefined)
     })

@@ -2,10 +2,11 @@
   Highlights:
   - Section header usage (`^ System`)
   - Inline object assignment (`config = { ... }`)
-  - Deeply nested objects (`services.web`, `services.database`)
+  - Nested inline objects (`services`, `web`, `database`)
   - Arrays of scalars (`ports`)
   - Arrays of inline objects (`routes`, `replicas`)
-  - Mixed value types: strings, numbers, booleans, objects, arrays
+  - Mixed value types: strings, numbers, booleans, null, objects, arrays
+  - Small edge cases: empty array, empty object, float, boolean aliases
   - Real-world style config modeling (web routes + DB replica roles)
 */
 
@@ -13,6 +14,11 @@
 
 config = {
   name: "production",
+  enabled: on,
+  version: 1.5,
+  metadata: {},
+  tags: [],
+  fallback_host: null,
   services: {
     web: {
       ports: [80, 443],
@@ -25,7 +31,10 @@ config = {
       replicas: [
         { host: "db1", role: "primary" },
         { host: "db2", role: "secondary" }
-      ]
+      ],
+      readonly: off
     }
   }
 }
+
+/END

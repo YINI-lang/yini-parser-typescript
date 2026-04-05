@@ -3,22 +3,28 @@
 /*
 
 Features:
-  - Several level-1 sections (implicit base)
-  - Booleans, numbers, strings,
-  - Lists (colon syntax)
-  - Nulls
+  - Several explicit level-1 sections
+  - No space between the marker and the section name
+  - Booleans, numbers, strings
+  - List
+  - Null
+  - Valid in lenient mode, not strict mode
 
 */
 
-^ Logging
+^Logging
 level = "info"
 to_console = yes
 to_file = true
 log_path = "/var/log/app.log"
 max_file_size = 1048576
 rotate = true
+retry_delay = 2.5
 
-^ Alerts
+^Alerts
 email_on_error = true
-emails: "ops@example.com", "alerts@example.com"
+emails = [
+    "ops@example.com",
+    "alerts@example.com"
+]
 slack_webhook = null

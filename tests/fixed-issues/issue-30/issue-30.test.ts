@@ -89,7 +89,7 @@ describe('Issue #30 Tests:', () => {
         debugPrint(result)
 
         // Assert.
-        expect(result.text.url).toEqual('images/')
+        expect(result.Prog.text.url).toEqual('images/')
         // expect(warnSpy.mock.calls?.length).toEqual(false) // Expect no calls.
         expect(warnSpy.mock.calls[0][0]).not.toMatch(/newline.*EOF/i)
     })

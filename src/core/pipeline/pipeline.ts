@@ -3,6 +3,7 @@
  * astBuilder → objectBuilder, etc.)
  */
 
+// src/core/pipeline/pipeline.ts
 import { performance } from 'perf_hooks'
 import { CharStreams, CommonTokenStream } from 'antlr4'
 import { isDebug } from '../../config/env'
@@ -68,7 +69,11 @@ export const runPipeline = (
     debugPrint('coreOptions.isThrowOnError = ' + coreOptions.isThrowOnError)
     debugPrint('  runtimeInfo.sourceType = ' + runtimeInfo.sourceType)
     debugPrint('    runtimeInfo.fileName = ' + runtimeInfo.fileName)
-
+    debugPrint('         bailSensitivity = ' + coreOptions.bailSensitivity)
+    debugPrint('coreOptions.isThrowOnError = ' + coreOptions.isThrowOnError)
+    debugPrint(
+        '   treatEmptyValueAsNull = ' + coreOptions.rules.treatEmptyValueAsNull,
+    )
     // let persistThreshold: TBailSensitivityLevel
     // switch (coreOptions.bailSensitivity) {
     //     case '0-Ignore-Errors':
