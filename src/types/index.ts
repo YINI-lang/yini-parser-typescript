@@ -133,7 +133,7 @@ export interface PrimaryUserParams extends BasicOptions {
  *   the effective mode becomes **custom** rather than purely strict/lenient.
  * @param options.treatEmptyValueAsNull - How to treat an explicitly empty value on the
  *   right-hand side of '='. Allowed values: `'allow'` | `'allow-with-warning'` | `'disallow'`.
- * @param options.throwOnError - Will throw on first parse error encountered.
+ * @param options.throwOnError - Throw when a parse issue reaches the active bail threshold (for example, on errors if `failLevel = 'errors'`).
  */
 // User-facing options, these are external and should be more user friendly
 // parameter names.

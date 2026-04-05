@@ -1,3 +1,4 @@
+// src/core/options/optionsFunctions.ts
 import { isDebug, isDev } from '../../config/env'
 import { ParseOptions } from '../../types'
 import {
@@ -43,8 +44,6 @@ export const isOptionsObjectForm = (v: unknown): v is ParseOptions => {
     return (
         v != null &&
         typeof v === 'object' &&
-        // Note: If one wants, this can be relax to "typeof v === 'object'"
-        // but this keeps accidental booleans/strings out.
         ('strictMode' in (v as any) ||
             'failLevel' in (v as any) ||
             'includeMetadata' in (v as any) ||
@@ -56,7 +55,7 @@ export const isOptionsObjectForm = (v: unknown): v is ParseOptions => {
             'treatEmptyValueAsNull' in (v as any) ||
             'quiet' in (v as any) ||
             'silent' in (v as any) ||
-            'isThrowOnError' in (v as any))
+            'throwOnError' in (v as any))
     )
 }
 

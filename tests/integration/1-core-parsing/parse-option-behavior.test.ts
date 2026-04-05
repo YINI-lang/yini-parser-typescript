@@ -50,47 +50,148 @@ describe('Parse option behavior tests:', () => {
     })
 
     describe('Throw behavior:', () => {
-        test('B.1) Default mode + throwOnError should throw on syntax error.', () => {
-            expect(() => {
-                YINI.parseFile(FILE_DEFECT_COMBO_2, {
+        const cases = [
+            {
+                name: 'B.1) lenient + auto + throwOnError should NOT throw on syntax error',
+                options: {
+                    strictMode: false,
+                    failLevel: 'auto' as const,
                     throwOnError: true,
-                })
-            }).toThrow(/syntax-error|syntax error/i)
-        })
-
-        test('B.2) Strict + throwOnError should throw on syntax error.', () => {
-            expect(() => {
-                YINI.parseFile(FILE_DEFECT_COMBO_2, {
+                },
+                shouldThrow: false,
+            },
+            {
+                name: 'B.2) strict + auto + throwOnError should throw on syntax error',
+                options: {
                     strictMode: true,
+                    failLevel: 'auto' as const,
                     throwOnError: true,
-                })
-            }).toThrow(/syntax-error|syntax error/i)
-        })
-
-        test('B.3) Invalid escaping + throwOnError should throw syntax error.', () => {
-            expect(() => {
-                YINI.parseFile(FILE_BAD_ESCAPING, {
+                },
+                shouldThrow: true,
+            },
+            {
+                name: 'B.3) lenient + ignore-errors + throwOnError should NOT throw on syntax error',
+                options: {
+                    strictMode: false,
+                    failLevel: 'ignore-errors' as const,
+                    throwOnError: true,
+                },
+                shouldThrow: false,
+            },
+            {
+                name: 'B.4) strict + ignore-errors + throwOnError should NOT throw on syntax error',
+                options: {
                     strictMode: true,
+                    failLevel: 'ignore-errors' as const,
                     throwOnError: true,
-                })
-            }).toThrow(/syntax-error|syntax error/i)
+                },
+                shouldThrow: false,
+            },
+            {
+                name: 'B.5) lenient + errors + throwOnError should throw on syntax error',
+                options: {
+                    strictMode: false,
+                    failLevel: 'errors' as const,
+                    throwOnError: true,
+                },
+                shouldThrow: true,
+            },
+            {
+                name: 'B.6) strict + errors + throwOnError should throw on syntax error',
+                options: {
+                    strictMode: true,
+                    failLevel: 'errors' as const,
+                    throwOnError: true,
+                },
+                shouldThrow: true,
+            },
+            {
+                name: 'B.7) lenient + warnings-and-errors + throwOnError should throw on syntax error',
+                options: {
+                    strictMode: false,
+                    failLevel: 'warnings-and-errors' as const,
+                    throwOnError: true,
+                },
+                shouldThrow: true,
+            },
+            {
+                name: 'B.8) strict + warnings-and-errors + throwOnError should throw on syntax error',
+                options: {
+                    strictMode: true,
+                    failLevel: 'warnings-and-errors' as const,
+                    throwOnError: true,
+                },
+                shouldThrow: true,
+            },
+            {
+                name: 'B.9) lenient + errors + throwOnError false should NOT throw on syntax error',
+                options: {
+                    strictMode: false,
+                    failLevel: 'errors' as const,
+                    throwOnError: false,
+                },
+                shouldThrow: false,
+            },
+            {
+                name: 'B.10) strict + errors + throwOnError false should NOT throw on syntax error',
+                options: {
+                    strictMode: true,
+                    failLevel: 'errors' as const,
+                    throwOnError: false,
+                },
+                shouldThrow: false,
+            },
+        ]
+
+        test.each(cases)('$name', ({ options, shouldThrow }) => {
+            // Arrange.
+
+            // Act. Assert.
+            const act = () => {
+                YINI.parseFile(FILE_DEFECT_COMBO_2, options)
+            }
+
+            if (shouldThrow) {
+                expect(act).toThrow(/syntax-error|syntax error/i)
+            } else {
+                expect(act).not.toThrow()
+            }
         })
 
-        test('B.4) Thrown error should include line and column.', () => {
+        test('B.11) strict + errors + throwOnError should include line and column in thrown error', () => {
+            // Arrange.
+            const options = {
+                strictMode: true,
+                failLevel: 'errors' as const,
+                throwOnError: true,
+            }
+
+            // Act.
             try {
-                YINI.parseFile(FILE_DEFECT_COMBO_2, {
-                    strictMode: true,
-                    throwOnError: true,
-                })
-
+                YINI.parseFile(FILE_DEFECT_COMBO_2, options)
                 throw new Error('Expected parser to throw, but it did not.')
             } catch (err: unknown) {
                 const msg = err instanceof Error ? err.message : String(err)
 
+                // Assert.
                 expect(msg).toMatch(/syntax-error|syntax error/i)
                 expect(msg).toMatch(/line/i)
                 expect(msg).toMatch(/column/i)
             }
+        })
+
+        test('B.12) strict + errors + throwOnError should throw on invalid escaping', () => {
+            // Arrange.
+            const options = {
+                strictMode: true,
+                failLevel: 'errors' as const,
+                throwOnError: true,
+            }
+
+            // Act. Assert.
+            expect(() => {
+                YINI.parseFile(FILE_BAD_ESCAPING, options)
+            }).toThrow(/syntax-error|syntax error/i)
         })
     })
 

@@ -74,10 +74,10 @@ if (isProdEnv()) {
 // val = 3e3
 // 3val = 33
 // name = "Shebang-\\"demo"
-value = c"Hello World"
-badEscape = c"E:\\logs\\nebula\\app.log"
-\`value\`.B = "dfdfgd"
-value.A = "gdfgdf"
+// value = c"Hello World"
+// badEscape = c"E:\\logs\\nebula\\app.log"
+// \`value\`.B = "dfdfgd"
+// value.A = "gdfgdf"
 
 num1 = 10
 num2 = null
@@ -88,29 +88,27 @@ num6 =
 num20 = 20
 `
 
-        // console.log('--start0------------------------------------------')
+        console.log('--start0------------------------------------------')
         const res0 = YINI.parse(yiniContent, {
             strictMode: false,
-            // failLevel: 'ignore-errors',
-            // includeMetadata: true,
-            // includeDiagnostics: true,
-            // requireDocTerminator: 'optional',
+            treatEmptyValueAsNull: 'disallow',
+            // throwOnError: true,
+            // failLevel: 'errors',
         })
         console.log('res0:')
         console.log(res0)
-        // console.log('--end------------------------------------------\n')
+        console.log('--end------------------------------------------\n')
 
-        // console.log('--start1------------------------------------------')
+        console.log('--start1------------------------------------------')
         const res1 = YINI.parse(yiniContent, {
-            strictMode: true,
-            // failLevel: 'ignore-errors',
-            // includeMetadata: true,
-            // includeDiagnostics: true,
-            // requireDocTerminator: 'optional',
+            strictMode: false,
+            treatEmptyValueAsNull: 'disallow',
+            throwOnError: true,
+            failLevel: 'errors',
         })
         console.log('res1:')
         console.log(res1)
-        // console.log('--end------------------------------------------\n')
+        console.log('--end------------------------------------------\n')
 
         // console.log('--start2------------------------------------------')
         // const res2 = YINI.parse(defectConfig2Combo3, {
