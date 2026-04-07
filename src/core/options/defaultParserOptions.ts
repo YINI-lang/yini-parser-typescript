@@ -1,3 +1,4 @@
+// src/core/options/defaultParserOptions.ts
 import { ParseOptions } from '../../types'
 import { TParserMode } from '../internalTypes'
 
@@ -39,6 +40,10 @@ const BASE_DEFAULTS: TNormalizedUserOptions = {
     throwOnError: true, // Will throw on first parse error encountered.
 }
 
+/**
+ * @note If editing any of these, the values in src/core/parsingRules/modeFromRulesMatcher.ts
+ * must match too.
+ */
 const DEFAULT_LENIENT_OPTS: TNormalizedUserOptions = {
     ...BASE_DEFAULTS,
     strictMode: false,
@@ -49,12 +54,16 @@ const DEFAULT_LENIENT_OPTS: TNormalizedUserOptions = {
     treatEmptyValueAsNull: 'allow',
 }
 
+/**
+ * @note If editing any of these, the values in src/core/parsingRules/modeFromRulesMatcher.ts
+ * must match too.
+ */
 const DEFAULT_STRICT_OPTS: TNormalizedUserOptions = {
     ...BASE_DEFAULTS,
     strictMode: true,
     failLevel: 'errors',
     // Below are options for pure rules:
     onDuplicateKey: 'error',
-    requireDocTerminator: 'optional',
+    requireDocTerminator: 'required',
     treatEmptyValueAsNull: 'disallow',
 }
