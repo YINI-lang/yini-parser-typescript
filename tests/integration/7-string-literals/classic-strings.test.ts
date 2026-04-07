@@ -1,7 +1,6 @@
 // tests/integration/7-string-literals/classic-strings.test.ts
 
 import YINI from '../../../src'
-import { debugPrint, toPrettyJSON } from '../../../src/utils/print'
 
 /**
  * Classic (C) string literal tests.
@@ -20,6 +19,7 @@ describe('Classic string literal tests:', () => {
     test('1.a) Should parse simple Classic string (double quotes).', () => {
         const yini = `^ Test
             value = c"Hello World"
+            /END
         `
         const result = YINI.parse(yini, true)
         expect(result.Test.value).toEqual('Hello World')
@@ -28,6 +28,7 @@ describe('Classic string literal tests:', () => {
     test('1.b) Should parse simple Classic string (single quotes).', () => {
         const yini = `^ Test
             value = C'Hello World'
+            /END
         `
         const result = YINI.parse(yini, true)
         expect(result.Test.value).toEqual('Hello World')
@@ -37,6 +38,7 @@ describe('Classic string literal tests:', () => {
         const yini = `^ Test
             a = c"test"
             b = C"test"
+            /END
         `
         const result = YINI.parse(yini, true)
         expect(result.Test.a).toEqual('test')
@@ -50,6 +52,7 @@ describe('Classic string literal tests:', () => {
     test('2.a) Should parse common escape sequences.', () => {
         const yini = `^ Escapes
             value = c"Line1\\nLine2\\tTabbed\\rCarriage"
+            /END
         `
         const result = YINI.parse(yini, true)
 
@@ -59,6 +62,7 @@ describe('Classic string literal tests:', () => {
     test('2.b) Should parse escaped quotes and backslash.', () => {
         const yini = `^ Escapes
             value = c"\\\\ \\" \\'"
+            /END
         `
         const result = YINI.parse(yini, true)
 
@@ -68,6 +72,7 @@ describe('Classic string literal tests:', () => {
     test('2.c) Should parse hex escape (\\xhh).', () => {
         const yini = `^ Escapes
             value = c"\\x41"
+            /END
         `
         const result = YINI.parse(yini, true)
 
@@ -77,6 +82,7 @@ describe('Classic string literal tests:', () => {
     test('2.d) Should parse Unicode escape (\\uhhhh).', () => {
         const yini = `^ Escapes
             value = c"\\u0041"
+            /END
         `
         const result = YINI.parse(yini, true)
 
@@ -86,6 +92,7 @@ describe('Classic string literal tests:', () => {
     test('2.e) Should parse UTF-32 escape (\\Uhhhhhhhh).', () => {
         const yini = `^ Escapes
             value = c"\\U00000041"
+            /END
         `
         const result = YINI.parse(yini, true)
 
@@ -95,6 +102,7 @@ describe('Classic string literal tests:', () => {
     test('2.f) Should parse octal escape (\\oOOO).', () => {
         const yini = `^ Escapes
             value = c"\\o101"
+            /END
         `
         const result = YINI.parse(yini, true)
 
@@ -108,6 +116,7 @@ describe('Classic string literal tests:', () => {
     test('2.g) Should support all classic escape sequences.', () => {
         const yini = `^ Escapes
         value = c"\\\\ \\' \\" \\/ \\0 \\? \\a \\b \\f \\n \\r \\t \\v"
+        /END
     `
         const result = YINI.parse(yini, true)
 
@@ -123,6 +132,7 @@ describe('Classic string literal tests:', () => {
     test('3.a) Invalid escape should throw (strict).', () => {
         const yini = `^ Test
             value = c"\\z"
+            /END
         `
         expect(() => YINI.parse(yini, true)).toThrow()
     })
@@ -130,6 +140,7 @@ describe('Classic string literal tests:', () => {
     test('3.b) Invalid octal should throw.', () => {
         const yini = `^ Test
             value = c"\\o378"
+            /END
         `
         expect(() => YINI.parse(yini, true)).toThrow()
     })
@@ -137,6 +148,7 @@ describe('Classic string literal tests:', () => {
     test('3.c) Invalid hex escape should throw.', () => {
         const yini = `^ Test
         value = c"\\x4"
+        /END
     `
         expect(() => YINI.parse(yini, true)).toThrow()
     })
@@ -144,6 +156,7 @@ describe('Classic string literal tests:', () => {
     test('3.d) Invalid unicode \\u escape should throw.', () => {
         const yini = `^ Test
         value = c"\\u123"
+        /END
     `
         expect(() => YINI.parse(yini, true)).toThrow()
     })
@@ -151,6 +164,7 @@ describe('Classic string literal tests:', () => {
     test('3.e) Invalid unicode \\U escape should throw.', () => {
         const yini = `^ Test
         value = c"\\U1234"
+        /END
     `
         expect(() => YINI.parse(yini, true)).toThrow()
     })
@@ -158,6 +172,7 @@ describe('Classic string literal tests:', () => {
     test('3.f) Invalid empty octal should throw.', () => {
         const yini = `^ Test
         value = c"\\o"
+        /END
     `
         expect(() => YINI.parse(yini, true)).toThrow()
     })
@@ -170,6 +185,7 @@ describe('Classic string literal tests:', () => {
         const yini = `^ Test
             value = c"Hello
 World"
+            /END
         `
         expect(() => YINI.parse(yini, true)).toThrow()
     })
@@ -182,6 +198,7 @@ World"
         const yini = `^ Test
             value = c"This
 is invalid"
+            /END
         `
         expect(() => YINI.parse(yini, true)).toThrow()
     })
@@ -193,6 +210,7 @@ is invalid"
     test('6.a) Should concatenate classic strings.', () => {
         const yini = `^ Test
             value = c"Hello " + c"World"
+            /END
         `
         const result = YINI.parse(yini, true)
 
@@ -202,6 +220,7 @@ is invalid"
     test('6.b) Should concatenate mixed raw + classic.', () => {
         const yini = `^ Test
             value = "Hello " + c"World"
+            /END
         `
         const result = YINI.parse(yini, true)
 
@@ -215,6 +234,7 @@ is invalid"
     test('7.a) Empty Classic string.', () => {
         const yini = `^ Test
             value = c""
+            /END
         `
         const result = YINI.parse(yini, true)
 
@@ -224,6 +244,7 @@ is invalid"
     test('7.b) Space and tab allowed directly.', () => {
         const yini = `^ Test
             value = c"Hello World\t"
+            /END
         `
         const result = YINI.parse(yini, true)
 

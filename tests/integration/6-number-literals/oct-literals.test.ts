@@ -14,6 +14,7 @@ describe('Octal number literal tests:', () => {
             oct4 = 0o10    // Decimal 8
             oct5 = 0o77    // Decimal 63
             oct6 = 0o755   // Common Unix file permission value (decimal 493)
+            /END
         `
 
         // Act.
@@ -44,6 +45,7 @@ describe('Octal number literal tests:', () => {
             oct4 = 0O10    // Decimal 8
             oct5 = 0O77    // Decimal 63
             oct6 = 0O755   // Common Unix file permission value (decimal 493)
+            /END
         `
 
         // Act.
@@ -74,6 +76,7 @@ describe('Octal number literal tests:', () => {
             oct4 = 0o377                    // Max unsigned 8-bit)
             oct5 = 0o17777777777            // Max signed 32-bit)
             oct6 = 0o1777777777777777777777 // Max unsigned 64-bit)
+            /END
         `
 
         // Act.
@@ -104,6 +107,7 @@ describe('Octal number literal tests:', () => {
             oct4 = 0O377                    // Max unsigned 8-bit)
             oct5 = 0O17777777777            // Max signed 32-bit)
             oct6 = 0O1777777777777777777777 // Max unsigned 64-bit)
+            /END
         `
 
         // Act.
@@ -134,6 +138,7 @@ describe('Octal number literal tests:', () => {
             oct4 = +0o377                    // Max unsigned 8-bit)
             oct5 = -0o17777777777            // Max signed 32-bit)
             oct6 = +0o1777777777777777777777 // Max unsigned 64-bit)
+            /END
         `
 
         // Act.
@@ -164,6 +169,7 @@ describe('Octal number literal tests:', () => {
             oct4 = +0O377                    // Max unsigned 8-bit)
             oct5 = -0O17777777777            // Max signed 32-bit)
             oct6 = +0O1777777777777777777777 // Max unsigned 64-bit)
+            /END
         `
 
         // Act.
@@ -187,7 +193,7 @@ describe('Octal number literal tests:', () => {
 
     test('4.a) Should throw error parsing a bad OCT number with 0o (lenient-mode, bail on error).', () => {
         // Arrange.
-        const badYini = `^ BinNumber
+        const badYini = `^ OctNumber
             badOct = 0o
         `
 
@@ -201,8 +207,9 @@ describe('Octal number literal tests:', () => {
 
     test('4.b) Should throw error parsing a bad OCT number with 0o (strict-mode).', () => {
         // Arrange.
-        const badYini = `^ BinNumber
+        const badYini = `^ OctNumber
             badOct = 0o
+            /END
         `
 
         // Act & Assert.
@@ -215,7 +222,7 @@ describe('Octal number literal tests:', () => {
 
     test('4.c) Should throw error parsing a bad OCT number with 0O (lenient-mode, bail on error).', () => {
         // Arrange.
-        const badYini = `^ BinNumber
+        const badYini = `^ OctNumber
             badOct = 0O
         `
 
@@ -229,8 +236,9 @@ describe('Octal number literal tests:', () => {
 
     test('4.d) Should throw error parsing a bad OCT number with 0O (strict-mode).', () => {
         // Arrange.
-        const badYini = `^ BinNumber
+        const badYini = `^ OctNumber
             badOct = 0O
+            /END
         `
 
         // Act & Assert.
@@ -243,7 +251,7 @@ describe('Octal number literal tests:', () => {
 
     test('5.a) Should throw error parsing a bad OCT number with 0o (lenient-mode, bail on error).', () => {
         // Arrange.
-        const badYini = `^ BinNumber
+        const badYini = `^ OctNumber
             badOct = 0o81    // Invalid OCT digit "8"
         `
 
@@ -257,8 +265,9 @@ describe('Octal number literal tests:', () => {
 
     test('5.b) Should throw error parsing a bad OCT number with 0o (strict-mode).', () => {
         // Arrange.
-        const badYini = `^ BinNumber
+        const badYini = `^ OctNumber
             badOct = 0o81    // Invalid OCT digit "8"
+            /END
         `
 
         // Act & Assert.
@@ -271,7 +280,7 @@ describe('Octal number literal tests:', () => {
 
     test('5.c) Should throw error parsing a bad OCT number with 0O (lenient-mode, bail on error).', () => {
         // Arrange.
-        const badYini = `^ BinNumber
+        const badYini = `^ OctNumber
             badOct = 0O81    // Invalid OCT digit "8"
         `
 
@@ -285,8 +294,9 @@ describe('Octal number literal tests:', () => {
 
     test('5.d) Should throw error parsing a bad OCT number with 0O (strict-mode).', () => {
         // Arrange.
-        const badYini = `^ BinNumber
+        const badYini = `^ OctNumber
             badOct = 0O81    // Invalid OCT digit "8"
+            /END
         `
 
         // Act & Assert.
@@ -299,7 +309,7 @@ describe('Octal number literal tests:', () => {
 
     test('6.a) Should throw error parsing a bad OCT number with 0o (lenient-mode, bail on error).', () => {
         // Arrange.
-        const badYini = `^ BinNumber
+        const badYini = `^ OctNumber
             badOct = -0o     // Minus sign with no digits
         `
 
@@ -313,8 +323,9 @@ describe('Octal number literal tests:', () => {
 
     test('6.b) Should throw error parsing a bad OCT number with 0o (strict-mode).', () => {
         // Arrange.
-        const badYini = `^ BinNumber
+        const badYini = `^ OctNumber
             badOct = -0o     // Minus sign with no digits
+            /END
         `
 
         // Act & Assert.
@@ -327,7 +338,7 @@ describe('Octal number literal tests:', () => {
 
     test('6.c) Should throw error parsing a bad OCT number with 0O (lenient-mode, bail on error).', () => {
         // Arrange.
-        const badYini = `^ BinNumber
+        const badYini = `^ OctNumber
             badOct = -0O     // Minus sign with no digits
         `
 
@@ -341,8 +352,9 @@ describe('Octal number literal tests:', () => {
 
     test('6.d) Should throw error parsing a bad OCT number with 0O (strict-mode).', () => {
         // Arrange.
-        const badYini = `^ BinNumber
+        const badYini = `^ OctNumber
             badOct = -0O     // Minus sign with no digits
+            /END
         `
 
         // Act & Assert.

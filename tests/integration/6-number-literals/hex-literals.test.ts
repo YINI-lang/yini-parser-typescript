@@ -14,6 +14,7 @@ describe('Hexadecimal number literal tests:', () => {
             hex4 = #FF
             hex5 = #7F
             hex6 = #0060BB
+            /END
        `
 
         // Act.
@@ -44,6 +45,7 @@ describe('Hexadecimal number literal tests:', () => {
             hex4 = 0xFF
             hex5 = 0x7F
             hex6 = 0X0060BB
+            /End
         `
 
         // Act.
@@ -74,6 +76,7 @@ describe('Hexadecimal number literal tests:', () => {
             hex4 = 0XFF
             hex5 = 0X7F
             hex6 = 0X0060BB
+            /end
         `
 
         // Act.
@@ -104,6 +107,7 @@ describe('Hexadecimal number literal tests:', () => {
             hex4 = #ff
             hex5 = #7f
             hex6 = #0060bb
+            /END
         `
 
         // Act.
@@ -134,6 +138,7 @@ describe('Hexadecimal number literal tests:', () => {
             hex4 = 0xff
             hex5 = 0x7f
             hex6 = 0x0060bb
+            /END
         `
 
         // Act.
@@ -164,6 +169,7 @@ describe('Hexadecimal number literal tests:', () => {
             hex4 = 0Xff
             hex5 = 0X7f
             hex6 = 0X0060bb
+            /END
         `
 
         // Act.
@@ -194,6 +200,7 @@ describe('Hexadecimal number literal tests:', () => {
             hex4 = #0FF0
             hex5 = #7FFFFFFF       // max signed 32-bit integer (2,147,483,647 decimal)
             hex6 = #FFFFFFFFFFFFFFFF // max unsigned 64-bit integer (18,446,744,073,709,551,615 decimal)
+            /END
         `
 
         // Act.
@@ -224,6 +231,7 @@ describe('Hexadecimal number literal tests:', () => {
             hex4 = 0x0FF0
             hex5 = 0x7FFFFFFF         // max signed 32-bit integer (2,147,483,647 decimal)
             hex6 = 0xFFFFFFFFFFFFFFFF // max unsigned 64-bit integer (18,446,744,073,709,551,615 decimal)
+            /END
         `
 
         // Act.
@@ -254,6 +262,7 @@ describe('Hexadecimal number literal tests:', () => {
             hex4 = 0X0FF0
             hex5 = 0X7FFFFFFF         // max signed 32-bit integer (2,147,483,647 decimal)
             hex6 = 0XFFFFFFFFFFFFFFFF // max unsigned 64-bit integer (18,446,744,073,709,551,615 decimal)
+            /END
         `
 
         // Act.
@@ -284,6 +293,7 @@ describe('Hexadecimal number literal tests:', () => {
             hex4 = #0ff0
             hex5 = #7fffffff       // max signed 32-bit integer (2,147,483,647 decimal)
             hex6 = #ffffffffffffffff // max unsigned 64-bit integer (18,446,744,073,709,551,615 decimal)
+            /END
         `
 
         // Act.
@@ -314,6 +324,7 @@ describe('Hexadecimal number literal tests:', () => {
             hex4 = 0x0ff0
             hex5 = 0x7fffffff       // max signed 32-bit integer (2,147,483,647 decimal)
             hex6 = 0xffffffffffffffff // max unsigned 64-bit integer (18,446,744,073,709,551,615 decimal)
+            /END
         `
 
         // Act.
@@ -344,6 +355,7 @@ describe('Hexadecimal number literal tests:', () => {
             hex4 = 0X0ff0
             hex5 = 0X7fffffff       // max signed 32-bit integer (2,147,483,647 decimal)
             hex6 = 0Xffffffffffffffff // max unsigned 64-bit integer (18,446,744,073,709,551,615 decimal)
+            /END
         `
 
         // Act.
@@ -374,6 +386,7 @@ describe('Hexadecimal number literal tests:', () => {
             hex4 = -#1c
             hex5 = -#aBc
             hex6 = +#Ab9C
+            /END
         `
 
         // Act.
@@ -404,6 +417,7 @@ describe('Hexadecimal number literal tests:', () => {
             hex4 = -0x1c
             hex5 = -0xaBc
             hex6 = +0xAb9C
+            /END
         `
 
         // Act.
@@ -434,6 +448,7 @@ describe('Hexadecimal number literal tests:', () => {
             hex4 = -0X1c
             hex5 = -0XaBc
             hex6 = +0XAb9C
+            /END
         `
 
         // Act.
@@ -473,6 +488,7 @@ describe('Hexadecimal number literal tests:', () => {
         // Arrange.
         const badYini = `^ HexNumber
             badHex = #
+            /END
         `
 
         // Act & Assert.
@@ -501,6 +517,7 @@ describe('Hexadecimal number literal tests:', () => {
         // Arrange.
         const badYini = `^ HexNumber
             badHex = 0x
+            /END
         `
 
         // Act & Assert.
@@ -529,6 +546,7 @@ describe('Hexadecimal number literal tests:', () => {
         // Arrange.
         const badYini = `^ HexNumber
             badHex = 0X
+            /END
         `
 
         // Act & Assert.
@@ -557,6 +575,7 @@ describe('Hexadecimal number literal tests:', () => {
         // Arrange.
         const badYini = `^ HexNumber
             badHex = #G1    // Invalid HEX digit "G"
+            /END
         `
 
         // Act & Assert.
@@ -585,6 +604,7 @@ describe('Hexadecimal number literal tests:', () => {
         // Arrange.
         const badYini = `^ HexNumber
             badHex = #G1    // Invalid HEX digit "G"
+            /END
         `
 
         // Act & Assert.
@@ -613,6 +633,7 @@ describe('Hexadecimal number literal tests:', () => {
         // Arrange.
         const badYini = `^ HexNumber
             badHex = #G1    // Invalid HEX digit "G"
+            /END
         `
 
         // Act & Assert.
@@ -644,6 +665,7 @@ describe('Hexadecimal number literal tests:', () => {
         // Arrange.
         const badYini = `^ HexNumber
             badHex = -#     // Minus sign with no digits
+            /END
         `
 
         // Act & Assert.
@@ -672,6 +694,7 @@ describe('Hexadecimal number literal tests:', () => {
         // Arrange.
         const badYini = `^ HexNumber
             badHex = -0x     // Minus sign with no digits
+            /END
         `
 
         // Act & Assert.
@@ -700,6 +723,7 @@ describe('Hexadecimal number literal tests:', () => {
         // Arrange.
         const badYini = `^ HexNumber
             badHex = -0X     // Minus sign with no digits
+            /END
         `
 
         // Act & Assert.
