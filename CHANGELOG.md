@@ -1,11 +1,15 @@
 # CHANGELOG
 
-## 1.4.3 + UPDATES - 2026 Apr xxx
+## 1.5.0 - 2026 Apr
+- **Updated:** Parser behavior aligned with YINI Specification `v1.0.0-RC.5`.
+- **Changed:** In strict mode, YINI documents must now end with the document terminator `/END`.
+- **Changed:** Strict mode now requires exactly one explicit top-level section.
+- **Updated:** Section header parsing now reflects the latest horizontal whitespace (`HSPACE`) rules from the specification.
 - **Improved:** Refined how members outside explicit sections are handled in lenient mode, and added stricter checks for top-level structure in strict mode.
-- **Added:** By default, strict mode requires exactly one explicit top-level section.
 - **Improved:** Clarified and tightened how empty values and explicit `null` are handled in lenient and strict mode.
 - **Improved:** Fixed `throwOnError` option detection, clarified the related documentation, and cleaned up public parameter names.
 - **Fixed:** Made `throwOnError` work consistently together with the selected fail level.
+- **Updated:** Synced to the latest lexer and parser grammar files from the Specification Package `v1.0.0-RC.5`, with cleaned up and refined grammar files for better consistency and maintainability.
 - **Added:** Expanded validation and tests for section headers, including shorthand markers, backticked names, and invalid dotted section names.
 - **Expanded:** Improved integration and smoke test coverage for error recovery, throw behavior, null handling, fixture parsing, and section/header edge cases.
 - **Updated:** Added and validated a new large smoke/golden fixture:
