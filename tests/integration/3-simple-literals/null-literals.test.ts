@@ -62,6 +62,7 @@ describe('Null literal tests', () => {
         const yini = `^ NullLiterals
             value2 = null
             value6 =        // Empty value must fail in strict mode by default.
+            /END
         `
 
         // Act & Assert.
@@ -75,6 +76,7 @@ describe('Null literal tests', () => {
         const yini = `^ NullLiterals
             value2 = null
             value6 =        // Allowed as null by option.
+            /END
         `
 
         const expected = {
@@ -101,6 +103,7 @@ describe('Null literal tests', () => {
         const yini = `^ NullLiterals
             value2 = null
             value6 =        // Allowed as null with warning by option.
+            /END
         `
 
         const expected = {
@@ -129,6 +132,7 @@ describe('Null literal tests', () => {
             value3 = Null
             value4 = NULL
             value5 = nULL
+            /END
         `
 
         const expected = {
@@ -199,6 +203,7 @@ describe('Null literal tests', () => {
         // Arrange.
         const yini = `^ NullLiterals
             obj = { value: null }
+            /END
         `
 
         const expected = {

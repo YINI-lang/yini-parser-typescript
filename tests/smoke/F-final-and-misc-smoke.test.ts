@@ -216,9 +216,9 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
         const correctMetaDiagn = {
             parserVersion: '####',
             mode: 'strict',
-            totalErrors: 6,
+            totalErrors: 7,
             totalWarnings: 1,
-            totalMessages: 7,
+            totalMessages: 8,
             runStartedAt: '####',
             runFinishedAt: '####',
             durationMs: -1,
@@ -256,28 +256,28 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
                     levelDescription: 'Continue despite errors.',
                 },
                 errors: {
-                    errorCount: 6,
+                    errorCount: 7,
                     payload: [
                         {
                             line: 7,
                             column: 10,
                             typeKey: 'syntax_error',
                             message: 'Syntax error.',
-                            advice: "Details: extraneous input '54_32' expecting {NL, INLINE_COMMENT}",
+                            advice: "Details: extraneous input '54_32' expecting NL",
                         },
                         {
                             line: 12,
                             column: 15,
                             typeKey: 'syntax_error',
                             message: 'Syntax error.',
-                            advice: "Details: extraneous input 'maybe' expecting {NL, INLINE_COMMENT}",
+                            advice: "Details: extraneous input 'maybe' expecting NL",
                         },
                         {
                             line: 19,
                             column: 8,
                             typeKey: 'syntax_error',
                             message: 'Syntax error.',
-                            advice: "Details: extraneous input ':' expecting {'=', WS}",
+                            advice: "Details: extraneous input ':' expecting '='",
                         },
                         {
                             line: 7,
@@ -301,6 +301,12 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
                                 'Strict mode requires exactly one explicit top-level section.',
                             advice: 'Found 3 explicit top-level sections.',
                             hint: 'Wrap the document in exactly one explicit top-level section and nest any additional sections beneath it.',
+                        },
+                        {
+                            typeKey: 'syntax_error',
+                            message: "Missing '/END' at end of document.",
+                            advice: "The document terminator '/END' (case-insensitive) is required at the end of the document.",
+                            hint: "Add '/END' as the final significant line, or change requireDocTerminator to 'optional' or 'warn-if-missing'.",
                         },
                     ],
                 },
@@ -344,7 +350,7 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
                     onDuplicateKey: 'error',
                     preserveUndefinedInMeta: false,
                     quiet: false,
-                    requireDocTerminator: 'optional',
+                    requireDocTerminator: 'required',
                     strictMode: true,
                     treatEmptyValueAsNull: 'disallow',
                 },
@@ -356,7 +362,7 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
                     onDuplicateKey: 'error',
                     preserveUndefinedInMeta: false,
                     quiet: false,
-                    requireDocTerminator: 'optional',
+                    requireDocTerminator: 'required',
                     silent: false,
                     strictMode: true,
                     throwOnError: true,
@@ -436,6 +442,96 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
         // Act & Assert.
         expect(() => {
             parseUntilError(invalidYini)
+        }).toThrow()
+    })
+
+    test('F-6.d) Should pass in strict mode with exactly one top-level section and /END.', () => {
+        // Arrange.
+        const validYini = `
+            ^ App
+            name = 'Demo App'
+            version = '1.0.0'
+
+                ^^ Server
+                host = 'localhost'
+                port = 8080
+
+            /END
+        `
+
+        const answer = {
+            App: {
+                name: 'Demo App',
+                version: '1.0.0',
+                Server: {
+                    host: 'localhost',
+                    port: 8080,
+                },
+            },
+        }
+
+        // Act.
+        const metaResult = parseUntilError(validYini, true, true)
+
+        // Assert.
+        expect(toPrettyJSON(metaResult.result)).toEqual(toPrettyJSON(answer))
+        expect(metaResult.meta.mode).toEqual('strict')
+        expect(metaResult.meta.source.hasDocumentTerminator).toEqual(true)
+        expect(metaResult.meta.structure.sectionCount).toEqual(2)
+        expect(metaResult.meta.structure.memberCount).toEqual(4)
+    })
+
+    test('F-6.e) Should throw in strict mode when /END is missing.', () => {
+        // Arrange.
+        const invalidYini = `
+            ^ App
+            name = 'Demo App'
+            version = '1.0.0'
+
+                ^^ Server
+                host = 'localhost'
+                port = 8080
+        `
+
+        // Act & Assert.
+        expect(() => {
+            parseUntilError(invalidYini, true)
+        }).toThrow()
+    })
+
+    test('F-6.f) Should throw in strict mode when multiple top-level sections exist.', () => {
+        // Arrange.
+        const invalidYini = `
+            ^ App
+            name = 'Demo App'
+
+            ^ Logging
+            level = 'info'
+
+            /END
+        `
+
+        // Act & Assert.
+        expect(() => {
+            parseUntilError(invalidYini, true)
+        }).toThrow()
+    })
+
+    test('F-6.g) Should throw in strict mode when top-level members exist outside the single root section.', () => {
+        // Arrange.
+        const invalidYini = `
+            title = 'Loose root member'
+
+            ^ App
+            name = 'Demo App'
+            version = '1.0.0'
+
+            /END
+        `
+
+        // Act & Assert.
+        expect(() => {
+            parseUntilError(invalidYini, true)
         }).toThrow()
     })
 

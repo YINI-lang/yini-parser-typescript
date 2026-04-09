@@ -97,6 +97,7 @@ const makeScalarValue = (
         case 'Undefined':
             return { type: 'Undefined', value: undefined, tag }
         default:
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             new ErrorDataHandler(_sourceType).pushOrBail(
                 undefined,
                 'Fatal-Error',
@@ -274,6 +275,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         const numTopLevelMembers = this.ast.root.members.size
 
         if (numTopLevelMembers > 0) {
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
                 undefined,
                 'Syntax-Error',
@@ -285,6 +287,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
 
         // Exactly one explicit top-level section in strict mode.
         if (numTopLevelSections !== 1) {
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
                 undefined,
                 'Syntax-Error',
@@ -466,6 +469,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         if (sec.members.has(key)) {
             switch (mode) {
                 case 'error':
+                    // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                     errorHandler!.pushOrBail(
                         toErrorLocation(ctx),
                         'Syntax-Error',
@@ -474,6 +478,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                     )
                     break
                 case 'warn-and-keep-first':
+                    // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                     errorHandler!.pushOrBail(
                         toErrorLocation(ctx),
                         'Syntax-Warning',
@@ -482,6 +487,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                     )
                     return // Keep first, don't overwrite.
                 case 'warn-and-overwrite':
+                    // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                     errorHandler!.pushOrBail(
                         toErrorLocation(ctx),
                         'Syntax-Warning',
@@ -510,49 +516,40 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         // Strict-mode structural validation.
         this.validateStrictTopLevelStructure()
 
-        // The document terminator is optional by default.
-        // If the option `isRequireDocTerminator` is set to true,
-        // the '/END' terminator at the end of the document becomes required.
-        if (
-            !this.ast.terminatorSeen &&
-            this.options.rules.requireDocTerminator === 'required'
-        ) {
-            const msgWhat = `Missing '/END' at end of document (option requireDocTerminator is ${this.options.rules.requireDocTerminator}).`
-            const msgWhy = `The terminator '/END' (case insensitive) is required and must appear at the end of the document.`
-            const msgHint = `This is option can be overriden by the option requireDocTerminator.`
+        const isMissingTerminator = !this.ast.terminatorSeen
 
+        // In strict mode, the document terminator is required by default.
+        // However, the parse option `requireDocTerminator` is authoritative
+        // and may override that default behavior.
+        const terminatorPolicy = this.options.rules.requireDocTerminator
+
+        if (isMissingTerminator && terminatorPolicy === 'required') {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
                 undefined,
                 'Syntax-Error',
-                msgWhat,
-                msgWhy,
-                msgHint,
+                "Missing '/END' at end of document.",
+                "The document terminator '/END' (case-insensitive) is required at the end of the document.",
+                "Add '/END' as the final significant line, or change requireDocTerminator to 'optional' or 'warn-if-missing'.",
             )
         } else if (
-            !this.ast.terminatorSeen &&
-            this.options.rules.requireDocTerminator === 'warn-if-missing'
+            isMissingTerminator &&
+            terminatorPolicy === 'warn-if-missing'
         ) {
-            const msgWhat = `Missing '/END' at end of document (option requireDocTerminator is ${this.options.rules.requireDocTerminator}).`
-            const msgWhy = `The terminator '/END' (case insensitive) might be missing at the end of the document.`
-            const msgHint = `This is option can be overriden by the option requireDocTerminator.`
-
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
                 undefined,
                 'Syntax-Warning',
-                msgWhat,
-                msgWhy,
-                msgHint,
+                "Missing '/END' at end of document.",
+                "The document terminator '/END' (case-insensitive) appears to be missing at the end of the document.",
+                "Add '/END' as the final significant line, or change requireDocTerminator to 'optional'.",
             )
         }
 
-        // Note: Below is important for error checking as well as for meta data.
         this.ast.numOfSections = this.mapSectionNamePaths.size
         this.ast.numOfMembers = this._numOfMembers
 
         if (this.options.isIncludeMeta) {
-            // Attach collected meta information.
             this.ast.maxDepth = this.meta_maxLevel
             this.ast.sectionNamePaths = [...this.mapSectionNamePaths.keys()]
         }
@@ -923,6 +920,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                         null,
                         'Implicit null (empty value)',
                     )
+                    // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                     this.errorHandler!.pushOrBail(
                         toErrorLocation(ctx),
                         'Syntax-Warning',
@@ -933,6 +931,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                     break
 
                 case 'disallow':
+                    // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                     this.errorHandler!.pushOrBail(
                         toErrorLocation(ctx),
                         'Syntax-Error',
@@ -977,6 +976,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             )
         }*/
         if (!valueNode) {
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
                 toErrorLocation(ctx),
                 'Syntax-Error',
@@ -990,6 +990,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             valueNode.tag !== 'Missing value already reported' &&
             valueNode.tag !== 'Parser syntax error already reported'
         ) {
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
                 toErrorLocation(ctx),
                 'Syntax-Error',
@@ -1179,6 +1180,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                     }
                 }
 
+                // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                 this.errorHandler!.pushOrBail(
                     toErrorLocation(ctx),
                     'Syntax-Error',
@@ -1493,6 +1495,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         } catch (err: unknown) {
             const msg = err instanceof Error ? err.message : String(err)
 
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
                 toErrorLocation(ctx),
                 'Syntax-Error',

@@ -1,12 +1,14 @@
-import { ParseOptions } from 'querystring'
+// src/core/parsingRules/modeFromRulesMatcher.ts
+// import { ParseOptions } from 'querystring'
 import { isDebug } from '../../config/env'
 import {
     DocumentTerminatorRule,
     DuplicateKeyPolicy,
     EmptyValueRule,
     OnDuplicateKey,
+    ParseOptions,
 } from '../../types'
-import { debugPrint, printObject } from '../../utils/print'
+import { debugPrint } from '../../utils/print'
 import { ErrorDataHandler } from '../errorDataHandler'
 import {
     IParseCoreOptions,
@@ -16,10 +18,16 @@ import {
 } from '../internalTypes'
 import { toCoreOptions } from '../options/optionsFunctions'
 
+/*
+ * Strict-mode defaults are:
+ * - onDuplicateKey:        'error' →       2
+ * - requireDocTerminator:  'required' →    2
+ * - treatEmptyValueAsNull: 'disallow' →    2
+ */
 const MODE_PROFILES: Record<TParserMode, TVec3> = {
     lenient: [0, 0, 0],
     //   moderate: [1, 0, 1],
-    strict: [2, 0, 2],
+    strict: [2, 2, 2],
     //'pedantic'
     //'paranoid'
 }
@@ -53,7 +61,7 @@ export const matchModeFromCoreOptions = (
             undefined,
             'Fatal-Error',
             `The passed input object is missing rules object.`,
-            'Option might be of wrong type, it must be core options.',
+            'The passed option object may be of the wrong type; expected core options.',
         )
     }
 
@@ -104,11 +112,12 @@ const inferTParserModeExact = (
     // debugPrint('rules.requireDocTerminator  = ' + rules.requireDocTerminator)
     // debugPrint('rules.treatEmptyValueAsNull = ' + rules.treatEmptyValueAsNull)
 
-    // Note, **each rule** is scored on a strictness scale (0 = lenient, 1 = medium, 2 = strict).
+    // Each rule is scored on a strictness scale:
+    // 0 = lenient / permissive, 1 = warning-level / intermediate, 2 = strict / enforcing.
     const vector: TVec3 = [
-        scoreDupl(rules.onDuplicateKey),
-        scoreTerm(rules.requireDocTerminator),
-        scoreEmpty(rules.treatEmptyValueAsNull),
+        scoreDuplicateKey(rules.onDuplicateKey),
+        scoreRequireDocTerminator(rules.requireDocTerminator),
+        scoreEmptyValue(rules.treatEmptyValueAsNull),
     ]
     debugPrint('** vector:')
     // isDebug() && printObject(vector)
@@ -123,29 +132,31 @@ const inferTParserModeExact = (
     return { mode: 'custom', vector }
 }
 
-const scoreDupl = (v: DuplicateKeyPolicy | OnDuplicateKey): TRuleScale => {
+const scoreDuplicateKey = (
+    v: DuplicateKeyPolicy | OnDuplicateKey,
+): TRuleScale => {
     switch (v) {
         case 'keep-first':
         case 'warn-and-keep-first':
-            return 0 // Rule in lenient mode.
+            return 0 // Lenient / permissive rule level.
         case 'overwrite':
         case 'warn-and-overwrite':
             return 1
         case 'error':
-            return 2 // Rule in strict mode.
+            return 2 // Strict / enforcing rule level.
     }
 }
-const scoreTerm = (v: DocumentTerminatorRule): TRuleScale => {
+const scoreRequireDocTerminator = (v: DocumentTerminatorRule): TRuleScale => {
     switch (v) {
         case 'optional':
-            return 0 // Rule in lenient and strict mode.
+            return 0 // Lenient / permissive rule level.
         case 'warn-if-missing':
             return 1
         case 'required':
-            return 2
+            return 2 // Strict / enforcing rule level.
     }
 }
-const scoreEmpty = (v: EmptyValueRule): TRuleScale => {
+const scoreEmptyValue = (v: EmptyValueRule): TRuleScale => {
     switch (v) {
         case 'allow':
             return 0 // Rule in lenient mode.

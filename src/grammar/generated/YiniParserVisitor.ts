@@ -1,4 +1,4 @@
-// Generated from ./grammar/v1.0.0-rc.4x/YiniParser.g4 by ANTLR 4.13.2
+// Generated from ./grammar/v1.0.0-rc.4xx/YiniParser.g4 by ANTLR 4.13.2
 
 import {ParseTreeVisitor} from 'antlr4';
 
@@ -7,6 +7,7 @@ import { YiniContext } from "./YiniParser.js";
 import { PrologContext } from "./YiniParser.js";
 import { Terminal_stmtContext } from "./YiniParser.js";
 import { StmtContext } from "./YiniParser.js";
+import { Invalid_section_stmtContext } from "./YiniParser.js";
 import { Meta_stmtContext } from "./YiniParser.js";
 import { DirectiveContext } from "./YiniParser.js";
 import { AnnotationContext } from "./YiniParser.js";
@@ -60,6 +61,12 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 * @return the visitor result
 	 */
 	visitStmt?: (ctx: StmtContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.invalid_section_stmt`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitInvalid_section_stmt?: (ctx: Invalid_section_stmtContext) => Result;
 	/**
 	 * Visit a parse tree produced by `YiniParser.meta_stmt`.
 	 * @param ctx the parse tree

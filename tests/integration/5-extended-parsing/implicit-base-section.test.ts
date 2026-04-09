@@ -1,6 +1,5 @@
 import YINI from '../../../src'
 import { debugPrint, toPrettyJSON } from '../../../src/utils/print'
-import { parseUntilError } from '../../test-helpers'
 
 /**
  * Implicit "base" section behavior.
@@ -21,11 +20,9 @@ describe('Implicit base section tests', () => {
         `
 
         const expected = {
-            // base: {
             name: 'Demo App',
             port: 8080,
             darkMode: true,
-            // },
         }
 
         // Act.
@@ -45,10 +42,8 @@ describe('Implicit base section tests', () => {
         `
 
         const expected = {
-            // base: {
             CacheFolder: null,
             CacheFolder2: null,
-            // },
         }
 
         // Act.
@@ -102,10 +97,8 @@ describe('Implicit base section tests', () => {
         `
 
         const expected = {
-            // base: {
             name: 'Demo App',
             port: 8080,
-            // },
             App: {
                 title: 'Hello',
             },
@@ -136,9 +129,7 @@ describe('Implicit base section tests', () => {
         `
 
         const expected = {
-            // base: {
             name: 'Demo App',
-            // },
             App: {
                 version: '1.0.0',
                 Features: {
@@ -192,6 +183,8 @@ describe('Implicit base section tests', () => {
 
             ^ App
             title = "Hello"
+
+            /END
         `
 
         // Act & Assert.
@@ -209,6 +202,8 @@ describe('Implicit base section tests', () => {
 
                 ^^ Server
                 host = "localhost"
+
+            /END
             `
 
         const expected = {
@@ -243,13 +238,11 @@ describe('Implicit base section tests', () => {
         `
 
         const expected = {
-            // base: {
             items: [1, 2, 3],
             settings: {
                 enabled: true,
                 retries: 3,
             },
-            // },
         }
 
         // Act.

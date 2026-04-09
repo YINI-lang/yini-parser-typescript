@@ -177,7 +177,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const mustBeTrue = true
 
         // Act.
-        const result = YINI.parse(fixture, {
+        const result = YINI.parse(fixtureWithTerminator, {
             // IMPORTANT: Below values are set.
             strictMode: isStrictMode,
             includeMetadata: mustBeTrue,
@@ -196,7 +196,7 @@ describe('Options Consistency Smoke Tests:', () => {
             preserveUndefinedInMeta: false,
             quiet: false, // Suppress warnings in console (does not effect warnings in meta data).
             onDuplicateKey: 'error',
-            requireDocTerminator: 'optional',
+            requireDocTerminator: 'required',
             treatEmptyValueAsNull: 'disallow',
         }
         expect(!!result.meta).toEqual(true)
@@ -403,7 +403,7 @@ describe('Options Consistency Smoke Tests:', () => {
         ).toEqual(toPrettyJSON(sortObjectKeys(effectiveOptions)))
     })
 
-    test('4.a) Parsing file and options having correct default values for strict mode.', () => {
+    test('4.a) Parsing file and options having correct default values for strict mode with requireDocTerminator as "optional".', () => {
         // Arrange.
         const isStrictMode = true
         const mustBeTrue = true
@@ -414,6 +414,7 @@ describe('Options Consistency Smoke Tests:', () => {
         const result = YINI.parseFile(fullPath, {
             // IMPORTANT: Below values are set.
             strictMode: isStrictMode,
+            requireDocTerminator: 'optional',
             includeMetadata: mustBeTrue,
             includeDiagnostics: mustBeTrue,
         })
@@ -421,8 +422,8 @@ describe('Options Consistency Smoke Tests:', () => {
 
         // Assert.
         const correctLenientOptions: ParseOptionsExt = {
-            effectiveMode: 'strict',
-            strictMode: isStrictMode,
+            effectiveMode: 'custom',
+            strictMode: false,
             failLevel: 'errors', // 'auto' must get normalized to 'ignore-errors' (lenient mode).
             includeMetadata: mustBeTrue,
             includeDiagnostics: mustBeTrue,

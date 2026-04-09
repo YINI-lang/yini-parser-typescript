@@ -1,7 +1,5 @@
-import path from 'path'
 import YINI from '../../../src'
-import { isDebug } from '../../../src/config/env'
-import { debugPrint, printObject, toPrettyJSON } from '../../../src/utils/print'
+import { debugPrint, toPrettyJSON } from '../../../src/utils/print'
 
 /**
  * Integer number literal tests.
@@ -19,6 +17,7 @@ describe('Integer number literal tests:', () => {
             value7 = -1000
             value8 = 5000
             value9 = -20
+            /END
         `
 
         // Act.
@@ -55,6 +54,7 @@ describe('Integer number literal tests:', () => {
             power_of_two = 1024
             max_16bit = 65535
             max_32bit = 2147483647
+            /END
         `
 
         // Act.
@@ -99,6 +99,7 @@ describe('Integer number literal tests:', () => {
             min_16bit = -32768
             min_32bit = -2147483648
             negative_edge = -2
+            /END
         `
 
         // Act.
@@ -130,6 +131,7 @@ describe('Integer number literal tests:', () => {
         // Arrange.
         const badYini = `^ Section
             value = 8888888T888888f88888
+            /END
         `
 
         // Act & Assert.
@@ -144,6 +146,7 @@ describe('Integer number literal tests:', () => {
         // Arrange.
         const badYini = `^ Section
             value = 76¤%&886 // INVALID
+            /END
         `
 
         // Act & Assert.
