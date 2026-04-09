@@ -10,7 +10,7 @@
 /* 
   This LEXER grammar aims to follow, as closely as possible (*),
   the YINI format specification version:
-  1.2.0-rc.1x - 2026 Apr.
+  1.2.0-rc.1 - 2026 Mar.
 
   *) NOTE: Some rules are intentionally more permissive than the specification
   requires. This relaxation allows the host parser to detect syntax errors
@@ -47,13 +47,8 @@ DEPRECATED_TOKEN options {
 
 fragment EBD: ('0' | '1') ('0' | '1') ('0' | '1');
 
-fragment HSPACE : [ \t];
-
-// SECTION_HEAD: SECTION_MARKER HSPACE* WS* IDENT NL+;
-SECTION_HEAD
-  // : SECTION_MARKER HSPACE+ SECTION_NAME_PART NL+ // Requires hor-WS between marker and name.
-  : SECTION_MARKER HSPACE* SECTION_NAME_PART NL+   // Does NOT require hor-WS between marker and name.
-  ;
+//SECTION_HEAD: [ \t]* SECTION_MARKER [ \t]* WS* IDENT NL+;
+SECTION_HEAD: SECTION_MARKER [ \t]* WS* IDENT NL+;
 
 // Section markers: '^', '<', '§'.
 // – Up to six repeated markers are allowed (the parser must enforce the ≤ 6 rule).
@@ -76,7 +71,7 @@ fragment SECTION_MARKER_BASIC_REPEAT
 // Shorthand: a single marker followed by a positive integer (1 or larger).
 // Examples: ^7, <12, §100
 fragment SECTION_MARKER_SHORTHAND
-    : (CARET | LT | SS) [1-9] DIGIT* HSPACE
+    : (CARET | LT | SS) [1-9] DIGIT*
     ;
 
 fragment SECTION_MARKER_INVALID
@@ -135,47 +130,23 @@ NUMBER:
 		| HEX_INTEGER
 	);
 
-// KEY: IDENT;
-KEY
-  : SECTION_NAME_PART
-  | IDENT_INVALID
-  ;
+KEY: IDENT;
 
-// fragment IDENT
-//   : IDENT_SIMPLE
-// 	| IDENT_BACKTICKED
-// 	| IDENT_INVALID;
-fragment SECTION_NAME_PART
-  : IDENT_SIMPLE_LX
-  | IDENT_BACKTICKED
-  ;
+// NOTE: Intentionally allowing `.` even though the spec says simple
+// identifiers must not contain periods. Validation of illegal `.` is
+// deferred to the parser so the error can be reported there with a
+// more user-friendly message.
+IDENT: ('a' ..'z' | 'A' ..'Z' | '_') (
+		'a' ..'z'
+		| 'A' ..'Z'
+		| '0' ..'9'
+		| '_' | '.' // NOTE: Allowing . on purpose!
 
-// fragment DOTTED_COMPOUND_NAME
-//   : (IDENT_SIMPLE | IDENT_BACKTICKED) ('.' (IDENT_SIMPLE | IDENT_BACKTICKED))+
-//   ;
+	)*
+	| IDENT_BACKTICKED
+	| IDENT_INVALID;
 
-fragment IDENT_SIMPLE_START : [a-zA-Z_];
-fragment IDENT_SIMPLE_CHAR  : [a-zA-Z0-9_];
-
-// fragment IDENT_SIMPLE       : IDENT_SIMPLE_START IDENT_SIMPLE_CHAR*;
-
-// NOTE: This lexer rule is intentionally relaxed to allow `.` as well.
-// This makes it possible for the parser (or later validation step) to detect
-// dotted compound names and report a more user-friendly error message, even
-// though such names are invalid in the YINI specification.
-//
-// IMPORTANT: The parser/validator must still check identifiers for illegal
-// characters and reject invalid dotted names accordingly.
-//
-// Examples of invalid dotted compound names:
-//     key.two
-//     main.`illegal key`
-//     another.key.2
-//     `yet another`.illegal.key
-fragment IDENT_SIMPLE_LX       : IDENT_SIMPLE_START (IDENT_SIMPLE_CHAR | '.')*;
-
-// IDENT_BACKTICKED: '`' ~[\u0000-\u001F`]* '`'; // No newlines, tabs, or C0 controls.
-fragment IDENT_BACKTICKED: '`' ~[\u0000-\u001F`]* '`'; // No newlines, tabs, or C0 controls.
+IDENT_BACKTICKED: '`' ~[\u0000-\u001F`]* '`'; // No newlines, tabs, or C0 controls.
 
 // Illegal prefix characters and characters inside strings are deferred to the
 // parser, which gives more control and enables better user feedback (e.g.,
@@ -256,7 +227,7 @@ fragment SIGN: ('+' | '-');
 NL: ( WS* COMMENT* SINGLE_NL COMMENT*);
 SINGLE_NL: ('\r' '\n'? | '\n');
 
-WS: HSPACE+ -> skip;
+WS: [ \t]+ -> skip;
 
 /*
  BLOCK_COMMENT:
@@ -278,14 +249,14 @@ fragment DISABLE_LINE_MARKER: '--';
  */
 //LINE_COMMENT: ((DISABLE_LINE|';') ~[\r\n]*) -> skip;
 LINE_COMMENT
-  : {this.atLineStart()}? HSPACE* (DISABLE_LINE_MARKER | SEMICOLON) ~[\r\n]* -> skip
+  : {this.atLineStart()}? [ \t]* (DISABLE_LINE_MARKER | SEMICOLON) ~[\r\n]* -> skip
   ;
 
 /*
  INLINE_COMMENT: 
  Remains in input, but hidden (doesn't interfere with parsing).
  */
-INLINE_COMMENT: ('//' | '#' HSPACE+) ~[\r\n]* -> skip;
+INLINE_COMMENT: ('//' | '#' [ \t]+) ~[\r\n]* -> skip;
 
 IDENT_INVALID
     : [0-9][a-zA-Z0-9_]*

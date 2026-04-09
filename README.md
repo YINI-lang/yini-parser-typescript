@@ -1,11 +1,11 @@
 # yini-parser
-> **Readable configuration for Node.js and TypeScript — without YAML foot-guns or JSON noise.**  
+> **Readable configuration for Node.js and TypeScript/JavaScript — without YAML footguns or JSON noise.**  
 
-The official TypeScript / Node.js parser for **YINI** (by the YINI-lang project) — a human-friendly configuration format with real structure, nested sections, comments, and predictable parsing.
+The official TypeScript / Node.js parser for **YINI** (by the YINI-lang project) — a human-friendly configuration format with clear structure, nested sections, comments, and predictable parsing.
 
 YINI is designed for applications, tools, and services that need configuration that stays readable for humans without becoming vague, fragile, or hard to maintain.  
 
-[![npm version](https://img.shields.io/npm/v/yini-parser.svg)](https://www.npmjs.com/package/yini-parser) [![All Test Suites](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml) [![All Regression Tests](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-regression-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-regression-tests.yml) [![Grammar Drift Check](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-grammar-drift-check.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-grammar-drift-check.yml) [![npm downloads](https://img.shields.io/npm/dm/yini-parser)](https://www.npmjs.com/package/yini-parser)
+[![npm version](https://img.shields.io/npm/v/yini-parser.svg)](https://www.npmjs.com/package/yini-parser) [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![All Test Suites](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml) [![All Regression Tests](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-regression-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-regression-tests.yml) [![Grammar Drift Check](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-grammar-drift-check.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-grammar-drift-check.yml) [![npm downloads](https://img.shields.io/npm/dm/yini-parser)](https://www.npmjs.com/package/yini-parser)  
 
 ## Quick Start
 
@@ -36,18 +36,18 @@ console.log(config.App.Features.caching)  // true
 ## 🙋‍♀️ Why try YINI?
 
 - **Readable by humans** — Less noisy than JSON, less fragile than indentation-driven formats.
-- **Structured enough for real configuration** — Sections, nested sections, lists, objects, booleans, and null.
+- **Structured for real-world configuration** — Sections, nested sections, lists, objects, booleans, and null.
 - **Predictable parsing** — Explicit syntax with clear rules.
 - **Easy to use from TypeScript/Node.js** — Parse from strings or files in a few lines.
   
 ---
 
 ## What YINI looks like in practice
-> A basic YINI configuration example, showing a section, nested section, comments:  
+> A basic YINI configuration example, showing a section, a nested section, and comments:  
 ![YINI Config Example](./samples/basic.yini.png)
 Source: [basic.yini](./samples/basic.yini)
 
-- ▶️ Link to [Demo Apps](https://github.com/YINI-lang/yini-demo-apps/tree/main) with complete basic usage.
+- ▶️ [Demo Apps](https://github.com/YINI-lang/yini-demo-apps/tree/main) with complete usage examples.
 
 ---
 
@@ -55,7 +55,7 @@ Source: [basic.yini](./samples/basic.yini)
 - **Indentation-independent structure:** Spaces and tabs never change meaning, so files can be reformatted without changing structure.
 - **Explicit nesting:** Hierarchy is defined with section markers like `^`, `^^`, and `^^^`, making large configurations easier to scan and refactor.
 - **Multiple data types:** Supports booleans (`true` / `false`, `yes` / `no`, etc.), numbers, lists, and inline objects, with explicit string syntax.
-- **Comment support:** YINI supports multiple comment styles (`#`, `//`, `/* ... */`, and `;`), making it easier to document configuration directly in the file.
+- **Comment support:** YINI supports multiple comment styles (`#`, `//`, `/* ... */`, and `;`), making it easy to document configuration directly in the file.
 - **Predictable parsing:** Clear rules with optional strict and lenient modes for different use cases.
 
 ---
@@ -141,7 +141,7 @@ Source: [config.yini](./samples/config.yini)
 
 ## 🧪 Testing and Stability
 
-This parser is continuously validated through comprehensive regression and smoke tests, ensuring deterministic parsing behavior across default, strict, and metadata-enabled modes.
+This parser is validated through regression and smoke tests to help ensure stable, predictable parsing across default, strict, and metadata-enabled modes.
 
 ---
 
@@ -164,7 +164,7 @@ This parser is continuously validated through comprehensive regression and smoke
 ---
 
 ## 🤝 Contributing
-We welcome feedback, bug reports, feature requests, and code contributions!
+Feedback, bug reports, feature requests, and code contributions are welcome.
 - [Open an Issue](https://github.com/YINI-lang/yini-parser-typescript/issues)
 - [Start a Discussion](https://github.com/YINI-lang/yini-parser-typescript/discussions)
   
@@ -177,9 +177,9 @@ If this library is useful to you, a GitHub star helps more people discover the p
 ---
 
 ## License
-This project is licensed under the Apache-2.0 license — see the [LICENSE](./LICENSE) file for details.
+This project is licensed under the Apache License 2.0 — see the [LICENSE](./LICENSE) file for details.
 
-In this project on GitHub, the `libs` directory contains third party software and each is licensed under its own license which is described in its own license file under the respective directory under `libs`.
+In this project on GitHub, the `libs` directory contains third-party software and each is licensed under its own license, described in its own license file under the respective directory under `libs`.
 
 ---
 
