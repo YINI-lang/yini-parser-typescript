@@ -171,7 +171,7 @@ GitHub Issues and Discussions are available for feedback and project discussion.
 ## License
 This project is licensed under the Apache License 2.0 — see the [LICENSE](./LICENSE) file for details.
 
-In this project on GitHub, the `libs` directory contains third-party software and each is licensed under its own license, described in its own license file under the respective directory under `libs`.
+In this project on GitHub, the `libs` directory contains third-party software and each is licensed under its own license which is described in its own license file under the respective directory under `libs`.
 
 ---
 
