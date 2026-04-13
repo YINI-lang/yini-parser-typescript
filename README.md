@@ -1,11 +1,10 @@
 # yini-parser
-> **Readable configuration for Node.js and TypeScript/JavaScript — without YAML footguns or JSON noise.**  
 
-The official TypeScript / Node.js parser for **YINI** (by the YINI-lang project) — a human-friendly configuration format with clear structure, nested sections, comments, and predictable parsing.
-
-YINI is designed for applications, tools, and services that need configuration that stays readable for humans without becoming vague, fragile, or hard to maintain.  
+The official TypeScript / Node.js parser for **YINI** (by the YINI-lang project) — an INI-inspired, human-readable configuration format with explicit structure, nested sections, comments, and deterministic parsing.  
 
 [![npm version](https://img.shields.io/npm/v/yini-parser.svg)](https://www.npmjs.com/package/yini-parser) [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![All Test Suites](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml) [![All Regression Tests](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-regression-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-regression-tests.yml) [![Grammar Drift Check](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-grammar-drift-check.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-grammar-drift-check.yml) [![npm downloads](https://img.shields.io/npm/dm/yini-parser)](https://www.npmjs.com/package/yini-parser)  
+
+YINI is intended to emphasize clarity, readability, explicit structure, and parsing parsing, while remaining simple, but not simplistic, and without relying on implicit or indentation-sensitive structure.
 
 ## Quick Start
 
@@ -18,27 +17,29 @@ import YINI from 'yini-parser'
 
 const config = YINI.parse(`
 ^ App
-name = 'My App'
-darkMode = true
+name     = 'My App'
+list     = ['web', 'api']
+darkMode = true  // Yes/On works too
 
     ^^ Features
     caching = on
+    object  = { logging: true, mode: 'debug' }
 `)
 
 console.log(config.App.name)              // My App
 console.log(config.App.Features.caching)  // true
 ```
 
-➡️ Learn more in the [YINI specification and documentation](https://yini-lang.org/refs/specification).
+See the [YINI specification and documentation](https://yini-lang.org/refs/specification).
 
 ---
 
-## 🙋‍♀️ Why try YINI?
+## 🙋‍♀️ Format characteristics
 
-- **Readable by humans** — Less noisy than JSON, less fragile than indentation-driven formats.
-- **Structured for real-world configuration** — Sections, nested sections, lists, objects, booleans, and null.
-- **Predictable parsing** — Explicit syntax with clear rules.
-- **Easy to use from TypeScript/Node.js** — Parse from strings or files in a few lines.
+- **Human-readable** — Uses explicit syntax and indentation-independent structure.
+- **Structured configuration model** — Supports sections, nested sections, lists, objects, booleans, and null.
+- **Predictable parsing** — Explicit syntax with clear rules and deterministic parsing behavior.
+- **TypeScript and Node.js integration** — Supports parsing from strings and files.
   
 ---
 
@@ -47,15 +48,15 @@ console.log(config.App.Features.caching)  // true
 ![YINI Config Example](./samples/basic.yini.png)
 Source: [basic.yini](./samples/basic.yini)
 
-- ▶️ [Demo Apps](https://github.com/YINI-lang/yini-demo-apps/tree/main) with complete usage examples.
+- [Demo Apps](https://github.com/YINI-lang/yini-demo-apps/tree/main) with usage examples.
 
 ---
 
-## Why YINI works well for configuration
+## Configuration-oriented design
 - **Indentation-independent structure:** Spaces and tabs never change meaning, so files can be reformatted without changing structure.
-- **Explicit nesting:** Hierarchy is defined with section markers like `^`, `^^`, and `^^^`, making large configurations easier to scan and refactor.
+- **Explicit nesting:** Hierarchy is defined with section markers such as `^`, `^^`, and `^^^`, rather than by indentation.
 - **Multiple data types:** Supports booleans (`true` / `false`, `yes` / `no`, etc.), numbers, lists, and inline objects, with explicit string syntax.
-- **Comment support:** YINI supports multiple comment styles (`#`, `//`, `/* ... */`, and `;`), making it easy to document configuration directly in the file.
+- **Comment support:** YINI supports multiple comment styles (`#`, `//`, `/* ... */`, and `;`) for documenting configuration directly in the file.
 - **Predictable parsing:** Clear rules with optional strict and lenient modes for different use cases.
 
 ---
@@ -130,7 +131,7 @@ const configFromFile = YINI.parseFile('./config.yini');
 
 ## 📂 More Examples
 
-- ▶️ Explore more [YINI examples](https://yini-lang.org/learn-yini/examples/?utm_source=yini-parser-ts&utm_medium=github&utm_campaign=repo-link&utm_content=readme).
+- Additional [YINI examples](https://yini-lang.org/learn-yini/examples/?utm_source=yini-parser-ts&utm_medium=github&utm_campaign=repo-link&utm_content=readme).
 
 ### Example 2
 > A real-world YINI configuration example, showing sections, nesting, comments, and multiple data types:  
@@ -141,34 +142,25 @@ Source: [config.yini](./samples/config.yini)
 
 ## 🧪 Testing and Stability
 
-This parser is validated through regression and smoke tests to help ensure stable, predictable parsing across default, strict, and metadata-enabled modes.
+This parser is covered by regression and smoke tests across default, strict, and metadata-enabled modes.
 
 ---
 
 ## Links
-- ➡️ [YINI Homepage](https://yini-lang.org)  
-  *Tutorials, guides, and examples.*
-
-- ➡️ [Read the YINI Specification](https://yini-lang.org/refs/specification)  
-  *Full syntax and format reference.*
-
-- ➡️ [YINI CLI on GitHub](https://github.com/YINI-lang/yini-cli)  
-  *CLI tooling for working with YINI files.*
-
-- ➡️ [Demo Apps](https://github.com/YINI-lang/yini-demo-apps/tree/main)  
-  *Complete basic usage examples.*
-
-- ➡️ [YINI-lang Project](https://github.com/YINI-lang)  
-  *Repositories and related ecosystem projects.*
+- [YINI Homepage](https://yini-lang.org)  
+- [YINI Specification](https://yini-lang.org/refs/specification)  
+- [YINI CLI on GitHub](https://github.com/YINI-lang/yini-cli)  
+- [YINI Demo Apps](https://github.com/YINI-lang/yini-demo-apps/tree/main)  
+- [YINI-lang Project](https://github.com/YINI-lang)  
 
 ---
 
 ## 🤝 Contributing
-Feedback, bug reports, feature requests, and code contributions are welcome.
+Bug reports, feature requests, discussions, and code contributions are welcome.
 - [Open an Issue](https://github.com/YINI-lang/yini-parser-typescript/issues)
 - [Start a Discussion](https://github.com/YINI-lang/yini-parser-typescript/discussions)
   
-If this library is useful to you, a GitHub star helps more people discover the project and supports future development.
+GitHub Issues and Discussions are available for feedback and project discussion.
 
 ### Documentation
 - [Project Setup](https://github.com/YINI-lang/yini-parser-typescript/blob/main/docs/Project-Setup.md) — How to run, test, and build the project, etc.
@@ -184,8 +176,8 @@ In this project on GitHub, the `libs` directory contains third-party software an
 ---
 
 **^YINI ≡**  
-> Readable like INI. Structured like JSON. No indentation surprises.  
+> YINI is a human-readable configuration format designed for clarity, readability, explicit structure, and predictable parsing.
 > 
-> Predictable configuration with clear rules.  
+> See the specification for syntax and format details.  
 
 [yini-lang.org](https://yini-lang.org/?utm_source=github&utm_medium=referral&utm_campaign=yini_parser_ts&utm_content=readme_footer) · [YINI-lang on GitHub](https://github.com/YINI-lang)  
