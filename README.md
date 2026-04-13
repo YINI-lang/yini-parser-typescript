@@ -34,7 +34,7 @@ See the [YINI specification and documentation](https://yini-lang.org/refs/specif
 
 ---
 
-## 🙋‍♀️ Format characteristics
+## Format characteristics
 
 - **Human-readable** — Uses explicit syntax and indentation-independent structure.
 - **Structured configuration model** — Supports sections, nested sections, lists, objects, booleans, and null.
