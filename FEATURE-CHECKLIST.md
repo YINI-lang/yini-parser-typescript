@@ -677,6 +677,24 @@ https://github.com/YINI-lang/YINI-spec
     <td>Still being refined; some behavior is controlled by rule options such as <code>requireDocTerminator</code> and <code>treatEmptyValueAsNull</code>.</td>
   </tr>
   <tr>
+    <td>Give error on empty document in strict mode</td>
+    <td>✅</td>
+    <td>Document contains only whitespace, comments, and/or disabled lines</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Must result in an error.</td>
+  </tr>  
+  <tr>
+    <td>Give warning on empty document in lenient mode</td>
+    <td>✅</td>
+    <td>Document contains only whitespace, comments, and/or disabled lines</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Must not fail, SHOULD produce a warning diagnostic that the file has no meaningful content.</td>
+  </tr>
+  <tr>
     <td>Optional Bail/Abort sensitivity levels</td>
     <td>🔲</td>
     <td>Level 0 = Ignore errors and try parse anyway (may remap faulty key/section names).<br/>

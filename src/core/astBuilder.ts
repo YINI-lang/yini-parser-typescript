@@ -356,7 +356,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         let strKind: IParsedStringInput['strKind']
 
         if (/^[Cc]/.test(raw)) prefix = 'C'
-        else if (/^[Hh]/.test(raw)) prefix = 'H'
+        // else if (/^[Hh]/.test(raw)) prefix = 'H'
         else if (/^[Rr]/.test(raw)) prefix = 'R'
 
         if (

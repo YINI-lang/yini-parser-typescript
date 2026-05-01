@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 1.5.0XX - 2026 xxx
+- **Updated:** Parser behavior aligned with YINI Specification `v1.0.0-RC.6`, including:
+  * Removed internal handling of Hyper Strings (H-Strings) to simplify the language core and reduce parser complexity.
+  * Updated empty-document behavior:
+    - In lenient mode (default), an empty document now produces a warning.
+    - In strict mode, an empty document now produces an error.
+  
 ## 1.5.0 - 2026 Apr
 - **Updated:** Parser behavior aligned with YINI Specification `v1.0.0-RC.5`.
 - **Changed:** In strict mode, YINI documents must now end with the document terminator `/END`.
