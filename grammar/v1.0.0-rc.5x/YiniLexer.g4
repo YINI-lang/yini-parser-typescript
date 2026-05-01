@@ -27,11 +27,6 @@
 
 lexer grammar YiniLexer;
 
-//@members {
-//  // Below is TypeScript code:
-//  public atLineStart(): boolean { return this.column === 0; }
-//}
-
 /* ------------------------------------------------------------------
  * Fragments
  * ------------------------------------------------------------------ */
@@ -318,14 +313,13 @@ fragment DISABLE_LINE_MARKER
   ;
 
 /*
- Full LINE_COMMENT:
+ FULL_LINE_COMMENT:
  This rule intentionally does not enforce "start of line" in the lexer.
- The parser or later validation step must verify that LINE_COMMENT appears
+ The parser or later validation step must verify that FULL_LINE_COMMENT appears
  only where a full-line comment is allowed.
 */
 // todo: if it doesn't work, try delete skip
-LINE_COMMENT
-//  : {this.atLineStart()}? HSPACE* (DISABLE_LINE_MARKER | SEMICOLON) ~[\r\n]* -> skip
+FULL_LINE_COMMENT
   : HSPACE* (DISABLE_LINE_MARKER | SEMICOLON) ~[\r\n]* -> skip
   //: ('\r\n' | '\r' | '\n') HSPACE* (DISABLE_LINE_MARKER | SEMICOLON) ~[\r\n]* -> skip
   ;

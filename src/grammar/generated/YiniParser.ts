@@ -56,7 +56,7 @@ export default class YiniParser extends Parser {
 	public static readonly NL = 36;
 	public static readonly WS = 37;
 	public static readonly BLOCK_COMMENT = 38;
-	public static readonly LINE_COMMENT = 39;
+	public static readonly FULL_LINE_COMMENT = 39;
 	public static readonly INLINE_COMMENT = 40;
 	public static readonly KEY = 41;
 	public static readonly IDENT_INVALID = 42;
@@ -131,7 +131,7 @@ export default class YiniParser extends Parser {
                                                              "AT", "SEMICOLON", 
                                                              "NL", "WS", 
                                                              "BLOCK_COMMENT", 
-                                                             "LINE_COMMENT", 
+                                                             "FULL_LINE_COMMENT", 
                                                              "INLINE_COMMENT", 
                                                              "KEY", "IDENT_INVALID", 
                                                              "REST", "META_INVALID" ];

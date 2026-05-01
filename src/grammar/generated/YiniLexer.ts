@@ -50,7 +50,7 @@ export default class YiniLexer extends Lexer {
 	public static readonly NL = 36;
 	public static readonly WS = 37;
 	public static readonly BLOCK_COMMENT = 38;
-	public static readonly LINE_COMMENT = 39;
+	public static readonly FULL_LINE_COMMENT = 39;
 	public static readonly INLINE_COMMENT = 40;
 	public static readonly KEY = 41;
 	public static readonly IDENT_INVALID = 42;
@@ -103,7 +103,7 @@ export default class YiniLexer extends Lexer {
                                                              "AT", "SEMICOLON", 
                                                              "NL", "WS", 
                                                              "BLOCK_COMMENT", 
-                                                             "LINE_COMMENT", 
+                                                             "FULL_LINE_COMMENT", 
                                                              "INLINE_COMMENT", 
                                                              "KEY", "IDENT_INVALID", 
                                                              "REST", "META_INVALID" ];
@@ -122,7 +122,8 @@ export default class YiniLexer extends Lexer {
 		"HYPER_STRING", "NUMBER", "SS", "CARET", "GT", "LT", "EQ", "HASH", "COMMA", 
 		"COLON", "OB", "CB", "OC", "CC", "PLUS", "DOLLAR", "PC", "AT", "SEMICOLON", 
 		"EOL", "NL", "SECTION_TAIL_COMMENT", "WS", "BLOCK_COMMENT", "DISABLE_LINE_MARKER", 
-		"LINE_COMMENT", "INLINE_COMMENT", "KEY", "IDENT_INVALID", "REST", "META_INVALID",
+		"FULL_LINE_COMMENT", "INLINE_COMMENT", "KEY", "IDENT_INVALID", "REST", 
+		"META_INVALID",
 	];
 
 
