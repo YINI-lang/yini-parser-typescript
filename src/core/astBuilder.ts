@@ -335,8 +335,6 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         switch (prefix) {
             case 'C':
                 return { strKind: 'classic', value: inner }
-            case 'H':
-                return { strKind: 'hyper', value: inner }
             case 'R':
             case '':
                 return { strKind: 'raw', value: inner }
@@ -372,7 +370,6 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             value = raw.replace(/^[CHRchr]?['"]/, '').replace(/['"]$/, '')
 
             if (prefix === 'C') strKind = 'classic'
-            else if (prefix === 'H') strKind = 'hyper'
             else strKind = 'raw'
         }
 

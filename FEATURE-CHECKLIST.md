@@ -475,13 +475,13 @@ https://github.com/YINI-lang/YINI-spec
     <td>Single line, escape codes, prefixed either with C or c</td>
   </tr>
   <tr>
-    <td>Hyper string (H-string)</td>
+    <td><strike>Hyper string (H-string)</strike></td>
     <td>🔲</td>
     <td><code>H'...'</code>, <code>H"..."</code></td>
     <td>🔲</td>
     <td>🔲</td>
     <td>🔲</td>
-    <td>Multi-line, trims WS, normalizes repeating WS to one WS</td>
+    <td>Since after RC5, removed to simplify the language core and reduce parser complexity.</td>
   </tr>
   <tr>
     <td>Triple-quoted (raw)</td>

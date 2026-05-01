@@ -24,8 +24,6 @@ version = 1.0
         string"""
 
         classic = C"Hello\tWorld\n"
-        hyper = H"  foo   
-            bar baz   "
 
 ^ Metadata
 author = 'Smoke Test'
