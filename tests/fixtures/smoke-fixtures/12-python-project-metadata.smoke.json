@@ -1,0 +1,140 @@
+{
+  "Project": {
+    "name": "parser",
+    "version": "0.1.0",
+    "description": "A Python parser for the configuration format.",
+    "requiresPython": ">=3.10",
+    "readme": "README.md",
+    "license": {
+      "text": "Apache-2.0"
+    },
+    "keywords": [
+      "parser",
+      "configuration",
+      "settings",
+      "config",
+      "python"
+    ],
+    "Authors": {
+      "primary": {
+        "name": "Sam Leenen",
+        "email": "your_name@example.com"
+      }
+    },
+    "URLs": {
+      "homepage": "https://yini-lang.org",
+      "repository": "https://github.com/YINI-lang/yini-parser-python",
+      "documentation": "https://github.com/YINI-lang/yini-parser-python#readme",
+      "issues": "https://github.com/YINI-lang/yini-parser-python/issues"
+    },
+    "Classifiers": {
+      "items": [
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: Apache Software License",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Topic :: Software Development :: Libraries",
+        "Topic :: Text Processing"
+      ]
+    },
+    "Dependencies": {
+      "runtime": [
+        "antlr4-python3-runtime==4.13.2"
+      ],
+      "OptionalDependencies": {
+        "dev": [
+          "pytest>=8",
+          "pytest-cov>=5",
+          "ruff>=0.6",
+          "black>=24.0"
+        ]
+      },
+      "ExtraGroups": {
+        "docs": [
+          "mkdocs>=1.6",
+          "mkdocs-material>=9.5"
+        ],
+        "typing": [
+          "mypy>=1.10"
+        ]
+      }
+    }
+  },
+  "BuildSystem": {
+    "requires": [
+      "setuptools>=69",
+      "wheel"
+    ],
+    "buildBackend": "setuptools.build_meta"
+  },
+  "Tool": {
+    "Pytest": {
+      "minVersion": "8.0",
+      "addopts": "-ra -q",
+      "testpaths": [
+        "tests"
+      ],
+      "pythonpath": [
+        "src"
+      ]
+    },
+    "Coverage": {
+      "branch": true,
+      "source": [
+        "src/parser"
+      ],
+      "Report": {
+        "showMissing": true,
+        "skipCovered": false
+      }
+    },
+    "Black": {
+      "lineLength": 88,
+      "targetVersion": [
+        "py310",
+        "py311",
+        "py312"
+      ]
+    },
+    "Ruff": {
+      "lineLength": 88,
+      "targetVersion": "py310",
+      "Lint": {
+        "select": [
+          "E",
+          "F",
+          "I",
+          "UP",
+          "B"
+        ],
+        "ignore": [
+          "E501"
+        ]
+      }
+    },
+    "Mypy": {
+      "pythonVersion": "3.10",
+      "warnUnusedConfigs": true,
+      "warnRedundantCasts": true,
+      "warnUnusedIgnores": true,
+      "strictOptional": true
+    }
+  },
+  "Tasks": {
+    "test": {
+      "command": "pytest -v",
+      "description": "Run the test suite."
+    },
+    "lint": {
+      "command": "ruff check src tests",
+      "description": "Run lint checks."
+    },
+    "format": {
+      "command": "black src tests",
+      "description": "Format source and test files."
+    }
+  }
+}

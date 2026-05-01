@@ -180,4 +180,18 @@ describe('Parse-File Smoke Tests:', () => {
         // NOTE: Dry run parsing - enough that something is successfully returned.
         expect(!!result).toEqual(true)
     })
+
+    test('Parse file "12-python-project-metadata.*".', () => {
+        // Arrange.
+        const fileName = '12-python-project-metadata.smoke.yini'
+        const fullPath = path.join(baseDir, fileName)
+
+        // Act.
+        const result = YINI.parseFile(fullPath)
+        debugPrint(result)
+
+        // Assert.
+        // NOTE: Dry run parsing - enough that something is successfully returned.
+        expect(!!result).toEqual(true)
+    })
 })

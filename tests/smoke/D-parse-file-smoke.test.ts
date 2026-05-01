@@ -4,9 +4,10 @@
  * To test a set of real-life (mimiced) configuration files one might have.
  */
 
+import fs from 'node:fs'
 import path from 'path'
 import YINI from '../../src'
-import { debugPrint } from '../../src/utils/print'
+import { debugPrint, toPrettyJSON } from '../../src/utils/print'
 import { parseFileUntilError } from '../test-helpers'
 
 const DIR_OF_FIXTURES = '../fixtures/smoke-fixtures'
@@ -176,5 +177,24 @@ describe('Parse-File Smoke Tests:', () => {
         expect(result.System.config.services.database.replicas[1].role).toEqual(
             'secondary',
         )
+    })
+
+    test('Parse and compare "12-python-project-metadata.*" YINI against JSON.', () => {
+        // Arrange.
+        const fileName = '12-python-project-metadata.smoke.yini'
+        const fullPath = path.join(baseDir, fileName)
+        const jsonPath = path.join(
+            baseDir,
+            '12-python-project-metadata.smoke.json',
+        )
+        const expected = JSON.parse(fs.readFileSync(jsonPath, 'utf8'))
+
+        // Act.
+        const result = YINI.parseFile(fullPath)
+        debugPrint(result)
+
+        // Assert.
+        expect(result).toBeDefined()
+        expect(toPrettyJSON(result)).toEqual(toPrettyJSON(expected))
     })
 })

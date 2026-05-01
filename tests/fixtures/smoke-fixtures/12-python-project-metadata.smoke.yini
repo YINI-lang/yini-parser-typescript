@@ -1,0 +1,118 @@
+/*
+  Smoke fixture 12:
+  Python project metadata and tooling configuration.
+
+  This example is inspired by a realistic pyproject-style setup,
+  but rewritten in YINI form to demonstrate:
+
+  - Project metadata.
+  - Dependency lists.
+  - Optional dependency groups.
+  - Build system settings.
+  - Test tool configuration.
+  - Formatter and linter settings.
+  - Nested sections and inline objects.
+
+  Notes:
+  - This is an example, not a literal 1:1 pyproject.toml replacement.
+  - Values are arranged for readability and parser coverage.
+*/
+
+^ Project
+name = "parser"
+version = "0.1.0"
+description = "A Python parser for the configuration format."
+requiresPython = ">=3.10"  // Minimum supported Python version.
+readme = "README.md"
+license = { text: "Apache-2.0" }
+keywords = ["parser", "configuration", "settings", "config", "python"]
+
+    ^^ Authors
+    primary = { name: "Sam Leenen", email: "your_name@example.com" }  // Primary author/contact.
+
+    ^^ URLs
+    homepage = "https://yini-lang.org"
+    repository = "https://github.com/YINI-lang/yini-parser-python"
+    documentation = "https://github.com/YINI-lang/yini-parser-python#readme"
+    issues = "https://github.com/YINI-lang/yini-parser-python/issues"
+
+    ^^ Classifiers
+    items = [
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: Apache Software License",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Topic :: Software Development :: Libraries",
+        "Topic :: Text Processing"
+    ]
+
+    ^^ Dependencies
+    runtime = [
+        "antlr4-python3-runtime==4.13.2"  // Core parser runtime dependency.
+    ]
+
+        ^^^ OptionalDependencies
+        dev = [
+            "pytest>=8",
+            "pytest-cov>=5",
+            "ruff>=0.6",
+            "black>=24.0"
+        ]
+
+        ^^^ ExtraGroups
+        docs = [
+            "mkdocs>=1.6",
+            "mkdocs-material>=9.5"
+        ]
+        typing = [
+            "mypy>=1.10"
+        ]
+
+^ BuildSystem
+requires = [
+    "setuptools>=69",
+    "wheel"
+]
+buildBackend = "setuptools.build_meta"  // Standard setuptools backend.
+
+^ Tool
+    ^^ Pytest
+    minVersion = "8.0"
+    addopts = "-ra -q"  // Show summary for skipped/failed tests, but keep output quieter.
+    testpaths = ["tests"]
+    pythonpath = ["src"]
+
+    ^^ Coverage
+    branch = true
+    source = ["src/parser"]  // Measure coverage for package source only.
+
+        ^^^ Report
+        showMissing = true
+        skipCovered = false
+
+    ^^ Black
+    lineLength = 88
+    targetVersion = ["py310", "py311", "py312"]
+
+    ^^ Ruff
+    lineLength = 88
+    targetVersion = "py310"  // Linting baseline.
+
+        ^^^ Lint
+        select = ["E", "F", "I", "UP", "B"]
+        ignore = ["E501"]  // Let formatter handle long lines.
+
+    ^^ Mypy
+    pythonVersion = "3.10"
+    warnUnusedConfigs = true
+    warnRedundantCasts = true
+    warnUnusedIgnores = true
+    strictOptional = true
+
+^ Tasks
+test = { command: "pytest -v", description: "Run the test suite." }
+lint = { command: "ruff check src tests", description: "Run lint checks." }
+format = { command: "black src tests", description: "Format source and test files." }
