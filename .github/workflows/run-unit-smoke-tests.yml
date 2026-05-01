@@ -1,19 +1,17 @@
+# Fast CI
 name: Unit & Smoke Tests (fast)
 
 on:
-    pull_request: # PR:s **Pre-merge** (Good for fast feedback before merge. - Secrets: Not available for PRs from forks (by default).)
-    workflow_dispatch: # allows manual run from GitHub UI
+    # Runs on every PR.
+    pull_request:
+
+    # Runs on pushes.
+    push:
+
+    workflow_dispatch: # Allows manual run from GitHub UI.
 
 jobs:
     run-unit-n-smoke-tests:
-        #    runs-on: ubuntu-latest
-        #    runs-on: windows-latest
-        # strategy:
-        #     matrix:
-        #         # Available GitHub-hosted runner types see:
-        #         # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#choosing-github-hosted-runners
-        #         os: [ubuntu-latest, macos-latest, ubuntu-20.04, macos-11]
-        # runs-on: ${{ matrix.os }}
         runs-on: ubuntu-latest
 
         steps:

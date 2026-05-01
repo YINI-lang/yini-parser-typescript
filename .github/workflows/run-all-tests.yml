@@ -1,9 +1,8 @@
 name: All Test Suites (full)
 
 on:
-    push: # Any push. **Post-merge** (Good for deploy / publish / generate artifacts.)
-        branches: ['main'] # To main (direct commits, or merges from PRs).
-    workflow_dispatch: # allows manual run from GitHub UI
+    # Runs on every PR.
+    pull_request:
 
 jobs:
     run-all-tests:
