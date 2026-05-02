@@ -1,3 +1,4 @@
+// src/parsers/parseNumber.ts
 import { isDebug } from '../config/env'
 import { isValidJSNumber } from '../utils/number'
 import { debugPrint } from '../utils/print'
@@ -18,21 +19,41 @@ const parseNumberLiteral = (
         debugPrint('* Identified as an exp number')
         return {
             tag: 'From exp number, Number-Float',
-            // value: parseInt(txt.replace('#', '0x'), 16),
+            // value: Number.parseInt(txt.replace('#', '0x'), 16),
             value: parseFloat(txt),
         }
     }
-    // --- Hexadecimal ---------
-    if (/^[+-]?(0[xX]|#)/.test(txt)) {
-        // Prefix: 0x, 0X, #
-        debugPrint('* Identified as a hex number')
-        debugPrint('parsed out HEX: ' + txt.replace(/0[xX]|#/, ''))
+
+    // --- Hexadecimal with prefix hex: ---------
+    if (/^[+-]?hex:[ \t]*/i.test(txt)) {
+        // Prefix: hex: or HEX:, optionally followed by horizontal whitespace.
+        debugPrint('* Identified as an explicit hex number')
+        debugPrint('parsed out HEX: ' + txt.replace(/^[+-]?hex:[ \t]*/i, ''))
+
+        const sign = txt.startsWith('-') ? -1 : 1
+        const digits = txt.replace(/^[+-]?hex:[ \t]*/i, '')
+
         return {
-            tag: 'From hex number, Number-Integer',
-            // value: parseInt(txt.replace('#', '0x'), 16),
-            value: parseInt(txt.replace(/0[xX]|#/, ''), 16),
+            tag: 'From explicit hex number, Number-Integer',
+            value: sign * Number.parseInt(digits, 16),
         }
     }
+
+    // --- Hexadecimal with prefix X or x ---------
+    if (/^[+-]?0[xX]/.test(txt)) {
+        // Prefix: 0x, 0X
+        debugPrint('* Identified as a hex number')
+        debugPrint('parsed out HEX: ' + txt.replace(/^[+-]?0[xX]/, ''))
+
+        const sign = txt.startsWith('-') ? -1 : 1
+        const digits = txt.replace(/^[+-]?0[xX]/, '')
+
+        return {
+            tag: 'From hex number, Number-Integer',
+            value: sign * Number.parseInt(digits, 16),
+        }
+    }
+
     // --- Binary ---------
     if (/^[+-]?(0[bB]|%)/.test(txt)) {
         // Prefix: 0b, 0B, %
@@ -40,9 +61,10 @@ const parseNumberLiteral = (
         debugPrint('parsed out BIN: ' + txt.replace(/0[bB]|%/, ''))
         return {
             tag: 'From bin number, Number-Integer',
-            value: parseInt(txt.replace(/0[bB]|%/, ''), 2),
+            value: Number.parseInt(txt.replace(/0[bB]|%/, ''), 2),
         }
     }
+
     // --- Octal ---------
     if (/^[+-]?0[oO]/.test(txt)) {
         // Prefix: 0o, 0O
@@ -50,9 +72,10 @@ const parseNumberLiteral = (
         debugPrint('parsed out OCT: ' + txt.replace(/0[oO]/, ''))
         return {
             tag: 'From oct number, Number-Integer',
-            value: parseInt(txt.replace(/0[oO]/, ''), 8),
+            value: Number.parseInt(txt.replace(/0[oO]/, ''), 8),
         }
     }
+
     // --- Duodecimal ---------
     if (/^[+-]?0[zZ]/.test(txt)) {
         // Prefix: 0z, 0Z, x = A = 10, e = B = 11.
@@ -63,7 +86,7 @@ const parseNumberLiteral = (
         debugPrint('Converter to AB form: ' + txt.replace(/0[zZ]/, ''))
         return {
             tag: 'From doz (duodecimal) number, Number-Integer',
-            value: parseInt(txt.replace(/0[zZ]/, ''), 12),
+            value: Number.parseInt(txt.replace(/0[zZ]/, ''), 12),
         }
     }
 
@@ -85,7 +108,10 @@ const parseNumberLiteral = (
     }
 
     debugPrint('* Identified as a int number')
-    return { tag: 'From int number, Number-Integer', value: parseInt(txt) }
+    return {
+        tag: 'From int number, Number-Integer',
+        value: Number.parseInt(txt),
+    }
 }
 
 export default parseNumberLiteral

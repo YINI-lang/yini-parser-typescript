@@ -2,6 +2,10 @@
 
 ## 1.5.0XX - 2026 xxx
 - **Updated:** Parser behavior aligned with YINI Specification `v1.0.0-RC.6`, including:
+  * Revised `#` character handling and updated hexadecimal notation rules, in the specification and in the ANTLR4 grammar:
+    - **Changed:** In the spec, the `#` character now always begins a comment outside string literals. No whitespace is required before or after `#`.
+    - **Added:** In the spec, added the explicit hexadecimal notation `hex:` as an alternative to `0x...`. The `hex:` prefix is case-insensitive and may be followed by optional horizontal whitespace.
+    - **Removed:** In the spec, support for `#` as a hexadecimal number prefix was removed. Hexadecimal numbers MUST instead be written using `0x...` or the explicit `hex:` form.
   * Removed internal handling of Hyper Strings (H-Strings) to simplify the language core and reduce parser complexity.
   * Updated empty-document behavior:
     - In lenient mode (default), an empty document now produces a warning.

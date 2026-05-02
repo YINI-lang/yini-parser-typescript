@@ -21,6 +21,7 @@ import {
     localNodeEnv,
 } from '../config/env'
 import { debugPrint, printObject, toPrettyJSON } from '../utils/print'
+import { forceExit } from '../utils/system'
 import YINI from '../YINI'
 import {
     defectConfig2Combo3,
@@ -70,23 +71,21 @@ if (isProdEnv()) {
         // ^ App
         // name = "Shebang-demo"`
         const yiniContent = `  #!/usr/bin/env yini
-^ App
-// val = 3e3
-// 3val = 33
-// name = "Shebang-\\"demo"
-// value = c"Hello World"
-// badEscape = c"E:\\logs\\nebula\\app.log"
-// \`value\`.B = "dfdfgd"
-// value.A = "gdfgdf"
+^ HexNumbers
+            hex1 = hex:0
+            hex2 = hex:1
+            hex3 = hex:A
+            hex4 = hex:FF
+            hex5 = hex:7F
+            hex6 = hex:0060BB
 
-num1 = 10
-num2 = null
-num3 = Null
-num4 = NULL
-num5 = nULL
-num6 = 
-num20 = 20
-`
+            hex7 = hex: 0
+            hex8 = hex: 1
+            hex9 = hex: A
+            hex10 = hex: FF
+            hex11 = hex: 7F
+            hex12 = hex: 0060BB
+            /END`
 
         console.log('--start0------------------------------------------')
         const res0 = YINI.parse(yiniContent, {
@@ -98,6 +97,9 @@ num20 = 20
         console.log('res0:')
         console.log(res0)
         console.log('--end------------------------------------------\n')
+
+        forceExit()
+        // process.exit()
 
         console.log('--start1------------------------------------------')
         const res1 = YINI.parse(yiniContent, {

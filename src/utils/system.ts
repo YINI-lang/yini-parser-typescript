@@ -15,3 +15,8 @@
 export const isError = (e: unknown): e is Error => {
     return e instanceof Error
 }
+
+export const forceExit = (): void => {
+    console.log('\n*** Forced program termination via forceExit() ***')
+    process.exit()
+}
