@@ -228,12 +228,13 @@ describe('General Smoke Tests:', () => {
         }).toThrow()
     })
 
-    test('12. Should throw error if parsing an incorrect hash comment.', () => {
+    test('12. Should throw error if parsing hex notation without digits.', () => {
         // Arrange.
         const invalidYini = `^ App
-            id = 32403  #This hash comment is invalid due to a missing space.
-            title = "My Program"
-        `
+        id = 32403
+        color = hex:
+        title = "My Program"
+    `
 
         // Act & Assert.
         expect(() => {

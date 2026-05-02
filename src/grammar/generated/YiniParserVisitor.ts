@@ -1,4 +1,4 @@
-// Generated from ./grammar/v1.0.0-rc.5x/YiniParser.g4 by ANTLR 4.13.2
+// Generated from ./grammar/v1.0.0-rc.5xx/YiniParser.g4 by ANTLR 4.13.2
 
 import {ParseTreeVisitor} from 'antlr4';
 
@@ -18,6 +18,7 @@ import { ValueContext } from "./YiniParser.js";
 import { Object_literalContext } from "./YiniParser.js";
 import { Object_membersContext } from "./YiniParser.js";
 import { Object_memberContext } from "./YiniParser.js";
+import { Object_member_separatorContext } from "./YiniParser.js";
 import { List_literalContext } from "./YiniParser.js";
 import { ElementsContext } from "./YiniParser.js";
 import { Number_literalContext } from "./YiniParser.js";
@@ -127,6 +128,12 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 * @return the visitor result
 	 */
 	visitObject_member?: (ctx: Object_memberContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.object_member_separator`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitObject_member_separator?: (ctx: Object_member_separatorContext) => Result;
 	/**
 	 * Visit a parse tree produced by `YiniParser.list_literal`.
 	 * @param ctx the parse tree

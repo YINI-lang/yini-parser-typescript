@@ -80,7 +80,7 @@ export type TObjectValue = {
     tag: string | undefined
 }
 
-type TStringKind = 'raw' | 'classic' | 'hyper' | 'triple-raw' | 'triple-classic'
+type TStringKind = 'raw' | 'classic' | 'triple-raw' | 'triple-classic'
 
 export interface IParsedStringInput {
     strKind: TStringKind

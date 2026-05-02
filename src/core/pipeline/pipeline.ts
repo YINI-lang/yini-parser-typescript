@@ -209,14 +209,33 @@ export const runPipeline = (
     )
     const ast: IYiniAST = builder.buildAST(parseTree)
     if (ast.numOfMembers === 0 && ast.numOfSections === 0) {
-        // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-        errorHandler.pushOrBail(
-            undefined,
-            'Syntax-Error',
-            'No meaningful content.',
-            `No sections or members found in the ${ast.sourceType === 'File' ? 'YINI file' : 'YINI inline content'}.`,
-            `${ast.sourceType === 'File' ? 'A valid YINI file' : 'Any valid YINI inline content'} must contain at least one section '^ SectionName' or a key–value pair 'key = value' to make it a valid YINI file.`,
-        )
+        const sourceLabel =
+            ast.sourceType === 'File' ? 'YINI file' : 'YINI inline content'
+
+        const sourceRequirement =
+            ast.sourceType === 'File'
+                ? 'A valid YINI file must contain at least one section (for example, ^ SectionName) or a key–value pair (for example, key = value).'
+                : 'Valid YINI inline content must contain at least one section (for example, ^ SectionName) or a key–value pair (for example, key = value).'
+
+        if (ast.isStrict === true) {
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+            errorHandler.pushOrBail(
+                undefined,
+                'Syntax-Error',
+                'No meaningful content.',
+                `No sections or members found in the ${sourceLabel}.`,
+                sourceRequirement,
+            )
+        } else {
+            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+            errorHandler.pushOrBail(
+                undefined,
+                'Syntax-Warning',
+                'No meaningful content.',
+                `This ${sourceLabel} has no meaningful content.`,
+                sourceRequirement,
+            )
+        }
     }
 
     if (isDebug()) {

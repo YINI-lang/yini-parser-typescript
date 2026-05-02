@@ -1,3 +1,4 @@
+// tests/integration/10-special-and-validation-modes\validation-modes.test.ts
 import path from 'path'
 import YINI from '../../../src'
 import { isDebug } from '../../../src/config/env'

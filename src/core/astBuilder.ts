@@ -20,6 +20,7 @@ import {
     Null_literalContext,
     Number_literalContext,
     Object_literalContext,
+    Object_member_separatorContext,
     Object_memberContext,
     Object_membersContext,
     PrologContext,
@@ -335,8 +336,6 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         switch (prefix) {
             case 'C':
                 return { strKind: 'classic', value: inner }
-            case 'H':
-                return { strKind: 'hyper', value: inner }
             case 'R':
             case '':
                 return { strKind: 'raw', value: inner }
@@ -358,7 +357,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         let strKind: IParsedStringInput['strKind']
 
         if (/^[Cc]/.test(raw)) prefix = 'C'
-        else if (/^[Hh]/.test(raw)) prefix = 'H'
+        // else if (/^[Hh]/.test(raw)) prefix = 'H'
         else if (/^[Rr]/.test(raw)) prefix = 'R'
 
         if (
@@ -372,7 +371,6 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             value = raw.replace(/^[CHRchr]?['"]/, '').replace(/['"]$/, '')
 
             if (prefix === 'C') strKind = 'classic'
-            else if (prefix === 'H') strKind = 'hyper'
             else strKind = 'raw'
         }
 
@@ -1392,25 +1390,57 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     /**
      * Visit a parse tree produced by `YiniParser.object_member`.
      * @param ctx the parse tree
-     * @grammarRule KEY WS? COLON NL* value
-     * @return the visitor result
+     * @grammarRule KEY object_member_separator NL* value
+     * @return the object member key and value
      */
-    // visitObject_member?: (ctx: Object_memberContext) => Result
     visitObject_member = (ctx: Object_memberContext): any => {
         debugPrint('-> Entered visitObject_member(..)')
 
         const rawKey = ctx.KEY().getText()
         const key = trimBackticks(rawKey)
-        const rawValue = ctx.value().getText()
-        const valueNode: TValueLiteral = ctx.value()
-            ? this.visitValue(ctx.value())
-            : makeScalarValue('Null', null, 'Implicit Null')
+
+        const separator = this.visitObject_member_separator(
+            ctx.object_member_separator(),
+        )
+
+        if (separator === '=') {
+            if (this.isStrict) {
+                this.errorHandler!.pushOrBail(
+                    toErrorLocation(ctx.object_member_separator()),
+                    'Syntax-Error',
+                    "Invalid inline object member separator '=' in strict mode",
+                    "Inside inline objects, members must use ':' in strict mode.",
+                    `Use '${key}: <value>' instead of '${key} = <value>'.`,
+                )
+            } else {
+                // NOTE: (!) Do not warn by default in lenient mode, since the spec says MAY.
+                // this.errorHandler!.pushOrBail(
+                //     toErrorLocation(ctx.object_member_separator()),
+                //     'Syntax-Warning',
+                //     "Non-canonical inline object member separator '='",
+                //     "Inside inline objects, ':' is the canonical separator. '=' is accepted only in lenient mode.",
+                //     `Prefer '${key}: <value>' instead of '${key} = <value>'.`,
+                // )
+            }
+        }
+
+        const valueCtx = ctx.value()
+        const rawValue = valueCtx?.getText() ?? ''
+
+        const valueNode: TValueLiteral = valueCtx
+            ? this.visitValue(valueCtx)
+            : makeScalarValue(
+                  'Undefined',
+                  undefined,
+                  'Missing object member value',
+              )
 
         debugPrint('  rawKey = ' + rawKey)
         debugPrint('     key = ' + key)
+        debugPrint('separator = ' + separator)
         debugPrint('rawValue = ' + rawValue)
+
         if (!valueNode) {
-            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
                 toErrorLocation(ctx),
                 'Syntax-Error',
@@ -1423,42 +1453,37 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         debugPrint('<- About to exit visitObject_member(..)')
         if (isDebug()) {
             console.log('Returning:')
-            printObject({ key, value: valueNode })
+            printObject({ key, value: valueNode, separator })
         }
 
-        return { key, value: valueNode }
+        return { key, value: valueNode, separator }
     }
 
     /**
-     * @note Colon list not supported any more since YINI Spec Package v1.0.0.rc4
+     * Visit a parse tree produced by `YiniParser.object_member_separator`.
+     * @param ctx the parse tree
+     * @grammarRule COLON | EQ
+     * @return ':' or '='
      */
-    // visitColon_list_decl = (ctx: Colon_list_declContext): any => {
-    //     debugPrint('-> Entered visitColon_list_decl(..)')
+    visitObject_member_separator = (
+        ctx: Object_member_separatorContext,
+    ): any => {
+        const sep = ctx.getText()
 
-    //     const key = ctx.getChild(0).getText()
-    //     debugPrint(`visitColon_list_decl(..): key = '${key}'`)
+        if (sep === ':' || sep === '=') {
+            return sep
+        }
 
-    //     const elems = this.visitElements(ctx.elements())
-    //     const value = makeListValue(elems, 'From colon-list')
-    //     const current = this.sectionStack[this.sectionStack.length - 1]
+        this.errorHandler!.pushOrBail(
+            toErrorLocation(ctx),
+            'Syntax-Error',
+            'Invalid inline object member separator',
+            `Got '${sep}', but expected ':' or '='.`,
+            "Use ':' for canonical inline object members. In lenient mode only, '=' may also be accepted.",
+        )
 
-    //     // putMember(current, key, list, this.ast, this.onDuplicateKey)
-    //     this.putMember(
-    //         this.errorHandler!,
-    //         ctx,
-    //         current,
-    //         key,
-    //         value,
-    //         // this.ast,
-    //         this.onDuplicateKey,
-    //     )
-    //     debugPrint('<- About to exit visitColon_list_decl(..)...')
-    //     if (isDebug()) {
-    //         console.log('List literal: (from a Colon-list)')
-    //         printObject(value)
-    //     }
-    //     return value
-    // }
+        return ':'
+    }
 
     /**
      * Visit a parse tree produced by `YiniParser.string_concat`.

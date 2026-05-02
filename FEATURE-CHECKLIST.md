@@ -475,13 +475,13 @@ https://github.com/YINI-lang/YINI-spec
     <td>Single line, escape codes, prefixed either with C or c</td>
   </tr>
   <tr>
-    <td>Hyper string (H-string)</td>
+    <td><strike>Hyper string (H-string)</strike></td>
     <td>🔲</td>
     <td><code>H'...'</code>, <code>H"..."</code></td>
     <td>🔲</td>
     <td>🔲</td>
     <td>🔲</td>
-    <td>Multi-line, trims WS, normalizes repeating WS to one WS</td>
+    <td>Since after RC5, removed to simplify the language core and reduce parser complexity.</td>
   </tr>
   <tr>
     <td>Triple-quoted (raw)</td>
@@ -675,6 +675,24 @@ https://github.com/YINI-lang/YINI-spec
     <td>🚧</td>
     <td>🚧</td>
     <td>Still being refined; some behavior is controlled by rule options such as <code>requireDocTerminator</code> and <code>treatEmptyValueAsNull</code>.</td>
+  </tr>
+  <tr>
+    <td>Give error on empty document in strict mode</td>
+    <td>✅</td>
+    <td>Document contains only whitespace, comments, and/or disabled lines</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Must result in an error.</td>
+  </tr>  
+  <tr>
+    <td>Give warning on empty document in lenient mode</td>
+    <td>✅</td>
+    <td>Document contains only whitespace, comments, and/or disabled lines</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Must not fail, SHOULD produce a warning diagnostic that the file has no meaningful content.</td>
   </tr>
   <tr>
     <td>Optional Bail/Abort sensitivity levels</td>
