@@ -1,4 +1,4 @@
-// Generated from ./grammar/v1.0.0-rc.5xx/YiniParser.g4 by ANTLR 4.13.2
+// Generated from ./grammar/v1.0.0-rc.5xxx/YiniParser.g4 by ANTLR 4.13.2
 
 import {ParseTreeVisitor} from 'antlr4';
 
@@ -15,6 +15,11 @@ import { EolContext } from "./YiniParser.js";
 import { AssignmentContext } from "./YiniParser.js";
 import { MemberContext } from "./YiniParser.js";
 import { ValueContext } from "./YiniParser.js";
+import { Scalar_valueContext } from "./YiniParser.js";
+import { Concat_expressionContext } from "./YiniParser.js";
+import { Concat_tailContext } from "./YiniParser.js";
+import { Concat_operandContext } from "./YiniParser.js";
+import { String_literalContext } from "./YiniParser.js";
 import { Object_literalContext } from "./YiniParser.js";
 import { Object_membersContext } from "./YiniParser.js";
 import { Object_memberContext } from "./YiniParser.js";
@@ -23,8 +28,6 @@ import { List_literalContext } from "./YiniParser.js";
 import { ElementsContext } from "./YiniParser.js";
 import { Number_literalContext } from "./YiniParser.js";
 import { Null_literalContext } from "./YiniParser.js";
-import { String_literalContext } from "./YiniParser.js";
-import { String_concatContext } from "./YiniParser.js";
 import { Boolean_literalContext } from "./YiniParser.js";
 import { Bad_meta_textContext } from "./YiniParser.js";
 import { Bad_memberContext } from "./YiniParser.js";
@@ -111,6 +114,36 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 */
 	visitValue?: (ctx: ValueContext) => Result;
 	/**
+	 * Visit a parse tree produced by `YiniParser.scalar_value`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitScalar_value?: (ctx: Scalar_valueContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.concat_expression`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitConcat_expression?: (ctx: Concat_expressionContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.concat_tail`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitConcat_tail?: (ctx: Concat_tailContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.concat_operand`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitConcat_operand?: (ctx: Concat_operandContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.string_literal`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitString_literal?: (ctx: String_literalContext) => Result;
+	/**
 	 * Visit a parse tree produced by `YiniParser.object_literal`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -158,18 +191,6 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 * @return the visitor result
 	 */
 	visitNull_literal?: (ctx: Null_literalContext) => Result;
-	/**
-	 * Visit a parse tree produced by `YiniParser.string_literal`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitString_literal?: (ctx: String_literalContext) => Result;
-	/**
-	 * Visit a parse tree produced by `YiniParser.string_concat`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitString_concat?: (ctx: String_concatContext) => Result;
 	/**
 	 * Visit a parse tree produced by `YiniParser.boolean_literal`.
 	 * @param ctx the parse tree
