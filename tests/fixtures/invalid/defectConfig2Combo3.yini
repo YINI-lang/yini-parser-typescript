@@ -4,7 +4,7 @@ version = 1.0
 
   ^^ Database
   host = "localhost"
-  port = 54_32      // INVALID number format: underscores not allowed inside numbers
+  port = 54__32      // INVALID number format: double underscores not allowed inside numbers
 
   auth = { user: "admin", pass: "secret" }
 

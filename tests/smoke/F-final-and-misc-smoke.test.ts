@@ -263,7 +263,7 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
                             column: 10,
                             typeKey: 'syntax_error',
                             message: 'Syntax error.',
-                            advice: "Details: extraneous input '54_32' expecting NL",
+                            advice: "Details: extraneous input '54__32' expecting NL",
                         },
                         {
                             line: 12,

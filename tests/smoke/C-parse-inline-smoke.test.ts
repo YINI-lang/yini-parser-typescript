@@ -251,7 +251,7 @@ empty = { }`
     val1 = 123  // Inline comment
     val2 = 456  # Another comment
     val3 = 789  //Inline comment
-    val4 = 123  #Another comment
+    val4 = 321  #Another comment
     ; Full-line comment
 
     /*
@@ -259,8 +259,8 @@ empty = { }`
     over multiple lines
     */
 
-    --val3 = "This is disabled and ignored"
-    val4 = 'Some text.'
+    --val13 = "This is disabled and ignored"
+    val14 = 'Some text.'
 `
 
         // Act.
@@ -270,8 +270,10 @@ empty = { }`
         // Assert.
         expect(result.CommentsDemo.val1).toEqual(123)
         expect(result.CommentsDemo.val2).toEqual(456)
-        expect(result.CommentsDemo.val3).toEqual(undefined)
-        expect(result.CommentsDemo.val4).toEqual('Some text.')
+        expect(result.CommentsDemo.val3).toEqual(789)
+        expect(result.CommentsDemo.val4).toEqual(321)
+        expect(result.CommentsDemo.val13).toEqual(undefined)
+        expect(result.CommentsDemo.val14).toEqual('Some text.')
     })
 
     test('9. Short-Hand and Alternative Section Notations', () => {

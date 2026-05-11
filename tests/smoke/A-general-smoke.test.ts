@@ -310,21 +310,23 @@ describe('General Smoke Tests:', () => {
         }).toThrow()
     })
 
-    test('17. hash after equals starts a comment, not a hex number', () => {
-        const ast = YINI.parse(
-            `
-@yini
-color = #ff00aa
-`,
-            {
-                strictMode: false,
-                treatEmptyValueAsNull: 'allow',
-            },
-        )
+    test('17. Hash "#" after equals starts a comment, not a hex number.', () => {
+        const result = parseUntilError(`
+            color = #ff00aa
+            `)
 
-        expect(ast.root.members.get('color')).toMatchObject({
-            type: 'Null',
-            value: null,
+        expect(result).toEqual({
+            color: null,
+        })
+    })
+
+    test('18. Hash inside string is not a comment.', () => {
+        const result = parseUntilError(`
+        color = "#ff00aa"
+        `)
+
+        expect(result).toMatchObject({
+            color: '#ff00aa',
         })
     })
 })
