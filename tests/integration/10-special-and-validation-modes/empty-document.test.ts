@@ -52,7 +52,7 @@ describe('Empty document handling tests:', () => {
         },
     )
 
-    test('Lenient mode should allow an inline empty document and report a warning.', () => {
+    test('1. Lenient mode should allow an inline empty document and report a warning.', () => {
         // Arrange.
         const emptyYini = ''
 
@@ -76,7 +76,7 @@ describe('Empty document handling tests:', () => {
         expect(allText).toContain('no meaningful content')
     })
 
-    test('Lenient mode should allow an inline document containing only whitespace and report a warning.', () => {
+    test('2. Lenient mode should allow an inline document containing only whitespace and report a warning.', () => {
         // Arrange.
         const emptyYini = `
 
@@ -104,7 +104,7 @@ describe('Empty document handling tests:', () => {
         expect(allText).toContain('no meaningful content')
     })
 
-    test('Lenient mode should allow an inline document containing only comments and report a warning.', () => {
+    test('3. Lenient mode should allow an inline document containing only comments and report a warning.', () => {
         // Arrange.
         const emptyYini = `
             // This document contains only comments.
@@ -134,7 +134,7 @@ describe('Empty document handling tests:', () => {
         expect(allText).toContain('no meaningful content')
     })
 
-    test('Lenient mode should allow an inline document containing only disabled lines and report a warning.', () => {
+    test('4. Lenient mode should allow an inline document containing only disabled lines and report a warning.', () => {
         // Arrange.
         const emptyYini = `
             --name = "Disabled"
@@ -162,7 +162,7 @@ describe('Empty document handling tests:', () => {
         expect(allText).toContain('no meaningful content')
     })
 
-    test('Strict mode should reject an inline empty document.', () => {
+    test('5. Strict mode should reject an inline empty document.', () => {
         // Arrange.
         const emptyYini = ''
 
@@ -174,7 +174,7 @@ describe('Empty document handling tests:', () => {
         }).toThrow()
     })
 
-    test('Strict mode should reject an inline document containing only whitespace.', () => {
+    test('6. Strict mode should reject an inline document containing only whitespace.', () => {
         // Arrange.
         const emptyYini = `
 
@@ -190,7 +190,7 @@ describe('Empty document handling tests:', () => {
         }).toThrow()
     })
 
-    test('Strict mode should reject an inline document containing only comments.', () => {
+    test('7. Strict mode should reject an inline document containing only comments.', () => {
         // Arrange.
         const emptyYini = `
             // This document contains only comments.
@@ -208,7 +208,7 @@ describe('Empty document handling tests:', () => {
         }).toThrow()
     })
 
-    test('Strict mode should reject an inline document containing only disabled lines.', () => {
+    test('8. Strict mode should reject an inline document containing only disabled lines.', () => {
         // Arrange.
         const emptyYini = `
             --name = "Disabled"
