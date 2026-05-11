@@ -11,6 +11,9 @@ import {
     Bad_memberContext,
     Bad_meta_textContext,
     Boolean_literalContext,
+    Concat_expressionContext,
+    Concat_operandContext,
+    Concat_tailContext,
     DirectiveContext,
     ElementsContext,
     EolContext,
@@ -24,8 +27,8 @@ import {
     Object_memberContext,
     Object_membersContext,
     PrologContext,
+    Scalar_valueContext,
     StmtContext,
-    String_concatContext,
     String_literalContext,
     Terminal_stmtContext,
     ValueContext,
@@ -155,40 +158,6 @@ function makeSection(name: string, level: number): IYiniSection {
     return { sectionName: name, level, members: new Map(), children: [] }
 }
 
-/** Parse SECTION_HEAD token text → {level, name}.
- * Supports repeated markers (^^^^) and shorthand (^7) (Spec 5.2–5.3.1). :contentReference[oaicite:5]{index=5}:contentReference[oaicite:6]{index=6}
- */
-// function parseSectionHeadToken(raw: string): { level: number; name: string } {
-//     // SECTION_HEAD token text includes: optional WS, marker(s) or shorthand, WS, IDENT (possibly backticked), NL+
-//     // We only need the visible line content up to NL.
-//     const line = raw.split(/\r?\n/)[0]
-
-//     // Extract marker block and name
-//     // Examples: "^^ Section", "^7 `Section name`", "< MySection"
-//     const m = line.match(/^\s*([\^<§€]+|\^|\<|§|€)(\d+)?[ \t]+(.+?)\s*$/)
-//     if (m) {
-//         const markerRun = m[1]
-//         const numeric = m[2]
-//         let level: number
-//         if (numeric) {
-//             level = parseInt(numeric, 10)
-//         } else {
-//             // count repeated marker chars (^^^^)
-//             level = markerRun.length
-//         }
-
-//         // Section name may be backticked: `Name with spaces`
-//         let name = m[3]
-//         if (name.startsWith('`') && name.endsWith('`')) {
-//             name = name.slice(1, -1)
-//         }
-//         return { level, name }
-//     }
-
-//     // Fallback: be defensive
-//     return { level: 1, name: line.trim() }
-// }
-
 // --- Builder Visitor -----------------------------------------------------
 
 /**
@@ -244,14 +213,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         this.isStrict = options?.rules?.initialMode === 'strict'
         this.onDuplicateKey = options?.rules?.onDuplicateKey ?? 'error' // Different setting depending on mode.
 
-        // if (options.isStrict) {
-        //     this.onDuplicateKey = 'error'
-        // } else {
-        //     this.onDuplicateKey = 'warn'
-        // }
-
         const root = makeSection('(root)', 0)
-        // this.mapSectionNamePaths.set('(root)', 0)
         this.ast = {
             root,
             isStrict: this.isStrict,
@@ -312,7 +274,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         let prefix = ''
         let rest = tokenText
 
-        const prefixMatch = tokenText.match(/^(C|c|H|h|R|r)/)
+        const prefixMatch = tokenText.match(/^(C|c|R|r)/)
         if (prefixMatch) {
             prefix = prefixMatch[1].toUpperCase()
             rest = tokenText.slice(1)
@@ -368,7 +330,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             value = raw.replace(/^[CRcr]?"""/, '').replace(/"""$/, '')
             strKind = prefix === 'C' ? 'triple-classic' : 'triple-raw'
         } else {
-            value = raw.replace(/^[CHRchr]?['"]/, '').replace(/['"]$/, '')
+            value = raw.replace(/^[CRchr]?['"]/, '').replace(/['"]$/, '')
 
             if (prefix === 'C') strKind = 'classic'
             else strKind = 'raw'
@@ -505,6 +467,21 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         sec.members.set(key, value)
     }
 
+    private stringifyConcatOperand(value: TScalarValue): string {
+        switch (value.type) {
+            case 'String':
+                return value.value
+            case 'Number':
+                return String(value.value)
+            case 'Boolean':
+                return value.value ? 'true' : 'false'
+            case 'Null':
+                return 'null'
+            default:
+                return ''
+        }
+    }
+
     // --------------------------------
 
     // Public entry
@@ -560,8 +537,6 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    // visitYini?: (ctx: YiniContext) => Result
-    // visitYini?: (ctx: YiniContext) => any
     visitYini = (ctx: YiniContext): any => {
         // children: prolog?, stmt*, terminal?, EOF
         ctx.children?.forEach((c: any) => this.visit?.(c))
@@ -590,8 +565,6 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         let rawText: string = ctx.getText().trim()
         debugPrint('rawText = "' + rawText + '"')
 
-        // rawText = extractYiniLine(rawText) // Remove possible comments.
-        // rawText = stripCommentsAndAfter(rawText.split('\n', 1)[0]).trim() // Remove possible comments.
         rawText = stripCommentsAndAfter(rawText) // Remove possible comments.
         debugPrint('rawText2 = "' + rawText + '"')
 
@@ -952,27 +925,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         if (isDebug()) {
             printObject(valueNode)
         }
-        /*
-        if (!valueNode) {
-            this.errorHandler!.pushOrBail(
-                toErrorLocation(ctx),
-                'Syntax-Error',
-                'Invalid value',
-                `Invalid value for key '${resultKey}' in member (<key> = <value> pair).`,
-                `Got '${rawValue}', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
-            )
-        } else if (
-            valueNode.type === 'Undefined' &&
-            valueNode.tag !== 'Invalid string literal already reported'
-        ) {
-            this.errorHandler!.pushOrBail(
-                toErrorLocation(ctx),
-                'Syntax-Error',
-                'Invalid value',
-                `Invalid value for key '${resultKey}' in member (<key> = <value> pair).`,
-                `Got '${rawValue}', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
-            )
-        }*/
+
         if (!valueNode) {
             // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
@@ -1026,31 +979,16 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    // visitValue?: (ctx: ValueContext) => Result
     visitValue = (ctx: ValueContext): any => {
         debugPrint('----------------------------')
         debugPrint('-> Entered visitValue(..)')
 
         let valueNode: TValueLiteral | undefined = undefined
-        if (ctx.null_literal()) {
-            debugPrint('  visiting visitNull_literal(..)')
-            valueNode = this.visitNull_literal(
-                ctx.null_literal()!,
-            ) as TValueLiteral
-        } else if (ctx.string_literal()) {
-            debugPrint('  visiting visitString_literal(..)')
-            valueNode = this.visitString_literal(
-                ctx.string_literal()!,
-            ) as TValueLiteral
-        } else if (ctx.number_literal()) {
-            debugPrint('  visiting visitNumber_literal(..)')
-            valueNode = this.visitNumber_literal(
-                ctx.number_literal()!,
-            ) as TValueLiteral
-        } else if (ctx.boolean_literal()) {
-            debugPrint('  visiting visitBoolean_literal(..)')
-            valueNode = this.visitBoolean_literal(
-                ctx.boolean_literal()!,
+
+        if (ctx.scalar_value()) {
+            debugPrint('  visiting visitScalar_value(..)')
+            valueNode = this.visitScalar_value(
+                ctx.scalar_value()!,
             ) as TValueLiteral
         } else if (ctx.list_literal()) {
             debugPrint('  visiting visitList_literal(..)')
@@ -1077,53 +1015,263 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     }
 
     /**
-     * Visit a parse tree produced by `YiniParser.string_literal`.
+     * Visit a parse tree produced by `YiniParser.scalar_value`.
      * @param ctx the parse tree
      * @return the visitor result
      */
-    /*
-    visitString_literal = (ctx: String_literalContext): any => {
-        let text = ''
+    visitScalar_value = (ctx: Scalar_valueContext): any => {
+        debugPrint('-> Entered visitScalar_value(..)')
 
-        const pieces = [
-            ctx.STRING(),
-            ...(ctx.string_concat_list()?.map((c) => c.STRING()) ?? []),
-        ]
+        if (ctx.concat_expression()) {
+            return this.visitConcat_expression(ctx.concat_expression()!)
+        }
 
-        try {
-            for (const token of pieces) {
-                const tokenText = token.getText()
-                const parsed = this.extractStringKindAndValue(tokenText)
+        if (ctx.string_literal()) {
+            return this.visitString_literal(ctx.string_literal()!)
+        }
 
-                try {
-                    text += parseStringLiteral(parsed)
-                } catch (err: unknown) {
-                    const msg = '' + (<any>err)?.message
-                    this.errorHandler!.pushOrBail(
-                        toErrorLocation(ctx),
-                        'Syntax-Error',
-                        'Parse error in string',
-                        `${msg}`,
-                    )
-                }
+        if (ctx.number_literal()) {
+            return this.visitNumber_literal(ctx.number_literal()!)
+        }
+
+        if (ctx.boolean_literal()) {
+            return this.visitBoolean_literal(ctx.boolean_literal()!)
+        }
+
+        if (ctx.null_literal()) {
+            return this.visitNull_literal(ctx.null_literal()!)
+        }
+
+        return makeScalarValue('Undefined', undefined, 'Invalid scalar value')
+    }
+
+    /**
+     * Visit a parse tree produced by `YiniParser.concat_expression`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitConcat_expression = (ctx: Concat_expressionContext): any => {
+        debugPrint('-> Entered visitConcat_expression(..)')
+
+        let result = ''
+
+        const firstStringCtx = ctx.string_literal()
+
+        if (!firstStringCtx) {
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                'Invalid string concatenation',
+                'A concatenation expression must begin with a string literal.',
+                'Start the expression with a string literal, for example: "prefix" + value.',
+            )
+
+            return makeScalarValue(
+                'Undefined',
+                undefined,
+                'Invalid concatenation already reported',
+            )
+        }
+
+        const firstValue = this.visitString_literal(
+            firstStringCtx,
+        ) as TScalarValue
+
+        if (!firstValue || firstValue.type !== 'String') {
+            return makeScalarValue(
+                'Undefined',
+                undefined,
+                'Invalid string literal already reported',
+            )
+        }
+
+        result += firstValue.value
+
+        const tails = ctx.concat_tail_list?.() ?? []
+
+        for (const tail of tails) {
+            const operandValue = this.visitConcat_tail(tail) as TScalarValue
+
+            if (!operandValue || operandValue.type === 'Undefined') {
+                return makeScalarValue(
+                    'Undefined',
+                    undefined,
+                    'Invalid concatenation operand already reported',
+                )
             }
 
-            return makeScalarValue('String', text)
+            if (this.isStrict && operandValue.type !== 'String') {
+                this.errorHandler!.pushOrBail(
+                    toErrorLocation(tail),
+                    'Syntax-Error',
+                    'Invalid strict-mode concatenation operand',
+                    `Strict mode allows only string literals in concatenation. Got ${operandValue.type}.`,
+                    'Convert the value to an explicit string literal.',
+                )
+
+                return makeScalarValue(
+                    'Undefined',
+                    undefined,
+                    'Invalid strict concatenation already reported',
+                )
+            }
+
+            result += this.stringifyConcatOperand(operandValue)
+        }
+
+        return makeScalarValue('String', result, 'Concatenated string')
+    }
+
+    /**
+     * Visit a parse tree produced by `YiniParser.concat_tail`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitConcat_tail = (ctx: Concat_tailContext): any => {
+        debugPrint('-> Entered visitConcat_tail(..)')
+
+        const operandCtx = ctx.concat_operand()
+
+        if (!operandCtx) {
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                'Missing concatenation operand',
+                'Expected a value after the + operator.',
+                'Add a string literal, number, boolean, or null after +.',
+            )
+
+            return makeScalarValue(
+                'Undefined',
+                undefined,
+                'Missing concatenation operand already reported',
+            )
+        }
+
+        return this.visitConcat_operand(operandCtx)
+    }
+
+    /**
+     * Visit a parse tree produced by `YiniParser.concat_operand`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitConcat_operand = (ctx: Concat_operandContext): any => {
+        debugPrint('-> Entered visitConcat_operand(..)')
+
+        if (ctx.string_literal()) {
+            return this.visitString_literal(ctx.string_literal()!)
+        }
+
+        if (ctx.number_literal()) {
+            const value = this.visitNumber_literal(ctx.number_literal()!)
+
+            if (this.isStrict) {
+                this.errorHandler!.pushOrBail(
+                    toErrorLocation(ctx),
+                    'Syntax-Error',
+                    'Invalid strict-mode concatenation operand',
+                    'Number literals are not allowed as concatenation operands in strict mode.',
+                    'Use an explicit string literal instead.',
+                )
+
+                return makeScalarValue(
+                    'Undefined',
+                    undefined,
+                    'Invalid strict concatenation operand already reported',
+                )
+            }
+
+            return value
+        }
+
+        if (ctx.boolean_literal()) {
+            const value = this.visitBoolean_literal(ctx.boolean_literal()!)
+
+            if (this.isStrict) {
+                this.errorHandler!.pushOrBail(
+                    toErrorLocation(ctx),
+                    'Syntax-Error',
+                    'Invalid strict-mode concatenation operand',
+                    'Boolean literals are not allowed as concatenation operands in strict mode.',
+                    'Use an explicit string literal instead.',
+                )
+
+                return makeScalarValue(
+                    'Undefined',
+                    undefined,
+                    'Invalid strict concatenation operand already reported',
+                )
+            }
+
+            return value
+        }
+
+        if (ctx.null_literal()) {
+            const value = this.visitNull_literal(ctx.null_literal()!)
+
+            if (this.isStrict) {
+                this.errorHandler!.pushOrBail(
+                    toErrorLocation(ctx),
+                    'Syntax-Error',
+                    'Invalid strict-mode concatenation operand',
+                    'Null literals are not allowed as concatenation operands in strict mode.',
+                    'Use an explicit string literal instead.',
+                )
+
+                return makeScalarValue(
+                    'Undefined',
+                    undefined,
+                    'Invalid strict concatenation operand already reported',
+                )
+            }
+
+            return value
+        }
+
+        this.errorHandler!.pushOrBail(
+            toErrorLocation(ctx),
+            'Syntax-Error',
+            'Invalid concatenation operand',
+            `Got '${ctx.getText()}', but expected a string literal, number literal, boolean literal, or null literal.`,
+            'Lists and inline objects cannot be used as concatenation operands.',
+        )
+
+        return makeScalarValue(
+            'Undefined',
+            undefined,
+            'Invalid concatenation operand already reported',
+        )
+    }
+
+    /*
+     * Visit a parse tree produced by `YiniParser.visitString_literal`.
+     * @note Should parse exactly one string literal. No concatenation logic here.
+     *
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitString_literal = (ctx: String_literalContext): any => {
+        const rawText = ctx.getText()
+        const parsed = this.extractStringKindAndValue(rawText)
+
+        try {
+            const value = parseStringLiteral(parsed)
+            return makeScalarValue('String', value)
         } catch (err: unknown) {
             const msg = err instanceof Error ? err.message : String(err)
 
-            let msgWhat = 'Invalid string literal'
+            let msgWhat = 'Parse error in string'
             let msgWhy = msg
             let msgHint = ''
 
             if (err instanceof CYiniStringParseError) {
-                msgWhat = 'Invalid escape sequence in string'
-                msgWhy = msg
-
-                if (/Invalid escape sequence \\\\/.test(msg)) {
+                if (/Invalid escape sequence/i.test(msg)) {
+                    msgWhat = 'Invalid escape sequence in string'
                     msgHint =
-                        'Use double backslashes (\\\\) in C-strings, or use a raw string for file paths.'
+                        'Use double backslashes (\\\\) in C-strings, or use a raw string if escapes are not needed.'
                 } else if (/end of string/i.test(msg)) {
+                    msgWhat = 'Incomplete escape sequence in string'
                     msgHint =
                         'Check that all escape sequences in the C-string are complete and valid.'
                 }
@@ -1140,62 +1288,9 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             return makeScalarValue(
                 'Undefined',
                 undefined,
-                'Invalid string literal',
+                'Invalid string literal already reported',
             )
         }
-    }
-    */
-    visitString_literal = (ctx: String_literalContext): any => {
-        let text = ''
-
-        const pieces = [
-            ctx.STRING(),
-            ...(ctx.string_concat_list()?.map((c) => c.STRING()) ?? []),
-        ]
-
-        for (const token of pieces) {
-            const tokenText = token.getText()
-            const parsed = this.extractStringKindAndValue(tokenText)
-
-            try {
-                text += parseStringLiteral(parsed)
-            } catch (err: unknown) {
-                const msg = err instanceof Error ? err.message : String(err)
-
-                let msgWhat = 'Parse error in string'
-                let msgWhy = msg
-                let msgHint = ''
-
-                if (err instanceof CYiniStringParseError) {
-                    if (/Invalid escape sequence/i.test(msg)) {
-                        msgWhat = 'Invalid escape sequence in string'
-                        msgHint =
-                            'Use double backslashes (\\\\) in C-strings, or use a raw string if escapes are not needed.'
-                    } else if (/end of string/i.test(msg)) {
-                        msgWhat = 'Incomplete escape sequence in string'
-                        msgHint =
-                            'Check that all escape sequences in the C-string are complete and valid.'
-                    }
-                }
-
-                // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-                this.errorHandler!.pushOrBail(
-                    toErrorLocation(ctx),
-                    'Syntax-Error',
-                    msgWhat,
-                    msgWhy,
-                    msgHint,
-                )
-
-                return makeScalarValue(
-                    'Undefined',
-                    undefined,
-                    'Invalid string literal already reported',
-                )
-            }
-        }
-
-        return makeScalarValue('String', text)
     }
 
     /**
@@ -1379,7 +1474,13 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         const entries: Record<string, TValueLiteral> = {}
         ctx.object_member_list().forEach((member) => {
             const { key, value }: any = this.visitObject_member(member)
+
             debugPrint('   key = ' + key)
+            if (!value || value.type === 'Undefined') {
+                debugPrint('Skip inserting Undefined')
+                return
+            }
+
             entries[key] = value
         })
 
@@ -1403,24 +1504,23 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             ctx.object_member_separator(),
         )
 
-        if (separator === '=') {
-            if (this.isStrict) {
-                this.errorHandler!.pushOrBail(
-                    toErrorLocation(ctx.object_member_separator()),
-                    'Syntax-Error',
-                    "Invalid inline object member separator '=' in strict mode",
-                    "Inside inline objects, members must use ':' in strict mode.",
-                    `Use '${key}: <value>' instead of '${key} = <value>'.`,
-                )
-            } else {
-                // NOTE: (!) Do not warn by default in lenient mode, since the spec says MAY.
-                // this.errorHandler!.pushOrBail(
-                //     toErrorLocation(ctx.object_member_separator()),
-                //     'Syntax-Warning',
-                //     "Non-canonical inline object member separator '='",
-                //     "Inside inline objects, ':' is the canonical separator. '=' is accepted only in lenient mode.",
-                //     `Prefer '${key}: <value>' instead of '${key} = <value>'.`,
-                // )
+        if (separator === '=' && this.isStrict) {
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(ctx.object_member_separator()),
+                'Syntax-Error',
+                "Invalid inline object member separator '=' in strict mode",
+                "Inside inline objects, members must use ':' in strict mode.",
+                `Use '${key}: <value>' instead of '${key} = <value>'.`,
+            )
+
+            return {
+                key,
+                value: makeScalarValue(
+                    'Undefined',
+                    undefined,
+                    'Invalid object member separator already reported',
+                ),
+                separator,
             }
         }
 
@@ -1485,52 +1585,27 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         return ':'
     }
 
-    /**
-     * Visit a parse tree produced by `YiniParser.string_concat`.
-     * @param ctx the parse tree
-     * @return the visitor result
-     */
-    /*
-    visitString_concat = (ctx: String_concatContext): any => {
-        const rawText = ctx.STRING().getText() // The token text.
-        const parsedInput = this.extractStringKindAndValue(rawText)
-        // return parseStringLiteral(parsedInput)
-
-        let txt = ''
-        try {
-            txt = parseStringLiteral(parsedInput)
-        } catch (err) {
-            const msg = '' + (<any>err)?.message
-            this.errorHandler!.pushOrBail(
-                toErrorLocation(ctx),
-                'Syntax-Error',
-                'Parse error in string',
-                `${msg}`,
-            )
-        }
-    }
-    */
     //@ todo (?) Check that this function actually works, not sure this function is finished.
-    visitString_concat = (ctx: String_concatContext): any => {
-        const rawText = ctx.STRING().getText()
-        const parsedInput = this.extractStringKindAndValue(rawText)
+    // visitString_concat = (ctx: String_concatContext): any => {
+    //     const rawText = ctx.STRING().getText()
+    //     const parsedInput = this.extractStringKindAndValue(rawText)
 
-        try {
-            return parseStringLiteral(parsedInput)
-        } catch (err: unknown) {
-            const msg = err instanceof Error ? err.message : String(err)
+    //     try {
+    //         return parseStringLiteral(parsedInput)
+    //     } catch (err: unknown) {
+    //         const msg = err instanceof Error ? err.message : String(err)
 
-            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-            this.errorHandler!.pushOrBail(
-                toErrorLocation(ctx),
-                'Syntax-Error',
-                'Parse error in string',
-                msg,
-            )
+    //         // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+    //         this.errorHandler!.pushOrBail(
+    //             toErrorLocation(ctx),
+    //             'Syntax-Error',
+    //             'Parse error in string',
+    //             msg,
+    //         )
 
-            return undefined
-        }
-    }
+    //         return undefined
+    //     }
+    // }
 
     /**
      * Visit a parse tree produced by `YiniParser.bad_member`.

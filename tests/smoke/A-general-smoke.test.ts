@@ -309,4 +309,22 @@ describe('General Smoke Tests:', () => {
             debugPrint(invalidYini)
         }).toThrow()
     })
+
+    test('17. hash after equals starts a comment, not a hex number', () => {
+        const ast = YINI.parse(
+            `
+@yini
+color = #ff00aa
+`,
+            {
+                strictMode: false,
+                treatEmptyValueAsNull: 'allow',
+            },
+        )
+
+        expect(ast.root.members.get('color')).toMatchObject({
+            type: 'Null',
+            value: null,
+        })
+    })
 })

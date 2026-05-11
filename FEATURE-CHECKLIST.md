@@ -1,7 +1,8 @@
 YINI Parser – Feature Implementation Status
 ===========================================
 
-This table shows the implementation status of the YINI parser. Features are based on the YINI Specification v1.0.0 RC 4 with parser-side implementation updates.
+Features are based on the YINI Specification with parser-side implementation updates:  
+v1.0.0 RC 5 + UPDATES
 
 https://github.com/YINI-lang/YINI-spec
 
@@ -261,7 +262,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>✅</td>
     <td>✅</td>
     <td>✅</td>
-    <td># must be followed by space/tab to be a comment</td>
+    <td><code>#</code> always begins a comment outside string literals; no whitespace is required.</td>
   </tr>
   <tr>
     <td>Block comment</td>
@@ -434,11 +435,11 @@ https://github.com/YINI-lang/YINI-spec
   <tr>
     <td>Hexadecimal numbers</td>
     <td>✅</td>
-    <td><code>0xF390</code>, <code>#F390</code>, <code>0X3fa</code></td>
+    <td><code>0xF390</code>, <code>hex:F390</code>, <code>0X3fa</code></td>
     <td>✅</td>
     <td>✅</td>
     <td>✅</td>
-    <td>⚠️ 16-base, including alternative notation with #</td>
+    <td>⚠️ 16-base. <code>#</code> is no longer a hexadecimal prefix; use <code>0x...</code> or <code>hex:...</code>.</td>
   </tr>
 </table>
 
@@ -511,13 +512,13 @@ https://github.com/YINI-lang/YINI-spec
     <td>All string types</td>
   </tr>
   <tr>
-    <td>String concatenation of numbers</td>
+    <td>Lenient string concatenation with numbers</td>
     <td>🔲</td>
     <td><code>"foo" + 123</code></td>
     <td>🚧</td>
     <td>🔲</td>
     <td>🔲</td>
-    <td>To string</td>
+    <td>Lenient mode only; converted using canonical textual numeric representation.</td>
   </tr>
   <tr>
     <td>Escapes: all 2 character sequences</td>
@@ -538,13 +539,13 @@ https://github.com/YINI-lang/YINI-spec
     <td></td>
   </tr>
   <tr>
-    <td>Concatenation of other types into strings</td>
-    <td>❌</td>
-    <td><code>str = "Hello"+true # NOT SUPPORTED</code></td>
-    <td>❌</td>
-    <td>❌</td>
-    <td>❌</td>
-    <td>Note: Other types than strings and numbers, not supported.</td>
+    <td>Lenient scalar-to-string concatenation</td>
+    <td>🔲</td>
+    <td><code>"enabled=" + true</code>, <code>"value=" + null</code></td>
+    <td>🚧</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Lenient mode only. Strict mode allows concatenation only between string literals.</td>
   </tr>
 </table>
 
@@ -569,8 +570,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>✅</td>
     <td>✅</td>
     <td>🔲</td>
-    <td>Inline, supports nesting, trailing comma ignored (lenient only)
-    </td>
+    <td>Inline, supports nesting, object member separators, and trailing comma handling.</td>    
   </tr>
   <tr>
     <td>Nested objects inside objects</td>
@@ -589,6 +589,17 @@ https://github.com/YINI-lang/YINI-spec
     <td>✅</td>
     <td>🔲</td>
     <td></td>
+  </tr>
+  <tr>
+    <td>Inline object member separators</td>
+    <td>✅</td>
+    <td><code>{ key: value }</code> and lenient <code>{ key = value }</code></td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+     <td>Recognizes both <code>:</code> and <code>=</code> as inline object member separators.<br/>
+     In lenient mode, both are accepted for flexibility.<br/>
+     In strict mode, <code>=</code> is rejected as a syntax error to enforce the canonical <code>key: value</code> form.</td>
   </tr>
 </table>
 
@@ -752,7 +763,7 @@ https://github.com/YINI-lang/YINI-spec
   <tr>
     <td><code>strictMode</code></td>
     <td>✅</td>
-    <td>Enable strict parsing<td>
+    <td>Enable strict parsing</td>
     <td>✅</td>
     <td>✅</td>
     <td>✅</td>

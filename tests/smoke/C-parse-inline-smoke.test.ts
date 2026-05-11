@@ -245,10 +245,13 @@ empty = { }`
         // Arrange.
         const validYini = `
     @yini    
-    // Top comment
+    // Line comment
+    # Another line comment
     ^ CommentsDemo
-    val1 = 123  # Inline comment
-    val2 = 456  // Another comment
+    val1 = 123  // Inline comment
+    val2 = 456  # Another comment
+    val3 = 789  //Inline comment
+    val4 = 123  #Another comment
     ; Full-line comment
 
     /*
