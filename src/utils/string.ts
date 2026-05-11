@@ -162,3 +162,21 @@ export const removeSuffix = (str: string, suffix: string): string => {
 export const ensurePeriod = (text: string): string => {
     return text.endsWith('.') ? text : text + '.'
 }
+
+export const trimQuotes = (text: string): string => {
+    // STRING token already excludes quotes; the rule returns the literal with quotes present.
+    // We’ll reliably strip the outer quote(s) and leave contents as-is (concat pieces handled below).
+    const q = text[0]
+    if (
+        (q === '"' || q === "'") &&
+        text.length >= 2 &&
+        text[text.length - 1] === q
+    ) {
+        return text.slice(1, -1)
+    }
+    // Triple-quoted cases are handled by the lexer too; same stripping works since token text begins with quotes.
+    if (text.startsWith('"""') && text.endsWith('"""') && text.length >= 6) {
+        return text.slice(3, -3)
+    }
+    return text
+}
