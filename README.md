@@ -4,7 +4,7 @@ The official TypeScript / Node.js parser for **YINI** (by the YINI-lang project)
 
 [![npm version](https://img.shields.io/npm/v/yini-parser.svg)](https://www.npmjs.com/package/yini-parser) [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![All Test Suites](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml) [![All Regression Tests](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-regression-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-regression-tests.yml) [![Grammar Drift Check](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-grammar-drift-check.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-grammar-drift-check.yml) [![npm downloads](https://img.shields.io/npm/dm/yini-parser)](https://www.npmjs.com/package/yini-parser)  
 
-YINI is intended to emphasize clarity, readability, explicit structure, and parsing parsing, while remaining simple, but not simplistic, and without relying on implicit or indentation-sensitive structure.
+YINI is intended to emphasize clarity, readability, explicit structure, and predictable parsing, while remaining simple, but not simplistic, and without relying on implicit or indentation-sensitive structure.
 
 ## Quick Start
 
@@ -56,8 +56,10 @@ Source: [basic.yini](./samples/basic.yini)
 - **Indentation-independent structure:** Spaces and tabs never change meaning, so files can be reformatted without changing structure.
 - **Explicit nesting:** Hierarchy is defined with section markers such as `^`, `^^`, and `^^^`, rather than by indentation.
 - **Multiple data types:** Supports booleans (`true` / `false`, `yes` / `no`, etc.), numbers, lists, and inline objects, with explicit string syntax.
-- **Comment support:** YINI supports multiple comment styles (`#`, `//`, `/* ... */`, and `;`) for documenting configuration directly in the file.
+- **Comment support:** YINI supports `//`, `#`, block comments (`/* ... */`), and full-line `;` comments for documenting configuration directly in the file.
 - **Predictable parsing:** Clear rules with optional strict and lenient modes for different use cases.
+- **Clear hash comments:** Outside string literals, `#` always starts a comment; hexadecimal values use `0x...` or `hex:...`.
+- **Predictable parsing:** Clear rules with optional strict and lenient modes (enforced by the parser) for different use cases.
 
 ---
 
@@ -142,7 +144,7 @@ Source: [config.yini](./samples/config.yini)
 
 ## 🧪 Testing and Stability
 
-This parser is covered by regression and smoke tests across default, strict, and metadata-enabled modes.
+This parser is covered by smoke, integration, and regression tests across lenient, strict, and metadata-enabled modes.
 
 ---
 
