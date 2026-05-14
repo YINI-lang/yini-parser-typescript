@@ -12,21 +12,6 @@ import YINI, { ParseOptions } from '../src'
 
 type TMode = 'lenient' | 'strict'
 
-/**
- * According to yini-test adapter-contract.
- */
-// interface IAdapterResult {
-//     // ok: boolean
-//     result: unknown | null
-//     // diagnostics: IAdapterDiagnostic[]
-// }
-
-// interface IAdapterDiagnostic {
-//     severity: 'error' | 'warning' | 'notice'
-//     message: string
-//     details?: string
-// }
-
 interface IParsedArgs {
     input: string
     mode: TMode
@@ -84,21 +69,6 @@ function parseArgs(argv: string[]): IParsedArgs {
     return { input, mode }
 }
 
-// function toDiagnostic(error: unknown): IAdapterDiagnostic {
-//     if (error instanceof Error) {
-//         return {
-//             severity: 'error',
-//             message: error.message,
-//             details: error.stack,
-//         }
-//     }
-
-//     return {
-//         severity: 'error',
-//         message: String(error),
-//     }
-// }
-
 function makeYINIParseOptions(mode: TMode): ParseOptions {
     const ret = {
         strictMode: mode === 'strict',
@@ -127,12 +97,12 @@ function main(): void {
 
         process.stdout.write(`${JSON.stringify(result, null, 2)}\n`)
 
-        // NOTE: exit with zero on success, according to yini-test adapter-contract.
+        // Exit with zero on success, according to yini-test adapter-contract.
         process.exit(0)
     } catch (error: unknown) {
         process.stderr.write(`${getErrorMessage(error)}\n`)
 
-        // NOTE: exit with non-zero on error, according to yini-test adapter-contract.
+        // Exit with non-zero on error, according to yini-test adapter-contract.
         process.exit(1)
     }
 }
