@@ -19,10 +19,6 @@ export class CYiniStringParseError extends Error {
 const isHex = (c: string) => /^[0-9a-fA-F]$/.test(c)
 const isOctal = (c: string) => /^[0-7]$/.test(c)
 
-function normalizeHyperWhitespace(input: string): string {
-    return input.replace(/[\s\r\n]+/g, ' ').trim()
-}
-
 const parseClassicEscapes = (input: string): string => {
     let result = ''
     for (let i = 0; i < input.length; i++) {
@@ -168,9 +164,6 @@ const parseStringLiteral = ({ strKind, value }: IParsedStringInput): string => {
         case 'classic':
         case 'triple-classic':
             return parseClassicEscapes(value)
-
-        case 'hyper':
-            return normalizeHyperWhitespace(value)
 
         default:
             throw new CYiniStringParseError(`Unknown string kind: ${strKind}`)

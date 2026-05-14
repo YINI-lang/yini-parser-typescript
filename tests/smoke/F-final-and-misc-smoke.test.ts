@@ -186,12 +186,12 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
         expect(metaResult.meta.structure.memberCount).toEqual(14)
     })
 
-    test('F-4) Should throw on invalid inline # comment usage.', () => {
+    test('F-4) Should throw on invalid hex notation with whitespace before colon.', () => {
         // Arrange.
         const invalidYini = `^ App
-            title = 'My App Title'
-            items = 25 #This comment is invalid, missing a space!
-            isDarkTheme = true`
+        title = 'My App Title'
+        value = hex : F09   // INVALID! whitespace before colon
+        isDarkTheme = true`
 
         // Act & Assert.
         expect(() => {
@@ -263,7 +263,7 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
                             column: 10,
                             typeKey: 'syntax_error',
                             message: 'Syntax error.',
-                            advice: "Details: extraneous input '54_32' expecting NL",
+                            advice: "Details: extraneous input '54__32' expecting NL",
                         },
                         {
                             line: 12,

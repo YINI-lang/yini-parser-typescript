@@ -42,14 +42,32 @@ describe('General Smoke Tests:', () => {
         expect(result).toEqual(8)
     })
 
-    test('2. Correctly parse a short YINI Example.', () => {
+    test('2.a) Correctly parse a short YINI Example.', () => {
+        // Arrange.
+        const validYini = `^ sectionTitle
+            strVar = "Hello World!"
+            intVar = 98.21
+            `
+
+        // Act.
+        const result = parseUntilError(validYini)
+        debugPrint(result)
+
+        // Assert.
+        expect(result.sectionTitle.strVar).toEqual('Hello World!')
+        expect(result.sectionTitle.intVar).toEqual(98.21)
+    })
+
+    test('2.b) Correctly parse a short YINI Example without an empty NL.', () => {
         // Arrange.
         const validYini = `^ sectionTitle
             strVar = "Hello World!"
             intVar = 98.21`
+
         // Act.
         const result = parseUntilError(validYini)
         debugPrint(result)
+
         // Assert.
         expect(result.sectionTitle.strVar).toEqual('Hello World!')
         expect(result.sectionTitle.intVar).toEqual(98.21)
@@ -90,13 +108,37 @@ describe('General Smoke Tests:', () => {
         }).toThrow()
     })
 
-    test('6. Should throw error if parsing "blank" content.', () => {
+    test('6.a) Should give warning if parsing "blank" content.', () => {
+        // Arrange.
+        const fixture = ' ' // NOTE: Only a blank space!
+
+        // Act.
+        const parsed = YINI.parse(fixture, {
+            strictMode: false,
+            includeMetadata: true,
+            includeDiagnostics: true,
+        })
+
+        const allText = JSON.stringify(parsed).toLowerCase()
+
+        // Assert.
+        expect(parsed).toBeTruthy()
+        expect(parsed.meta).toBeTruthy()
+        expect(parsed.meta.mode).toEqual('lenient')
+        expect(parsed.meta.diagnostics).toBeTruthy()
+        expect(parsed.meta.diagnostics.warnings.warningCount).toBeGreaterThan(0)
+
+        expect(allText).toContain('empty')
+        expect(allText).toContain('no meaningful content')
+    })
+
+    test('6.b) Should throw error if parsing "blank" content in strict mode.', () => {
         // Arrange.
         const fixture = ' ' // NOTE: Only a blank space!
 
         // Act & Assert.
         expect(() => {
-            parseUntilError(fixture)
+            parseUntilError(fixture, true)
         }).toThrow()
     })
 
@@ -228,12 +270,13 @@ describe('General Smoke Tests:', () => {
         }).toThrow()
     })
 
-    test('12. Should throw error if parsing an incorrect hash comment.', () => {
+    test('12. Should throw error if parsing hex notation without digits.', () => {
         // Arrange.
         const invalidYini = `^ App
-            id = 32403  #This hash comment is invalid due to a missing space.
-            title = "My Program"
-        `
+        id = 32403
+        color = hex:
+        title = "My Program"
+    `
 
         // Act & Assert.
         expect(() => {
@@ -307,5 +350,25 @@ describe('General Smoke Tests:', () => {
             parseUntilError(invalidYini)
             debugPrint(invalidYini)
         }).toThrow()
+    })
+
+    test('17. Hash "#" after equals starts a comment, not a hex number.', () => {
+        const result = parseUntilError(`
+            color = #ff00aa
+            `)
+
+        expect(result).toEqual({
+            color: null,
+        })
+    })
+
+    test('18. Hash inside string is not a comment.', () => {
+        const result = parseUntilError(`
+        color = "#ff00aa"
+        `)
+
+        expect(result).toMatchObject({
+            color: '#ff00aa',
+        })
     })
 })

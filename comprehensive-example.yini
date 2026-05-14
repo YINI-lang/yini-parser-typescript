@@ -95,19 +95,6 @@ hex1 = 0xDEADBEEF   // The common "0x" works too
 rawString1 = R'This is a "raw" string, it is as-is, no escapes are interpreted'
 rawString2 = r"This is a\n**raw**\nstring, it's as-is, no escapes are interpreted"
 
-; Hyper strings are prefixed with H or h
-; They are multi-line, trims & normalizes whitespaces
-hyperStr1 = H'
-    This is a
-        multi-line  string.
-    All   extra   spaces
-are   normalized!'
-; Above resulting value: This will trim and normalize whitespace
-hyperStr2 = h"
-        This is a multi-line  string. All   extra   spaces are   normalized!
-    "
-; Above resulting value: This will trim and normalize whitespace
-
 ; Classic strings are prefixed with C or c
 ; They support and interpret escape sequences like \n, \t
 classicStr1 = C'Hello,\nWorld!\tWelcome to YINI.'

@@ -1,3 +1,4 @@
+// tests/integration/2-file-structure-and-error/handle shebang.test.ts
 import { join } from 'node:path'
 import path from 'path'
 import YINI from '../../../src'

@@ -42,3 +42,7 @@ export const printObject = (obj: any, isForce = false, isColors = true) => {
 
     console.log(util.inspect(obj, { depth: null, colors: isColors }))
 }
+
+export const normalizeHyperWhitespace = (input: string): string => {
+    return input.replace(/[\s\r\n]+/g, ' ').trim()
+}

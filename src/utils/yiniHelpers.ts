@@ -59,23 +59,20 @@ export const stripCommentsAndAfter = (line: string): string => {
     line = line.split('\n', 1)[0]
 
     let idx1 = line.indexOf('//')
-    let idx2 = line.indexOf('# ') // NOTE: (!) Hash comments requires a WS after the hash!
-    let idx3 = line.indexOf('#\t') // NOTE: (!) Hash comments requires a WS after the hash!
-    let idx4 = line.indexOf(';')
-    let idx5 = line.indexOf('--')
+    let idx2 = line.indexOf('#')
+    let idx3 = line.indexOf(';')
+    let idx4 = line.indexOf('--')
 
     if (idx1 < 0) idx1 = Number.MAX_SAFE_INTEGER
     if (idx2 < 0) idx2 = Number.MAX_SAFE_INTEGER
     if (idx3 < 0) idx3 = Number.MAX_SAFE_INTEGER
     if (idx4 < 0) idx4 = Number.MAX_SAFE_INTEGER
-    if (idx5 < 0) idx5 = Number.MAX_SAFE_INTEGER
     // debugPrint('stripCommentsAndAfter(..): idx1 = ' + idx1)
     // debugPrint('stripCommentsAndAfter(..): idx2 = ' + idx2)
     // debugPrint('stripCommentsAndAfter(..): idx3 = ' + idx3)
     // debugPrint('stripCommentsAndAfter(..): idx4 = ' + idx4)
-    // debugPrint('stripCommentsAndAfter(..): idx5 = ' + idx5)
 
-    const idx = Math.min(idx1, idx2, idx3, idx4, idx5)
+    const idx = Math.min(idx1, idx2, idx3, idx4)
     const resultLine =
         idx === Number.MAX_SAFE_INTEGER ? line : line.substring(0, idx)
 

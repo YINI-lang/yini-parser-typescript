@@ -149,9 +149,15 @@ export class YiniRuntime {
         // NOTE: Important: Do not trim or mutate the yiniContent here, due
         // to it will mess up the line numbers in error reporting.
 
-        if (!yiniContent) {
-            throw new Error('Syntax-Error: Unexpected blank YINI input')
+        // if (!yiniContent) {
+        //     throw new Error('Syntax-Error: Unexpected blank YINI input')
+        // }
+
+        if (yiniContent === null || yiniContent === undefined) {
+            throw new Error('Syntax-Error: Missing YINI input')
         }
+
+        // IMPORTANT: Makes sure input ends with an empty NL!
         if (!yiniContent.endsWith('\n')) {
             yiniContent += '\n'
         }

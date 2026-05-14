@@ -95,17 +95,17 @@ export const runPipeline = (
         coreOptions.isThrowOnError,
     )
 
-    if (yiniContent.trim() === '') {
-        const isFileSourceType: boolean = runtimeInfo?.sourceType === 'File'
-        // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-        errorHandler.pushOrBail(
-            undefined,
-            'Syntax-Error',
-            'Empty YINI document.',
-            `The input is blank or contains only whitespace in the ${isFileSourceType ? 'YINI file' : 'YINI inline content'}.`,
-            `Tip: Add at least one section '^ SectionName' or a key-value pair 'key = value' to make it a valid YINI file.`,
-        )
-    }
+    // if (yiniContent.trim() === '') {
+    //     const isFileSourceType: boolean = runtimeInfo?.sourceType === 'File'
+    //     // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+    //     errorHandler.pushOrBail(
+    //         undefined,
+    //         'Syntax-Error',
+    //         'Empty YINI document.',
+    //         `The input is blank or contains only whitespace in the ${isFileSourceType ? 'YINI file' : 'YINI inline content'}.`,
+    //         `Tip: Add at least one section '^ SectionName' or a key-value pair 'key = value' to make it a valid YINI file.`,
+    //     )
+    // }
 
     //---------------------------------------------
     // Note: Only computed when isWithTiming.
@@ -209,14 +209,34 @@ export const runPipeline = (
     )
     const ast: IYiniAST = builder.buildAST(parseTree)
     if (ast.numOfMembers === 0 && ast.numOfSections === 0) {
-        // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-        errorHandler.pushOrBail(
-            undefined,
-            'Syntax-Error',
-            'No meaningful content.',
-            `No sections or members found in the ${ast.sourceType === 'File' ? 'YINI file' : 'YINI inline content'}.`,
-            `${ast.sourceType === 'File' ? 'A valid YINI file' : 'Any valid YINI inline content'} must contain at least one section '^ SectionName' or a key–value pair 'key = value' to make it a valid YINI file.`,
-        )
+        // Lenient mode: empty document is allowed, but warning.
+        // Strict mode: empty document is invalid, error.
+
+        const sourceLabel =
+            ast.sourceType === 'File' ? 'YINI file' : 'YINI inline content'
+
+        const sourceRequirement =
+            ast.sourceType === 'File'
+                ? 'A valid YINI file must contain at least one section, for example: ^ SectionName, or a key-value pair, for example: key = value.'
+                : 'Valid YINI inline content must contain at least one section, for example: ^ SectionName, or a key-value pair, for example: key = value.'
+
+        if (ast.isStrict === true) {
+            errorHandler.pushOrBail(
+                undefined,
+                'Syntax-Error',
+                'Empty YINI document.',
+                `The ${sourceLabel} contains no meaningful content.`,
+                sourceRequirement,
+            )
+        } else {
+            errorHandler.pushOrBail(
+                undefined,
+                'Syntax-Warning',
+                'Empty YINI document.',
+                `The ${sourceLabel} contains no meaningful content.`,
+                sourceRequirement,
+            )
+        }
     }
 
     if (isDebug()) {
