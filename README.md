@@ -1,6 +1,6 @@
 # yini-parser
 
-The official TypeScript / Node.js parser for **YINI** (by the YINI-lang project) — an INI-inspired, human-readable configuration format with explicit structure, nested sections, comments, and deterministic parsing.  
+The official TypeScript / Node.js parser for **YINI** (by the YINI-lang project) — a human-readable, INI-inspired, indentation-insensitive configuration format with clear nested sections, explicit structure, comments, and predictable parsing.  
 
 [![npm version](https://img.shields.io/npm/v/yini-parser.svg)](https://www.npmjs.com/package/yini-parser) [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![All Test Suites](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml) [![All Regression Tests](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-regression-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-regression-tests.yml) [![Grammar Drift Check](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-grammar-drift-check.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-grammar-drift-check.yml) [![npm downloads](https://img.shields.io/npm/dm/yini-parser)](https://www.npmjs.com/package/yini-parser)  
 
@@ -30,7 +30,7 @@ console.log(config.App.name)              // My App
 console.log(config.App.Features.caching)  // true
 ```
 
-See the [YINI specification and documentation](https://yini-lang.org/refs/specification).
+See the [YINI specification and documentation](https://yini-lang.org/refs/specification?utm_source=github&utm_medium=referral&utm_campaign=yini_parser_ts&utm_content=readme).
 
 ---
 
@@ -139,6 +139,21 @@ const configFromFile = YINI.parseFile('./config.yini');
 > A real-world YINI configuration example, showing sections, nesting, comments, and multiple data types:  
 ![YINI Config Example](./samples/config.yini.png)
 Source: [config.yini](./samples/config.yini)
+
+---
+
+## Feedback and bug reports
+
+If you find a problem, please open an issue on GitHub:
+
+- [Report a bug or issue](https://github.com/YINI-lang/yini-parser-typescript/issues)
+
+When reporting parser behavior, it is helpful to include:
+- The YINI input that caused the issue.
+- The expected result.
+- The actual result or error message.
+- The installed `yini-parser` version.
+- The Node.js version used.
 
 ---
 
