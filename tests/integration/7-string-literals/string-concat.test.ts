@@ -10,7 +10,7 @@ describe('String concatenation tests:', () => {
         test('1. Should concatenate string literals.', () => {
             // Arrange.
             const validYini = `
-                @yini
+                @yini lenient
 
                 message = "Hello, " + "world"
             `
@@ -28,10 +28,10 @@ describe('String concatenation tests:', () => {
             expect(toPrettyJSON(result)).toEqual(toPrettyJSON(answer))
         })
 
-        test('2. Should allow number, boolean, and null operands after an initial string literal.', () => {
+        test('2. Should allow number, boolean, and null operands when at least one operand is a string literal.', () => {
             // Arrange.
             const validYini = `
-                @yini
+                @yini lenient
 
                 message = "port=" + 8080 + ", enabled=" + true + ", value=" + null
             `
@@ -49,10 +49,58 @@ describe('String concatenation tests:', () => {
             expect(toPrettyJSON(result)).toEqual(toPrettyJSON(answer))
         })
 
-        test('3. Should allow concatenation to continue after plus on the next line.', () => {
+        test('3. Should allow the first concatenation operand to be a number if the expression contains a string literal.', () => {
             // Arrange.
             const validYini = `
-                @yini
+                @yini lenient
+
+                message = 8080 + " is the port"
+            `
+
+            const answer = {
+                message: '8080 is the port',
+            }
+
+            // Act.
+            const result = YINI.parse(validYini, {
+                strictMode: false,
+            })
+
+            // Assert.
+            expect(toPrettyJSON(result)).toEqual(toPrettyJSON(answer))
+        })
+
+        test('4. Should concatenate scalar operands in source order.', () => {
+            // Arrange.
+            const validYini = `
+                @yini lenient
+
+                value1 = 1 + 2 + "3"
+                value2 = "1" + 2 + 3
+                value3 = true + " is enabled"
+                value4 = null + " value"
+            `
+
+            const answer = {
+                value1: '123',
+                value2: '123',
+                value3: 'true is enabled',
+                value4: 'null value',
+            }
+
+            // Act.
+            const result = YINI.parse(validYini, {
+                strictMode: false,
+            })
+
+            // Assert.
+            expect(toPrettyJSON(result)).toEqual(toPrettyJSON(answer))
+        })
+
+        test('5. Should allow concatenation to continue after plus on the next line.', () => {
+            // Arrange.
+            const validYini = `
+                @yini lenient
 
                 text = "hello " +
                     "world"
@@ -71,12 +119,12 @@ describe('String concatenation tests:', () => {
             expect(toPrettyJSON(result)).toEqual(toPrettyJSON(answer))
         })
 
-        test('4. Should throw when the first concatenation operand is not a string literal.', () => {
+        test('6. Should throw when a plus expression contains no string literal.', () => {
             // Arrange.
             const invalidYini = `
-                @yini
+                @yini lenient
 
-                message = 8080 + " is the port"
+                value = 1 + 2 + 3
             `
 
             // Act & Assert.
@@ -88,10 +136,10 @@ describe('String concatenation tests:', () => {
             }).toThrow()
         })
 
-        test('5. Should throw when plus appears at the beginning of the next line.', () => {
+        test('7. Should throw when plus appears at the beginning of the next line.', () => {
             // Arrange.
             const invalidYini = `
-                @yini
+                @yini lenient
 
                 message = "Hello, "
                     + "world"
@@ -106,10 +154,10 @@ describe('String concatenation tests:', () => {
             }).toThrow()
         })
 
-        test('6. Should throw when a list is used as a concatenation operand.', () => {
+        test('8. Should throw when a list is used as a concatenation operand.', () => {
             // Arrange.
             const invalidYini = `
-                @yini
+                @yini lenient
 
                 message = "items=" + [1, 2]
             `
@@ -123,10 +171,10 @@ describe('String concatenation tests:', () => {
             }).toThrow()
         })
 
-        test('7. Should throw when an inline object is used as a concatenation operand.', () => {
+        test('9. Should throw when an inline object is used as a concatenation operand.', () => {
             // Arrange.
             const invalidYini = `
-                @yini
+                @yini lenient
 
                 message = "object=" + { a: 1 }
             `
@@ -145,7 +193,7 @@ describe('String concatenation tests:', () => {
         test('1. Should concatenate string literals.', () => {
             // Arrange.
             const validYini = `
-                @yini
+                @yini strict
 
                 ^ App
                 message = "Hello, " + "world"
@@ -172,7 +220,7 @@ describe('String concatenation tests:', () => {
         test('2. Should allow string concatenation to continue after plus on the next line.', () => {
             // Arrange.
             const validYini = `
-                @yini
+                @yini strict
 
                 ^ Config
                 text = "hello " +
@@ -200,7 +248,7 @@ describe('String concatenation tests:', () => {
         test('3. Should throw when concatenation contains a number operand.', () => {
             // Arrange.
             const invalidYini = `
-                @yini
+                @yini strict
 
                 ^ App
                 message = "port=" + 8080
@@ -218,10 +266,31 @@ describe('String concatenation tests:', () => {
             }).toThrow()
         })
 
-        test('4. Should throw when concatenation contains a boolean operand.', () => {
+        test('4. Should throw when concatenation starts with a number operand.', () => {
             // Arrange.
             const invalidYini = `
-                @yini
+                @yini strict
+
+                ^ App
+                message = 8080 + " is the port"
+
+                /END
+            `
+
+            // Act & Assert.
+            expect(() => {
+                YINI.parse(invalidYini, {
+                    strictMode: true,
+                    requireDocTerminator: 'required',
+                    failLevel: 'errors',
+                })
+            }).toThrow()
+        })
+
+        test('5. Should throw when concatenation contains a boolean operand.', () => {
+            // Arrange.
+            const invalidYini = `
+                @yini strict
 
                 ^ App
                 message = "enabled=" + true
@@ -239,10 +308,10 @@ describe('String concatenation tests:', () => {
             }).toThrow()
         })
 
-        test('5. Should throw when concatenation contains a null operand.', () => {
+        test('6. Should throw when concatenation contains a null operand.', () => {
             // Arrange.
             const invalidYini = `
-                @yini
+                @yini strict
 
                 ^ App
                 message = "value=" + null
@@ -260,10 +329,10 @@ describe('String concatenation tests:', () => {
             }).toThrow()
         })
 
-        test('6. Should throw when plus appears at the beginning of the next line.', () => {
+        test('7. Should throw when plus appears at the beginning of the next line.', () => {
             // Arrange.
             const invalidYini = `
-                @yini
+                @yini strict
 
                 ^ App
                 message = "Hello, "
@@ -282,10 +351,10 @@ describe('String concatenation tests:', () => {
             }).toThrow()
         })
 
-        test('7. Should throw when a list is used as a concatenation operand.', () => {
+        test('8. Should throw when a list is used as a concatenation operand.', () => {
             // Arrange.
             const invalidYini = `
-                @yini
+                @yini strict
 
                 ^ App
                 message = "items=" + [1, 2]
@@ -303,10 +372,10 @@ describe('String concatenation tests:', () => {
             }).toThrow()
         })
 
-        test('8. Should throw when an inline object is used as a concatenation operand.', () => {
+        test('9. Should throw when an inline object is used as a concatenation operand.', () => {
             // Arrange.
             const invalidYini = `
-                @yini
+                @yini strict
 
                 ^ App
                 message = "object=" + { a: 1 }

@@ -13,10 +13,11 @@ import { toPrettyJSON } from '../../../src/utils/print'
  * - hex:_FFAA00
  * - 0x_FFAA00
  *
- *@note Outside string literals, # always begins a comment.
+ * Note:
+ * Outside string literals, # always begins a comment.
  */
 describe('Hexadecimal number literal tests:', () => {
-    test('1) Should parse hexadecimal numbers using 0x and 0X notation.', () => {
+    test('1. Should parse hexadecimal numbers using 0x and 0X notation.', () => {
         // Arrange.
         const validYini = `
             ^ HexNumbers
@@ -65,7 +66,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('2) Should parse lowercase hexadecimal digits using 0x and 0X notation.', () => {
+    test('2. Should parse lowercase hexadecimal digits using 0x and 0X notation.', () => {
         // Arrange.
         const validYini = `
             ^ HexNumbers
@@ -114,7 +115,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('3) Should parse hexadecimal numbers using explicit hex: notation.', () => {
+    test('3. Should parse hexadecimal numbers using explicit hex: notation.', () => {
         // Arrange.
         const validYini = `
             ^ HexNumbers
@@ -163,7 +164,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('4) Should parse explicit hex: notation case-insensitively.', () => {
+    test('4. Should parse explicit hex: notation case-insensitively.', () => {
         // Arrange.
         const validYini = `
             ^ HexNumbers
@@ -196,7 +197,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('5) Should parse signed hexadecimal numbers.', () => {
+    test('5. Should parse signed hexadecimal numbers.', () => {
         // Arrange.
         const validYini = `
             ^ HexNumbers
@@ -245,7 +246,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('6) Should parse hexadecimal edge cases with leading zeroes.', () => {
+    test('6. Should parse hexadecimal edge cases with leading zeroes.', () => {
         // Arrange.
         const validYini = `
             ^ HexNumbers
@@ -290,7 +291,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('7) Should parse hexadecimal numbers with digit separators.', () => {
+    test('7. Should parse hexadecimal numbers with digit separators.', () => {
         // Arrange.
         const validYini = `
             ^ HexNumbers
@@ -331,7 +332,38 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('8) Should treat old # hexadecimal notation as a comment, not as hex, in lenient mode.', () => {
+    test('8. Should allow inline comments after valid hexadecimal numbers.', () => {
+        // Arrange.
+        const validYini = `
+            ^ HexNumbers
+            color1 = 0xFFAA00 # Inline comment.
+            color2 = hex:FFAA00#Inline comment.
+            color3 = 0x_FF_AA_00 // Inline comment.
+            color4 = hex:_FF_AA_00//Inline comment.
+
+            /END
+        `
+
+        const correct = {
+            HexNumbers: {
+                color1: 16755200,
+                color2: 16755200,
+                color3: 16755200,
+                color4: 16755200,
+            },
+        }
+
+        // Act.
+        const result = YINI.parse(validYini, {
+            strictMode: true,
+            requireDocTerminator: 'required',
+        })
+
+        // Assert.
+        expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
+    })
+
+    test('9. Should treat old # hexadecimal notation as a comment, not as hex, in lenient mode.', () => {
         // Arrange.
         const validYini = `
             ^ HexNumbers
@@ -355,7 +387,7 @@ describe('Hexadecimal number literal tests:', () => {
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
     })
 
-    test('9) Should reject old # hexadecimal notation in strict mode because the value is missing.', () => {
+    test('10. Should reject old # hexadecimal notation in strict mode because the value is missing.', () => {
         // Arrange.
         const invalidYini = `
             ^ HexNumbers
@@ -390,13 +422,15 @@ describe('Hexadecimal number literal tests:', () => {
         ['hex: with whitespace after prefix', 'badHex = hex: FFAA00'],
         ['hex: with whitespace before colon', 'badHex = hex : FFAA00'],
         ['hex: with trailing underscore', 'badHex = hex:FF_'],
+        ['hex: with only underscore after prefix', 'badHex = hex:_'],
         ['hex: with adjacent underscores', 'badHex = hex:FF__AA'],
 
         ['signed 0x without digits', 'badHex = -0x'],
         ['signed hex: without digits', 'badHex = -hex:'],
         ['signed hex: with whitespace after prefix', 'badHex = +hex: FFAA00'],
+        ['signed hex: with only underscore after prefix', 'badHex = -hex:_'],
     ])(
-        '10.%#) Should reject malformed hexadecimal notation: %s.',
+        '11.%# Should reject malformed hexadecimal notation: %s.',
         (_name, line) => {
             // Arrange.
             const invalidYini = `

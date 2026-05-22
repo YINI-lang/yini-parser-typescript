@@ -248,70 +248,24 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
         this.mapSectionNamePaths.set(keyPath, level)
     }
 
-    // private extractStringParts(tokenText: string): IParsedStringInput {
-    //     // Detect prefix
-    //     let prefix = ''
-    //     let rest = tokenText
-
-    //     const prefixMatch = tokenText.match(/^(C|c|R|r)/)
-    //     if (prefixMatch) {
-    //         prefix = prefixMatch[1].toUpperCase()
-    //         rest = tokenText.slice(1)
-    //     }
-
-    //     // Triple quoted
-    //     if (rest.startsWith('"""')) {
-    //         const inner = rest.slice(3, -3)
-
-    //         if (prefix === 'C') {
-    //             return { strKind: 'triple-classic', value: inner }
-    //         }
-
-    //         return { strKind: 'triple-raw', value: inner }
-    //     }
-
-    //     // Single quoted or double quoted
-    //     const quote = rest[0]
-    //     const inner = rest.slice(1, -1)
-
-    //     switch (prefix) {
-    //         case 'C':
-    //             return { strKind: 'classic', value: inner }
-    //         case 'R':
-    //         case '':
-    //             return { strKind: 'raw', value: inner }
-    //         default:
-    //             return { strKind: 'raw', value: inner }
-    //     }
-    // }
-
     private extractStringKindAndValue(raw: string): IParsedStringInput {
-        const triple =
-            raw.startsWith('C"""') ||
-            raw.startsWith('c"""') ||
-            raw.startsWith('R"""') ||
-            raw.startsWith('r"""') ||
-            raw.startsWith('"""')
+        const hasClassicPrefix = /^[Cc]/.test(raw)
+        const hasRawPrefix = /^[Rr]/.test(raw)
+        const hasPrefix = hasClassicPrefix || hasRawPrefix
 
-        let prefix = ''
-        let value = ''
-        let strKind: IParsedStringInput['strKind']
+        const body = hasPrefix ? raw.slice(1) : raw
 
-        if (/^[Cc]/.test(raw)) prefix = 'C'
-        // else if (/^[Hh]/.test(raw)) prefix = 'H'
-        else if (/^[Rr]/.test(raw)) prefix = 'R'
-
-        if (triple) {
-            value = raw.replace(/^[CRcr]?"""/, '').replace(/"""$/, '')
-            strKind = prefix === 'C' ? 'triple-classic' : 'triple-raw'
-        } else {
-            value = raw.replace(/^[CRcr]?['"]/, '').replace(/['"]$/, '')
-
-            if (prefix === 'C') strKind = 'classic'
-            else strKind = 'raw'
+        if (body.startsWith('"""')) {
+            return {
+                strKind: hasClassicPrefix ? 'triple-classic' : 'triple-raw',
+                value: body.slice(3, -3),
+            }
         }
 
-        return { strKind, value }
+        return {
+            strKind: hasClassicPrefix ? 'classic' : 'raw',
+            value: body.slice(1, -1),
+        }
     }
 
     /** Attach a section to the stack respecting up/down moves (Spec 5.3). :contentReference[oaicite:7]{index=7} */

@@ -18,6 +18,13 @@ export class CYiniStringParseError extends Error {
 
 const isHex = (c: string) => /^[0-9a-fA-F]$/.test(c)
 const isOctal = (c: string) => /^[0-7]$/.test(c)
+const isUnicodeScalarValue = (codePoint: number): boolean => {
+    return (
+        codePoint >= 0x0000 &&
+        codePoint <= 0x10ffff &&
+        !(codePoint >= 0xd800 && codePoint <= 0xdfff)
+    )
+}
 
 const parseClassicEscapes = (input: string): string => {
     let result = ''
@@ -101,7 +108,16 @@ const parseClassicEscapes = (input: string): string => {
                 if (hex.length !== 4 || ![...hex].every(isHex)) {
                     throw new CYiniStringParseError(`Invalid \\u escape`)
                 }
-                result += String.fromCharCode(parseInt(hex, 16))
+
+                const codePoint = parseInt(hex, 16)
+
+                if (!isUnicodeScalarValue(codePoint)) {
+                    throw new CYiniStringParseError(
+                        `Invalid Unicode scalar value in \\u escape`,
+                    )
+                }
+
+                result += String.fromCodePoint(codePoint)
                 i += 4
                 break
             }
@@ -111,7 +127,15 @@ const parseClassicEscapes = (input: string): string => {
                 if (hex.length !== 8 || ![...hex].every(isHex)) {
                     throw new CYiniStringParseError(`Invalid \\U escape`)
                 }
+
                 const codePoint = parseInt(hex, 16)
+
+                if (!isUnicodeScalarValue(codePoint)) {
+                    throw new CYiniStringParseError(
+                        `Invalid Unicode scalar value in \\U escape`,
+                    )
+                }
+
                 result += String.fromCodePoint(codePoint)
                 i += 8
                 break
@@ -159,6 +183,8 @@ const parseStringLiteral = ({ strKind, value }: IParsedStringInput): string => {
     switch (strKind) {
         case 'raw':
         case 'triple-raw':
+            // Raw strings preserve content exactly as provided by the lexer.
+            // Single-line raw string constraints are enforced by the lexer.
             return value
 
         case 'classic':

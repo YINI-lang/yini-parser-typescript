@@ -236,22 +236,29 @@ describe('General Smoke Tests:', () => {
     test('11. Throw error if using section repeating markers higher than supported.', () => {
         // Arrange.
         const fixture1 = `^ Section1
-            ^^ Section2
-            ^^^ Section3
-            ^^^^ Section4
-            ^^^^^ Section5
-            ^^^^^^ Section6 // Section 6.
-            strVar = "These section headers are valid!"
-        `
+        ^^ Section2
+        ^^^ Section3
+        ^^^^ Section4
+        ^^^^^ Section5
+        ^^^^^^ Section6
+        ^^^^^^^ Section7
+        ^^^^^^^^ Section8
+        ^^^^^^^^^ Section9 // Section 9.
+        strVar = "These section headers are valid!"
+    `
+
         const fixture2 = `^ Section1
-            ^^ Section2
-            ^^^ Section3
-            ^^^^ Section4
-            ^^^^^ Section5
-            ^^^^^^ Section6 // Section 6.
-            ^^^^^^^ Section7 // INVALID HEADER MARKER!
-            strVar = "^^^^^^^ (7) is invalid"
-        `
+        ^^ Section2
+        ^^^ Section3
+        ^^^^ Section4
+        ^^^^^ Section5
+        ^^^^^^ Section6
+        ^^^^^^^ Section7
+        ^^^^^^^^ Section8
+        ^^^^^^^^^ Section9
+        ^^^^^^^^^^ Section10 // INVALID HEADER MARKER!
+        strVar = "^^^^^^^^^^ (10) is invalid"
+    `
 
         // Act.
         const result1 = parseUntilError(fixture1)
@@ -261,7 +268,7 @@ describe('General Smoke Tests:', () => {
         expect(!!result1).toEqual(true)
         expect(
             result1.Section1.Section2.Section3.Section4.Section5.Section6
-                .strVar,
+                .Section7.Section8.Section9.strVar,
         ).toBe('These section headers are valid!')
 
         // Act & Assert.

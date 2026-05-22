@@ -522,20 +522,20 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>Triple-quoted (raw)</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>"""..."""</code>, multi-line</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>Raw by default</td>
   </tr>
   <tr>
     <td>C-Triple-quoted</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>C"""..."""</code>, with escapes</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>Multi-line, supports escapes</td>
   </tr>
   <tr>

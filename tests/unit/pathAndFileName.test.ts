@@ -1,4 +1,5 @@
-import { getFileNameExtension } from './pathAndFileName'
+// tests/unit/pathAndFileName.test.ts
+import { getFileNameExtension } from '../../src/utils/pathAndFileName'
 
 /**
  * Utils-Path and File Name Unit Tests.
