@@ -47,6 +47,34 @@ export const countRepeatedSectionMarkers = (markerText: string): number => {
     return [...markerText].filter((ch) => isMarkerCharacter(ch)).length
 }
 
+/**
+ * Strips/removes separator characters from a repeated section marker sequence.
+ *
+ * Examples:
+ * - ^^^_^^^_^  -> ^^^^^^^
+ * - ^^^_^^^_^^ -> ^^^^^^^^
+ *
+ * Invalid:
+ * - _^^
+ * - ^^_
+ * - ^^__^^
+ */
+export const normalizeRepeatedSectionMarkerSequence = (
+    marker: string,
+): string => {
+    if (marker.startsWith('_')) {
+        throw Error('Marker cannot start with a separator.')
+    }
+    if (marker.endsWith('_')) {
+        throw Error('Marker cannot end with a separator.')
+    }
+    if (marker.includes('__')) {
+        throw Error('Marker cannot include a double separator.')
+    }
+
+    return marker.replace(/_/g, '')
+}
+
 export const hasMixedSectionMarkers = (markerText: string): boolean => {
     const markerKinds = new Set(
         [...markerText].filter((ch) => isMarkerCharacter(ch)),

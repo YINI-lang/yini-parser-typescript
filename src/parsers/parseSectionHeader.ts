@@ -14,19 +14,28 @@ import {
     isValidSimpleIdent,
     MAX_REPEATED_SECTION_MARKER_DEPTH,
     MAX_SECTION_DEPTH,
+    normalizeRepeatedSectionMarkerSequence,
 } from '../utils/yiniHelpers'
 
 /**
- * Extract ...
- * @param rawLine Raw line with the section header.
- * @note Implemented without regexp to keep it less cryptic, etc.
+ * Parses a YINI section header line and returns the marker type,
+ * section name, and resolved section depth.
+ *
+ * Supports:
+ * - Repeated markers: ^ Section, ^^ Section, ^^^_^^^_^ Section.
+ * - Numeric shorthand markers: ^10 Section.
+ * - Alternative section marker characters handled by extractHeaderParts(..).
+ *
+ * @param rawLine Raw line containing the section header.
+ * @param errorHandler Error handler used for diagnostics.
+ * @param ctx Parser context used for error location reporting.
  */
 const parseSectionHeader = (
     rawLine: string,
     errorHandler: ErrorDataHandler,
-    ctx: null | StmtContext, // For error reporting.
+    ctx: null | StmtContext,
 ): {
-    markerType: TSectionHeaderType // Header marker type.
+    markerType: TSectionHeaderType
     sectionName: string
     sectionLevel: number
 } => {
@@ -40,6 +49,7 @@ const parseSectionHeader = (
 
     let { strMarkerChars, strSectionName, strNumberPart, isBacktickedName } =
         extractHeaderParts(rawLine, errorHandler, ctx)
+
     debugPrint('In parseSectionHeader(..), after extractHeaderParts(..):')
     debugPrint('  strMarkerChars: ' + strMarkerChars)
     debugPrint('  strSectionName: ' + strSectionName)
@@ -53,13 +63,16 @@ const parseSectionHeader = (
         errorHandler.pushOrBail(
             toErrorLocation(ctx),
             'Syntax-Error',
-            'Unknown section header marker type',
-            'Section header marker type could not be identified, header text: ' +
-                rawLine,
+            'Unknown section header marker type.',
+            'Section header marker type could not be identified.',
+            `Header text: ${rawLine}`,
         )
     }
 
-    // --- Determing level and headerMarkerType ------------------------
+    // ---------------------------------------------------------------------
+    // Determine section marker type and depth.
+    // ---------------------------------------------------------------------
+
     if (strNumberPart === '') {
         headerMarkerType = 'Classic-Header-Marker'
 
@@ -78,6 +91,22 @@ const parseSectionHeader = (
                 'Syntax-Error',
                 'Invalid section marker separator placement.',
                 `Got '${strMarkerChars}'. Section marker separators '_' may appear only between repeated occurrences of the same marker character.`,
+                'Examples of valid forms: ^^, ^^^_^^^, ^^^_^^^_^.',
+            )
+        }
+
+        try {
+            strMarkerChars =
+                normalizeRepeatedSectionMarkerSequence(strMarkerChars)
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : String(err)
+
+            errorHandler.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                'Invalid section marker separator placement.',
+                message,
+                `Got '${strMarkerChars}'.`,
             )
         }
 
@@ -91,6 +120,7 @@ const parseSectionHeader = (
                 'Syntax-Error',
                 'Invalid separator in numeric shorthand section header.',
                 `Numeric shorthand section headers must not contain '_'. Got '${strMarkerChars}${strNumberPart}'.`,
+                "Use numeric shorthand like '^10 Section', not '^_10 Section'.",
             )
         }
 
@@ -102,8 +132,22 @@ const parseSectionHeader = (
                 'Syntax-Error',
                 'Invalid numeric shorthand section depth.',
                 `Could not parse '${strNumberPart}' as a section depth.`,
+                'Use a positive integer, for example: ^1 Section, ^2 Section, or ^10 Section.',
             )
         }
+    }
+
+    // ---------------------------------------------------------------------
+    // Validate resolved section depth.
+    // ---------------------------------------------------------------------
+
+    if (level < 1) {
+        errorHandler.pushOrBail(
+            toErrorLocation(ctx),
+            'Syntax-Error',
+            'Invalid section depth.',
+            `Section depth must be 1 or higher. Got ${level}.`,
+        )
     }
 
     if (level > MAX_SECTION_DEPTH) {
@@ -115,9 +159,6 @@ const parseSectionHeader = (
         )
     }
 
-    // ---------------------------------------------------------------
-
-    // --- Check level contraints based on headerMarkerType ----------
     if (
         headerMarkerType === 'Classic-Header-Marker' &&
         level > MAX_REPEATED_SECTION_MARKER_DEPTH
@@ -129,57 +170,46 @@ const parseSectionHeader = (
             `Repeated/basic section markers may express levels 1–${MAX_REPEATED_SECTION_MARKER_DEPTH}. Got level ${level}.`,
             `For levels ${MAX_REPEATED_SECTION_MARKER_DEPTH + 1} and deeper, use numeric shorthand, for example '^10 Section'.`,
         )
-    } else {
-        if (level < 1) {
-            errorHandler.pushOrBail(
-                toErrorLocation(ctx),
-                'Syntax-Error',
-                'Invalid number in numeric shorthand section marker: ' +
-                    strMarkerChars,
-                'The number in a numeric shorthand section marker must be 1 or higher, e.g. ^1, ^2, ^3, etc.',
-            )
-        }
     }
-    // ---------------------------------------------------------------
 
-    // --- Check naming contraints based on isBacktickedName ----------
+    // ---------------------------------------------------------------------
+    // Validate section name.
+    // ---------------------------------------------------------------------
+
     const lenOfName = strSectionName.length
+
     if (isBacktickedName) {
         if (!isValidBacktickedIdent(strSectionName)) {
             errorHandler.pushOrBail(
                 toErrorLocation(ctx),
                 'Syntax-Error',
-                'Invalid section header name "' + strSectionName + '"',
-                'Section name should be backticked like e.g. `My section name`.',
-            )
-        }
-    } else {
-        debugPrint('Naming contraints: Is not a BacktickedName')
-        if (lenOfName <= 0) {
-            errorHandler.pushOrBail(
-                toErrorLocation(ctx),
-                'Syntax-Error',
-                'Invalid section name in repeating marker characters header, section name: "' +
-                    strSectionName +
-                    '"',
-            )
-        }
-
-        if (!isValidSimpleIdent(strSectionName)) {
-            errorHandler.pushOrBail(
-                toErrorLocation(ctx),
-                'Syntax-Error',
-                'Invalid section header name "' + strSectionName + '"',
-                'Section name must start with: A-Z, a-z, or _, unless enclosed in backticks e.g. `' +
-                    strSectionName +
-                    '`, `My section name`.',
+                `Invalid section header name "${strSectionName}".`,
+                'Backticked section names must be enclosed in backticks, for example: `My section name`.',
             )
         }
 
         strSectionName = trimBackticks(strSectionName)
+    } else {
+        debugPrint('Naming constraints: Is not a BacktickedName.')
+
+        if (lenOfName <= 0) {
+            errorHandler.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                'Missing section name.',
+                `Invalid section header: '${rawLine}'.`,
+                'A section header must contain a marker and a section name, for example: ^ App.',
+            )
+        } else if (!isValidSimpleIdent(strSectionName)) {
+            errorHandler.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                `Invalid section header name "${strSectionName}".`,
+                'Section names must start with A-Z, a-z, or _, unless enclosed in backticks.',
+                `Use ${strSectionName} only if it is a valid simple identifier, or write it as \`${strSectionName}\`.`,
+            )
+        }
     }
-    // ---------------------------------------------------------------
-    // strSectionName = trimBackticks(strSectionName)
 
     debugPrint('                        --------------')
     debugPrint('<- About to leave parseSectionHeader(..)')
