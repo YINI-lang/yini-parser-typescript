@@ -1,14 +1,19 @@
-import { isDebug } from '../config/env'
+// src/parsers/parseSectionHeader.ts
 import { ErrorDataHandler, toErrorLocation } from '../core/errorDataHandler'
 import { TSectionHeaderType } from '../core/internalTypes'
 import { StmtContext } from '../grammar/generated/YiniParser'
 import extractHeaderParts from '../parsers/extractHeaderParts'
 import { extractYiniLine } from '../parsers/extractSignificantYiniLine'
 import { debugPrint } from '../utils/print'
-import { isAlpha, trimBackticks } from '../utils/string'
+import { trimBackticks } from '../utils/string'
 import {
+    countRepeatedSectionMarkers,
+    hasInvalidSectionMarkerSeparatorPlacement,
+    hasMixedSectionMarkers,
     isValidBacktickedIdent,
     isValidSimpleIdent,
+    MAX_REPEATED_SECTION_MARKER_DEPTH,
+    MAX_SECTION_DEPTH,
 } from '../utils/yiniHelpers'
 
 /**
@@ -58,45 +63,72 @@ const parseSectionHeader = (
     if (strNumberPart === '') {
         headerMarkerType = 'Classic-Header-Marker'
 
-        level = strMarkerChars.length
-        if (strNumberPart !== '') {
+        if (hasMixedSectionMarkers(strMarkerChars)) {
             errorHandler.pushOrBail(
                 toErrorLocation(ctx),
                 'Syntax-Error',
-                'Invalid extra input in section header of a repeating marker characters: ' +
-                    strNumberPart,
-                'Classic section header markers may not include any numbers after, correct header markers looks like ^ Title, ^^ Title, ^^^ Title, etc.',
+                'Mixed section marker characters are not allowed.',
+                `Got '${strMarkerChars}'. A repeated section marker sequence must use only one marker kind.`,
             )
         }
-    } else {
-        headerMarkerType = 'Numeric-Header-Marker'
-        try {
-            level = Number.parseInt(strNumberPart)
-        } catch (err) {
+
+        if (hasInvalidSectionMarkerSeparatorPlacement(strMarkerChars)) {
             errorHandler.pushOrBail(
                 toErrorLocation(ctx),
                 'Syntax-Error',
-                'No number in this shorthand section header marker found',
-                'This shorthand section header marker could not be parse correctly, section header text: ' +
-                    line +
-                    ', raw: ' +
-                    rawLine,
+                'Invalid section marker separator placement.',
+                `Got '${strMarkerChars}'. Section marker separators '_' may appear only between repeated occurrences of the same marker character.`,
+            )
+        }
+
+        level = countRepeatedSectionMarkers(strMarkerChars)
+    } else {
+        headerMarkerType = 'Numeric-Header-Marker'
+
+        if (strMarkerChars.includes('_')) {
+            errorHandler.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                'Invalid separator in numeric shorthand section header.',
+                `Numeric shorthand section headers must not contain '_'. Got '${strMarkerChars}${strNumberPart}'.`,
+            )
+        }
+
+        level = Number.parseInt(strNumberPart, 10)
+
+        if (Number.isNaN(level)) {
+            errorHandler.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                'Invalid numeric shorthand section depth.',
+                `Could not parse '${strNumberPart}' as a section depth.`,
             )
         }
     }
+
+    if (level > MAX_SECTION_DEPTH) {
+        errorHandler.pushOrBail(
+            toErrorLocation(ctx),
+            'Syntax-Error',
+            'Section depth exceeds the maximum supported depth.',
+            `Got section depth ${level}. The maximum supported section depth is ${MAX_SECTION_DEPTH}.`,
+        )
+    }
+
     // ---------------------------------------------------------------
 
     // --- Check level contraints based on headerMarkerType ----------
-    if (headerMarkerType === 'Classic-Header-Marker') {
-        if (level > 6) {
-            errorHandler.pushOrBail(
-                toErrorLocation(ctx),
-                'Syntax-Error',
-                'Invalid number of repeating marker characters: ' +
-                    strMarkerChars,
-                'It is invalid to use seven or more section marker characters in succession (e.g. ^^^^^^^). However, to represent nesting levels deeper than 6, you may switch to the numeric shorthand section header syntax, e.g. ^7.',
-            )
-        }
+    if (
+        headerMarkerType === 'Classic-Header-Marker' &&
+        level > MAX_REPEATED_SECTION_MARKER_DEPTH
+    ) {
+        errorHandler.pushOrBail(
+            toErrorLocation(ctx),
+            'Syntax-Error',
+            'Too many repeated section marker characters.',
+            `Repeated/basic section markers may express levels 1–${MAX_REPEATED_SECTION_MARKER_DEPTH}. Got level ${level}.`,
+            `For levels ${MAX_REPEATED_SECTION_MARKER_DEPTH + 1} and deeper, use numeric shorthand, for example '^10 Section'.`,
+        )
     } else {
         if (level < 1) {
             errorHandler.pushOrBail(

@@ -13,8 +13,11 @@ import {
     Concat_operandContext,
     Concat_tailContext,
     DirectiveContext,
+    Disabled_line_stmtContext,
     ElementsContext,
     EolContext,
+    Full_line_comment_stmtContext,
+    Invalid_section_stmtContext,
     List_literalContext,
     MemberContext,
     Meta_stmtContext,
@@ -29,7 +32,10 @@ import {
     StmtContext,
     String_literalContext,
     Terminal_stmtContext,
+    Terminal_triviaContext,
     ValueContext,
+    Yini_directiveContext,
+    Yini_mode_declarationContext,
     YiniContext,
 } from '../grammar/generated/YiniParser.js'
 import YiniParserVisitor from '../grammar/generated/YiniParserVisitor'
@@ -37,20 +43,14 @@ import { extractYiniLine } from '../parsers/extractSignificantYiniLine'
 import parseBoolean from '../parsers/parseBoolean'
 import parseNullLiteral from '../parsers/parseNull'
 import parseNumberLiteral from '../parsers/parseNumber'
-// import parseNumber from '../parsers/parseNumber'
 import parseSectionHeader from '../parsers/parseSectionHeader'
 import parseStringLiteral, {
     CYiniStringParseError,
 } from '../parsers/parseString'
 import { isInfinityValue, isNaNValue } from '../utils/number'
 import { debugPrint, printObject } from '../utils/print'
+import { isEnclosedInBackticks, trimBackticks } from '../utils/string'
 import {
-    isEnclosedInBackticks,
-    toLowerSnakeCase,
-    trimBackticks,
-} from '../utils/string'
-import {
-    isScalar,
     isValidBacktickedIdent,
     isValidSimpleIdent,
     printLiteral,
@@ -63,10 +63,8 @@ import {
     IParsedStringInput,
     IYiniAST,
     IYiniSection,
-    TListValue,
     TScalarValue,
     TSourceType,
-    TSubjectType,
     TValueLiteral,
 } from './internalTypes'
 
@@ -148,7 +146,8 @@ function makeSection(name: string, level: number): IYiniSection {
  * operations with no return type.
  */
 // export default class YINIVisitor<IResult> extends YiniParserVisitor<IResult> {
-export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
+// export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
+export default class ASTBuilder extends YiniParserVisitor<any> {
     private errorHandler: ErrorDataHandler | null = null
     private readonly options: IParseCoreOptions
     private readonly isStrict: boolean
@@ -302,11 +301,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         // else if (/^[Hh]/.test(raw)) prefix = 'H'
         else if (/^[Rr]/.test(raw)) prefix = 'R'
 
-        if (
-            raw.startsWith('"""') ||
-            raw.startsWith('C"""') ||
-            raw.startsWith('c"""')
-        ) {
+        if (triple) {
             value = raw.replace(/^[CRcr]?"""/, '').replace(/"""$/, '')
             strKind = prefix === 'C' ? 'triple-classic' : 'triple-raw'
         } else {
@@ -504,6 +499,13 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         }
     }
 
+    private hasTrailingComma(ctx: any): boolean {
+        const childCount = ctx.getChildCount?.() ?? 0
+        if (childCount <= 0) return false
+
+        return ctx.getChild(childCount - 1)?.getText?.() === ','
+    }
+
     // --------------------------------
 
     // Public entry
@@ -581,7 +583,6 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @return the visitor result
      */
-    // visitTerminal_stmt?: (ctx: Terminal_stmtContext) => Result;
     visitTerminal_stmt = (ctx: Terminal_stmtContext): any => {
         debugPrint('-> Entered visitTerminal_stmt(..)')
         let rawText: string = ctx.getText().trim()
@@ -616,12 +617,48 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     }
 
     /**
+     * Visit a parse tree produced by `YiniParser.terminal_trivia`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitTerminal_trivia = (ctx: Terminal_triviaContext): any => {
+        ctx.children?.forEach((c: any) => this.visit?.(c))
+        return null
+    }
+
+    /**
+     * Visit a parse tree produced by `YiniParser.stmt`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    // visitStmt?: (ctx: StmtContext) => Result
+
+    /**
+     * Visit a parse tree produced by `YiniParser.full_line_comment_stmt`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitFull_line_comment_stmt = (
+        _ctx: Full_line_comment_stmtContext,
+    ): any => {
+        return null
+    }
+
+    /**
+     * Visit a parse tree produced by `YiniParser.disabled_line_stmt`.
+     * @param ctx the parse tree
+     * @return the visitor result
+     */
+    visitDisabled_line_stmt = (_ctx: Disabled_line_stmtContext): any => {
+        return null
+    }
+
+    /**
      * Visit a parse tree produced by `YiniParser.stmt`.
      * @param ctx the parse tree
      * @grammarRule eol | SECTION_HEAD | assignment | colon_list_decl | marker_stmt | bad_member
      * @return the visitor result
      */
-    // visitStmt?: (ctx: StmtContext) => Result
     visitStmt = (ctx: StmtContext): any => {
         const child: any = ctx.getChild(0)
         const ruleName = child?.constructor?.name ?? ''
@@ -633,6 +670,12 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         // }
 
         if (ruleName.includes('EolContext')) return this.visitEol?.(child)
+        if (ruleName.includes('Full_line_comment_stmtContext'))
+            return this.visitFull_line_comment_stmt?.(child)
+        if (ruleName.includes('Disabled_line_stmtContext'))
+            return this.visitDisabled_line_stmt?.(child)
+        if (ruleName.includes('Invalid_section_stmtContext'))
+            return this.visitInvalid_section_stmt?.(child)
         if (ruleName.includes('AssignmentContext'))
             return this.visitAssignment?.(child)
         if (ruleName.includes('Meta_stmtContext'))
@@ -677,6 +720,18 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         return this.visitBad_member?.(ctx.getChild(0) as any)
     }
 
+    visitInvalid_section_stmt = (ctx: Invalid_section_stmtContext): any => {
+        this.errorHandler!.pushOrBail(
+            toErrorLocation(ctx),
+            'Syntax-Error',
+            'Invalid section header',
+            `Offending section header: '${ctx.getText().trim()}'`,
+            'Section headers must use a valid marker sequence followed by a valid section name.',
+        )
+
+        return null
+    }
+
     /**
      * Visit a parse tree produced by `YiniParser.meta_stmt`.
      * @param ctx the parse tree
@@ -705,54 +760,44 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
      */
     visitDirective = (ctx: DirectiveContext): any => {
         debugPrint('-> Entered visitDirective(..)')
-        let rawText: string = ctx.getText().trim()
-        debugPrint('rawText = "' + rawText + '"')
 
-        // NOTE: Important to strip any possible comments on the same line.
-        rawText = stripCommentsAndAfter(rawText) // Remove possible comments.
-        debugPrint('rawText2 = "' + rawText + '"')
+        const rawText = stripCommentsAndAfter(ctx.getText().trim())
 
         if (this.mapSectionNamePaths.size || this._numOfMembers) {
-            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
             this.errorHandler!.pushOrBail(
                 toErrorLocation(ctx),
                 this.isStrict ? 'Syntax-Error' : 'Syntax-Warning',
                 `Found a directive statement in the wrong place ${this.isStrict ? '(strict mode)' : '(lenient mode)'}`,
                 `Directive '${rawText}' must appear only at the beginning of the document, before any sections or members.`,
-                `Tip: Move the line with '${rawText}' to the very top of the file (but after a possible #! line or comments).`,
+                'Move the directive to the top of the file, after a possible shebang, comments, or whitespace.',
             )
         }
 
-        if (rawText.toLowerCase().startsWith('@include')) {
-            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-            this.errorHandler!.pushOrBail(
-                toErrorLocation(ctx),
-                'Notice',
-                `Detected unsupported directive '@include'`,
-                `This directive is not currently supported by the parser.`,
-            )
-        } else if (rawText.toLowerCase() === '@yini') {
-            if (this.ast.yiniMarkerSeen) {
-                // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-                this.errorHandler!.pushOrBail(
-                    toErrorLocation(ctx),
-                    this.isStrict ? 'Syntax-Error' : 'Syntax-Warning',
-                    `Hit a duplicate YINI Marker in document`,
-                    `'${rawText}' already exists in this file, it's enough with only one YINI Marker ('@YINI').`,
-                )
-            }
-        } else {
-            // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+        const yiniDirective = ctx.yini_directive?.()
+        if (yiniDirective) {
+            return this.visitYini_directive(yiniDirective)
+        }
+
+        if (ctx.INCLUDE_TOKEN?.()) {
             this.errorHandler!.pushOrBail(
                 toErrorLocation(ctx),
                 'Syntax-Error',
-                'Encountered unknow directive statement',
-                `Got '${rawText}', but expected '@YINI' (case insensitive).`,
+                "Unsupported directive '@include'",
+                "'@include' is reserved for possible future use, but is not currently supported by this parser.",
+                'Remove the directive or preprocess included files before parsing.',
             )
+
+            return null
         }
 
-        // @yini marker is advisory (no semantic value) per spec. We ignore it. (Spec 2.4) :contentReference[oaicite:9]{index=9}
-        this.ast.yiniMarkerSeen = true
+        this.errorHandler!.pushOrBail(
+            toErrorLocation(ctx),
+            'Syntax-Error',
+            'Encountered unknown directive statement',
+            `Got '${rawText}'.`,
+            "Expected '@yini', '@yini strict', '@yini lenient', or a supported directive.",
+        )
+
         return null
     }
 
@@ -1072,19 +1117,49 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
      * Visit a parse tree produced by `YiniParser.concat_expression`.
      * @param ctx the parse tree
      * @return the visitor result
+     *
+     * "Port: " + 8080       // lenient valid
+     * 8080 + " is the port" // lenient valid
+     * 1 + 2 + "3"           // lenient valid
+     * 1 + 2 + 3             // invalid
      */
     visitConcat_expression = (ctx: Concat_expressionContext): any => {
         debugPrint('-> Entered visitConcat_expression(..)')
 
-        const firstToken = ctx.STRING()
+        const operands: TScalarValue[] = []
 
-        if (!firstToken) {
+        const firstOperand = this.visitConcat_operand(
+            ctx.concat_operand(),
+        ) as TScalarValue
+
+        operands.push(firstOperand)
+
+        for (const tail of ctx.concat_tail_list()) {
+            const operand = this.visitConcat_tail(tail) as TScalarValue
+            operands.push(operand)
+        }
+
+        if (
+            operands.some((operand) => !operand || operand.type === 'Undefined')
+        ) {
+            return makeScalarValue(
+                'Undefined',
+                undefined,
+                'Invalid concatenation operand already reported',
+            )
+        }
+
+        const hasStringOperand = operands.some(
+            (operand) => operand.type === 'String',
+        )
+
+        if (!hasStringOperand) {
             this.errorHandler!.pushOrBail(
                 toErrorLocation(ctx),
                 'Syntax-Error',
-                'Invalid string concatenation',
-                'A concatenation expression must begin with a string literal.',
-                'Start the expression with a string literal, for example: "prefix" + value.',
+                'Invalid concatenation expression',
+                'YINI does not define numeric addition. A lenient-mode + expression must contain at least one string literal.',
+                'Use a string literal in the expression, for example: "value: " + 123.',
             )
 
             return makeScalarValue(
@@ -1094,31 +1169,31 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             )
         }
 
-        const firstValue = this.parseStringToken(firstToken.getText(), ctx)
-
-        if (!firstValue || firstValue.type !== 'String') {
-            return makeScalarValue(
-                'Undefined',
-                undefined,
-                'Invalid string literal already reported',
+        if (this.isStrict) {
+            const firstNonString = operands.find(
+                (operand) => operand.type !== 'String',
             )
-        }
 
-        let result = firstValue.value
+            if (firstNonString) {
+                this.errorHandler!.pushOrBail(
+                    toErrorLocation(ctx),
+                    'Syntax-Error',
+                    'Invalid strict-mode concatenation expression',
+                    'In strict mode, all concatenation operands must be string literals.',
+                    'Convert non-string operands to explicit string literals.',
+                )
 
-        for (const tail of ctx.concat_tail_list()) {
-            const operandValue = this.visitConcat_tail(tail) as TScalarValue
-
-            if (!operandValue || operandValue.type === 'Undefined') {
                 return makeScalarValue(
                     'Undefined',
                     undefined,
-                    'Invalid concatenation operand already reported',
+                    'Invalid strict concatenation already reported',
                 )
             }
-
-            result += this.stringifyConcatOperand(operandValue)
         }
+
+        const result = operands
+            .map((operand) => this.stringifyConcatOperand(operand))
+            .join('')
 
         return makeScalarValue('String', result, 'Concatenated string')
     }
@@ -1184,62 +1259,14 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
                 )
             }
 
-            if (this.isStrict) {
-                this.errorHandler!.pushOrBail(
-                    toErrorLocation(ctx),
-                    'Syntax-Error',
-                    'Invalid strict-mode concatenation operand',
-                    'Number literals are not allowed as concatenation operands in strict mode.',
-                    'Use an explicit string literal instead.',
-                )
-
-                return makeScalarValue(
-                    'Undefined',
-                    undefined,
-                    'Invalid strict concatenation operand already reported',
-                )
-            }
-
             return makeScalarValue('Number', parsedNum.value, parsedNum.tag)
         }
 
         if (ctx.BOOLEAN_TRUE() || ctx.BOOLEAN_FALSE()) {
-            if (this.isStrict) {
-                this.errorHandler!.pushOrBail(
-                    toErrorLocation(ctx),
-                    'Syntax-Error',
-                    'Invalid strict-mode concatenation operand',
-                    'Boolean literals are not allowed as concatenation operands in strict mode.',
-                    'Use an explicit string literal instead.',
-                )
-
-                return makeScalarValue(
-                    'Undefined',
-                    undefined,
-                    'Invalid strict concatenation operand already reported',
-                )
-            }
-
             return makeScalarValue('Boolean', parseBoolean(ctx.getText()))
         }
 
         if (ctx.NULL()) {
-            if (this.isStrict) {
-                this.errorHandler!.pushOrBail(
-                    toErrorLocation(ctx),
-                    'Syntax-Error',
-                    'Invalid strict-mode concatenation operand',
-                    'Null literals are not allowed as concatenation operands in strict mode.',
-                    'Use an explicit string literal instead.',
-                )
-
-                return makeScalarValue(
-                    'Undefined',
-                    undefined,
-                    'Invalid strict concatenation operand already reported',
-                )
-            }
-
             return makeScalarValue('Null', null, 'Explicit Null')
         }
 
@@ -1402,8 +1429,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
     visitList_literal = (ctx: List_literalContext): any => {
         debugPrint('-> Entered visitList_literal(..)')
 
-        // '[' elements? ']' ; empty_list handled by lexer (Spec section, 10.1). :contentReference[oaicite:14]{index=14}
-        const elems = this.visitElements(ctx.elements())
+        const elems = ctx.elements() ? this.visitElements(ctx.elements()!) : []
         const value = makeListValue(elems, 'From bracketed list')
 
         debugPrint('<- About to exit visitList_literal(..)...')
@@ -1411,6 +1437,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             console.log('List literal:')
             printObject(value)
         }
+
         return value
     }
 
@@ -1424,12 +1451,22 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         debugPrint('-> Entered visitElements(..)')
         debugPrint('  elements.length = ' + ctx?.value_list().length)
 
+        if (this.isStrict && this.hasTrailingComma(ctx)) {
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                'Trailing comma is not allowed in strict mode',
+                'A list literal ended with a trailing comma.',
+                'Remove the final comma, or parse the document in lenient mode.',
+            )
+        }
+
         const elems = !ctx?.value_list()
             ? []
             : ctx.value_list().map((elem) => {
                   const valueNode = this.visitValue(elem)
+
                   if (!valueNode) {
-                      // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
                       this.errorHandler!.pushOrBail(
                           toErrorLocation(ctx),
                           'Syntax-Error',
@@ -1447,6 +1484,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
             console.log('Mapped value_list of elements in a list:')
             printObject(elems)
         }
+
         return elems
     }
 
@@ -1458,11 +1496,7 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
      */
     visitObject_literal = (ctx: Object_literalContext): any => {
         debugPrint('-> Entered visitObject_literal(..)')
-        // debugPrint('entries.EMPTY_OBJECT = ' + ctx?.EMPTY_OBJECT())
-        // debugPrint('entries.length = ' + ctx?.object_members())
-        // printObject(ctx)
 
-        // const entries = this.visitObject_members(ctx?.object_members())
         const entries = ctx.object_members()
             ? this.visitObject_members(ctx.object_members())
             : {}
@@ -1481,26 +1515,54 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
      * @param ctx the parse tree
      * @grammarRule object_member (COMMA NL* object_member)* COMMA?
      * @return the visitor result
+     *
+     * @note
+     * SPEC says:
+     * - Lenient: first wins + warning
+     * - Strict: error
+     *
+     * NEVER silently overwrite.
      */
     visitObject_members = (ctx: Object_membersContext): any => {
         debugPrint('-> Entered visitObject_members(..)')
-        debugPrint('entries.length = ' + ctx?.object_member_list().length)
 
-        // const entries: Array<{ k: string; v: TValueLiteral }> = []
+        if (this.isStrict && this.hasTrailingComma(ctx)) {
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                'Trailing comma is not allowed in strict mode',
+                'An inline object literal ended with a trailing comma.',
+                'Remove the final comma, or parse the document in lenient mode.',
+            )
+        }
+
         const entries: Record<string, TValueLiteral> = {}
+
         ctx.object_member_list().forEach((member) => {
             const { key, value }: any = this.visitObject_member(member)
 
-            debugPrint('   key = ' + key)
             if (!value || value.type === 'Undefined') {
                 debugPrint('Skip inserting Undefined')
+                return
+            }
+
+            if (Object.prototype.hasOwnProperty.call(entries, key)) {
+                this.errorHandler!.pushOrBail(
+                    toErrorLocation(member),
+                    this.isStrict ? 'Syntax-Error' : 'Syntax-Warning',
+                    'Duplicate inline object member',
+                    `Object member '${key}' is already defined in this inline object.`,
+                    this.isStrict
+                        ? 'Inline object member keys must be unique in strict mode.'
+                        : 'The first object member value is kept; later duplicates are ignored.',
+                )
+
                 return
             }
 
             entries[key] = value
         })
 
-        debugPrint('<- About to exit visitObject_members(..)')
         return entries
     }
 
@@ -1601,27 +1663,74 @@ export default class ASTBuilder<Result> extends YiniParserVisitor<Result> {
         return ':'
     }
 
-    //@ todo (?) Check that this function actually works, not sure this function is finished.
-    // visitString_concat = (ctx: String_concatContext): any => {
-    //     const rawText = ctx.STRING().getText()
-    //     const parsedInput = this.extractStringKindAndValue(rawText)
+    /**
+     *
+     * @note
+     * @yini strict  + active lenient  => error
+     * @yini lenient + active strict   => error
+     * @yini strict  + active strict   => ok
+     * @yini lenient + active lenient  => ok
+     * @yini         + any mode        => ok
+     */
+    visitYini_directive = (ctx: Yini_directiveContext): any => {
+        debugPrint('-> Entered visitYini_directive(..)')
 
-    //     try {
-    //         return parseStringLiteral(parsedInput)
-    //     } catch (err: unknown) {
-    //         const msg = err instanceof Error ? err.message : String(err)
+        const modeText = this.visitYini_mode_declaration(
+            ctx.yini_mode_declaration?.(),
+        )
 
-    //         // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-    //         this.errorHandler!.pushOrBail(
-    //             toErrorLocation(ctx),
-    //             'Syntax-Error',
-    //             'Parse error in string',
-    //             msg,
-    //         )
+        const displayText = modeText ? `@yini ${modeText}` : '@yini'
 
-    //         return undefined
-    //     }
-    // }
+        if (this.ast.yiniMarkerSeen) {
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(ctx),
+                this.isStrict ? 'Syntax-Error' : 'Syntax-Warning',
+                'Duplicate YINI marker in document',
+                `'${displayText}' appears after an earlier @yini marker. Only one YINI marker should be used.`,
+            )
+        }
+
+        this.ast.yiniMarkerSeen = true
+        this.meta_hasYiniMarker = true
+
+        if (!modeText) {
+            return null
+        }
+
+        const activeMode = this.isStrict ? 'strict' : 'lenient'
+
+        if (modeText !== 'strict' && modeText !== 'lenient') {
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(ctx.yini_mode_declaration?.() ?? ctx),
+                'Syntax-Error',
+                'Invalid @yini mode declaration',
+                `Got '${modeText}', but expected 'strict' or 'lenient'.`,
+                "Use '@yini strict', '@yini lenient', or just '@yini'.",
+            )
+
+            return null
+        }
+
+        if (modeText !== activeMode) {
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                'YINI mode declaration does not match active parser mode',
+                `Document declares ${modeText} mode but parser is running in ${activeMode} mode.`,
+                `Parse this document in ${modeText} mode, or change/remove the mode declaration.`,
+            )
+        }
+
+        return null
+    }
+
+    visitYini_mode_declaration = (
+        ctx: Yini_mode_declarationContext | undefined,
+    ): any => {
+        if (!ctx) return undefined
+
+        return ctx.getText().trim().toLowerCase()
+    }
 
     /**
      * Visit a parse tree produced by `YiniParser.bad_member`.

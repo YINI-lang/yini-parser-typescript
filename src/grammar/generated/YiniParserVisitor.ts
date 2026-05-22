@@ -1,4 +1,4 @@
-// Generated from ./grammar/v1.0.0-rc.5xxx/YiniParser.g4 by ANTLR 4.13.2
+// Generated from ./grammar/v1.0.0-rc.5xxxx/YiniParser.g4 by ANTLR 4.13.2
 
 import {ParseTreeVisitor} from 'antlr4';
 
@@ -6,10 +6,15 @@ import {ParseTreeVisitor} from 'antlr4';
 import { YiniContext } from "./YiniParser.js";
 import { PrologContext } from "./YiniParser.js";
 import { Terminal_stmtContext } from "./YiniParser.js";
+import { Terminal_triviaContext } from "./YiniParser.js";
 import { StmtContext } from "./YiniParser.js";
+import { Full_line_comment_stmtContext } from "./YiniParser.js";
+import { Disabled_line_stmtContext } from "./YiniParser.js";
 import { Invalid_section_stmtContext } from "./YiniParser.js";
 import { Meta_stmtContext } from "./YiniParser.js";
 import { DirectiveContext } from "./YiniParser.js";
+import { Yini_directiveContext } from "./YiniParser.js";
+import { Yini_mode_declarationContext } from "./YiniParser.js";
 import { AnnotationContext } from "./YiniParser.js";
 import { EolContext } from "./YiniParser.js";
 import { AssignmentContext } from "./YiniParser.js";
@@ -60,11 +65,29 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 */
 	visitTerminal_stmt?: (ctx: Terminal_stmtContext) => Result;
 	/**
+	 * Visit a parse tree produced by `YiniParser.terminal_trivia`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitTerminal_trivia?: (ctx: Terminal_triviaContext) => Result;
+	/**
 	 * Visit a parse tree produced by `YiniParser.stmt`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	visitStmt?: (ctx: StmtContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.full_line_comment_stmt`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitFull_line_comment_stmt?: (ctx: Full_line_comment_stmtContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.disabled_line_stmt`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitDisabled_line_stmt?: (ctx: Disabled_line_stmtContext) => Result;
 	/**
 	 * Visit a parse tree produced by `YiniParser.invalid_section_stmt`.
 	 * @param ctx the parse tree
@@ -83,6 +106,18 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 * @return the visitor result
 	 */
 	visitDirective?: (ctx: DirectiveContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.yini_directive`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitYini_directive?: (ctx: Yini_directiveContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.yini_mode_declaration`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitYini_mode_declaration?: (ctx: Yini_mode_declarationContext) => Result;
 	/**
 	 * Visit a parse tree produced by `YiniParser.annotation`.
 	 * @param ctx the parse tree
