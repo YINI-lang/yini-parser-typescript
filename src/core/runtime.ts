@@ -1,5 +1,10 @@
+// src/core/runtime.ts
 import fs from 'fs'
 import { isDev } from '../config/env'
+import {
+    stripBomAndValidShebang,
+    validateShebangPlacement,
+} from '../parsers/validateShebangPlacement'
 import { ParsedObject, ParseOptions, PreferredFailLevel } from '../types'
 import { getFileNameExtension } from '../utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from '../utils/print'
@@ -135,6 +140,30 @@ export class YiniRuntime {
                 failLevel,
                 includeMetadata,
             }
+        }
+
+        validateShebangPlacement(yiniContent, {
+            strictMode: userOpts.strictMode,
+            quiet: userOpts.quiet,
+            silent: userOpts.silent,
+        })
+
+        const originalContent = yiniContent
+        yiniContent = stripBomAndValidShebang(yiniContent)
+
+        if (originalContent.startsWith('\uFEFF')) {
+            devPrint(
+                'runParse(..): BOM was detected and stripped from UTF-8 content.',
+            )
+        }
+
+        if (
+            originalContent.startsWith('#!') ||
+            originalContent.startsWith('\uFEFF#!')
+        ) {
+            devPrint(
+                'runParse(..): Shebang detected on first line and ignored.',
+            )
         }
 
         if (userOpts.includeMetadata && this.#runtime.sourceType === 'Inline') {

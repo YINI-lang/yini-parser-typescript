@@ -140,11 +140,15 @@ export const stripCommentsAndAfter = (line: string): string => {
 */
 
 /**
- * Returns the beginning of a single logical line up to an inline comment.
+ * Returns the significant beginning of a single logical line.
  *
  * Recognized inline comments:
  * - `//`
  * - `#`
+ *
+ * Recognized full-line trivia:
+ * - `;`
+ * - `--`
  *
  * Notes:
  * - `;` is not an inline comment marker in YINI.
@@ -156,24 +160,32 @@ export const stripCommentsAndAfter = (line: string): string => {
  * not to contain string literals with comment-like text.
  */
 export const stripCommentsAndAfter = (line: string): string => {
-    line = line.split('\n', 1)[0]
+    const trimmedStart = line.trimStart()
 
-    let idx1 = line.indexOf('//')
-    let idx2 = line.indexOf('#')
+    // Disabled line.
+    if (trimmedStart.startsWith('--')) {
+        return ''
+    }
 
-    if (idx1 < 0) idx1 = Number.MAX_SAFE_INTEGER
-    if (idx2 < 0) idx2 = Number.MAX_SAFE_INTEGER
+    // Full-line semicolon comment.
+    if (trimmedStart.startsWith(';')) {
+        return ''
+    }
 
-    const idx = Math.min(idx1, idx2)
-    const resultLine =
-        idx === Number.MAX_SAFE_INTEGER ? line : line.substring(0, idx)
+    const slashSlashIndex = line.indexOf('//')
+    const hashIndex = line.indexOf('#')
 
-    debugPrint('stripCommentsAndAfter(..),       line: >>>' + line + '<<<')
-    debugPrint(
-        'stripCommentsAndAfter(..), resultLine: >>>' + resultLine + '<<<',
+    const commentIndexes = [slashSlashIndex, hashIndex].filter(
+        (index) => index >= 0,
     )
 
-    return resultLine.trim()
+    if (commentIndexes.length === 0) {
+        return line
+    }
+
+    const firstCommentIndex = Math.min(...commentIndexes)
+
+    return line.slice(0, firstCommentIndex)
 }
 
 /**

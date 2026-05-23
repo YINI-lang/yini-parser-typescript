@@ -156,7 +156,18 @@ describe('yiniHelpers: stripCommentsAndAfter(..) Unit Tests:', () => {
         expect(result).toEqual('')
     })
 
-    test('10. Should strip comment from @yini strict directive.', () => {
+    test('10. Should not strip inline semicolon because semicolon is full-line only.', () => {
+        // Arrange.
+        const fixture = 'name = "demo"; not a comment marker here'
+
+        // Act.
+        const result = stripCommentsAndAfter(fixture).trim()
+
+        // Assert.
+        expect(result).toEqual('name = "demo"; not a comment marker here')
+    })
+
+    test('11. Should strip comment from @yini strict directive.', () => {
         // Arrange.
         const fixture = '@yini strict # This is a comment.'
 
@@ -167,7 +178,7 @@ describe('yiniHelpers: stripCommentsAndAfter(..) Unit Tests:', () => {
         expect(result).toEqual('@yini strict')
     })
 
-    test('11. Should strip comment from @yini lenient directive.', () => {
+    test('12. Should strip comment from @yini lenient directive.', () => {
         // Arrange.
         const fixture = '@yini lenient // This is a comment.'
 
@@ -178,7 +189,7 @@ describe('yiniHelpers: stripCommentsAndAfter(..) Unit Tests:', () => {
         expect(result).toEqual('@yini lenient')
     })
 
-    test('12. Should strip comment from document terminator.', () => {
+    test('13. Should strip comment from document terminator.', () => {
         // Arrange.
         const fixture = '/END # This is a comment.'
 
@@ -187,17 +198,6 @@ describe('yiniHelpers: stripCommentsAndAfter(..) Unit Tests:', () => {
 
         // Assert.
         expect(result).toEqual('/END')
-    })
-
-    test('13. Should only use the first physical line.', () => {
-        // Arrange.
-        const fixture = 'SectionName1\nSectionName2 # Comment.'
-
-        // Act.
-        const result = stripCommentsAndAfter(fixture).trim()
-
-        // Assert.
-        expect(result).toEqual('SectionName1')
     })
 })
 

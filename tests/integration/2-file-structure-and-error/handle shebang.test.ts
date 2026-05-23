@@ -38,18 +38,52 @@ name = "Shebang-demo"`
         expect(result).toEqual(expected)
     })
 
-    test('A-3) Should reject shebang with leading whitespace before #!.', () => {
+    test('A-3.a) Should treat leading-whitespace shebang-like line as a comment and warn in lenient mode.', () => {
         // Arrange.
         const input = `  #!/usr/bin/env yini
 ^ App
 name = "Shebang-demo"`
 
+        const expected = {
+            App: { name: 'Shebang-demo' },
+        }
+
+        const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+
+        try {
+            // Act.
+            const result = YINI.parse(input, {
+                strictMode: false,
+                failLevel: 'errors',
+            })
+
+            // Assert.
+            expect(result).toEqual(expected)
+
+            expect(warnSpy).toHaveBeenCalledTimes(1)
+            expect(String(warnSpy.mock.calls[0][0])).toMatch(/shebang/i)
+        } finally {
+            warnSpy.mockRestore()
+        }
+    })
+
+    test('A-3.b) Should report leading-whitespace shebang-like line as an error in strict mode.', () => {
+        // Arrange.
+        const input = `  #!/usr/bin/env yini
+
+^ App
+name = "Shebang-demo"
+
+/END`
+
         // Act & Assert.
         expect(() => {
             YINI.parse(input, {
+                strictMode: true,
                 failLevel: 'errors',
+                requireDocTerminator: 'required',
             })
-        }).toThrow()
+        }).toThrow(/shebang|syntax-error|syntax error/i)
     })
 
     test('A-4) Should reject shebang after the first line.', () => {
@@ -164,16 +198,45 @@ describe('Shebang handling via parseFile(..):', () => {
         expect(result).toEqual(expected)
     })
 
-    test('B-3) Should reject file with leading whitespace before shebang.', () => {
+    test('B-3.a) Should treat leading-whitespace shebang-like line as a comment and warn in lenient mode.', () => {
+        // Arrange.
+        const fullPath = join(baseDir, 'shebang-3-invalid-leading-space.yini')
+
+        const expected = {
+            App: { name: 'Shebang-demo' },
+        }
+
+        const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+
+        try {
+            // Act.
+            const result = YINI.parseFile(fullPath, {
+                strictMode: false,
+                failLevel: 'errors',
+            })
+
+            // Assert.
+            expect(result).toEqual(expected)
+
+            expect(warnSpy).toHaveBeenCalledTimes(1)
+            expect(String(warnSpy.mock.calls[0][0])).toMatch(/shebang/i)
+        } finally {
+            warnSpy.mockRestore()
+        }
+    })
+
+    test('B-3.b) Should report leading-whitespace shebang-like line as an error in strict mode.', () => {
         // Arrange.
         const fullPath = join(baseDir, 'shebang-3-invalid-leading-space.yini')
 
         // Act & Assert.
         expect(() => {
             YINI.parseFile(fullPath, {
+                strictMode: true,
                 failLevel: 'errors',
+                requireDocTerminator: 'required',
             })
-        }).toThrow()
+        }).toThrow(/shebang|syntax-error|syntax error/i)
     })
 
     test('B-4) Should reject file with shebang on the second line.', () => {
