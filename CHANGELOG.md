@@ -11,7 +11,7 @@
   * **Changed:** String concatenation now uses the updated grammar model:
   - `+` performs explicit string concatenation only; it does not define numeric addition.
   - In strict mode, all operands must be string literals.
-  - In lenient mode, operands may be strings, numbers, booleans, or null, but at least one operand must be a string literal.
+  - In lenient mode, operands may be strings, numbers, booleans, or null, but first operand must be a string literal.
   - If no operand is a string literal, the expression is rejected rather than treated as arithmetic.
   - A line break is allowed after `+`, but not before it.
   - Lists and inline objects are invalid concatenation operands.
@@ -21,7 +21,7 @@
   * **Improved:** Orphan root-level members in lenient mode are mounted directly on the resulting top-level object.
   * **Improved:** Parser/runtime handling of empty inline input and final newline normalization.
   * **Updated:** Tests for string concatenation, empty documents, inline object separators, hash comments, and hex notation.
-    * **Added:** Support for YINI mode declarations: `@yini strict` and `@yini lenient`. Mode declarations validate the active parser mode; they do not switch parser mode.
+  * **Added:** Support for YINI mode declarations: `@yini strict` and `@yini lenient`. Mode declarations validate the active parser mode; they do not switch parser mode.
   * **Updated:** Shebang handling. A shebang is recognized only when `#!` is the first two non-BOM characters of the document. Valid shebang lines are ignored. Misplaced shebang-like sequences are no longer treated as shebangs; they may produce warnings in lenient mode and errors in strict mode. Only the first misplaced sequence is reported.
   * **Updated:** Section marker handling. Repeated section markers now support levels 1–9; level 10 and deeper must use numeric shorthand, for example `^10 Section`. Marker separators using `_` are supported inside repeated marker sequences, invalid separator placement and mixed marker characters are rejected, the obsolete `€` marker has been removed, and `>` is supported as an alternative marker.
   * **Updated:** Numeric shorthand section headers. Numeric shorthand now keeps marker and depth parsing separate, requires a positive section depth, uses a single marker followed by a number, and rejects repeated markers combined with numeric shorthand, such as `^^1 Section`.

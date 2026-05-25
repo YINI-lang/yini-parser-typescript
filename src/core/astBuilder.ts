@@ -190,7 +190,9 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
 
         this.errorHandler = errorHandler
         this.isStrict = options?.rules?.initialMode === 'strict'
-        this.onDuplicateKey = options?.rules?.onDuplicateKey ?? 'error' // Different setting depending on mode.
+        this.onDuplicateKey =
+            options?.rules?.onDuplicateKey ??
+            (this.isStrict ? 'error' : 'warn-and-keep-first')
 
         const root = makeSection('(root)', 0)
         this.ast = {
@@ -308,16 +310,19 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
         if (this.hasDefinedSectionTitle(keyPath)) {
             this.errorHandler!.pushOrBail(
                 toErrorLocation(ctx),
-                'Syntax-Error',
+                this.isStrict ? 'Syntax-Error' : 'Syntax-Warning',
                 'Duplicate section name',
                 `Section name: '${sectionName}' at level ${targetLevel} is already defined and cannot be redefined.`,
+                this.isStrict
+                    ? 'Duplicate sections are not allowed in strict mode.'
+                    : 'The first section definition is kept; later duplicate sections are ignored.',
             )
 
             return
         } else {
             if (section.members === undefined) {
                 debugPrint(
-                    'This sReslult does not hold any valid members (=undefined)',
+                    'This section result does not hold any valid members (=undefined)',
                 )
             } else {
                 // this.existingSectionTitles.set(key, true)
@@ -553,7 +558,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
                     toErrorLocation(ctx),
                     'Syntax-Warning',
                     'Hit a duplicate terminator in document',
-                    `'${rawText}' already exists in this file, there must only be one terminator at the end of file ('/END'). Also note that the terminator is optional in both lenient and strict mode, unless the option 'isRequireDocTerminator' is enabled.`,
+                    `'${rawText}' already exists in this file. A YINI document may contain only one document terminator ('/END'). The terminator is optional in lenient mode and required in strict mode unless parser options explicitly override that policy.`,
                 )
             }
         } else {
@@ -561,7 +566,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
             this.errorHandler!.pushOrBail(
                 toErrorLocation(ctx),
                 'Syntax-Error',
-                'Encountered unknow syntax for terminator',
+                'Encountered unknown syntax for terminator',
                 `Got '${rawText}', but expected '/END' (case insensitive).`,
             )
         }
@@ -610,7 +615,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
     /**
      * Visit a parse tree produced by `YiniParser.stmt`.
      * @param ctx the parse tree
-     * @grammarRule eol | SECTION_HEAD | assignment | colon_list_decl | marker_stmt | bad_member
+     * @grammarRule eol | full_line_comment_stmt | disabled_line_stmt | SECTION_HEAD | invalid_section_stmt | assignment | meta_stmt | bad_member
      * @return the visitor result
      */
     visitStmt = (ctx: StmtContext): any => {
@@ -877,10 +882,6 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
         let valueContext = ctx.value?.()
         let valueNode: TValueLiteral | undefined
 
-        const hasEquals = rawMemberText.includes('=')
-        // const hasTextAfterEquals = hasEquals
-        //     ? rawMemberText.split('=').slice(1).join('=').trim().length > 0
-        //     : false
         const eqIndex = rawMemberText.indexOf('=')
         const hasTextAfterEquals =
             eqIndex >= 0 && rawMemberText.slice(eqIndex + 1).trim().length > 0
@@ -1069,24 +1070,47 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
 
     /**
      * Visit a parse tree produced by `YiniParser.concat_expression`.
-     * @param ctx the parse tree
-     * @return the visitor result
      *
+     * Grammar:
+     *   concat_expression : STRING concat_tail+ ;
+     *
+     * Spec:
+     *   - Concatenation must begin with a string literal.
+     *   - In strict mode, every operand must be a string literal.
+     *   - In lenient mode, later operands may be string, number, boolean, or null.
+     *   - YINI does not define numeric addition.
+     *
+     * Examples:
      * "Port: " + 8080       // lenient valid
-     * 8080 + " is the port" // lenient valid
-     * 1 + 2 + "3"           // lenient valid
-     * 1 + 2 + 3             // invalid
+     * "1" + 2 + 3           // lenient valid
+     * 8080 + " is the port" // invalid: must begin with string literal
+     * 1 + 2 + "3"           // invalid: must begin with string literal
+     * 1 + 2 + 3             // invalid: YINI does not define numeric addition
      */
     visitConcat_expression = (ctx: Concat_expressionContext): any => {
         debugPrint('-> Entered visitConcat_expression(..)')
 
         const operands: TScalarValue[] = []
 
-        const firstOperand = this.visitConcat_operand(
-            ctx.concat_operand(),
-        ) as TScalarValue
+        const firstStringToken = ctx.STRING()
 
-        operands.push(firstOperand)
+        if (!firstStringToken) {
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                'Invalid concatenation expression',
+                'A concatenation expression must begin with a string literal.',
+                'Start the expression with a quoted string, for example: "value: " + 123.',
+            )
+
+            return makeScalarValue(
+                'Undefined',
+                undefined,
+                'Invalid concatenation start already reported',
+            )
+        }
+
+        operands.push(this.parseStringToken(firstStringToken.getText(), ctx))
 
         for (const tail of ctx.concat_tail_list()) {
             const operand = this.visitConcat_tail(tail) as TScalarValue
@@ -1100,26 +1124,6 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
                 'Undefined',
                 undefined,
                 'Invalid concatenation operand already reported',
-            )
-        }
-
-        const hasStringOperand = operands.some(
-            (operand) => operand.type === 'String',
-        )
-
-        if (!hasStringOperand) {
-            this.errorHandler!.pushOrBail(
-                toErrorLocation(ctx),
-                'Syntax-Error',
-                'Invalid concatenation expression',
-                'YINI does not define numeric addition. A lenient-mode + expression must contain at least one string literal.',
-                'Use a string literal in the expression, for example: "value: " + 123.',
-            )
-
-            return makeScalarValue(
-                'Undefined',
-                undefined,
-                'Invalid concatenation already reported',
             )
         }
 

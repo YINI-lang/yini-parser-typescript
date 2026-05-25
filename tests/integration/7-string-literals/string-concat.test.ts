@@ -28,7 +28,7 @@ describe('String concatenation tests:', () => {
             expect(toPrettyJSON(result)).toEqual(toPrettyJSON(answer))
         })
 
-        test('2. Should allow number, boolean, and null operands when at least one operand is a string literal.', () => {
+        test('2. Should allow number, boolean, and null operands after an initial string literal.', () => {
             // Arrange.
             const validYini = `
                 @yini lenient
@@ -49,16 +49,37 @@ describe('String concatenation tests:', () => {
             expect(toPrettyJSON(result)).toEqual(toPrettyJSON(answer))
         })
 
-        test('3. Should allow the first concatenation operand to be a number if the expression contains a string literal.', () => {
+        test('3. Should throw when concatenation starts with a number operand.', () => {
+            // Arrange.
+            const invalidYini = `
+        @yini lenient
+
+        message = 8080 + " is the port"
+    `
+
+            // Act & Assert.
+            expect(() => {
+                YINI.parse(invalidYini, {
+                    strictMode: false,
+                    failLevel: 'errors',
+                })
+            }).toThrow()
+        })
+
+        test('4.a) Should concatenate scalar operands in source order after an initial string literal.', () => {
             // Arrange.
             const validYini = `
-                @yini lenient
+        @yini lenient
 
-                message = 8080 + " is the port"
-            `
+        value1 = "1" + 2 + 3
+        value2 = "enabled=" + true
+        value3 = "value=" + null
+    `
 
             const answer = {
-                message: '8080 is the port',
+                value1: '123',
+                value2: 'enabled=true',
+                value3: 'value=null',
             }
 
             // Act.
@@ -69,32 +90,22 @@ describe('String concatenation tests:', () => {
             // Assert.
             expect(toPrettyJSON(result)).toEqual(toPrettyJSON(answer))
         })
-
-        test('4. Should concatenate scalar operands in source order.', () => {
+        test('4.b) Should throw when concatenation starts with a boolean or null operand.', () => {
             // Arrange.
-            const validYini = `
-                @yini lenient
+            const invalidYini = `
+        @yini lenient
 
-                value1 = 1 + 2 + "3"
-                value2 = "1" + 2 + 3
-                value3 = true + " is enabled"
-                value4 = null + " value"
-            `
+        value1 = true + " is enabled"
+        value2 = null + " value"
+    `
 
-            const answer = {
-                value1: '123',
-                value2: '123',
-                value3: 'true is enabled',
-                value4: 'null value',
-            }
-
-            // Act.
-            const result = YINI.parse(validYini, {
-                strictMode: false,
-            })
-
-            // Assert.
-            expect(toPrettyJSON(result)).toEqual(toPrettyJSON(answer))
+            // Act & Assert.
+            expect(() => {
+                YINI.parse(invalidYini, {
+                    strictMode: false,
+                    failLevel: 'errors',
+                })
+            }).toThrow()
         })
 
         test('5. Should allow concatenation to continue after plus on the next line.', () => {
@@ -119,7 +130,7 @@ describe('String concatenation tests:', () => {
             expect(toPrettyJSON(result)).toEqual(toPrettyJSON(answer))
         })
 
-        test('6. Should throw when a plus expression contains no string literal.', () => {
+        test('6. Should throw when a plus expression does not begin with a string literal.', () => {
             // Arrange.
             const invalidYini = `
                 @yini lenient
