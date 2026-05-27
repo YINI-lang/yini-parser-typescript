@@ -2,7 +2,7 @@ YINI Parser – Feature Implementation Status
 ===========================================
 
 Features are based on the YINI Specification with parser-side implementation updates:  
-v1.0.0 RC 5 + UPDATES
+v1.0.0 RC 6
 
 https://github.com/YINI-lang/YINI-spec
 
@@ -788,12 +788,16 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td><code>@yini strict</code> / <code>@yini lenient</code> mode declarations</td>
-    <td>🚧</td>
+    <td>✅</td>
     <td>Optional mode declaration after the YINI marker</td>
-    <td>🚧</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>Declaration does not switch parser mode. Parser must emit a mode-mismatch error if declared mode differs from active mode.</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>
+      Declaration does not switch parser mode.
+      <code>@yini strict</code> parsed in lenient mode must produce a mode-mismatch error.
+      <code>@yini lenient</code> parsed in strict mode must remain valid, but must produce a mode-mismatch warning.
+    </td>
   </tr>
   <tr>
     <td>Give error on empty document in strict mode</td>

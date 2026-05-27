@@ -7,7 +7,7 @@ import YINI from '../../../src'
  * Covers:
  * - Plain @yini marker.
  * - Optional @yini strict and @yini lenient declarations.
- * - Mode mismatch errors.
+ * - Mode mismatch diagnostics.
  * - Invalid mode declarations.
  * - Duplicate @yini marker handling.
  * - Directive placement rules.
@@ -138,11 +138,11 @@ describe('Mode declaration tests:', () => {
         test('1. Should allow @yini lenient when parser runs in lenient mode.', () => {
             // Arrange.
             const validYini = `
-                @yini lenient
+            @yini lenient
 
-                ^ App
-                name = "demo"
-            `
+            ^ App
+            name = "demo"
+        `
 
             // Act.
             const result = YINI.parse(validYini, {
@@ -153,23 +153,57 @@ describe('Mode declaration tests:', () => {
             expect(result.App.name).toEqual('demo')
         })
 
-        test('2. Should throw when @yini lenient is parsed in strict mode.', () => {
+        test('2. Should allow @yini lenient in strict mode, but emit a warning.', () => {
+            // Arrange.
+            const validYini = `
+            @yini lenient
+
+            ^ App
+            name = "demo"
+
+            /END
+        `
+
+            // Act.
+            const result = YINI.parse(validYini, {
+                strictMode: true,
+                requireDocTerminator: 'required',
+                includeMetadata: true,
+                includeDiagnostics: true,
+                failLevel: 'errors',
+            })
+
+            // Assert.
+            expect(result.result.App.name).toEqual('demo')
+
+            const diagnostics = result.meta?.diagnostics ?? []
+            const allDiagnosticsText = JSON.stringify(diagnostics).toLowerCase()
+
+            expect(allDiagnosticsText).toContain('warning')
+            expect(allDiagnosticsText).toContain('mode')
+            expect(allDiagnosticsText).toContain('lenient')
+            expect(allDiagnosticsText).toContain('strict')
+        })
+
+        test('3. Should throw on @yini lenient in strict mode when warnings are fatal.', () => {
             // Arrange.
             const invalidYini = `
-                @yini lenient
+            @yini lenient
 
-                ^ App
-                name = "demo"
+            ^ App
+            name = "demo"
 
-                /END
-            `
+            /END
+        `
 
             // Act & Assert.
             expect(() => {
                 YINI.parse(invalidYini, {
                     strictMode: true,
                     requireDocTerminator: 'required',
-                    failLevel: 'errors',
+                    includeMetadata: true,
+                    includeDiagnostics: true,
+                    failLevel: 'warnings-and-errors',
                 })
             }).toThrow()
         })

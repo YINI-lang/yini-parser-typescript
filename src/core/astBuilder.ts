@@ -1625,7 +1625,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
      *
      * @note
      * @yini strict  + active lenient  => error
-     * @yini lenient + active strict   => error
+     * @yini lenient + active strict   => warning
      * @yini strict  + active strict   => ok
      * @yini lenient + active lenient  => ok
      * @yini         + any mode        => ok
@@ -1669,13 +1669,25 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
             return null
         }
 
-        if (modeText !== activeMode) {
+        if (modeText === 'strict' && activeMode === 'lenient') {
             this.errorHandler!.pushOrBail(
                 toErrorLocation(ctx),
                 'Syntax-Error',
                 'YINI mode declaration does not match active parser mode',
-                `Document declares ${modeText} mode but parser is running in ${activeMode} mode.`,
-                `Parse this document in ${modeText} mode, or change/remove the mode declaration.`,
+                'Document declares strict mode but parser is running in lenient mode.',
+                "Parse this document in strict mode, or change/remove the '@yini strict' declaration.",
+            )
+
+            return null
+        }
+
+        if (modeText === 'lenient' && activeMode === 'strict') {
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Warning',
+                'YINI mode declaration does not match active parser mode',
+                'Document declares lenient mode but parser is running in strict mode.',
+                'The document remains valid if it satisfies strict-mode rules, but the declared parsing intent is lenient.',
             )
         }
 
