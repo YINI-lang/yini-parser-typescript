@@ -110,11 +110,13 @@ export default class YINI {
      *   Allowed values: `'warn-and-keep-first'` | `'warn-and-overwrite'` | `'keep-first'` (silent, first wins) | `'overwrite'` (silent, last wins) | `'error'`.
      * @param options.preserveUndefinedInMeta - Keep properties with value `undefined` inside
      *   the returned metadata. Requires: `includeMetadata = true`. Ignored otherwise.
-     * @param options.quiet - Show only errors, will suppress warnings and messages sent to the console/log.
-     *   Does not affect warnings included in returned metadata.
+     * @param options.logDiagnostics - Opt in to writing diagnostics to stderr.
+     *   Library calls do not write diagnostics by default.
+     * @param options.quiet - When `logDiagnostics = true`, show only errors.
+     *   Does not affect diagnostics included in returned metadata.
      * @param options.requireDocTerminator - Controls whether a document terminator is required.
      *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
-     * @param options.silent - Suppress all console output, including errors and warnings.
+     * @param options.silent - Suppress diagnostic output, even when `logDiagnostics = true`.
      * @param options.strictMode - Sets the baseline ruleset (true = strict, false = lenient).
      *   This is only a starting point: rule-specific options (e.g., `treatEmptyValueAsNull`,
      *   `onDuplicateKey`, etc.) can override parts of that ruleset. If any overrides are given,
@@ -255,11 +257,13 @@ export default class YINI {
      *   Allowed values: `'warn-and-keep-first'` | `'warn-and-overwrite'` | `'keep-first'` (silent, first wins) | `'overwrite'` (silent, last wins) | `'error'`.
      * @param options.preserveUndefinedInMeta - Keep properties with value `undefined` inside
      *   the returned metadata. Requires: `includeMetadata = true`. Ignored otherwise.
-     * @param options.quiet - Show only errors, will suppress warnings and messages sent to the console/log.
-     *   Does not affect warnings included in returned metadata.
+     * @param options.logDiagnostics - Opt in to writing diagnostics to stderr.
+     *   Library calls do not write diagnostics by default.
+     * @param options.quiet - When `logDiagnostics = true`, show only errors.
+     *   Does not affect diagnostics included in returned metadata.
      * @param options.requireDocTerminator - Controls whether a document terminator is required.
      *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
-     * @param options.silent - Suppress all console output, including errors and warnings.
+     * @param options.silent - Suppress diagnostic output, even when `logDiagnostics = true`.
      * @param options.strictMode - Sets the baseline ruleset (true = strict, false = lenient).
      *   This is only a starting point: rule-specific options (e.g., `treatEmptyValueAsNull`,
      *   `onDuplicateKey`, etc.) can override parts of that ruleset. If any overrides are given,

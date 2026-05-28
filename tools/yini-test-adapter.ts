@@ -1,14 +1,7 @@
-/*
-Build this with:
-npm run build-tools
-
-#!/usr/bin/env tsx
-*/
-
 // tools/yini-test-adapter.ts
 import fs from 'node:fs'
 import path from 'node:path'
-import YINI, { ParseOptions } from '../src'
+import YINI, { IssuePayload, ParseOptions, YiniParseResult } from '../src'
 
 type TMode = 'lenient' | 'strict'
 
@@ -17,16 +10,16 @@ interface IParsedArgs {
     mode: TMode
 }
 
-function printUsage(): void {
-    console.error(
-        `
+const USAGE = `
 Usage:
-  tsx tools/yini-test-adapter.ts --input <file> --mode <lenient|strict>
+  tsx tools/yini-test-adapter.ts --input <file> [--mode <lenient|strict>]
 
 Example:
   tsx tools/yini-test-adapter.ts --input cases/example.yini --mode strict
-`.trim(),
-    )
+`.trim()
+
+function printUsage(): void {
+    process.stderr.write(`${USAGE}\n`)
 }
 
 function parseArgs(argv: string[]): IParsedArgs {
@@ -44,7 +37,7 @@ function parseArgs(argv: string[]): IParsedArgs {
         if (arg === '--mode') {
             const value = argv[++i] ?? ''
 
-            if (value !== 'lenient' && value !== 'strict') {
+            if (!isMode(value)) {
                 throw new Error(
                     `Invalid --mode value: '${value}'. Expected 'lenient' or 'strict'.`,
                 )
@@ -63,27 +56,74 @@ function parseArgs(argv: string[]): IParsedArgs {
     }
 
     if (!input) {
-        throw new Error(`Missing required argument: --input <file>`)
+        throw new Error('Missing required argument: --input <file>')
     }
 
     return { input, mode }
 }
 
+function isMode(value: string): value is TMode {
+    return value === 'lenient' || value === 'strict'
+}
+
 function makeYINIParseOptions(mode: TMode): ParseOptions {
-    const ret = {
+    return {
         strictMode: mode === 'strict',
-        throwOnError: true,
-        // silent: true,
+        failLevel: 'ignore-errors',
+        includeDiagnostics: true,
+        logDiagnostics: false,
+        silent: true,
+        throwOnError: false,
     }
-    return ret
+}
+
+function parseYini(source: string, mode: TMode): YiniParseResult {
+    return YINI.parse(source, makeYINIParseOptions(mode)) as YiniParseResult
+}
+
+function hasParseErrors(result: YiniParseResult): boolean {
+    return result.meta.totalErrors > 0
+}
+
+function formatIssue(issue: IssuePayload): string {
+    const location =
+        issue.line === undefined
+            ? ''
+            : ` at line ${issue.line}${
+                  issue.column === undefined ? '' : `, column ${issue.column}`
+              }`
+
+    const details = [issue.advice, issue.hint]
+        .filter((part): part is string => Boolean(part))
+        .join(' ')
+
+    return `${issue.typeKey}${location}: ${issue.message}${
+        details ? ` ${details}` : ''
+    }`
+}
+
+function formatParseFailure(result: YiniParseResult): string {
+    const errors = result.meta.diagnostics?.errors.payload ?? []
+    const warnings = result.meta.diagnostics?.warnings.payload ?? []
+
+    const header = `Parse failed with ${result.meta.totalErrors} error(s), ${result.meta.totalWarnings} warning(s).`
+    const issueLines = errors.length
+        ? errors.map(formatIssue)
+        : warnings.map(formatIssue)
+
+    return [header, ...issueLines].join('\n')
+}
+
+function writeWarnings(result: YiniParseResult): void {
+    const warnings = result.meta.diagnostics?.warnings.payload ?? []
+
+    for (const warning of warnings) {
+        process.stderr.write(`${formatIssue(warning)}\n`)
+    }
 }
 
 function getErrorMessage(error: unknown): string {
-    if (error instanceof Error) {
-        return error.message
-    }
-
-    return String(error)
+    return error instanceof Error ? error.message : String(error)
 }
 
 function main(): void {
@@ -91,18 +131,19 @@ function main(): void {
         const args = parseArgs(process.argv.slice(2))
         const inputPath = path.resolve(args.input)
         const source = fs.readFileSync(inputPath, 'utf8')
+        const result = parseYini(source, args.mode)
 
-        const parseOptions = makeYINIParseOptions(args.mode)
-        const result = YINI.parse(source, parseOptions)
+        if (hasParseErrors(result)) {
+            process.stderr.write(`${formatParseFailure(result)}\n`)
+            process.exit(1)
+        }
 
-        process.stdout.write(`${JSON.stringify(result, null, 2)}\n`)
+        writeWarnings(result)
 
-        // Exit with zero on success, according to yini-test adapter-contract.
+        process.stdout.write(`${JSON.stringify(result.result, null, 2)}\n`)
         process.exit(0)
     } catch (error: unknown) {
         process.stderr.write(`${getErrorMessage(error)}\n`)
-
-        // Exit with non-zero on error, according to yini-test adapter-contract.
         process.exit(1)
     }
 }

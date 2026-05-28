@@ -13,6 +13,7 @@ describe('Throw error when parsing invalid section headers:', () => {
             '1-Abort-on-Errors',
             false,
             false,
+            false,
             true,
         )
     }

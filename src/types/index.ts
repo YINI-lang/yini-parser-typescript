@@ -120,8 +120,10 @@ export interface PrimaryUserParams extends BasicOptions {
  *   Allowed values: `'warn-and-keep-first'` | `'warn-and-overwrite'` | `'keep-first'` (silent, first wins) | `'overwrite'` (silent, last wins) | `'error'`.
  * @param options.preserveUndefinedInMeta - Keep properties with value `undefined` inside
  *   the returned metadata. Requires: `includeMetadata = true`. Ignored otherwise.
- * @param options.quiet - Print **errors only** to the console; warnings and info are not printed.
- *   Diagnostics in the returned metadata are unaffected. Silent overrides quiet if both are enabled.
+ * @param options.logDiagnostics - Opt in to writing diagnostics to stderr.
+ *   Library calls do not write diagnostics by default.
+ * @param options.quiet - When `logDiagnostics = true`, print **errors only** to stderr;
+ *   warnings and info are not printed. Structured diagnostics are unaffected.
  * @param options.requireDocTerminator - Whether a document terminator is required.
  *   One of: 'optional' | 'warn-if-missing' | 'required'.
  * @param options.silent - **No console output** at all (including errors).
@@ -145,7 +147,8 @@ export interface ParseOptions extends BasicOptions {
     onDuplicateKey?: OnDuplicateKey
     requireDocTerminator?: DocumentTerminatorRule
     treatEmptyValueAsNull?: EmptyValueRule
-    quiet?: boolean // Reduce output (show only errors, does not effect warnings and etc. in meta data). Silent overrides quiet if both are enabled.
+    logDiagnostics?: boolean // Opt in to writing diagnostics to stderr. Library calls do not write diagnostics by default.
+    quiet?: boolean // When logDiagnostics is true, reduce output to errors only. Does not affect diagnostics in metadata.
     silent?: boolean // Suppress all output (even errors, exit code only). Silent overrides quiet if both are enabled.
     throwOnError?: boolean // Will throw on first parse error encountered.
 }

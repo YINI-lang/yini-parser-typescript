@@ -90,10 +90,21 @@ export const runPipeline = (
         runtimeInfo.sourceType,
         runtimeInfo.fileName,
         coreOptions.bailSensitivity,
+        coreOptions.isDiagnosticOutputEnabled,
         coreOptions.isQuiet,
         coreOptions.isSilent,
         coreOptions.isThrowOnError,
     )
+
+    for (const issue of runtimeInfo.preflightIssues) {
+        errorHandler.pushOrBail(
+            issue.locInput,
+            issue.type,
+            issue.msgWhat,
+            issue.msgWhy,
+            issue.msgHint,
+        )
+    }
 
     // if (yiniContent.trim() === '') {
     //     const isFileSourceType: boolean = runtimeInfo?.sourceType === 'File'
@@ -298,8 +309,11 @@ export const runPipeline = (
         )
 
         if (coreOptions.bailSensitivity === '0-Ignore-Errors') {
-            // IMPORTANT: If "silent" option is set, do not log anything to console!
-            if (!coreOptions.isQuiet && !coreOptions.isSilent) {
+            if (
+                coreOptions.isDiagnosticOutputEnabled &&
+                !coreOptions.isQuiet &&
+                !coreOptions.isSilent
+            ) {
                 console.warn(
                     `Warning: The initial mode was set to strict mode, but fail level is set to 'ignore-errors'. This combination is contradictory and might be a mistake.`,
                 )
@@ -330,7 +344,10 @@ export const runPipeline = (
     debugPrint('getNumOfErrors(): ' + errorHandler.getNumOfErrors())
 
     // Print a summary line at the end if any errors or warnings.
-    if (!coreOptions.isQuiet && !coreOptions.isSilent) {
+    if (
+        coreOptions.isDiagnosticOutputEnabled &&
+        !coreOptions.isSilent
+    ) {
         const errors: number = errorHandler.getNumOfErrors()
         const warnings: number = errorHandler.getNumOfWarnings()
 

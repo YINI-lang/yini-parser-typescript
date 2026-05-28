@@ -17,6 +17,7 @@ export type TNormalizedUserOptions = Required<
         | 'onDuplicateKey'
         | 'requireDocTerminator'
         | 'treatEmptyValueAsNull'
+        | 'logDiagnostics'
         | 'quiet'
         | 'silent'
         | 'throwOnError'
@@ -34,7 +35,8 @@ const BASE_DEFAULTS: TNormalizedUserOptions = {
     onDuplicateKey: 'error',
     requireDocTerminator: 'optional',
     treatEmptyValueAsNull: 'allow-with-warning',
-    quiet: false, // Suppress warnings in console (does not affect warnings in meta data).
+    logDiagnostics: false,
+    quiet: false, // When logDiagnostics is true, suppress warnings in stderr output.
     silent: false,
     //@todo: Change default throwOnError to false
     throwOnError: true, // Will throw on first parse error encountered.

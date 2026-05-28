@@ -1,6 +1,6 @@
 // tests/integration/2-file-structure-and-error/handle shebang.test.ts
 import { join } from 'node:path'
-import YINI from '../../../src'
+import YINI, { YiniParseResult } from '../../../src'
 
 const DIR_OF_FIXTURES = '../../fixtures/shebang'
 
@@ -55,13 +55,18 @@ name = "Shebang-demo"`
             const result = YINI.parse(input, {
                 strictMode: false,
                 failLevel: 'errors',
-            })
+                includeDiagnostics: true,
+            }) as YiniParseResult
 
             // Assert.
-            expect(result).toEqual(expected)
+            expect(result.result).toEqual(expected)
 
-            expect(warnSpy).toHaveBeenCalledTimes(1)
-            expect(String(warnSpy.mock.calls[0][0])).toMatch(/shebang/i)
+            expect(warnSpy).not.toHaveBeenCalled()
+            expect(
+                result.meta.diagnostics!.warnings.payload.some((issue) =>
+                    /shebang/i.test(issue.message),
+                ),
+            ).toBe(true)
         } finally {
             warnSpy.mockRestore()
         }
@@ -213,13 +218,18 @@ describe('Shebang handling via parseFile(..):', () => {
             const result = YINI.parseFile(fullPath, {
                 strictMode: false,
                 failLevel: 'errors',
-            })
+                includeDiagnostics: true,
+            }) as YiniParseResult
 
             // Assert.
-            expect(result).toEqual(expected)
+            expect(result.result).toEqual(expected)
 
-            expect(warnSpy).toHaveBeenCalledTimes(1)
-            expect(String(warnSpy.mock.calls[0][0])).toMatch(/shebang/i)
+            expect(warnSpy).not.toHaveBeenCalled()
+            expect(
+                result.meta.diagnostics!.warnings.payload.some((issue) =>
+                    /shebang/i.test(issue.message),
+                ),
+            ).toBe(true)
         } finally {
             warnSpy.mockRestore()
         }

@@ -40,7 +40,10 @@ describe('Issue 20260314 error-msg-on-invalid-escape Tests:', () => {
     })
 
     test('1.a) (inline) Should report invalid escape sequence in a C-string.', () => {
-        const result = YINI.parse(invalidEscaping, { strictMode: false })
+        const result = YINI.parse(invalidEscaping, {
+            strictMode: false,
+            logDiagnostics: true,
+        })
 
         expect(result).toBeDefined()
         expect(errorSpy).toHaveBeenCalled()
@@ -62,6 +65,7 @@ describe('Issue 20260314 error-msg-on-invalid-escape Tests:', () => {
         const result = YINI.parse(invalidEscaping, {
             strictMode: false,
             failLevel: 'ignore-errors',
+            logDiagnostics: true,
         })
 
         expect(result).toBeDefined()
@@ -78,7 +82,10 @@ describe('Issue 20260314 error-msg-on-invalid-escape Tests:', () => {
 
     test('1.c) (inline) Should report syntax error (incl. line and column): For invalid escape in a C-String.', () => {
         try {
-            YINI.parse(invalidEscaping, { strictMode: false })
+            YINI.parse(invalidEscaping, {
+                strictMode: false,
+                logDiagnostics: true,
+            })
         } catch (err: any) {
             expect(err.message).toMatch(/Syntax error/i)
             expect(err.message).toMatch(/invalid escape sequence/i)
@@ -96,6 +103,7 @@ describe('Issue 20260314 error-msg-on-invalid-escape Tests:', () => {
         const result = YINI.parse(invalidEscaping, {
             strictMode: false,
             failLevel: 'ignore-errors',
+            logDiagnostics: true,
         })
 
         expect(result?.App?.name).toEqual('Nebula Server')
@@ -115,7 +123,10 @@ describe('Issue 20260314 error-msg-on-invalid-escape Tests:', () => {
     })
 
     test('2.a) (file) Should report invalid escape sequence in a C-string.', () => {
-        const result = YINI.parseFile(fullPath, { strictMode: false })
+        const result = YINI.parseFile(fullPath, {
+            strictMode: false,
+            logDiagnostics: true,
+        })
 
         expect(result).toBeDefined()
         expect(errorSpy).toHaveBeenCalled()
@@ -137,6 +148,7 @@ describe('Issue 20260314 error-msg-on-invalid-escape Tests:', () => {
         const result = YINI.parseFile(fullPath, {
             strictMode: false,
             failLevel: 'ignore-errors',
+            logDiagnostics: true,
         })
 
         expect(result).toBeDefined()

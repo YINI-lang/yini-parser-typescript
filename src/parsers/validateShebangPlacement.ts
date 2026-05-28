@@ -1,13 +1,11 @@
 // src/parsers/validateShebangPlacement.ts
 
-export const validateShebangPlacement = (
+import { IPreflightIssue } from '../core/internalTypes'
+
+export const getShebangPlacementIssue = (
     input: string,
-    options: {
-        strictMode: boolean
-        quiet?: boolean
-        silent?: boolean
-    },
-): void => {
+    strictMode: boolean,
+): IPreflightIssue | undefined => {
     const text = input.startsWith('\uFEFF') ? input.slice(1) : input
     const lines = text.split(/\r?\n/)
 
@@ -23,7 +21,7 @@ export const validateShebangPlacement = (
         const startsAtFirstColumn = line.startsWith('#!')
 
         if (isFirstLine && startsAtFirstColumn) {
-            return
+            return undefined
         }
 
         const message =
@@ -32,20 +30,20 @@ export const validateShebangPlacement = (
         const lineNumber = index + 1
         const columnNumber = line.length - trimmedStart.length + 1
 
-        if (options.strictMode) {
-            throw new Error(
-                `Syntax-Error: ${message}\nAt line: ${lineNumber}, column(s): ${columnNumber}-${columnNumber}.`,
-            )
+        return {
+            locInput: {
+                line: lineNumber,
+                column: columnNumber,
+                endColumn: columnNumber,
+            },
+            type: strictMode ? 'Syntax-Error' : 'Syntax-Warning',
+            msgWhat: 'Misplaced shebang-like sequence.',
+            msgWhy: message,
+            msgHint: 'Move the shebang to the first line and first column, or remove the leading whitespace.',
         }
-
-        if (!options.quiet && !options.silent) {
-            console.warn(
-                `Warning: ${message}\nAt line: ${lineNumber}, column(s): ${columnNumber}-${columnNumber}.`,
-            )
-        }
-
-        return
     }
+
+    return undefined
 }
 
 export const stripBomAndValidShebang = (input: string): string => {

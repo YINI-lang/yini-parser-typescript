@@ -2,8 +2,8 @@
 import fs from 'fs'
 import { isDev } from '../config/env'
 import {
+    getShebangPlacementIssue,
     stripBomAndValidShebang,
-    validateShebangPlacement,
 } from '../parsers/validateShebangPlacement'
 import { ParsedObject, ParseOptions, PreferredFailLevel } from '../types'
 import { getFileNameExtension } from '../utils/pathAndFileName'
@@ -55,6 +55,7 @@ export class YiniRuntime {
             timeIoMs: null,
             preferredBailSensitivity: null,
             sha256: null,
+            preflightIssues: [],
         }
     }
 
@@ -142,11 +143,13 @@ export class YiniRuntime {
             }
         }
 
-        validateShebangPlacement(yiniContent, {
-            strictMode: userOpts.strictMode,
-            quiet: userOpts.quiet,
-            silent: userOpts.silent,
-        })
+        const shebangIssue = getShebangPlacementIssue(
+            yiniContent,
+            userOpts.strictMode,
+        )
+        if (shebangIssue) {
+            this.#runtime.preflightIssues.push(shebangIssue)
+        }
 
         const originalContent = yiniContent
         yiniContent = stripBomAndValidShebang(yiniContent)
@@ -284,15 +287,6 @@ export class YiniRuntime {
         }
 
         if (getFileNameExtension(filePath).toLowerCase() !== '.yini') {
-            // IMPORTANT: If "silent" option is set, do not log anything to console!
-            if (!userOpts.silent) {
-                // In quiet-mode we still show errors (these are fine).
-                console.error('Invalid file extension for YINI file:')
-                console.error(`"${filePath}"`)
-                console.error(
-                    'File does not have a valid ".yini" extension (case-insensitive).',
-                )
-            }
             throw new Error('Error: Unexpected file extension for YINI file')
         }
 
@@ -318,25 +312,19 @@ export class YiniRuntime {
             this.#runtime.sha256 = computeSha256(content) // NOTE: Compute BEFORE any possible tampering of content.
         }
 
-        let hasNoNewlineAtEOF = false
         if (!content.endsWith('\n')) {
+            this.#runtime.preflightIssues.push({
+                locInput: undefined,
+                type: 'Syntax-Warning',
+                msgWhat: 'No newline at end of file.',
+                msgWhy: `It's recommended to end a YINI file with a newline. File: "${filePath}"`,
+            })
             content += '\n'
-            hasNoNewlineAtEOF = true
         }
 
         const result = this.runParse(content, {
             ...userOpts,
         })
-        // if (hasNoNewlineAtEOF && !userOpts.quiet && !userOpts.silent) {
-        if (hasNoNewlineAtEOF && !userOpts.quiet) {
-            // IMPORTANT: If "silent" option is set, do not log anything to console!
-            if (!userOpts.silent) {
-                //@todo: (or maybe not, 20250917) Maybe let errorHandler emit message
-                console.warn(
-                    `No newline at end of file, it's recommended to end a file with a newline. File:\n"${filePath}"`,
-                )
-            }
-        }
 
         return result
     }

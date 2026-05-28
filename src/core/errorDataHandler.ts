@@ -55,6 +55,7 @@ export class ErrorDataHandler {
     private readonly subjectType: TSubjectType
     private readonly fileName: string | undefined
     private readonly persistThreshold: TBailSensitivityLevel
+    private readonly isDiagnosticOutputEnabled: boolean
     private readonly isQuiet: boolean
     private readonly isSilent: boolean
     private readonly isThrowOnError: boolean
@@ -84,13 +85,15 @@ export class ErrorDataHandler {
         subjectType: TSubjectType,
         fileName: string | undefined = undefined,
         bailSensitivityLevel: TBailSensitivityLevel = '1-Abort-on-Errors',
-        isQuiet: boolean = false, // Reduce output (show only errors, does not effect warnings and etc. in meta data).
+        isDiagnosticOutputEnabled: boolean = false, // Opt in to writing diagnostics to stderr.
+        isQuiet: boolean = false, // When diagnostic output is enabled, show errors only.
         isSilent: boolean = false, // Suppress all output (even errors, exit code only).
         isThrowOnError: boolean = false, // Will throw on first parse error encountered.
     ) {
         this.subjectType = subjectType
         this.fileName = fileName
         this.persistThreshold = bailSensitivityLevel
+        this.isDiagnosticOutputEnabled = isDiagnosticOutputEnabled
         this.isQuiet = isQuiet
         this.isSilent = isSilent
         this.isThrowOnError = isThrowOnError
@@ -175,8 +178,8 @@ export class ErrorDataHandler {
             colNum: colNum || 0, // 1-based, if n/a use 0.
         }
 
-        if (!this.isSilent) {
-            console.log() // Print an empty line before outputting message.
+        if (this.shouldEmitDiagnostics()) {
+            console.error() // Print an empty line before outputting message.
         }
         switch (type) {
             case 'Internal-Error':
@@ -361,10 +364,27 @@ export class ErrorDataHandler {
         }
     }
 
-    /*
-     * - error/warning → console.error / console.warn
-     * - notice/info → console.log / console.info
-     */
+    private shouldEmitDiagnostics(): boolean {
+        return this.isDiagnosticOutputEnabled && !this.isSilent
+    }
+
+    private shouldEmitNonErrors(): boolean {
+        return this.shouldEmitDiagnostics() && !this.isQuiet
+    }
+
+    private emitDiagnosticToStderr(
+        write: (message?: any, ...optionalParams: any[]) => void,
+        messageHeader: string,
+        msgWhat = '',
+        msgWhy = '',
+        msgHint = '',
+    ): void {
+        write(messageHeader)
+        msgWhat && write(msgWhat)
+        msgWhy && write(msgWhy)
+        msgHint && write(msgHint)
+        write()
+    }
 
     private emitFatalError(
         loc: ILocation,
@@ -376,12 +396,14 @@ export class ErrorDataHandler {
             loc,
             issueTitle[0],
         )
-        if (!this.isSilent) {
-            console.error(messageHeader) // Print the issue title.
-            msgWhat && console.log(msgWhat)
-            msgWhy && console.log(msgWhy)
-            msgHint && console.log(msgHint)
-            console.log() // Emit an empty line before outputting message.
+        if (this.shouldEmitDiagnostics()) {
+            this.emitDiagnosticToStderr(
+                console.error.bind(console),
+                messageHeader,
+                msgWhat,
+                msgWhy,
+                msgHint,
+            )
         }
     }
 
@@ -395,12 +417,14 @@ export class ErrorDataHandler {
             loc,
             issueTitle[1],
         )
-        if (!this.isSilent) {
-            console.error(messageHeader) // Print the issue title.
-            msgWhat && console.log(msgWhat)
-            msgWhy && console.log(msgWhy)
-            msgHint && console.log(msgHint)
-            console.log() // Emit an empty line before outputting message.
+        if (this.shouldEmitDiagnostics()) {
+            this.emitDiagnosticToStderr(
+                console.error.bind(console),
+                messageHeader,
+                msgWhat,
+                msgWhy,
+                msgHint,
+            )
         }
     }
 
@@ -414,12 +438,14 @@ export class ErrorDataHandler {
             loc,
             issueTitle[2],
         )
-        if (!this.isSilent) {
-            console.error(messageHeader) // Print the issue title.
-            msgWhat && console.log(msgWhat)
-            msgWhy && console.log(msgWhy)
-            msgHint && console.log(msgHint)
-            console.log() // Emit an empty line before outputting message.
+        if (this.shouldEmitDiagnostics()) {
+            this.emitDiagnosticToStderr(
+                console.error.bind(console),
+                messageHeader,
+                msgWhat,
+                msgWhy,
+                msgHint,
+            )
         }
     }
 
@@ -433,12 +459,14 @@ export class ErrorDataHandler {
             loc,
             issueTitle[3],
         )
-        if (!this.isQuiet && !this.isSilent) {
-            console.warn(messageHeader) // Print the issue title.
-            msgWhat && console.log(msgWhat)
-            msgWhy && console.log(msgWhy)
-            msgHint && console.log(msgHint)
-            console.log() // Emit an empty line before outputting message.
+        if (this.shouldEmitNonErrors()) {
+            this.emitDiagnosticToStderr(
+                console.warn.bind(console),
+                messageHeader,
+                msgWhat,
+                msgWhy,
+                msgHint,
+            )
         }
     }
 
@@ -452,12 +480,14 @@ export class ErrorDataHandler {
             loc,
             issueTitle[4],
         )
-        if (!this.isQuiet && !this.isSilent) {
-            console.log(messageHeader) // Print the issue title.
-            msgWhat && console.log(msgWhat)
-            msgWhy && console.log(msgWhy)
-            msgHint && console.log(msgHint)
-            console.log() // Emit an empty line before outputting message.
+        if (this.shouldEmitNonErrors()) {
+            this.emitDiagnosticToStderr(
+                console.error.bind(console),
+                messageHeader,
+                msgWhat,
+                msgWhy,
+                msgHint,
+            )
         }
     }
 
@@ -471,12 +501,14 @@ export class ErrorDataHandler {
             loc,
             issueTitle[5],
         )
-        if (!this.isQuiet && !this.isSilent) {
-            console.info(messageHeader) // Print the issue title.
-            msgWhat && console.log(msgWhat)
-            msgWhy && console.log(msgWhy)
-            msgHint && console.log(msgHint)
-            console.log() // Emit an empty line before outputting message.
+        if (this.shouldEmitNonErrors()) {
+            this.emitDiagnosticToStderr(
+                console.error.bind(console),
+                messageHeader,
+                msgWhat,
+                msgWhy,
+                msgHint,
+            )
         }
     }
 

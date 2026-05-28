@@ -331,7 +331,6 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
                 },
                 environment: {
                     NODE_ENV: 'test',
-                    APP_ENV: '####',
                     lib: {
                         nodeEnv: 'test',
                         appEnv: '####',
@@ -340,6 +339,7 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
                             isDebug: false,
                         },
                     },
+                    APP_ENV: '####',
                 },
                 effectiveOptions: {
                     effectiveMode: 'strict',
@@ -359,6 +359,7 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
                     includeDiagnostics: true,
                     includeMetadata: true,
                     includeTiming: false,
+                    logDiagnostics: false,
                     onDuplicateKey: 'error',
                     preserveUndefinedInMeta: false,
                     quiet: false,
@@ -378,8 +379,14 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
         result.meta.source.fileName = '####'
         result.meta.source.byteSize = -1
         result.meta.source.sha256 = '####'
-        result.meta.diagnostics.environment.APP_ENV = '####'
-        result.meta.diagnostics.environment.lib.appEnv = '####'
+        result.meta.diagnostics.environment = {
+            NODE_ENV: result.meta.diagnostics.environment.NODE_ENV,
+            lib: {
+                ...result.meta.diagnostics.environment.lib,
+                appEnv: '####',
+            },
+            APP_ENV: '####',
+        }
 
         expect(toPrettyJSON(result.meta)).toEqual(
             toPrettyJSON(correctMetaDiagn),
