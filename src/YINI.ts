@@ -3,10 +3,15 @@ import { ErrorDataHandler } from './core/errorDataHandler'
 import { isOptionsObjectForm } from './core/options/optionsFunctions'
 import { YiniRuntime } from './core/runtime'
 import {
+    IssuePayload,
     ParsedObject,
+    ParseForToolingOptions,
     ParseOptions,
     PreferredFailLevel,
+    ToolingDiagnostic,
+    ToolingDiagnosticSeverity,
     YiniParseResult,
+    YiniToolingParseResult,
 } from './types'
 import { debugPrint, devPrint, printObject } from './utils/print'
 
@@ -190,6 +195,134 @@ export default class YINI {
         }
 
         return result
+    }
+
+    /**
+     * Parse inline YINI content for tools, editors, linters, and test runners.
+     *
+     * This API always returns a stable result object and structured diagnostics.
+     * It does not write diagnostics to stdout/stderr and does not throw for
+     * normal parse errors.
+     */
+    public static parseForTooling(
+        yiniContent: string,
+        options: ParseForToolingOptions = {},
+    ): YiniToolingParseResult {
+        try {
+            const parsed = this.parse(yiniContent, {
+                ...options,
+                failLevel: 'ignore-errors',
+                includeMetadata: true,
+                includeDiagnostics: true,
+                logDiagnostics: false,
+                silent: true,
+                throwOnError: false,
+            }) as YiniParseResult
+
+            return {
+                ok: parsed.meta.totalErrors === 0,
+                result: parsed.result,
+                diagnostics: this.toToolingDiagnostics(parsed),
+            }
+        } catch (error: unknown) {
+            return {
+                ok: false,
+                result: {},
+                diagnostics: [
+                    {
+                        severity: 'error',
+                        code: 'parser-error',
+                        message:
+                            error instanceof Error
+                                ? error.message
+                                : String(error),
+                    },
+                ],
+            }
+        }
+    }
+
+    private static toToolingDiagnostics(
+        parsed: YiniParseResult,
+    ): ToolingDiagnostic[] {
+        const diagnostics = parsed.meta.diagnostics
+
+        if (!diagnostics) {
+            return []
+        }
+
+        return [
+            ...diagnostics.errors.payload.map((issue) =>
+                this.toToolingDiagnostic(issue, 'error'),
+            ),
+            ...diagnostics.warnings.payload.map((issue) =>
+                this.toToolingDiagnostic(issue, 'warning'),
+            ),
+            ...diagnostics.notices.payload.map((issue) =>
+                this.toToolingDiagnostic(issue, 'notice'),
+            ),
+            ...diagnostics.infos.payload.map((issue) =>
+                this.toToolingDiagnostic(issue, 'info'),
+            ),
+        ]
+    }
+
+    private static toToolingDiagnostic(
+        issue: IssuePayload,
+        severity: ToolingDiagnosticSeverity,
+    ): ToolingDiagnostic {
+        const diagnostic: ToolingDiagnostic = {
+            severity,
+            code: this.toDiagnosticCode(issue),
+            message: issue.message,
+        }
+
+        if (issue.line !== undefined) {
+            diagnostic.line = issue.line
+        }
+
+        if (issue.column !== undefined) {
+            diagnostic.column = issue.column
+        }
+
+        return diagnostic
+    }
+
+    private static toDiagnosticCode(issue: IssuePayload): string {
+        const text = [issue.message, issue.advice, issue.hint]
+            .filter((part): part is string => Boolean(part))
+            .join(' ')
+            .toLowerCase()
+
+        if (text.includes('empty yini document')) {
+            return 'empty-document'
+        }
+
+        if (text.includes('duplicate key')) {
+            return 'duplicate-key'
+        }
+
+        if (text.includes('invalid escape sequence')) {
+            return 'invalid-escape-sequence'
+        }
+
+        if (text.includes('unterminated') && text.includes('string')) {
+            return 'unterminated-string'
+        }
+
+        if (text.includes('/end') && text.includes('missing')) {
+            return 'missing-document-terminator'
+        }
+
+        if (text.includes('shebang')) {
+            return 'misplaced-shebang'
+        }
+
+        if (text.includes('trailing comma')) {
+            return 'trailing-comma'
+        }
+
+        return issue.typeKey.replace(/_/g, '-')
     }
 
     /**

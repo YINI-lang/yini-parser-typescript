@@ -38,6 +38,26 @@ export interface YiniParseResult {
     meta: ResultMetadata
 }
 
+export type ToolingDiagnosticSeverity =
+    | 'error'
+    | 'warning'
+    | 'notice'
+    | 'info'
+
+export interface ToolingDiagnostic {
+    severity: ToolingDiagnosticSeverity
+    code: string
+    message: string
+    line?: number
+    column?: number
+}
+
+export interface YiniToolingParseResult {
+    ok: boolean
+    result: ParsedObject
+    diagnostics: ToolingDiagnostic[]
+}
+
 // Keys as reported in metadata (human-readable).
 // NOTE: Should control how far the parser proceeds (continue vs. bail early),
 // not whether it throws (if whould throw shall be controlled by throwOnError instead).
@@ -156,6 +176,16 @@ export interface ParseOptions extends BasicOptions {
 export interface AllUserOptions extends ParseOptions {
     dummy: null
 } // NOTE: Deprecated since 1.3.0-beta.
+
+export type ParseForToolingOptions = Omit<
+    ParseOptions,
+    | 'failLevel'
+    | 'includeMetadata'
+    | 'includeDiagnostics'
+    | 'logDiagnostics'
+    | 'silent'
+    | 'throwOnError'
+>
 
 //{ line: 12, column: 8, type: 'Syntax-Error', message1: 'Invalid number' }
 export interface IssuePayload {

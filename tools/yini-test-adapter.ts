@@ -1,7 +1,7 @@
 // tools/yini-test-adapter.ts
 import fs from 'node:fs'
 import path from 'node:path'
-import YINI, { IssuePayload, ParseOptions, YiniParseResult } from '../src'
+import YINI, { ToolingDiagnostic, YiniToolingParseResult } from '../src'
 
 type TMode = 'lenient' | 'strict'
 
@@ -20,6 +20,10 @@ Example:
 
 function printUsage(): void {
     process.stderr.write(`${USAGE}\n`)
+}
+
+function isMode(value: string): value is TMode {
+    return value === 'lenient' || value === 'strict'
 }
 
 function parseArgs(argv: string[]): IParsedArgs {
@@ -62,63 +66,49 @@ function parseArgs(argv: string[]): IParsedArgs {
     return { input, mode }
 }
 
-function isMode(value: string): value is TMode {
-    return value === 'lenient' || value === 'strict'
-}
-
-function makeYINIParseOptions(mode: TMode): ParseOptions {
-    return {
+function parseForYiniTest(source: string, mode: TMode): YiniToolingParseResult {
+    return YINI.parseForTooling(source, {
         strictMode: mode === 'strict',
-        failLevel: 'ignore-errors',
-        includeDiagnostics: true,
-        logDiagnostics: false,
-        silent: true,
-        throwOnError: false,
-    }
+    })
 }
 
-function parseYini(source: string, mode: TMode): YiniParseResult {
-    return YINI.parse(source, makeYINIParseOptions(mode)) as YiniParseResult
-}
-
-function hasParseErrors(result: YiniParseResult): boolean {
-    return result.meta.totalErrors > 0
-}
-
-function formatIssue(issue: IssuePayload): string {
+function formatDiagnostic(diagnostic: ToolingDiagnostic): string {
     const location =
-        issue.line === undefined
+        diagnostic.line === undefined
             ? ''
-            : ` at line ${issue.line}${
-                  issue.column === undefined ? '' : `, column ${issue.column}`
+            : ` at line ${diagnostic.line}${
+                  diagnostic.column === undefined
+                      ? ''
+                      : `, column ${diagnostic.column}`
               }`
 
-    const details = [issue.advice, issue.hint]
-        .filter((part): part is string => Boolean(part))
-        .join(' ')
-
-    return `${issue.typeKey}${location}: ${issue.message}${
-        details ? ` ${details}` : ''
-    }`
+    return `${diagnostic.severity} ${diagnostic.code}${location}: ${diagnostic.message}`
 }
 
-function formatParseFailure(result: YiniParseResult): string {
-    const errors = result.meta.diagnostics?.errors.payload ?? []
-    const warnings = result.meta.diagnostics?.warnings.payload ?? []
-
-    const header = `Parse failed with ${result.meta.totalErrors} error(s), ${result.meta.totalWarnings} warning(s).`
-    const issueLines = errors.length
-        ? errors.map(formatIssue)
-        : warnings.map(formatIssue)
-
-    return [header, ...issueLines].join('\n')
+function getDiagnosticsBySeverity(
+    result: YiniToolingParseResult,
+    severity: ToolingDiagnostic['severity'],
+): ToolingDiagnostic[] {
+    return result.diagnostics.filter(
+        (diagnostic) => diagnostic.severity === severity,
+    )
 }
 
-function writeWarnings(result: YiniParseResult): void {
-    const warnings = result.meta.diagnostics?.warnings.payload ?? []
+function formatParseFailure(result: YiniToolingParseResult): string {
+    const errors = getDiagnosticsBySeverity(result, 'error')
+    const warnings = getDiagnosticsBySeverity(result, 'warning')
+
+    const header = `Parse failed with ${errors.length} error(s), ${warnings.length} warning(s).`
+    const diagnosticsToPrint = errors.length > 0 ? errors : warnings
+
+    return [header, ...diagnosticsToPrint.map(formatDiagnostic)].join('\n')
+}
+
+function writeWarnings(result: YiniToolingParseResult): void {
+    const warnings = getDiagnosticsBySeverity(result, 'warning')
 
     for (const warning of warnings) {
-        process.stderr.write(`${formatIssue(warning)}\n`)
+        process.stderr.write(`${formatDiagnostic(warning)}\n`)
     }
 }
 
@@ -131,9 +121,9 @@ function main(): void {
         const args = parseArgs(process.argv.slice(2))
         const inputPath = path.resolve(args.input)
         const source = fs.readFileSync(inputPath, 'utf8')
-        const result = parseYini(source, args.mode)
+        const result = parseForYiniTest(source, args.mode)
 
-        if (hasParseErrors(result)) {
+        if (!result.ok) {
             process.stderr.write(`${formatParseFailure(result)}\n`)
             process.exit(1)
         }

@@ -45,6 +45,7 @@ export default YINI // Public package API.
 
 export const parse = YINI.parse
 export const parseFile = YINI.parseFile
+export const parseForTooling = YINI.parseForTooling
 export const getTabSize = YINI.getTabSize
 export const setTabSize = YINI.setTabSize
 
@@ -69,6 +70,9 @@ export type {
     ParsedObject,
     AllUserOptions,
     YiniParseResult,
+    YiniToolingParseResult,
+    ToolingDiagnostic,
+    ToolingDiagnosticSeverity,
     OnDuplicateKey,
     DuplicateKeyPolicy,
     DocumentTerminatorRule,
@@ -78,6 +82,7 @@ export type {
     BasicOptions,
     PrimaryUserParams,
     ParseOptions,
+    ParseForToolingOptions,
     IssuePayload,
     MetaSchemaVersion,
     OrderGuarantee,
