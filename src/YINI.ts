@@ -302,6 +302,10 @@ export default class YINI {
             return 'duplicate-key'
         }
 
+        if (text.includes('duplicate section')) {
+            return 'duplicate-section'
+        }
+
         if (text.includes('invalid escape sequence')) {
             return 'invalid-escape-sequence'
         }

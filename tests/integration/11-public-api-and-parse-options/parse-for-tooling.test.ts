@@ -51,6 +51,72 @@ port = 8080
         expect(warning.message).toMatch(/empty yini document/i)
     })
 
+    test('Keeps the first duplicate section body in lenient mode.', () => {
+        const parsed = YINI.parseForTooling(
+            `
+^ Application
+name = "first-section"
+status = "kept"
+
+^ Application
+debug = true
+status = "replaced"
+`,
+            {
+                strictMode: false,
+            },
+        )
+
+        expect(parsed.ok).toBe(true)
+        expect(parsed.result).toEqual({
+            Application: {
+                name: 'first-section',
+                status: 'kept',
+            },
+        })
+
+        const warning = requireDiagnostic(parsed, 'warning')
+        expect(warning.code).toBe('duplicate-section')
+        expect(warning.message).toMatch(/duplicate section/i)
+    })
+
+    test('Keeps the first duplicate subsection body in lenient mode.', () => {
+        const parsed = YINI.parseForTooling(
+            `
+^ Application
+
+^^ Database
+host = "primary"
+
+^^ Database
+port = 5432
+host = "replica"
+
+^^ Logging
+level = "info"
+`,
+            {
+                strictMode: false,
+            },
+        )
+
+        expect(parsed.ok).toBe(true)
+        expect(parsed.result).toEqual({
+            Application: {
+                Database: {
+                    host: 'primary',
+                },
+                Logging: {
+                    level: 'info',
+                },
+            },
+        })
+
+        const warning = requireDiagnostic(parsed, 'warning')
+        expect(warning.code).toBe('duplicate-section')
+        expect(warning.message).toMatch(/duplicate section/i)
+    })
+
     test('does not let callers override the tooling-safe parser behavior.', () => {
         const parsed = YINI.parseForTooling(
             `

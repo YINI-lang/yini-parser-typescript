@@ -156,6 +156,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
     private readonly onDuplicateKey: IBuildOptions['onDuplicateKey']
     private ast: IYiniAST
     private sectionStack: IYiniSection[]
+    private ignoredSectionLevel: number | null = null
 
     private meta_hasYiniMarker = false // For stats.
     // private meta_numOfSections = 0 // For stats.
@@ -276,7 +277,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
         stack: IYiniSection[],
         section: IYiniSection,
         ast: IYiniAST,
-    ) {
+    ): boolean {
         const targetLevel = section.level
         const sectionName = section.sectionName
 
@@ -288,7 +289,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
                 `Invalid section level: ${targetLevel}`,
             )
 
-            return
+            return false
         }
 
         // ------------------------------
@@ -318,7 +319,8 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
                     : 'The first section definition is kept; later duplicate sections are ignored.',
             )
 
-            return
+            this.ignoredSectionLevel = targetLevel
+            return false
         } else {
             if (section.members === undefined) {
                 debugPrint(
@@ -346,6 +348,25 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
         if (targetLevel > this.meta_maxLevel) {
             this.meta_maxLevel = targetLevel
         }
+
+        return true
+    }
+
+    private isIgnoringDuplicateSection(): boolean {
+        return this.ignoredSectionLevel !== null
+    }
+
+    private shouldSkipSectionAtLevel(sectionLevel: number): boolean {
+        if (this.ignoredSectionLevel === null) {
+            return false
+        }
+
+        if (sectionLevel > this.ignoredSectionLevel) {
+            return true
+        }
+
+        this.ignoredSectionLevel = null
+        return false
     }
 
     /** Insert a key/value into current section (duplicate handling per options). */
@@ -633,6 +654,11 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
             return this.visitFull_line_comment_stmt?.(child)
         if (ruleName.includes('Disabled_line_stmtContext'))
             return this.visitDisabled_line_stmt?.(child)
+
+        if (this.isIgnoringDuplicateSection() && !ctx.SECTION_HEAD()) {
+            return null
+        }
+
         if (ruleName.includes('Invalid_section_stmtContext'))
             return this.visitInvalid_section_stmt?.(child)
         if (ruleName.includes('AssignmentContext'))
@@ -654,6 +680,11 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
                 this.errorHandler!,
                 ctx,
             )
+
+            if (this.shouldSkipSectionAtLevel(sectionLevel)) {
+                return null
+            }
+
             // Validate level sequencing per spec 5.3 (no skipping upward)
             const currentLevel =
                 this.sectionStack[this.sectionStack.length - 1].level
