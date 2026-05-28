@@ -306,6 +306,13 @@ export default class YINI {
             return 'duplicate-section'
         }
 
+        if (
+            text.includes('yini mode declaration') &&
+            text.includes('active parser mode')
+        ) {
+            return 'YINI_MODE_MISMATCH'
+        }
+
         if (text.includes('invalid escape sequence')) {
             return 'invalid-escape-sequence'
         }

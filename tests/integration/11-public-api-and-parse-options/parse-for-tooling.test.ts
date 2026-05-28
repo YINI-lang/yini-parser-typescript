@@ -1,7 +1,7 @@
 import YINI, { YiniToolingParseResult } from '../../../src'
 
 describe('parseForTooling(..):', () => {
-    test('returns ok true, parsed result, and no diagnostics for valid input.', () => {
+    test('Returns ok true, parsed result, and no diagnostics for valid input.', () => {
         const parsed = YINI.parseForTooling(`
 ^ App
 name = "Demo"
@@ -18,7 +18,7 @@ name = "Demo"
         })
     })
 
-    test('returns ok false, partial result, and error diagnostics for invalid input.', () => {
+    test('Returns ok false, partial result, and error diagnostics for invalid input.', () => {
         const parsed = YINI.parseForTooling(`
 ^ App
 name = "Demo"
@@ -38,7 +38,7 @@ port = 8080
         expect(typeof error.column).toBe('number')
     })
 
-    test('returns ok true with warning diagnostics for warning-only input.', () => {
+    test('Returns ok true with warning diagnostics for warning-only input.', () => {
         const parsed = YINI.parseForTooling('', {
             strictMode: false,
         })
@@ -117,7 +117,35 @@ level = "info"
         expect(warning.message).toMatch(/duplicate section/i)
     })
 
-    test('does not let callers override the tooling-safe parser behavior.', () => {
+    test('Returns a stable diagnostic code for YINI mode mismatch warnings.', () => {
+        const parsed = YINI.parseForTooling(
+            `
+@yini lenient
+
+^ App
+name = "Demo"
+/END
+`,
+            {
+                strictMode: true,
+            },
+        )
+
+        expect(parsed.ok).toBe(true)
+        expect(parsed.result).toEqual({
+            App: {
+                name: 'Demo',
+            },
+        })
+        expect(parsed.diagnostics).toContainEqual(
+            expect.objectContaining({
+                severity: 'warning',
+                code: 'YINI_MODE_MISMATCH',
+            }),
+        )
+    })
+
+    test('Does not let callers override the tooling-safe parser behavior.', () => {
         const parsed = YINI.parseForTooling(
             `
 ^ App
