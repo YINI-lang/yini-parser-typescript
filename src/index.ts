@@ -8,9 +8,9 @@
     Run the code with the following command:
         npm start
     or
-        npm run start:dev
+        npm run start:main
     or
-        npm run start:dev:debug
+        npm run start:main:dev:debug
 	
 	/END
 */

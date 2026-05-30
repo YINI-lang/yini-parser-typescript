@@ -4,12 +4,18 @@
  * Node.js needs .mjs extension to know this is a module.
  */
 
-import yini from '../../../dist/esm/index.js'
+import yini, { parse, parseForTooling } from '../../../dist/index.js'
 
 // Test if import works.
 export function doesImportWorkInESM() {
-    const result = !!yini
-    // const result = true
+    const parsedFromDefault = yini.parse('^ App\nname = "Demo"')
+    const parsedFromNamedExport = parse('^ App\nname = "Demo"')
+    const toolingResult = parseForTooling('^ App\nname = "Demo"')
+
+    const result =
+        parsedFromDefault.App.name === 'Demo' &&
+        parsedFromNamedExport.App.name === 'Demo' &&
+        toolingResult.ok === true
 
     console.log('ESM:', typeof yini, 'Import works: ', result)
     return result

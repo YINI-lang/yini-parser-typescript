@@ -10,7 +10,7 @@ name = 'Nested Demo App'
 version = "1.2.3"
 
     ^^ Theme           // Nested under App: App.Theme
-    primaryColor = #336699
+    primaryColor = 0x336699
     darkMode = true
 
 

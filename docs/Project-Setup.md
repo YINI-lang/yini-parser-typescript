@@ -57,7 +57,7 @@ See more in the section, "Project Structure".
 2. Make sure you are running the correct version of Node, it should match or be higher than the version in the file `.nvmrc`.
     - You can check the current version of node by typing: `node -v`
 3. In here type (to just run the parser quickly):
-    > npm start:dev
+    > npm run start:main
 4. (Optionally) Runs all (Jest) tests.
    > npm test
 
@@ -65,7 +65,9 @@ See more in the section, "Project Structure".
 ## Available npm scripts
 Here's a short description of each script (in `package.json`) in this project.
 
-- `npm start:dev` — Runs the parser (`src/index.ts`) directly using `ts-node`.
+- `npm run start:main` — Runs the local development harness (`src/dev/main.ts`) directly using `ts-node`.
+- `npm run start:main:dev` — Runs the local development harness with the development flag enabled.
+- `npm run start:main:dev:debug` — Runs the local development harness with development and debug flags enabled.
 - `npm test` — Runs all (Jest) tests.
 - `npm run test:smoke` — Runs only the smoke tests (located in `tests/smoke`).
 - `npm run antlr` — Runs the ANTLR4 code generation.
@@ -109,7 +111,7 @@ Here's an overview of the project's directory structure — to help users unders
 │   ├── config/                   // Environment/config-specific code
 │   ├── core/                     // All the main building blocks (visitor, builder, internal types, error handling, etc)
 │   ├── grammar/                  // ANTLR-generated artifacts: parser/lexer/visitor (.ts)
-│   ├── parser/                   // All code that parses or extracts specific things (header parts, numbers, booleans, etc)
+│   ├── parsers/                  // All code that parses or extracts specific things (header parts, numbers, booleans, etc)
 │   ├── utils/                    // All general helpers/utility functions
 │   ├── types/index.ts            // Public (user-facing) types goes here
 │   └── index.ts                  // Main entry point of this library/package
@@ -190,8 +192,9 @@ Under development, different environments and flags can be used by starting diff
 Note: This library should never set or modify values in `process.env`, **only read from it**. Changing it in the library will cause side effect in users application and other dependencies.
 
 - `npm run start:debug`
-- `npm run start:dev`
-- `npm run start:dev:debug`
+- `npm run start:main`
+- `npm run start:main:dev`
+- `npm run start:main:dev:debug`
 
 
 ---
@@ -213,7 +216,7 @@ node dist/index.js  # runs the compiled JS
 
 **With ts-node:**
 ```bash
-ts-node src/index.ts  # runs TypeScript file directly
+ts-node src/dev/main.ts  # runs the local development harness directly
 ```
 
 ---

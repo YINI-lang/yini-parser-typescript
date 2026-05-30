@@ -123,7 +123,7 @@ pnpm add yini-parser
 ```
 
 ### Node.js (CommonJS)
-**Note:** Only a default export (YINI) is provided. Named imports are not supported.
+**Note:** The default export is the main API. Named exports such as `parse`, `parseFile`, and `parseForTooling` are also available from the package entry.
 ```js
 const YINI = require('yini-parser').default;
 // If your setup handles default interop differently, try:

@@ -19,7 +19,7 @@ items = 25
 darkMode = true
 
     ^^ Special
-    color = #336699
+    color = 0x336699
     isCaching = false
 ```
 
