@@ -1,3 +1,4 @@
+// src/parsers/extractHeaderParts.unit.test.ts
 import { debugPrint } from '../utils/print'
 import extractHeaderParts from './extractHeaderParts'
 
@@ -664,9 +665,10 @@ describe('Extract header parts unit tests Unit Tests:', () => {
         expect(isBacktickedName).toEqual(true)
     })
 
-    test('12.a. Extract parts for classic section header with alternative marker (€), level 1 with any WS delimeters and backticked name.', () => {
+    test('12.a. Extract parts for classic section header with alternative marker (>), level 1 with whitespace delimiter.', () => {
         // Arrange.
-        const fixture = '€\t\t    Title'
+        const fixture = '>\t\t    Title'
+
         // Act.
         const {
             strMarkerChars,
@@ -674,17 +676,18 @@ describe('Extract header parts unit tests Unit Tests:', () => {
             strNumberPart,
             isBacktickedName,
         } = extractHeaderParts(fixture)
+
         // Assert.
-        expect(strSectionName).not.toEqual('nonCorrectName')
-        expect(strMarkerChars).toEqual('€')
+        expect(strMarkerChars).toEqual('>')
         expect(strSectionName).toEqual('Title')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(false)
     })
 
-    test('12.b. Extract parts for classic section header with alternative marker (€), level 2 with any WS delimeters and backticked name.', () => {
+    test('12.b. Extract parts for classic section header with alternative marker (>), level 2 with backticked name.', () => {
         // Arrange.
-        const fixture = '€€\t  \t  `Section Title`'
+        const fixture = '>>\t  \t  `Section Title`'
+
         // Act.
         const {
             strMarkerChars,
@@ -692,17 +695,18 @@ describe('Extract header parts unit tests Unit Tests:', () => {
             strNumberPart,
             isBacktickedName,
         } = extractHeaderParts(fixture)
+
         // Assert.
-        expect(strSectionName).not.toEqual('nonCorrectName')
-        expect(strMarkerChars).toEqual('€€')
+        expect(strMarkerChars).toEqual('>>')
         expect(strSectionName).toEqual('`Section Title`')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(true)
     })
 
-    test('12.c. Extract parts for classic section header with alternative marker (€), level 3 with any WS delimeters, backticked name and a comment.', () => {
+    test('12.c. Extract parts for classic section header with alternative marker (>), level 3 with backticked name and a comment.', () => {
         // Arrange.
-        const fixture = '€€€\t  \t  `Section Title` // This is a comment.'
+        const fixture = '>>>\t  \t  `Section Title` // This is a comment.'
+
         // Act.
         const {
             strMarkerChars,
@@ -710,11 +714,182 @@ describe('Extract header parts unit tests Unit Tests:', () => {
             strNumberPart,
             isBacktickedName,
         } = extractHeaderParts(fixture)
+
         // Assert.
-        expect(strSectionName).not.toEqual('nonCorrectName')
-        expect(strMarkerChars).toEqual('€€€')
+        expect(strMarkerChars).toEqual('>>>')
         expect(strSectionName).toEqual('`Section Title`')
         expect(strNumberPart).toEqual('')
         expect(isBacktickedName).toEqual(true)
+    })
+
+    test('13.a. Extract parts for repeated section marker sequence with separator, level 7.', () => {
+        // Arrange.
+        const fixture = '^^^_^^^_^ SectionName'
+
+        // Act.
+        const {
+            strMarkerChars,
+            strSectionName,
+            strNumberPart,
+            isBacktickedName,
+        } = extractHeaderParts(fixture)
+
+        // Assert.
+        expect(strMarkerChars).toEqual('^^^_^^^_^')
+        expect(strSectionName).toEqual('SectionName')
+        expect(strNumberPart).toEqual('')
+        expect(isBacktickedName).toEqual(false)
+    })
+
+    test('13.b. Extract parts for repeated section marker sequence with separator, level 8.', () => {
+        // Arrange.
+        const fixture = '^^^_^^^_^^ SectionName'
+
+        // Act.
+        const {
+            strMarkerChars,
+            strSectionName,
+            strNumberPart,
+            isBacktickedName,
+        } = extractHeaderParts(fixture)
+
+        // Assert.
+        expect(strMarkerChars).toEqual('^^^_^^^_^^')
+        expect(strSectionName).toEqual('SectionName')
+        expect(strNumberPart).toEqual('')
+        expect(isBacktickedName).toEqual(false)
+    })
+
+    test('13.c. Extract parts for repeated section marker sequence with separator, level 9.', () => {
+        // Arrange.
+        const fixture = '^^^_^^^_^^^ SectionName'
+
+        // Act.
+        const {
+            strMarkerChars,
+            strSectionName,
+            strNumberPart,
+            isBacktickedName,
+        } = extractHeaderParts(fixture)
+
+        // Assert.
+        expect(strMarkerChars).toEqual('^^^_^^^_^^^')
+        expect(strSectionName).toEqual('SectionName')
+        expect(strNumberPart).toEqual('')
+        expect(isBacktickedName).toEqual(false)
+    })
+
+    test('13.d. Extract parts for repeated section marker sequence with separator and backticked name.', () => {
+        // Arrange.
+        const fixture = '^^^_^^^_^ `Section Title`'
+
+        // Act.
+        const {
+            strMarkerChars,
+            strSectionName,
+            strNumberPart,
+            isBacktickedName,
+        } = extractHeaderParts(fixture)
+
+        // Assert.
+        expect(strMarkerChars).toEqual('^^^_^^^_^')
+        expect(strSectionName).toEqual('`Section Title`')
+        expect(strNumberPart).toEqual('')
+        expect(isBacktickedName).toEqual(true)
+    })
+
+    test('14.a. Extract parts for numeric shorthand section header with primary marker.', () => {
+        // Arrange.
+        const fixture = '^7 SectionName'
+
+        // Act.
+        const {
+            strMarkerChars,
+            strSectionName,
+            strNumberPart,
+            isBacktickedName,
+        } = extractHeaderParts(fixture)
+
+        // Assert.
+        expect(strMarkerChars).toEqual('^')
+        expect(strSectionName).toEqual('SectionName')
+        expect(strNumberPart).toEqual('7')
+        expect(isBacktickedName).toEqual(false)
+    })
+
+    test('14.b. Extract parts for numeric shorthand section header with level 10.', () => {
+        // Arrange.
+        const fixture = '^10 SectionName'
+
+        // Act.
+        const {
+            strMarkerChars,
+            strSectionName,
+            strNumberPart,
+            isBacktickedName,
+        } = extractHeaderParts(fixture)
+
+        // Assert.
+        expect(strMarkerChars).toEqual('^')
+        expect(strSectionName).toEqual('SectionName')
+        expect(strNumberPart).toEqual('10')
+        expect(isBacktickedName).toEqual(false)
+    })
+
+    test('14.c. Extract parts for numeric shorthand section header with alternative marker (<).', () => {
+        // Arrange.
+        const fixture = '<3 SectionName'
+
+        // Act.
+        const {
+            strMarkerChars,
+            strSectionName,
+            strNumberPart,
+            isBacktickedName,
+        } = extractHeaderParts(fixture)
+
+        // Assert.
+        expect(strMarkerChars).toEqual('<')
+        expect(strSectionName).toEqual('SectionName')
+        expect(strNumberPart).toEqual('3')
+        expect(isBacktickedName).toEqual(false)
+    })
+
+    test('14.d. Extract parts for numeric shorthand section header with alternative marker (§) and backticked name.', () => {
+        // Arrange.
+        const fixture = '§2 `Section Title`'
+
+        // Act.
+        const {
+            strMarkerChars,
+            strSectionName,
+            strNumberPart,
+            isBacktickedName,
+        } = extractHeaderParts(fixture)
+
+        // Assert.
+        expect(strMarkerChars).toEqual('§')
+        expect(strSectionName).toEqual('`Section Title`')
+        expect(strNumberPart).toEqual('2')
+        expect(isBacktickedName).toEqual(true)
+    })
+
+    test('14.e. Extract parts for numeric shorthand section header with alternative marker (>).', () => {
+        // Arrange.
+        const fixture = '>4 SectionName'
+
+        // Act.
+        const {
+            strMarkerChars,
+            strSectionName,
+            strNumberPart,
+            isBacktickedName,
+        } = extractHeaderParts(fixture)
+
+        // Assert.
+        expect(strMarkerChars).toEqual('>')
+        expect(strSectionName).toEqual('SectionName')
+        expect(strNumberPart).toEqual('4')
+        expect(isBacktickedName).toEqual(false)
     })
 })

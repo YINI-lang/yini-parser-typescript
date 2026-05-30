@@ -17,6 +17,7 @@ import { IYiniAST, IYiniSection, TValueLiteral } from './internalTypes'
  *
  * @note All `tag` fields MUST be ignored.
  */
+// src/core/objectBuilder.ts
 export const astToObject = (
     ast: IYiniAST,
     errorHandler: ErrorDataHandler,
@@ -34,7 +35,6 @@ export const astToObject = (
 
     // 2) Mount explicit top-level sections directly onto result.
     for (const child of ast.root.children) {
-        // Collision: a lenient orphan member already used this name.
         if (Object.prototype.hasOwnProperty.call(out, child.sectionName)) {
             errorHandler.pushOrBail(
                 undefined,
@@ -46,7 +46,8 @@ export const astToObject = (
             continue
         }
 
-        define(out, child.sectionName, sectionToObject(child))
+        // define(out, child.sectionName, sectionToObject(child))
+        define(out, child.sectionName, sectionToObject(child, errorHandler))
     }
 
     return out
@@ -56,17 +57,44 @@ export const astToObject = (
  * Convert a section (members + nested sections) to a plain object,
  * preserving insertion order.
  */
-const sectionToObject = (node: IYiniSection): Record<string, unknown> => {
+// const sectionToObject = (node: IYiniSection): Record<string, unknown> => {
+//     const obj: Record<string, unknown> = {}
+
+//     // 1) Members (Map preserves insertion order).
+//     for (const [key, val] of node.members) {
+//         define(obj, key, literalToJS(val))
+//     }
+
+//     // 2) Nested sections (array order preserved).
+//     for (const child of node.children) {
+//         define(obj, child.sectionName, sectionToObject(child))
+//     }
+
+//     return obj
+// }
+const sectionToObject = (
+    node: IYiniSection,
+    errorHandler: ErrorDataHandler,
+): Record<string, unknown> => {
     const obj: Record<string, unknown> = {}
 
-    // 1) Members (Map preserves insertion order).
     for (const [key, val] of node.members) {
         define(obj, key, literalToJS(val))
     }
 
-    // 2) Nested sections (array order preserved).
     for (const child of node.children) {
-        define(obj, child.sectionName, sectionToObject(child))
+        if (Object.prototype.hasOwnProperty.call(obj, child.sectionName)) {
+            errorHandler.pushOrBail(
+                undefined,
+                'Syntax-Error',
+                `Name collision between member and subsection '${child.sectionName}'`,
+                `The name '${child.sectionName}' is already used by a member in section '${node.sectionName}' and cannot also be used as a subsection name.`,
+                'Rename either the member or the subsection.',
+            )
+            continue
+        }
+
+        define(obj, child.sectionName, sectionToObject(child, errorHandler))
     }
 
     return obj

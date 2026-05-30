@@ -1,7 +1,7 @@
 {
     "name": "yini-parser",
     "version": "1.5.0",
-    "description": "The official Node.js (TypeScript) parser for YINI — an INI-inspired, human-readable configuration format with explicit structure and predictable parsing.",
+    "description": "Official Node.js (TypeScript) parser for YINI, an INI-inspired, indentation-insensitive configuration format with clear nested sections and explicit structure.",
     "keywords": [
         "yini",
         "yini-parser",
@@ -24,6 +24,10 @@
     "files": [
         "dist/",
         "!dist/**/*.test.*",
+        "!dist/**/*.js.map",
+        "!dist/src/**",
+        "!dist/dev/**",
+        "!dist/tools/**",
         "package.json",
         "README.md",
         "LICENSE",
@@ -69,12 +73,15 @@
         "ci:test": "cross-env NODE_ENV=test APP_ENV=ci jest --verbose --runInBand",
         "ci:test:smoke": "cross-env NODE_ENV=test APP_ENV=ci jest tests/smoke --verbose --runInBand",
         "ci:test:unit": "cross-env NODE_ENV=test APP_ENV=ci jest src/ --verbose --runInBand",
+        "yini-test:adapter": "tsx tools/yini-test-adapter.ts",
+        "test:yini-test:adapter": "npx tsx tools/yini-test-adapter.ts --input some-file.yini --mode lenient",
         "tsc": "npx tsc -p ./tsconfig.json",
         "lint": "eslint src --ext .ts",
         "clean:ts-js": "bash scripts/clean-ts-js.sh",
         "antlr": "make generate",
         "ci:antlr": "make ci-generate",
         "build": "tsc -p ./tsconfig.json",
+        "build-tools": "tsc -p tsconfig.tools.json",
         "prepublishOnly": "npm run lint && npm test && npm run build"
     },
     "author": "Marko K. Seppänen",
@@ -98,6 +105,7 @@
         "prettier": "^3.7.4",
         "ts-jest": "^29.4.6",
         "ts-node": "^10.9.2",
+        "tsx": "^4.21.0",
         "typescript": "^5.9.3"
     },
     "lint-staged": {

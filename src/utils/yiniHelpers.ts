@@ -3,6 +3,7 @@
  * @note More general helper functions should go into the dir "src/utils/".
  */
 
+// src/utils/yiniHelpers.ts
 import {
     TListValue,
     TObjectValue,
@@ -12,15 +13,24 @@ import {
 import { debugPrint, printObject } from './print'
 import { isEnclosedInBackticks, splitLines } from './string'
 
-const SECTION_MARKER1 = '^'
-const SECTION_MARKER2 = '<'
-const SECTION_MARKER3 = '\u00A7' // Section sign §.
-const SECTION_MARKER4 = '\u20AC' // Euro sign €.
+export const SECTION_MARKER_CARET = '^'
+export const SECTION_MARKER_SECTION_SIGN = '\u00A7' // Section sign §.
+export const SECTION_MARKER_GT = '>'
+export const SECTION_MARKER_LT = '<'
+
+export const SECTION_MARKERS = new Set([
+    SECTION_MARKER_CARET,
+    SECTION_MARKER_SECTION_SIGN,
+    SECTION_MARKER_GT,
+    SECTION_MARKER_LT,
+])
+
+export const MAX_REPEATED_SECTION_MARKER_DEPTH = 9
+export const MAX_SECTION_DEPTH = 255
 
 /**
  * Check if the character is a section marker character.
- * @param character A character in a string.
- * @note The string must be of length 1.
+ * @param character A single character.
  * @throws Will throw if not exactly of length 1.
  */
 export const isMarkerCharacter = (character: string): boolean => {
@@ -30,14 +40,69 @@ export const isMarkerCharacter = (character: string): boolean => {
         )
     }
 
-    const ch = character
-    if (
-        ch === SECTION_MARKER1 ||
-        ch === SECTION_MARKER2 ||
-        ch === SECTION_MARKER3 ||
-        ch === SECTION_MARKER4
-    ) {
-        return true
+    return SECTION_MARKERS.has(character)
+}
+
+export const countRepeatedSectionMarkers = (markerText: string): number => {
+    return [...markerText].filter((ch) => isMarkerCharacter(ch)).length
+}
+
+/**
+ * Strips/removes separator characters from a repeated section marker sequence.
+ *
+ * Examples:
+ * - ^^^_^^^_^  -> ^^^^^^^
+ * - ^^^_^^^_^^ -> ^^^^^^^^
+ *
+ * Invalid:
+ * - _^^
+ * - ^^_
+ * - ^^__^^
+ */
+export const normalizeRepeatedSectionMarkerSequence = (
+    marker: string,
+): string => {
+    if (marker.startsWith('_')) {
+        throw Error('Marker cannot start with a separator.')
+    }
+    if (marker.endsWith('_')) {
+        throw Error('Marker cannot end with a separator.')
+    }
+    if (marker.includes('__')) {
+        throw Error('Marker cannot include a double separator.')
+    }
+
+    return marker.replace(/_/g, '')
+}
+
+export const hasMixedSectionMarkers = (markerText: string): boolean => {
+    const markerKinds = new Set(
+        [...markerText].filter((ch) => isMarkerCharacter(ch)),
+    )
+
+    return markerKinds.size > 1
+}
+
+export const hasInvalidSectionMarkerSeparatorPlacement = (
+    markerText: string,
+): boolean => {
+    if (!markerText) return false
+
+    if (markerText.startsWith('_')) return true
+    if (markerText.endsWith('_')) return true
+    if (markerText.includes('__')) return true
+
+    const chars = [...markerText]
+
+    for (let i = 1; i < chars.length - 1; i++) {
+        if (chars[i] !== '_') continue
+
+        const left = chars[i - 1]
+        const right = chars[i + 1]
+
+        if (!isMarkerCharacter(left)) return true
+        if (!isMarkerCharacter(right)) return true
+        if (left !== right) return true
     }
 
     return false
@@ -48,34 +113,21 @@ export const isMarkerCharacter = (character: string): boolean => {
  * starting with //, #, ; or --.
  * @throws Will throw if consisting more than 1 lines.
  */
+/*
 export const stripCommentsAndAfter = (line: string): string => {
-    // if (splitLines(line).length > 1) {
-    //     throw new Error(
-    //         'Internal error: Detected several row lines in line: >>>' +
-    //             line +
-    //             '<<<',
-    //     )
-    // }
     line = line.split('\n', 1)[0]
 
     let idx1 = line.indexOf('//')
-    let idx2 = line.indexOf('# ') // NOTE: (!) Hash comments requires a WS after the hash!
-    let idx3 = line.indexOf('#\t') // NOTE: (!) Hash comments requires a WS after the hash!
-    let idx4 = line.indexOf(';')
-    let idx5 = line.indexOf('--')
+    let idx2 = line.indexOf('#')
+    let idx3 = line.indexOf(';')
+    let idx4 = line.indexOf('--')
 
     if (idx1 < 0) idx1 = Number.MAX_SAFE_INTEGER
     if (idx2 < 0) idx2 = Number.MAX_SAFE_INTEGER
     if (idx3 < 0) idx3 = Number.MAX_SAFE_INTEGER
     if (idx4 < 0) idx4 = Number.MAX_SAFE_INTEGER
-    if (idx5 < 0) idx5 = Number.MAX_SAFE_INTEGER
-    // debugPrint('stripCommentsAndAfter(..): idx1 = ' + idx1)
-    // debugPrint('stripCommentsAndAfter(..): idx2 = ' + idx2)
-    // debugPrint('stripCommentsAndAfter(..): idx3 = ' + idx3)
-    // debugPrint('stripCommentsAndAfter(..): idx4 = ' + idx4)
-    // debugPrint('stripCommentsAndAfter(..): idx5 = ' + idx5)
 
-    const idx = Math.min(idx1, idx2, idx3, idx4, idx5)
+    const idx = Math.min(idx1, idx2, idx3, idx4)
     const resultLine =
         idx === Number.MAX_SAFE_INTEGER ? line : line.substring(0, idx)
 
@@ -84,6 +136,56 @@ export const stripCommentsAndAfter = (line: string): string => {
         'stripCommentsAndAfter(..), resultLine: >>>' + resultLine + '<<<',
     )
     return resultLine.trim()
+}
+*/
+
+/**
+ * Returns the significant beginning of a single logical line.
+ *
+ * Recognized inline comments:
+ * - `//`
+ * - `#`
+ *
+ * Recognized full-line trivia:
+ * - `;`
+ * - `--`
+ *
+ * Notes:
+ * - `;` is not an inline comment marker in YINI.
+ * - `--` is not an inline comment marker; it only disables a line when it is
+ *   the first non-whitespace content.
+ *
+ * This helper is intentionally simple and should only be used after the lexer
+ * has already separated strings/comments, or in places where the input is known
+ * not to contain string literals with comment-like text.
+ */
+export const stripCommentsAndAfter = (line: string): string => {
+    const trimmedStart = line.trimStart()
+
+    // Disabled line.
+    if (trimmedStart.startsWith('--')) {
+        return ''
+    }
+
+    // Full-line semicolon comment.
+    if (trimmedStart.startsWith(';')) {
+        return ''
+    }
+
+    const slashSlashIndex = line.indexOf('//')
+    const hashIndex = line.indexOf('#')
+
+    const commentIndexes = [slashSlashIndex, hashIndex].filter(
+        (index) => index >= 0,
+    )
+
+    if (commentIndexes.length === 0) {
+        return line
+    }
+
+    const firstCommentIndex = Math.min(...commentIndexes)
+
+    return line.slice(0, firstCommentIndex)
 }
 
 /**

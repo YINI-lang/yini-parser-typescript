@@ -38,23 +38,29 @@ describe('Throw error when parsing bad file/inline content tests:', () => {
         }).toThrow()
     })
 
-    test('2. Should throw error if parsing nothing ("").', () => {
+    test('2. Should throw error if parsing nothing ("") in strict mode.', () => {
         // Arrange.
-        const fixture = '' // (!) Blank!
+        const fixture = ''
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(fixture, { failLevel: 'errors' })
+            YINI.parse(fixture, {
+                strictMode: true,
+                failLevel: 'errors',
+            })
         }).toThrow()
     })
 
-    test('3. Should throw error if parsing only whitespaces.', () => {
+    test('3. Should throw error if parsing only whitespaces in strict mode.', () => {
         // Arrange.
-        const fixture = '      \t  \n  ' // (!) Only whitepaces!
+        const fixture = '   '
 
         // Act & Assert.
         expect(() => {
-            YINI.parse(fixture, { failLevel: 'errors' })
+            YINI.parse(fixture, {
+                strictMode: true,
+                failLevel: 'errors',
+            })
         }).toThrow()
     })
 

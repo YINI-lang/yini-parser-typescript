@@ -1,3 +1,4 @@
+// src/parsers/parseSectionHeader-classic.unit.test.ts
 import { ErrorDataHandler } from '../core/errorDataHandler'
 import parseSectionHeader from './parseSectionHeader'
 
@@ -14,78 +15,83 @@ describe('Parse classic section header unit tests:', () => {
     test('1.a. Identify classic section header with level 1.', () => {
         // Arrange.
         const fixture = '^ SectionName'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(1)
     })
 
-    test('1.b. Identify classic section header with level 1 with tabbed delimeter.', () => {
+    test('1.b. Identify classic section header with level 1 and tab delimiter.', () => {
         // Arrange.
         const fixture = '^\tSectionName'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(1)
     })
 
-    test('1.c. Identify classic section header with level 1 with multiple spaces.', () => {
+    test('1.c. Identify classic section header with level 1 and multiple spaces.', () => {
         // Arrange.
         const fixture = '^   SectionName'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(1)
     })
 
-    test('1.d. Identify classic section header with level 1 with any WS delimeters.', () => {
+    test('1.d. Identify classic section header with level 1 and mixed whitespace delimiters.', () => {
         // Arrange.
         const fixture = '^\t  \t  SectionName'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(1)
     })
 
-    test('1.e. Identify classic section header with level 1 with a comment and any WS delimeters.', () => {
+    test('1.e. Identify classic section header with level 1 and trailing comment.', () => {
         // Arrange.
         const fixture = '^\t  \t  SectionName // This part is a comment.'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(1)
@@ -94,273 +100,270 @@ describe('Parse classic section header unit tests:', () => {
     test('2.a. Identify classic section header with level 1 and backticked name.', () => {
         // Arrange.
         const fixture = '^ `Section Name`'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('`Section Name`')
+        expect(sectionName).toEqual('Section Name')
         expect(sectionLevel).toEqual(1)
     })
 
-    test('2.b. Identify classic section header with level 1 with tabbed delimeter and backticked name.', () => {
+    test('2.b. Identify classic section header with level 1, tab delimiter, and backticked name.', () => {
         // Arrange.
         const fixture = '^\t`Section Name`'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('`Section Name`')
+        expect(sectionName).toEqual('Section Name')
         expect(sectionLevel).toEqual(1)
     })
 
-    test('2.c. Identify classic section header with level 1 with multiple spaces and backticked name.', () => {
+    test('2.c. Identify classic section header with level 1, spaces, and backticked name.', () => {
         // Arrange.
         const fixture = '^   `Section Name`'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('`Section Name`')
+        expect(sectionName).toEqual('Section Name')
         expect(sectionLevel).toEqual(1)
     })
 
-    test('2.d. Identify classic section header with level 1 with any WS delimeters and backticked name.', () => {
+    test('2.d. Identify classic section header with level 1, mixed whitespace, and backticked name.', () => {
         // Arrange.
         const fixture = '^\t  \t  `Section Name`'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('`Section Name`')
+        expect(sectionName).toEqual('Section Name')
         expect(sectionLevel).toEqual(1)
     })
 
-    test('2.e. Identify classic section header with level 1 with a comment and any WS delimeters and backticked name.', () => {
+    test('2.e. Identify classic section header with level 1, backticked name, and trailing comment.', () => {
         // Arrange.
         const fixture = '^\t  \t  `Section Name` # This part is a comment.'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('`Section Name`')
+        expect(sectionName).toEqual('Section Name')
         expect(sectionLevel).toEqual(1)
     })
 
-    test('3.a. Identify classic section header with level 1, compact (no WS).', () => {
+    test('3.a. Identify compact classic section header with level 1.', () => {
         // Arrange.
         const fixture = '^SectionName'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(1)
     })
 
-    test('3.b. Identify classic section header with level 1 with comment, compact (no WS).', () => {
+    test('3.b. Identify compact classic section header with level 1 and slash comment.', () => {
         // Arrange.
         const fixture = '^SectionName // This is a section header.'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(1)
     })
 
-    test('3.c. Identify classic section header with level 1 with comment, compact (no WS).', () => {
+    test('3.c. Identify compact classic section header with level 1 and hash comment.', () => {
         // Arrange.
         const fixture = '^SectionName # This part is a comment.'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(1)
     })
 
-    test('3.d. Identify classic section header with level 1 with comment, compact (no WS).', () => {
+    test('3.d. Identify compact classic section header with level 1 and slash comment without whitespace.', () => {
         // Arrange.
         const fixture = '^SectionName// This is a section header.'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(1)
     })
 
-    test('3.e. Identify classic section header with level 1 with comment, compact (no WS).', () => {
+    test('3.e. Identify compact classic section header with level 1 and hash comment without whitespace.', () => {
         // Arrange.
         const fixture = '^SectionName# This part is a comment.'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(1)
     })
 
-    test('3.f. Identify classic section header with level 1 enclosed in comments, compact (no WS).', () => {
-        // Arrange.
-        const fixture = `// This whole line is a comment.
-            ^SectionName# This part is a comment.
-            // This whole line is a comment.
-        `
-        // Act.
-        const { markerType, sectionName, sectionLevel } = parseSectionHeader(
-            fixture,
-            eh,
-            null,
-        )
-        // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
-        expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('SectionName')
-        expect(sectionLevel).toEqual(1)
-    })
-
-    test('4.a. Identify classic section header with level 1, backticked name, compact (no WS).', () => {
+    test('4.a. Identify compact classic section header with level 1 and backticked name.', () => {
         // Arrange.
         const fixture = '^`Section Name`'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('`Section Name`')
+        expect(sectionName).toEqual('Section Name')
         expect(sectionLevel).toEqual(1)
     })
 
-    test('4.b. Identify classic section header with level 1 with backticked name and comment, compact (no WS).', () => {
+    test('4.b. Identify compact classic section header with level 1, backticked name, and slash comment.', () => {
         // Arrange.
         const fixture = '^`Section Name` // Comment.'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('`Section Name`')
+        expect(sectionName).toEqual('Section Name')
         expect(sectionLevel).toEqual(1)
     })
 
-    test('4.c. Identify classic section header with level 1 with backticked name and comment, compact (no WS).', () => {
+    test('4.c. Identify compact classic section header with level 1, backticked name, and hash comment.', () => {
         // Arrange.
         const fixture = '^`Section Name` # Comment.'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('`Section Name`')
+        expect(sectionName).toEqual('Section Name')
         expect(sectionLevel).toEqual(1)
     })
 
-    test('4.d. Identify classic section header with level 1 with backticked name and comment, compact (no WS).', () => {
+    test('4.d. Identify compact classic section header with level 1, backticked name, and slash comment without whitespace.', () => {
         // Arrange.
         const fixture = '^`Section Name`// This part is a comment.'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('`Section Name`')
+        expect(sectionName).toEqual('Section Name')
         expect(sectionLevel).toEqual(1)
     })
 
     test('5.a. Identify classic section header with level 2.', () => {
         // Arrange.
         const fixture = '^^ SectionName'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(2)
     })
 
-    test('5.b. Identify classic section header with level 2 and comment.', () => {
+    test('5.b. Identify classic section header with level 2 and trailing comment.', () => {
         // Arrange.
         const fixture = '^^ SectionName // This part is a comment.'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(2)
@@ -369,30 +372,32 @@ describe('Parse classic section header unit tests:', () => {
     test('6.a. Identify classic section header with level 3.', () => {
         // Arrange.
         const fixture = '^^^ SectionName'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(3)
     })
 
-    test('6.b. Identify classic section header with level 3, compact (no WS).', () => {
+    test('6.b. Identify compact classic section header with level 3.', () => {
         // Arrange.
         const fixture = '^^^SectionName'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(3)
@@ -401,61 +406,66 @@ describe('Parse classic section header unit tests:', () => {
     test('7.a. Identify classic section header with level 4.', () => {
         // Arrange.
         const fixture = '^^^^ SectionName'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(4)
     })
-    test('7.b. Identify classic section header with level 4 with backticked name.', () => {
+
+    test('7.b. Identify classic section header with level 4 and backticked name.', () => {
         // Arrange.
         const fixture = '^^^^ `Section Name`'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('`Section Name`')
+        expect(sectionName).toEqual('Section Name')
         expect(sectionLevel).toEqual(4)
     })
 
     test('8.a. Identify classic section header with level 5.', () => {
         // Arrange.
         const fixture = '^^^^^ SectionName'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(5)
     })
 
-    test('8.b. Identify classic section header with level 5, with many WS.', () => {
+    test('8.b. Identify classic section header with level 5 and mixed whitespace.', () => {
         // Arrange.
         const fixture = '^^^^^    \tSectionName'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(5)
@@ -464,134 +474,255 @@ describe('Parse classic section header unit tests:', () => {
     test('9.a. Identify classic section header with level 6.', () => {
         // Arrange.
         const fixture = '^^^^^^ SectionName'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(6)
     })
 
-    test('9.b. Identify classic section header with level 6, compact with backticed name and comment.', () => {
+    test('9.b. Identify compact classic section header with level 6, backticked name, and comment.', () => {
         // Arrange.
-        const fixture = `;This line is comment.
-            ^^^^^^\`Section Name\`//Comment here.
-            ;This line is comment.
-        `
+        const fixture = '^^^^^^`Section Name`//Comment here.'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('`Section Name`')
+        expect(sectionName).toEqual('Section Name')
         expect(sectionLevel).toEqual(6)
     })
 
-    test('10.a. Identify classic section header with level 1 and alternative character marker (<).', () => {
+    test('9.c. Identify classic section header with level 7 using marker separators.', () => {
         // Arrange.
-        const fixture = '< SectionName'
+        const fixture = '^^^_^^^_^ SectionName'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
+        expect(markerType).toEqual('Classic-Header-Marker')
+        expect(sectionName).toEqual('SectionName')
+        expect(sectionLevel).toEqual(7)
+    })
+
+    test('9.d. Identify classic section header with level 8 using marker separators.', () => {
+        // Arrange.
+        const fixture = '^^^_^^^_^^ SectionName'
+
+        // Act.
+        const { markerType, sectionName, sectionLevel } = parseSectionHeader(
+            fixture,
+            eh,
+            null,
+        )
+
+        // Assert.
+        expect(markerType).toEqual('Classic-Header-Marker')
+        expect(sectionName).toEqual('SectionName')
+        expect(sectionLevel).toEqual(8)
+    })
+
+    test('9.e. Identify classic section header with level 9 using marker separators.', () => {
+        // Arrange.
+        const fixture = '^^^_^^^_^^^ SectionName'
+
+        // Act.
+        const { markerType, sectionName, sectionLevel } = parseSectionHeader(
+            fixture,
+            eh,
+            null,
+        )
+
+        // Assert.
+        expect(markerType).toEqual('Classic-Header-Marker')
+        expect(sectionName).toEqual('SectionName')
+        expect(sectionLevel).toEqual(9)
+    })
+
+    test('9.f. Identify classic section header with level 9 using direct repeated markers.', () => {
+        // Arrange.
+        const fixture = '^^^^^^^^^ SectionName'
+
+        // Act.
+        const { markerType, sectionName, sectionLevel } = parseSectionHeader(
+            fixture,
+            eh,
+            null,
+        )
+
+        // Assert.
+        expect(markerType).toEqual('Classic-Header-Marker')
+        expect(sectionName).toEqual('SectionName')
+        expect(sectionLevel).toEqual(9)
+    })
+
+    test('10.a. Identify classic section header with level 1 and alternative marker (<).', () => {
+        // Arrange.
+        const fixture = '< SectionName'
+
+        // Act.
+        const { markerType, sectionName, sectionLevel } = parseSectionHeader(
+            fixture,
+            eh,
+            null,
+        )
+
+        // Assert.
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(1)
     })
 
-    test('10.b. Identify classic section header with level 2 with tabbed delimeter and alternative character marker (§).', () => {
+    test('10.b. Identify classic section header with level 2 and alternative marker (<).', () => {
         // Arrange.
-        const fixture = '§§\tSectionName'
+        const fixture = '<<\tSectionName'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(2)
     })
 
-    test('10.c. Identify classic section header with level 2 with tabbed delimeter and alternative character marker (€).', () => {
-        // Arrange.
-        const fixture = '€€\tSectionName'
-        // Act.
-        const { markerType, sectionName, sectionLevel } = parseSectionHeader(
-            fixture,
-            eh,
-            null,
-        )
-        // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
-        expect(markerType).toEqual('Classic-Header-Marker')
-        expect(sectionName).toEqual('SectionName')
-        expect(sectionLevel).toEqual(2)
-    })
-
-    test('11.a. Identify classic section header with level 4 and alternative character marker (<).', () => {
+    test('10.c. Identify classic section header with level 4 and alternative marker (<).', () => {
         // Arrange.
         const fixture = '<<<<   SectionName // This part is a comment.'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(4)
     })
 
-    test('11.b. Identify classic section header with level 5 with tabbed delimeter and alternative character marker (§).', () => {
+    test('11.a. Identify classic section header with level 1 and alternative marker (§).', () => {
         // Arrange.
-        const fixture = '§§§§§SectionName # This part is a comment.'
+        const fixture = '§ SectionName'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
+        expect(markerType).toEqual('Classic-Header-Marker')
+        expect(sectionName).toEqual('SectionName')
+        expect(sectionLevel).toEqual(1)
+    })
+
+    test('11.b. Identify classic section header with level 2 and alternative marker (§).', () => {
+        // Arrange.
+        const fixture = '§§\tSectionName'
+
+        // Act.
+        const { markerType, sectionName, sectionLevel } = parseSectionHeader(
+            fixture,
+            eh,
+            null,
+        )
+
+        // Assert.
+        expect(markerType).toEqual('Classic-Header-Marker')
+        expect(sectionName).toEqual('SectionName')
+        expect(sectionLevel).toEqual(2)
+    })
+
+    test('11.c. Identify compact classic section header with level 5 and alternative marker (§).', () => {
+        // Arrange.
+        const fixture = '§§§§§SectionName # This part is a comment.'
+
+        // Act.
+        const { markerType, sectionName, sectionLevel } = parseSectionHeader(
+            fixture,
+            eh,
+            null,
+        )
+
+        // Assert.
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
         expect(sectionLevel).toEqual(5)
     })
 
-    test('11.c. Identify classic section header with level 6 with tabbed delimeter and alternative character marker (€).', () => {
+    test('12.a. Identify classic section header with level 1 and alternative marker (>).', () => {
         // Arrange.
-        const fixture = `// This line is a comment.
-            €€€€€€ SectionName# This part is a comment.
-            ; This line is a comment.
-        `
+        const fixture = '> SectionName'
+
         // Act.
         const { markerType, sectionName, sectionLevel } = parseSectionHeader(
             fixture,
             eh,
             null,
         )
+
         // Assert.
-        expect(markerType).not.toEqual('Numeric-Header-Marker')
         expect(markerType).toEqual('Classic-Header-Marker')
         expect(sectionName).toEqual('SectionName')
-        expect(sectionLevel).toEqual(6)
+        expect(sectionLevel).toEqual(1)
+    })
+
+    test('12.b. Identify classic section header with level 2 and alternative marker (>).', () => {
+        // Arrange.
+        const fixture = '>>\tSectionName'
+
+        // Act.
+        const { markerType, sectionName, sectionLevel } = parseSectionHeader(
+            fixture,
+            eh,
+            null,
+        )
+
+        // Assert.
+        expect(markerType).toEqual('Classic-Header-Marker')
+        expect(sectionName).toEqual('SectionName')
+        expect(sectionLevel).toEqual(2)
+    })
+
+    test('12.c. Identify classic section header with level 4 and alternative marker (>).', () => {
+        // Arrange.
+        const fixture = '>>>>   SectionName // This part is a comment.'
+
+        // Act.
+        const { markerType, sectionName, sectionLevel } = parseSectionHeader(
+            fixture,
+            eh,
+            null,
+        )
+
+        // Assert.
+        expect(markerType).toEqual('Classic-Header-Marker')
+        expect(sectionName).toEqual('SectionName')
+        expect(sectionLevel).toEqual(4)
     })
 })

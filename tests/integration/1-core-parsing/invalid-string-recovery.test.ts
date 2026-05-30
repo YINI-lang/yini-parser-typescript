@@ -6,7 +6,6 @@
       * Diagnostics / line / column when requested
  */
 // tests/integration/1-core-parsing/invalid-string-recovery.test.ts
-import fs from 'node:fs'
 import path from 'node:path'
 import YINI from '../../../src'
 
@@ -14,14 +13,15 @@ const FIXTURE_DIR = path.join(__dirname, '../../fixtures/invalid')
 const BAD_ESCAPING_FILE = path.join(FIXTURE_DIR, 'bad-escaping-1.yini')
 
 const invalidInlineYini = `^ App
-name = "Shebang-\\"demo"
+name = 'Shebang-\\"demo'
 value = c"Hello World"
 badEscape = c"E:\\logs\\nebula\\app.log"
 valueA = c"\\x41"
+/END
 `
 
 describe('Invalid string recovery tests:', () => {
-    test('1.a) inline: lenient + ignore-errors should recover and keep valid sibling values', () => {
+    test('1.a) inline: lenient + ignore-errors should recover from invalid C-string escape and keep valid sibling values', () => {
         const result = YINI.parse(invalidInlineYini, {
             strictMode: false,
             failLevel: 'ignore-errors',
@@ -39,7 +39,7 @@ describe('Invalid string recovery tests:', () => {
         expect(result.App.badEscape).toBeUndefined()
     })
 
-    test('1.b) inline: strict/default should throw on invalid string escape', () => {
+    test('1.b.1) [strict] inline: should throw on invalid C-string escape', () => {
         expect(() => {
             YINI.parse(invalidInlineYini, {
                 strictMode: true,
@@ -47,8 +47,17 @@ describe('Invalid string recovery tests:', () => {
             })
         }).toThrow(/syntax-error|syntax error/i)
     })
+    test('1.b.2) [lenient] inline: should throw on invalid C-string escape', () => {
+        expect(() => {
+            YINI.parse(invalidInlineYini, {
+                strictMode: false,
+                failLevel: 'errors',
+                throwOnError: true,
+            })
+        }).toThrow(/syntax-error|syntax error/i)
+    })
 
-    test('1.c) inline: thrown error should include escape + line + column', () => {
+    test('1.c.1) [strict] inline: thrown error should include escape + line + column', () => {
         try {
             YINI.parse(invalidInlineYini, {
                 strictMode: true,
@@ -60,7 +69,25 @@ describe('Invalid string recovery tests:', () => {
             const msg = err instanceof Error ? err.message : String(err)
 
             expect(msg).toMatch(/syntax-error|syntax error/i)
-            expect(msg).toMatch(/escape|string/i)
+            expect(msg).toMatch(/escape|string|token/i)
+            expect(msg).toMatch(/line/i)
+            expect(msg).toMatch(/column/i)
+        }
+    })
+    test('1.c.2) [lenient] inline: thrown error should include escape + line + column', () => {
+        try {
+            YINI.parse(invalidInlineYini, {
+                strictMode: false,
+                failLevel: 'errors',
+                throwOnError: true,
+            })
+
+            throw new Error('Expected parser to throw, but it did not.')
+        } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : String(err)
+
+            expect(msg).toMatch(/syntax-error|syntax error/i)
+            expect(msg).toMatch(/escape|string|token/i)
             expect(msg).toMatch(/line/i)
             expect(msg).toMatch(/column/i)
         }
@@ -86,7 +113,9 @@ describe('Invalid string recovery tests:', () => {
         expect(firstErr).toBeDefined()
         expect(firstErr.line).toBeDefined()
         expect(firstErr.column).toBeDefined()
-        expect(String(firstErr.message)).toMatch(/syntax error|escape|string/i)
+        expect(String(firstErr.message)).toMatch(
+            /syntax error|escape|string|token/i,
+        )
 
         expect(parsed.result.App.name).toEqual('Shebang-\\"demo')
         expect(parsed.result.App.value).toEqual('Hello World')
@@ -128,7 +157,7 @@ describe('Invalid string recovery tests:', () => {
             const msg = err instanceof Error ? err.message : String(err)
 
             expect(msg).toMatch(/syntax-error|syntax error/i)
-            expect(msg).toMatch(/escape|string/i)
+            expect(msg).toMatch(/escape|string|token/i)
             expect(msg).toMatch(/line/i)
             expect(msg).toMatch(/column/i)
         }
@@ -154,6 +183,8 @@ describe('Invalid string recovery tests:', () => {
         expect(firstErr).toBeDefined()
         expect(firstErr.line).toBeDefined()
         expect(firstErr.column).toBeDefined()
-        expect(String(firstErr.message)).toMatch(/syntax error|escape|string/i)
+        expect(String(firstErr.message)).toMatch(
+            /syntax error|escape|string|token/i,
+        )
     })
 })

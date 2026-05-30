@@ -90,22 +90,33 @@ export const runPipeline = (
         runtimeInfo.sourceType,
         runtimeInfo.fileName,
         coreOptions.bailSensitivity,
+        coreOptions.isDiagnosticOutputEnabled,
         coreOptions.isQuiet,
         coreOptions.isSilent,
         coreOptions.isThrowOnError,
     )
 
-    if (yiniContent.trim() === '') {
-        const isFileSourceType: boolean = runtimeInfo?.sourceType === 'File'
-        // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+    for (const issue of runtimeInfo.preflightIssues) {
         errorHandler.pushOrBail(
-            undefined,
-            'Syntax-Error',
-            'Empty YINI document.',
-            `The input is blank or contains only whitespace in the ${isFileSourceType ? 'YINI file' : 'YINI inline content'}.`,
-            `Tip: Add at least one section '^ SectionName' or a key-value pair 'key = value' to make it a valid YINI file.`,
+            issue.locInput,
+            issue.type,
+            issue.msgWhat,
+            issue.msgWhy,
+            issue.msgHint,
         )
     }
+
+    // if (yiniContent.trim() === '') {
+    //     const isFileSourceType: boolean = runtimeInfo?.sourceType === 'File'
+    //     // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
+    //     errorHandler.pushOrBail(
+    //         undefined,
+    //         'Syntax-Error',
+    //         'Empty YINI document.',
+    //         `The input is blank or contains only whitespace in the ${isFileSourceType ? 'YINI file' : 'YINI inline content'}.`,
+    //         `Tip: Add at least one section '^ SectionName' or a key-value pair 'key = value' to make it a valid YINI file.`,
+    //     )
+    // }
 
     //---------------------------------------------
     // Note: Only computed when isWithTiming.
@@ -209,14 +220,34 @@ export const runPipeline = (
     )
     const ast: IYiniAST = builder.buildAST(parseTree)
     if (ast.numOfMembers === 0 && ast.numOfSections === 0) {
-        // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-        errorHandler.pushOrBail(
-            undefined,
-            'Syntax-Error',
-            'No meaningful content.',
-            `No sections or members found in the ${ast.sourceType === 'File' ? 'YINI file' : 'YINI inline content'}.`,
-            `${ast.sourceType === 'File' ? 'A valid YINI file' : 'Any valid YINI inline content'} must contain at least one section '^ SectionName' or a key–value pair 'key = value' to make it a valid YINI file.`,
-        )
+        // Lenient mode: empty document is allowed, but warning.
+        // Strict mode: empty document is invalid, error.
+
+        const sourceLabel =
+            ast.sourceType === 'File' ? 'YINI file' : 'YINI inline content'
+
+        const sourceRequirement =
+            ast.sourceType === 'File'
+                ? 'A valid YINI file must contain at least one section, for example: ^ SectionName, or a key-value pair, for example: key = value.'
+                : 'Valid YINI inline content must contain at least one section, for example: ^ SectionName, or a key-value pair, for example: key = value.'
+
+        if (ast.isStrict === true) {
+            errorHandler.pushOrBail(
+                undefined,
+                'Syntax-Error',
+                'Empty YINI document.',
+                `The ${sourceLabel} contains no meaningful content.`,
+                sourceRequirement,
+            )
+        } else {
+            errorHandler.pushOrBail(
+                undefined,
+                'Syntax-Warning',
+                'Empty YINI document.',
+                `The ${sourceLabel} contains no meaningful content.`,
+                sourceRequirement,
+            )
+        }
     }
 
     if (isDebug()) {
@@ -278,8 +309,11 @@ export const runPipeline = (
         )
 
         if (coreOptions.bailSensitivity === '0-Ignore-Errors') {
-            // IMPORTANT: If "silent" option is set, do not log anything to console!
-            if (!coreOptions.isQuiet && !coreOptions.isSilent) {
+            if (
+                coreOptions.isDiagnosticOutputEnabled &&
+                !coreOptions.isQuiet &&
+                !coreOptions.isSilent
+            ) {
                 console.warn(
                     `Warning: The initial mode was set to strict mode, but fail level is set to 'ignore-errors'. This combination is contradictory and might be a mistake.`,
                 )
@@ -310,7 +344,10 @@ export const runPipeline = (
     debugPrint('getNumOfErrors(): ' + errorHandler.getNumOfErrors())
 
     // Print a summary line at the end if any errors or warnings.
-    if (!coreOptions.isQuiet && !coreOptions.isSilent) {
+    if (
+        coreOptions.isDiagnosticOutputEnabled &&
+        !coreOptions.isSilent
+    ) {
         const errors: number = errorHandler.getNumOfErrors()
         const warnings: number = errorHandler.getNumOfWarnings()
 

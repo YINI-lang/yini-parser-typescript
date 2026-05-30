@@ -1,40 +1,30 @@
-import { isDebug } from '../config/env'
+// src/parsers/extractHeaderParts.ts
 import { ErrorDataHandler, toErrorLocation } from '../core/errorDataHandler'
-// import { TSectionHeaderType } from '../core/internalTypes'
 import { StmtContext } from '../grammar/generated/YiniParser'
 import { debugPrint } from '../utils/print'
-import { trimBackticks } from '../utils/string'
 import { isMarkerCharacter } from '../utils/yiniHelpers'
 import { extractYiniLine } from './extractSignificantYiniLine'
 
 /**
- * Check and identify the section header parts via tokenizing the parts and return them as strings.
- * @param rawHeaderLine Raw line with the section header where the header
- * marker will be identified. E.g. does the header start with '^^^' or '^3'
- * and then some identifier.
+ * Extracts the marker sequence, optional numeric shorthand depth,
+ * section name, and backticked-name flag from a YINI section header line.
  *
- * Below, copied from YINI Specification v1.0.0 Beta 7.
- * Form 1: Identifier of Simple Form:
- * - Keys must be non-empty.
- * - Keys are case-sensitive (`Title` and `title` are different).
- * - Can only contain letters (a-z or A-Z), digits (0-9) and underscores `_`.
- * - Must begin with a letter or an underscore `_`.
- * - Note: Cannot contain hyphens (`-`) or periods (`.`).
+ * Examples:
+ * - ^ Section
+ * - ^^ Section
+ * - ^^^_^^^_^ Section
+ * - ^10 Section
+ * - §2 Section
+ * - < `Backticked Section`
  *
- * Form 2: Backticked Identifier:
- * - A phrase is a name wrapped in backticks  ``` ` ```.
- * - Backticked identifiers must be on a single line and must not contain tabs or new lines unless using escaping codes, except for ordinary spaces.
- * - Special control characters (U+0000–U+001F) must be escaped.
- *
- * @note Implemented without regexp to keep it less cryptic, etc.
- * @note Returns the parts as strings; each part needs to be analyzed separately against the contraints in the specifications.
- * @returns An object with the identified header parts: marker characters, parsed name, and parsed level string.
+ * @note This function only splits the header into parts.
+ *       Validation of marker depth, marker separator placement, mixed markers,
+ *       and section name rules is handled by parseSectionHeader.ts.
  */
 const extractHeaderParts = (
     rawLine: string,
     errorHandler: ErrorDataHandler | null = null,
-    ctx: StmtContext | null = null, // For error reporting.
-    // ): TSectionHeaderType | TErrorDetectMarkerType => {
+    ctx: StmtContext | null = null,
 ): {
     strMarkerChars: string
     strSectionName: string
@@ -49,68 +39,100 @@ const extractHeaderParts = (
     debugPrint('rawLine: >>>' + rawLine + '<<<')
     debugPrint('    str: >>>' + str + '<<<')
 
-    // Edge case: empty line.
     if (!str) {
-        errorHandler!.pushOrBail(
-            toErrorLocation(ctx),
-            'Internal-Error',
-            'Received blank argument in extractHeaderParts(..)',
-            'Sorry, an unintended internal error happened.',
-        )
+        if (errorHandler) {
+            errorHandler.pushOrBail(
+                toErrorLocation(ctx),
+                'Internal-Error',
+                'Received blank argument in extractHeaderParts(..)',
+                'Sorry, an unintended internal error happened.',
+            )
+        } else {
+            throw new Error(
+                'Internal error: extractHeaderParts(..) received a blank argument.',
+            )
+        }
     }
 
     let pos = 0
     const len = str.length
+
     let markerCharsPart = ''
     let numberPart = ''
     let sectionNamePart = ''
     let isBacktickedName = false
 
-    // 1. Skip leading whitespace.
-    while (pos < len && (str[pos] === ' ' || str[pos] === '\t')) pos++
+    // 1. Skip leading horizontal whitespace.
+    while (pos < len && (str[pos] === ' ' || str[pos] === '\t')) {
+        pos++
+    }
 
-    // 2. Collect marker(s): ^, <, §, €.
-    while (pos < len && isMarkerCharacter(str[pos])) {
+    // 2. Collect the first section marker character.
+    if (pos < len && isMarkerCharacter(str[pos])) {
         markerCharsPart += str[pos]
         pos++
     }
 
-    // 3. Numeric part (for numeric shorthand; only if single marker found).
-    if (
-        markerCharsPart.length === 1 &&
-        pos < len &&
-        str[pos] >= '1' &&
-        str[pos] <= '9'
-    ) {
-        // Start collecting number part.
+    // 3. Numeric shorthand: only allowed after a single marker character,
+    //    for example ^10 Section or §2 Section.
+    if (pos < len && str[pos] >= '1' && str[pos] <= '9') {
         while (pos < len && str[pos] >= '0' && str[pos] <= '9') {
             numberPart += str[pos]
             pos++
         }
-        markerCharsPart += numberPart // E.g., "^7".
+
+        const hasWhitespaceAfterNumber =
+            pos >= len || str[pos] === ' ' || str[pos] === '\t'
+
+        if (!hasWhitespaceAfterNumber && errorHandler) {
+            errorHandler.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                'Missing whitespace after numeric shorthand section marker.',
+                `Numeric shorthand section headers require whitespace after the number. Got '${str}'.`,
+                "Use a form such as '^10 Section', not '^10Section'.",
+            )
+        }
+    } else {
+        // 4. Repeated marker sequence. Separators '_' are collected here too,
+        //    so parseSectionHeader.ts can validate their placement.
+        while (pos < len && (str[pos] === '_' || isMarkerCharacter(str[pos]))) {
+            markerCharsPart += str[pos]
+            pos++
+        }
     }
 
-    // 4. Skip whitespace between marker and section name.
-    while (pos < len && (str[pos] === ' ' || str[pos] === '\t')) pos++
+    // 5. Skip horizontal whitespace between marker and section name.
+    while (pos < len && (str[pos] === ' ' || str[pos] === '\t')) {
+        pos++
+    }
 
-    // 5. Collect section name (identifier or backticked).
+    // 6. Collect section name.
     if (pos < len && str[pos] === '`') {
-        // Backticked identifier.
-        let start = pos
-        pos++ // Skip initial backtick.
-        while (pos < len && str[pos] !== '`') pos++
-        pos++ // Include the closing backtick (if found).
+        const start = pos
+        pos++ // Skip opening backtick.
+
+        while (pos < len) {
+            const ch = str[pos]
+
+            // Skip escaped character inside backticked identifier.
+            if (ch === '\\') {
+                pos += 2
+                continue
+            }
+
+            if (ch === '`') {
+                pos++ // Include closing backtick.
+                break
+            }
+
+            pos++
+        }
+
         sectionNamePart = str.slice(start, pos).trim()
         isBacktickedName = true
     } else {
-        // Non-backticked: take the rest of the line, trim off any trailing comments, etc.
         sectionNamePart = str.slice(pos).trim()
-        // Optionally, strip trailing comments or newlines here if needed.
-    }
-
-    if (isBacktickedName) {
-        debugPrint('Backticed sectionNamePart: ' + sectionNamePart)
-        // sectionNamePart = trimBackticks(sectionNamePart)
     }
 
     debugPrint()

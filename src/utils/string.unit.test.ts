@@ -105,11 +105,11 @@ describe('Utils-String: trimBackticks(..) Unit Tests:', () => {
 
     test('7. Trim backticks test.', () => {
         // Arrange.
-        const fixture = '`H`'
+        const fixture = '`Title`'
         // Act.
         const result = trimBackticks(fixture)
         // Assert.
-        expect(result).toEqual('H')
+        expect(result).toEqual('Title')
     })
 
     test('8. Trim backticks test.', () => {

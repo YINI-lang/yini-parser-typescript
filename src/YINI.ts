@@ -3,10 +3,15 @@ import { ErrorDataHandler } from './core/errorDataHandler'
 import { isOptionsObjectForm } from './core/options/optionsFunctions'
 import { YiniRuntime } from './core/runtime'
 import {
+    IssuePayload,
     ParsedObject,
+    ParseForToolingOptions,
     ParseOptions,
     PreferredFailLevel,
+    ToolingDiagnostic,
+    ToolingDiagnosticSeverity,
     YiniParseResult,
+    YiniToolingParseResult,
 } from './types'
 import { debugPrint, devPrint, printObject } from './utils/print'
 
@@ -110,11 +115,13 @@ export default class YINI {
      *   Allowed values: `'warn-and-keep-first'` | `'warn-and-overwrite'` | `'keep-first'` (silent, first wins) | `'overwrite'` (silent, last wins) | `'error'`.
      * @param options.preserveUndefinedInMeta - Keep properties with value `undefined` inside
      *   the returned metadata. Requires: `includeMetadata = true`. Ignored otherwise.
-     * @param options.quiet - Show only errors, will suppress warnings and messages sent to the console/log.
-     *   Does not affect warnings included in returned metadata.
+     * @param options.logDiagnostics - Opt in to writing diagnostics to stderr.
+     *   Library calls do not write diagnostics by default.
+     * @param options.quiet - When `logDiagnostics = true`, show only errors.
+     *   Does not affect diagnostics included in returned metadata.
      * @param options.requireDocTerminator - Controls whether a document terminator is required.
      *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
-     * @param options.silent - Suppress all console output, including errors and warnings.
+     * @param options.silent - Suppress diagnostic output, even when `logDiagnostics = true`.
      * @param options.strictMode - Sets the baseline ruleset (true = strict, false = lenient).
      *   This is only a starting point: rule-specific options (e.g., `treatEmptyValueAsNull`,
      *   `onDuplicateKey`, etc.) can override parts of that ruleset. If any overrides are given,
@@ -191,6 +198,145 @@ export default class YINI {
     }
 
     /**
+     * Parse inline YINI content for tools, editors, linters, and test runners.
+     *
+     * This API always returns a stable result object and structured diagnostics.
+     * It does not write diagnostics to stdout/stderr and does not throw for
+     * normal parse errors.
+     */
+    public static parseForTooling(
+        yiniContent: string,
+        options: ParseForToolingOptions = {},
+    ): YiniToolingParseResult {
+        try {
+            const parsed = this.parse(yiniContent, {
+                ...options,
+                failLevel: 'ignore-errors',
+                includeMetadata: true,
+                includeDiagnostics: true,
+                logDiagnostics: false,
+                silent: true,
+                throwOnError: false,
+            }) as YiniParseResult
+
+            return {
+                ok: parsed.meta.totalErrors === 0,
+                result: parsed.result,
+                diagnostics: this.toToolingDiagnostics(parsed),
+            }
+        } catch (error: unknown) {
+            return {
+                ok: false,
+                result: {},
+                diagnostics: [
+                    {
+                        severity: 'error',
+                        code: 'parser-error',
+                        message:
+                            error instanceof Error
+                                ? error.message
+                                : String(error),
+                    },
+                ],
+            }
+        }
+    }
+
+    private static toToolingDiagnostics(
+        parsed: YiniParseResult,
+    ): ToolingDiagnostic[] {
+        const diagnostics = parsed.meta.diagnostics
+
+        if (!diagnostics) {
+            return []
+        }
+
+        return [
+            ...diagnostics.errors.payload.map((issue) =>
+                this.toToolingDiagnostic(issue, 'error'),
+            ),
+            ...diagnostics.warnings.payload.map((issue) =>
+                this.toToolingDiagnostic(issue, 'warning'),
+            ),
+            ...diagnostics.notices.payload.map((issue) =>
+                this.toToolingDiagnostic(issue, 'notice'),
+            ),
+            ...diagnostics.infos.payload.map((issue) =>
+                this.toToolingDiagnostic(issue, 'info'),
+            ),
+        ]
+    }
+
+    private static toToolingDiagnostic(
+        issue: IssuePayload,
+        severity: ToolingDiagnosticSeverity,
+    ): ToolingDiagnostic {
+        const diagnostic: ToolingDiagnostic = {
+            severity,
+            code: this.toDiagnosticCode(issue),
+            message: issue.message,
+        }
+
+        if (issue.line !== undefined) {
+            diagnostic.line = issue.line
+        }
+
+        if (issue.column !== undefined) {
+            diagnostic.column = issue.column
+        }
+
+        return diagnostic
+    }
+
+    private static toDiagnosticCode(issue: IssuePayload): string {
+        const text = [issue.message, issue.advice, issue.hint]
+            .filter((part): part is string => Boolean(part))
+            .join(' ')
+            .toLowerCase()
+
+        if (text.includes('empty yini document')) {
+            return 'empty-document'
+        }
+
+        if (text.includes('duplicate key')) {
+            return 'duplicate-key'
+        }
+
+        if (text.includes('duplicate section')) {
+            return 'duplicate-section'
+        }
+
+        if (
+            text.includes('yini mode declaration') &&
+            text.includes('active parser mode')
+        ) {
+            return 'YINI_MODE_MISMATCH'
+        }
+
+        if (text.includes('invalid escape sequence')) {
+            return 'invalid-escape-sequence'
+        }
+
+        if (text.includes('unterminated') && text.includes('string')) {
+            return 'unterminated-string'
+        }
+
+        if (text.includes('/end') && text.includes('missing')) {
+            return 'missing-document-terminator'
+        }
+
+        if (text.includes('shebang')) {
+            return 'misplaced-shebang'
+        }
+
+        if (text.includes('trailing comma')) {
+            return 'trailing-comma'
+        }
+
+        return issue.typeKey.replace(/_/g, '-')
+    }
+
+    /**
      * Parse a YINI file into a JavaScript object.
      *
      * @param filePath           Path to the YINI file.
@@ -255,11 +401,13 @@ export default class YINI {
      *   Allowed values: `'warn-and-keep-first'` | `'warn-and-overwrite'` | `'keep-first'` (silent, first wins) | `'overwrite'` (silent, last wins) | `'error'`.
      * @param options.preserveUndefinedInMeta - Keep properties with value `undefined` inside
      *   the returned metadata. Requires: `includeMetadata = true`. Ignored otherwise.
-     * @param options.quiet - Show only errors, will suppress warnings and messages sent to the console/log.
-     *   Does not affect warnings included in returned metadata.
+     * @param options.logDiagnostics - Opt in to writing diagnostics to stderr.
+     *   Library calls do not write diagnostics by default.
+     * @param options.quiet - When `logDiagnostics = true`, show only errors.
+     *   Does not affect diagnostics included in returned metadata.
      * @param options.requireDocTerminator - Controls whether a document terminator is required.
      *   Allowed values: `'optional'` | `'warn-if-missing'` | `'required'`.
-     * @param options.silent - Suppress all console output, including errors and warnings.
+     * @param options.silent - Suppress diagnostic output, even when `logDiagnostics = true`.
      * @param options.strictMode - Sets the baseline ruleset (true = strict, false = lenient).
      *   This is only a starting point: rule-specific options (e.g., `treatEmptyValueAsNull`,
      *   `onDuplicateKey`, etc.) can override parts of that ruleset. If any overrides are given,

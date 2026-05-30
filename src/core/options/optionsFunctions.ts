@@ -26,13 +26,17 @@ export const toCoreOptions = (
             treatEmptyValueAsNull: userOpts.treatEmptyValueAsNull,
         },
         bailSensitivity: level,
-        isIncludeMeta: userOpts.includeMetadata,
+        isIncludeMeta:
+            userOpts.includeMetadata ||
+            userOpts.includeDiagnostics ||
+            userOpts.includeTiming,
         // isWithDiagnostics: isDev() || isDebug() || userOpts.includeDiagnostics,
         isWithDiagnostics: userOpts.includeDiagnostics,
         // isWithTiming: isDev() || isDebug() || userOpts.includeTiming,
         isWithTiming: userOpts.includeTiming,
         // isKeepUndefinedInMeta: isDebug() || userOpts.preserveUndefinedInMeta,
         isKeepUndefinedInMeta: userOpts.preserveUndefinedInMeta,
+        isDiagnosticOutputEnabled: userOpts.logDiagnostics,
         isQuiet: userOpts.quiet, // Suppress warnings, etc.
         isSilent: userOpts.silent,
         isThrowOnError: userOpts.throwOnError,
@@ -53,6 +57,7 @@ export const isOptionsObjectForm = (v: unknown): v is ParseOptions => {
             'onDuplicateKey' in (v as any) ||
             'requireDocTerminator' in (v as any) ||
             'treatEmptyValueAsNull' in (v as any) ||
+            'logDiagnostics' in (v as any) ||
             'quiet' in (v as any) ||
             'silent' in (v as any) ||
             'throwOnError' in (v as any))

@@ -1,0 +1,117 @@
+{
+    "name": "yini-parser",
+    "version": "1.5.0",
+    "description": "Official Node.js (TypeScript) parser for YINI, an INI-inspired, indentation-insensitive configuration format with clear nested sections and explicit structure.",
+    "keywords": [
+        "yini",
+        "yini-parser",
+        "data-format",
+        "config",
+        "config-file",
+        "configuration",
+        "settings",
+        "ini",
+        "ini-parser",
+        "json-alternative",
+        "yaml-alternative",
+        "parser",
+        "parse",
+        "read",
+        "files"
+    ],
+    "homepage": "https://yini-lang.org/",
+    "license": "Apache-2.0",
+    "files": [
+        "dist/",
+        "!dist/**/*.test.*",
+        "package.json",
+        "README.md",
+        "LICENSE",
+        "CHANGELOG.md",
+        "examples/"
+    ],
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "require": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/YINI-lang/yini-parser-typescript.git"
+    },
+    "private": false,
+    "scripts": {
+        "start": "npm run build && node dist/index.js",
+        "start:debug": "npm run start -- isDebug=1",
+        "start:main": "cross-env NODE_ENV=development APP_ENV=local ts-node src/dev/main.ts",
+        "start:main:dev": "cross-env npm run start:main -- isDev=1",
+        "start:main:dev:debug": "cross-env npm run start:main:dev -- isDebug=1",
+        "start-w-clean": "npm run tsc && npm run clean:ts-js && npm run start:dev",
+        "test": "cross-env NODE_ENV=test APP_ENV=local jest --bail --verbose --runInBand",
+        "test:debug": "cross-env npm run test -- --isDebug=1",
+        "test:smoke": "cross-env NODE_ENV=test APP_ENV=local jest tests/smoke --bail --verbose --runInBand",
+        "test:unit": "cross-env NODE_ENV=test APP_ENV=local jest src/ --bail --verbose --runInBand",
+        "test:integr": "cross-env NODE_ENV=test APP_ENV=local jest tests/integration --bail --verbose --runInBand",
+        "test:issues": "cross-env NODE_ENV=test APP_ENV=local jest tests/fixed-issues --bail --verbose --runInBand",
+        "test:gold": "cross-env NODE_ENV=test APP_ENV=local jest tests/golden --bail --verbose --runInBand",
+        "test:smoke:debug": "cross-env npm run test:smoke -- --isDebug=1",
+        "test:unit:debug": "cross-env npm run test:unit -- --isDebug=1",
+        "test:integr:debug": "cross-env npm run test:integr -- --isDebug=1",
+        "test:issues:debug": "cross-env npm run test:issues -- --isDebug=1",
+        "test:gold:debug": "cross-env npm run test:gold -- --isDebug=1",
+        "test:esm": "node ./tests/fixtures/test-src-files/esm-smoke.js",
+        "test:cov": "jest --coverage",
+        "test:cov:lcov": "jest --coverage --coverageReporters=lcov",
+        "ci:test": "cross-env NODE_ENV=test APP_ENV=ci jest --verbose --runInBand",
+        "ci:test:smoke": "cross-env NODE_ENV=test APP_ENV=ci jest tests/smoke --verbose --runInBand",
+        "ci:test:unit": "cross-env NODE_ENV=test APP_ENV=ci jest src/ --verbose --runInBand",
+        "yini-test:adapter": "tsx tools/yini-test-adapter.ts",
+        "test:yini-test:adapter": "npx tsx tools/yini-test-adapter.ts --input some-file.yini --mode lenient",
+        "tsc": "npx tsc -p ./tsconfig.json",
+        "lint": "eslint src --ext .ts",
+        "clean:ts-js": "bash scripts/clean-ts-js.sh",
+        "antlr": "make generate",
+        "ci:antlr": "make ci-generate",
+        "build": "tsc -p ./tsconfig.json",
+        "build-tools": "tsc -p tsconfig.tools.json",
+        "prepublishOnly": "npm run lint && npm test && npm run build"
+    },
+    "author": "Marko K. Seppänen",
+    "dependencies": {
+        "antlr4": "^4.13.2"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.39.1",
+        "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
+        "@types/jest": "^30.0.0",
+        "@types/node": "^22.15.3",
+        "@typescript-eslint/eslint-plugin": "^8.48.1",
+        "@typescript-eslint/parser": "^8.48.1",
+        "cross-env": "^10.1.0",
+        "eslint": "^9.39.1",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-prettier": "^5.5.4",
+        "husky": "^9.1.7",
+        "jest": "^30.2.0",
+        "lint-staged": "^16.2.7",
+        "prettier": "^3.7.4",
+        "ts-jest": "^29.4.6",
+        "ts-node": "^10.9.2",
+        "tsx": "^4.21.0",
+        "typescript": "^5.9.3"
+    },
+    "lint-staged": {
+        "src/**/*.{js,jsx,json,ts,tsx,css,scss}": [
+            "prettier --config ./.prettierrc --write"
+        ]
+    },
+    "engines": {
+        "node": ">=20"
+    },
+    "sideEffects": false,
+    "type": "commonjs"
+}

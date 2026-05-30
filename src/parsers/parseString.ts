@@ -18,36 +18,56 @@ export class CYiniStringParseError extends Error {
 
 const isHex = (c: string) => /^[0-9a-fA-F]$/.test(c)
 const isOctal = (c: string) => /^[0-7]$/.test(c)
-
-function normalizeHyperWhitespace(input: string): string {
-    return input.replace(/[\s\r\n]+/g, ' ').trim()
+const isUnicodeScalarValue = (codePoint: number): boolean => {
+    return (
+        codePoint >= 0x0000 &&
+        codePoint <= 0x10ffff &&
+        !(codePoint >= 0xd800 && codePoint <= 0xdfff)
+    )
 }
 
-const parseClassicEscapes = (input: string): string => {
+/**
+ *
+ * @param isAllowRealLineBreaks True if this is a Multi-line string (a triple-quoted string in YINI).
+ */
+const parseClassicEscapes = (
+    input: string,
+    isAllowRealLineBreaks = false,
+): string => {
     let result = ''
+
     for (let i = 0; i < input.length; i++) {
         const ch = input[i]
 
         if (ch !== '\\') {
-            // Control character enforcement (U+0000–U+001F except tab).
             const code = ch.charCodeAt(0)
-            if (code < 0x20 && ch !== '\t') {
-                throw new CYiniStringParseError(
-                    `Unescaped control character U+${code
-                        .toString(16)
-                        .padStart(4, '0')}`,
-                )
+
+            if (code < 0x20) {
+                const isAllowedLineBreak =
+                    isAllowRealLineBreaks && (ch === '\n' || ch === '\r')
+
+                const isAllowedTab = ch === '\t'
+
+                if (!isAllowedLineBreak && !isAllowedTab) {
+                    throw new CYiniStringParseError(
+                        `Unescaped control character U+${code
+                            .toString(16)
+                            .padStart(4, '0')}`,
+                    )
+                }
             }
+
             result += ch
             continue
         }
 
         // Escape sequence.
         const next = input[++i]
-        if (!next)
+        if (!next) {
             throw new CYiniStringParseError(
                 'Invalid escape sequence at end of string',
             )
+        }
 
         switch (next) {
             case '\\':
@@ -92,9 +112,11 @@ const parseClassicEscapes = (input: string): string => {
 
             case 'x': {
                 const hex = input.slice(i + 1, i + 3)
+
                 if (hex.length !== 2 || ![...hex].every(isHex)) {
-                    throw new CYiniStringParseError(`Invalid \\x escape`)
+                    throw new CYiniStringParseError('Invalid \\x escape')
                 }
+
                 result += String.fromCharCode(parseInt(hex, 16))
                 i += 2
                 break
@@ -102,20 +124,42 @@ const parseClassicEscapes = (input: string): string => {
 
             case 'u': {
                 const hex = input.slice(i + 1, i + 5)
+
                 if (hex.length !== 4 || ![...hex].every(isHex)) {
-                    throw new CYiniStringParseError(`Invalid \\u escape`)
+                    throw new CYiniStringParseError('Invalid \\u escape')
                 }
-                result += String.fromCharCode(parseInt(hex, 16))
+
+                const codePoint = parseInt(hex, 16)
+
+                if (codePoint >= 0xd800 && codePoint <= 0xdfff) {
+                    throw new CYiniStringParseError(
+                        'Unicode escape must not be a surrogate code point',
+                    )
+                }
+
+                result += String.fromCharCode(codePoint)
                 i += 4
                 break
             }
 
             case 'U': {
                 const hex = input.slice(i + 1, i + 9)
+
                 if (hex.length !== 8 || ![...hex].every(isHex)) {
-                    throw new CYiniStringParseError(`Invalid \\U escape`)
+                    throw new CYiniStringParseError('Invalid \\U escape')
                 }
+
                 const codePoint = parseInt(hex, 16)
+
+                if (
+                    codePoint > 0x10ffff ||
+                    (codePoint >= 0xd800 && codePoint <= 0xdfff)
+                ) {
+                    throw new CYiniStringParseError(
+                        'Unicode escape must represent a valid Unicode scalar value',
+                    )
+                }
+
                 result += String.fromCodePoint(codePoint)
                 i += 8
                 break
@@ -124,6 +168,7 @@ const parseClassicEscapes = (input: string): string => {
             case 'o': {
                 let oct = ''
                 let j = i + 1
+
                 while (
                     j < input.length &&
                     oct.length < 3 &&
@@ -132,18 +177,22 @@ const parseClassicEscapes = (input: string): string => {
                     oct += input[j]
                     j++
                 }
+
                 if (oct.length === 0) {
-                    throw new CYiniStringParseError(`Invalid \\o escape`)
+                    throw new CYiniStringParseError('Invalid \\o escape')
                 }
+
                 const value = parseInt(oct, 8)
+
                 if (value > 0o377) {
-                    throw new CYiniStringParseError(`Octal escape out of range`)
+                    throw new CYiniStringParseError('Octal escape out of range')
                 }
+
                 result += String.fromCharCode(value)
                 i += oct.length
 
                 if (j < input.length && /[0-9]/.test(input[j])) {
-                    throw new CYiniStringParseError(`Invalid \\o escape`)
+                    throw new CYiniStringParseError('Invalid \\o escape')
                 }
 
                 break
@@ -163,14 +212,15 @@ const parseStringLiteral = ({ strKind, value }: IParsedStringInput): string => {
     switch (strKind) {
         case 'raw':
         case 'triple-raw':
+            // Raw strings preserve content exactly as provided by the lexer.
+            // Single-line raw string constraints are enforced by the lexer.
             return value
 
         case 'classic':
-        case 'triple-classic':
-            return parseClassicEscapes(value)
+            return parseClassicEscapes(value, false)
 
-        case 'hyper':
-            return normalizeHyperWhitespace(value)
+        case 'triple-classic':
+            return parseClassicEscapes(value, true)
 
         default:
             throw new CYiniStringParseError(`Unknown string kind: ${strKind}`)

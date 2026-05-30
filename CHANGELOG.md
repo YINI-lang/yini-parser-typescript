@@ -1,5 +1,37 @@
 # CHANGELOG
 
+## 1.5.0XX - 2026 xxx
+- **Improved:** Reduced the published npm package contents by excluding development-only build output, internal tool output, and duplicate `dist/src` declaration files from the package tarball.
+- **Updated:** Parser behavior aligned with YINI Specification `v1.0.0-RC.6`, including:
+  * **Changed:** `#` now always starts a comment outside string literals. No whitespace is required before or after `#`.
+  * **Added:** Support for explicit hexadecimal notation using `hex:` as an alternative to `0x...`.
+  * **Removed:** Support for `#` as a hexadecimal number prefix. Hexadecimal numbers must now use `0x...` or `hex:...`.
+  * **Removed:** Internal handling of Hyper Strings (H-Strings), simplifying string parsing and reducing parser complexity.
+  * **Added:** Lenient mode now accepts `=` as an alternative inline object member separator. The canonical form remains `key: value`.
+  * **Changed:** Strict mode rejects `=` inside inline objects; inline object members must use `:`.
+  * **Changed:** String concatenation now uses the updated grammar model:
+  - `+` performs explicit string concatenation only; it does not define numeric addition.
+  - In strict mode, all operands must be string literals.
+  - In lenient mode, the first operand must be a string literal; later operands may be string, number, boolean, or null literals.
+  - If the expression does not begin with a string literal, it is rejected rather than treated as arithmetic.
+  - A line break is allowed after `+`, but not before it.
+  - Lists and inline objects are invalid concatenation operands.
+  * **Added:** Empty-document handling by mode:
+    - In lenient mode, empty documents now parse successfully with a warning.
+    - In strict mode, empty documents now produce an error.
+  * **Improved:** Orphan root-level members in lenient mode are mounted directly on the resulting top-level object.
+  * **Improved:** Parser/runtime handling of empty inline input and final newline normalization.
+  * **Updated:** Tests for string concatenation, empty documents, inline object separators, hash comments, and hex notation.
+  * **Added:** Support for YINI mode declarations: `@yini strict` and `@yini lenient`. Mode declarations validate the active parser mode; they do not switch parser mode. `@yini strict` parsed in lenient mode produces a mode-mismatch error, while `@yini lenient` parsed in strict mode remains valid but produces a mode-mismatch warning.
+  * **Updated:** Shebang handling. A shebang is recognized only when `#!` is the first two non-BOM characters of the document. Valid shebang lines are ignored. Misplaced shebang-like sequences are no longer treated as shebangs; they may produce warnings in lenient mode and errors in strict mode. Only the first misplaced sequence is reported.
+  * **Updated:** Section marker handling. Repeated section markers now support levels 1–9; level 10 and deeper must use numeric shorthand, for example `^10 Section`. Marker separators using `_` are supported inside repeated marker sequences, invalid separator placement and mixed marker characters are rejected, the obsolete `€` marker has been removed, and `>` is supported as an alternative marker.
+  * **Updated:** Numeric shorthand section headers. Numeric shorthand now keeps marker and depth parsing separate, requires a positive section depth, uses a single marker followed by a number, and rejects repeated markers combined with numeric shorthand, such as `^^1 Section`.
+  * **Improved:** Section header parsing and validation. Backticked section names are normalized, invalid simple names such as names with dots, hyphens, or leading digits are rejected, and parsing is aligned with the updated marker separator and alternative marker rules.
+  * **Updated:** String literal handling. Raw strings remain the default; `R`/`r` explicit raw prefixes, `C`/`c` Classic prefixes, raw triple-quoted strings, and C-triple-quoted strings are supported. C-triple-quoted strings preserve real line breaks while interpreting escape sequences. Invalid Classic string escapes are reported as errors, and invalid string members are omitted from recovered partial results in lenient `ignore-errors` mode.
+  * **Improved:** Escape sequence validation. Unicode escapes must represent valid Unicode scalar values, surrogate code points are rejected, and invalid hex, Unicode, UTF-32, and octal escapes are rejected.
+  * **Improved:** Duplicate inline object member handling. Duplicate members are no longer silently overwritten: lenient mode keeps the first member and reports duplicates; strict mode treats duplicates as errors.
+  * **Updated:** Comment and disabled-line handling. `;` is full-line only, `--` disables a line only when it is the first non-whitespace content, and `#` / `//` remain inline comment markers outside string literals.
+
 ## 1.5.0 - 2026 Apr
 - **Updated:** Parser behavior aligned with YINI Specification `v1.0.0-RC.5`.
 - **Changed:** In strict mode, YINI documents must now end with the document terminator `/END`.

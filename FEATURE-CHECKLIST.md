@@ -1,7 +1,8 @@
 YINI Parser – Feature Implementation Status
 ===========================================
 
-This table shows the implementation status of the YINI parser. Features are based on the YINI Specification v1.0.0 RC 4 with parser-side implementation updates.
+Features are based on the YINI Specification with parser-side implementation updates:  
+v1.0.0 RC 6
 
 https://github.com/YINI-lang/YINI-spec
 
@@ -29,7 +30,7 @@ https://github.com/YINI-lang/YINI-spec
 
 ---
 
-### 🚧 — 1. Core Parsing / Basic Members
+### ✅ — 1. Core Parsing / Basic Members
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -53,7 +54,7 @@ https://github.com/YINI-lang/YINI-spec
   <tr>
     <td>Throw error if using section repeating markers higher than supported</td>
     <td>✅</td>
-    <td>Per spec only nesting levels 1–6 supported with repeating markers, e.g. <code>^^^^^^^</code> is invalid</td>
+    <td>Per spec only nesting levels 1–9 supported with repeating markers, e.g. <code>^^^^^^^</code> is invalid</td>
     <td>✅</td>
     <td>✅</td>
     <td>✅</td>
@@ -61,11 +62,11 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>Type inference</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>String, integer, float, boolean, null</td>
     <td>✅</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>Based on value syntax</td>
   </tr>
   <tr>
@@ -85,7 +86,7 @@ https://github.com/YINI-lang/YINI-spec
     <td>✅</td>
     <td>✅</td>
     <td>Must increment exactly one level at a time. E.g.: `^^` → `^^^` but not `^^` → `^^^^`.
-</td>
+  </td>
   </tr>
   <tr>
     <td>Section nesting: Going shallower</td>
@@ -95,16 +96,25 @@ https://github.com/YINI-lang/YINI-spec
     <td>✅</td>
     <td>✅</td>
     <td>May drop directly to any previous level. E.g.: `^9` → `^^` or `^9` → `^`.
-</td>
+  </td>
   </tr>
   <tr>
     <td>Unique keys (per section)</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>Reformat/emit error/warning</td>
     <td>✅</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>Enforce per nesting level</td>
+  </tr>
+  <tr>
+    <td>Duplicate sections under same parent</td>
+    <td>🚧</td>
+    <td>Same section name at the same nesting level and parent</td>
+    <td>🚧</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Lenient mode: first section wins and later duplicate section blocks are ignored with warning. Strict mode: error. Must not merge, overwrite, or reinterpret duplicate section contents.</td>
   </tr>
 </table>
 
@@ -233,7 +243,7 @@ https://github.com/YINI-lang/YINI-spec
 
 ---
 
-### 🚧 — 4. Comments + Disable line
+### ✅ — 4. Comments + Disable line
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -247,11 +257,11 @@ https://github.com/YINI-lang/YINI-spec
 
   <tr>
     <td>Full-line comment with `;` </td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>; Line comment</code></td>
     <td>✅</td>
     <td>✅</td>
-    <td>🚧</td>
+    <td>✅</td>
     <td></td>
   </tr>
   <tr>
@@ -261,11 +271,11 @@ https://github.com/YINI-lang/YINI-spec
     <td>✅</td>
     <td>✅</td>
     <td>✅</td>
-    <td># must be followed by space/tab to be a comment</td>
+    <td><code>#</code> always begins a comment outside string literals; no whitespace is required.</td>
   </tr>
   <tr>
     <td>Block comment</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>/* ... */</code></td>
     <td>✅</td>
     <td>✅</td>
@@ -274,20 +284,20 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>Disable line with `--`</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>--This line is ignored</code></td>
     <td>✅</td>
     <td>✅</td>
-    <td>🚧</td>
+    <td>✅</td>
     <td>For temporarily ignoring valid code</td>
   </tr>
   <tr>
     <td>Ignore comments or disable line when parsing/extracting entities such section names, keys and other identifiers or values</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>E.g. <code>^ App // Comment</code> should extract section name = "App" and not "App // Comment", etc</td>
     <td>✅</td>
     <td>✅</td>
-    <td>🚧</td>
+    <td>✅</td>
     <td>⚠️ Easy to forget trimming away these</td>
   </tr>
 </table>
@@ -325,13 +335,13 @@ https://github.com/YINI-lang/YINI-spec
     <td>Section names with spaces etc.</td>
   </tr>
   <tr>
-    <td>Standard/basic/classic section marks (^, <, §)</td>
+    <td>Standard/basic/classic section marks (^, §, >, <)</td>
     <td>✅</td>
     <td><code></code></td>
     <td>✅</td>
     <td>✅</td>
     <td>✅</td>
-    <td>Repeat up to MAX 6 characters, indent optional</td>
+    <td>Primary marker is <code>^</code>. Alternatives are <code>§</code>, <code>></code>, and <code><</code>. Repeated form supports levels 1–9.</td>
   </tr>
   <tr>
     <td>Numeric shorthand section marker (^7, etc.)</td>
@@ -341,6 +351,15 @@ https://github.com/YINI-lang/YINI-spec
     <td>✅</td>
     <td>✅</td>
     <td>Arbitrary nesting; requires horizontal space after the numeric shorthand; thus ^7Section is incorrect.</td>
+  </tr>
+  <tr>
+    <td>Maximum section depth</td>
+    <td>🔲</td>
+    <td>Maximum supported section depth is 255</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Parser/validator should reject section depths above 255.</td>
   </tr>
   <tr>
     <td>(Implicit) Null</td>
@@ -369,6 +388,15 @@ https://github.com/YINI-lang/YINI-spec
   <td>✅</td>
   <td>✅</td>
   <td><b>⚠️ Mounted directly on the parsed result as separate top-level objects in lenient mode; invalid in strict mode.</b></td>
+</tr>
+<tr>
+  <td>Section marker separators</td>
+  <td>🚧</td>
+  <td><code>^^_^^_^ Section</code>, <code>^^^_^^^_^^^ Section</code></td>
+  <td>🚧</td>
+  <td>🔲</td>
+  <td>🔲</td>
+  <td>Underscores may appear only between repeated occurrences of the same section marker. They do not count toward section depth.</td>
 </tr>
 </table>
 
@@ -434,11 +462,20 @@ https://github.com/YINI-lang/YINI-spec
   <tr>
     <td>Hexadecimal numbers</td>
     <td>✅</td>
-    <td><code>0xF390</code>, <code>#F390</code>, <code>0X3fa</code></td>
+    <td><code>0xF390</code>, <code>hex:F390</code>, <code>0X3fa</code></td>
     <td>✅</td>
     <td>✅</td>
     <td>✅</td>
-    <td>⚠️ 16-base, including alternative notation with #</td>
+    <td>⚠️ 16-base. <code>#</code> is no longer a hexadecimal prefix; use <code>0x...</code> or <code>hex:...</code>.</td>
+  </tr>
+  <tr>
+    <td>Digit separators</td>
+    <td>✅</td>
+    <td><code>1_000</code>, <code>0x_ab_cd</code>, <code>0b_1010</code>, <code>hex:_FF</code></td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Underscores are allowed after base prefixes and between digits, but not at the end or doubled.</td>
   </tr>
 </table>
 
@@ -475,82 +512,109 @@ https://github.com/YINI-lang/YINI-spec
     <td>Single line, escape codes, prefixed either with C or c</td>
   </tr>
   <tr>
-    <td>Hyper string (H-string)</td>
-    <td>🔲</td>
+    <td><strike>Hyper string (H-string)</strike></td>
+    <td>❌</td>
     <td><code>H'...'</code>, <code>H"..."</code></td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>Multi-line, trims WS, normalizes repeating WS to one WS</td>
+    <td>❌</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Removed after RC5 to simplify the language core and reduce parser complexity.</td>
   </tr>
   <tr>
     <td>Triple-quoted (raw)</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>"""..."""</code>, multi-line</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>Raw by default</td>
   </tr>
   <tr>
     <td>C-Triple-quoted</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>C"""..."""</code>, with escapes</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>Multi-line, supports escapes</td>
   </tr>
   <tr>
     <td>String concatenation</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>"foo" + 'bar'</code></td>
-    <td>🚧</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>All string types</td>
   </tr>
   <tr>
-    <td>String concatenation of numbers</td>
-    <td>🔲</td>
-    <td><code>"foo" + 123</code></td>
+    <td>Escape sequence validation</td>
+    <td>🚧</td>
+    <td>Reject invalid escapes such as <code>\z</code>, <code>\o378</code>, invalid Unicode scalar values, and surrogate code points</td>
     <td>🚧</td>
     <td>🔲</td>
     <td>🔲</td>
-    <td>To string</td>
+    <td>Escape sequences are valid only in C-Strings and C-Triple-Quoted Strings.</td>
   </tr>
   <tr>
-    <td>Escapes: all 2 character sequences</td>
+    <td>Reject escape sequences in raw strings</td>
+    <td>🚧</td>
+    <td>Raw strings do not interpret escapes</td>
+    <td>🚧</td>
     <td>🔲</td>
-    <td>E.g. <code>\\</code>, <code>\a</code></td>
-    <td>✅</td>
-    <td>✅</td>
     <td>🔲</td>
-    <td></td>
+    <td>Backslashes are ordinary characters in raw strings.</td>
   </tr>
   <tr>
-    <td>Escapes: all 3>= character sequences</td>
-    <td>🔲</td>
-    <td>E.g. <code>\xhh</code>, <code>\uhhhh</code></td>
+    <td>Lenient scalar-to-string concatenation</td>
+    <td>✅</td>
+    <td><code>"enabled=" + true</code>, <code>"value=" + null</code></td>
     <td>✅</td>
     <td>✅</td>
-    <td>🔲</td>
-    <td></td>
+    <td>✅</td>
+    <td>Lenient mode only. Strict mode allows concatenation only between string literals.</td>
   </tr>
   <tr>
-    <td>Concatenation of other types into strings</td>
-    <td>❌</td>
-    <td><code>str = "Hello"+true # NOT SUPPORTED</code></td>
-    <td>❌</td>
-    <td>❌</td>
-    <td>❌</td>
-    <td>Note: Other types than strings and numbers, not supported.</td>
+    <td>Multi-line concatenation after <code>+</code></td>
+    <td>✅</td>
+    <td><code>"a" +</code><br/><code>"b"</code></td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>A line break may occur after <code>+</code>.</td>
+  </tr>
+  <tr>
+    <td>Reject line break before <code>+</code></td>
+    <td>✅</td>
+    <td><code>"a"</code><br/><code>+ "b"</code></td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>The <code>+</code> operator must appear on the same logical line as the preceding operand.</td>
+  </tr>
+  <tr>
+    <td>Reject numeric-only plus expressions</td>
+    <td>✅</td>
+    <td><code>1 + 2 + 3</code></td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>YINI does not define numeric addition.</td>
+  </tr>
+  <tr>
+    <td>Reject lists/objects as concatenation operands</td>
+    <td>🔲</td>
+    <td><code>"x" + [1, 2]</code>, <code>"x" + { a: 1 }</code></td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Lists and inline objects must not be used as concatenation operands.</td>
   </tr>
 </table>
 
 ---
 
-### 🔲 — 8. Object Literals
+### ✅ — 8. Object Literals
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -564,37 +628,74 @@ https://github.com/YINI-lang/YINI-spec
 
   <tr>
     <td>Objects</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>{ key: value, ... }</code></td>
     <td>✅</td>
     <td>✅</td>
-    <td>🔲</td>
-    <td>Inline, supports nesting, trailing comma ignored (lenient only)
-    </td>
+    <td>✅</td>
+    <td>Inline, supports nesting, object member separators, and trailing comma handling.</td>    
   </tr>
   <tr>
     <td>Nested objects inside objects</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>Objects themselves are literals and can be nested</td>
     <td>✅</td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td></td>
   </tr>
   <tr>
     <td>Nested objects inside lists</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>Objects themselves are literals and can be nested</td>
     <td>✅</td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td></td>
+  </tr>
+  <tr>
+    <td>Inline object member separators</td>
+    <td>✅</td>
+    <td><code>{ key: value }</code> and lenient <code>{ key = value }</code></td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+     <td>Recognizes both <code>:</code> and <code>=</code> as inline object member separators.<br/>
+     In lenient mode, both are accepted for flexibility.<br/>
+     In strict mode, <code>=</code> is rejected as a syntax error to enforce the canonical <code>key: value</code> form.</td>
+  </tr>
+  <tr>
+    <td>Duplicate inline object member keys</td>
+    <td>🚧</td>
+    <td><code>{ a: 1, a: 2 }</code></td>
+    <td>🚧</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Lenient mode: first member wins and later duplicates are ignored with warning. Strict mode: error. Implementations must not silently overwrite.</td>
+  </tr>
+  <tr>
+    <td>Object member value same-line rule</td>
+    <td>🔲</td>
+    <td><code>a: 1</code> valid, but newline after <code>:</code> before value is invalid</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Inside inline objects, the value must begin on the same logical line as the object member separator.</td>
+  </tr>
+  <tr>
+    <td>Object opening brace same-line rule</td>
+    <td>🚧</td>
+    <td><code>obj = { ... }</code>; newline after <code>=</code> is not an object value</td>
+    <td>🚧</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>The opening <code>{</code> must appear on the same logical line as <code>=</code>.</td>
   </tr>
 </table>
 
 ---
 
-### 🔲 — 9. List Literals
+### ✅ — 9. List Literals
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -608,36 +709,45 @@ https://github.com/YINI-lang/YINI-spec
 
   <tr>
     <td>Bracketed lists ([])</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>key = [a, b, c]</code></td>
     <td>✅</td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>Trailing comma allowed and is ignored (lenient only)</td>
   </tr>
   <tr>
     <td>Nested lists inside lists</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>Lists themselves are literals and can be nested</td>
     <td>✅</td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td></td>
   </tr>
   <tr>
     <td>Nested lists inside objects</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>Lists themselves are literals and can be nested</td>
     <td>✅</td>
     <td>✅</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td></td>
+  </tr>
+  <tr>
+    <td>List opening bracket same-line rule</td>
+    <td>🚧</td>
+    <td><code>items = [ ... ]</code>; newline after <code>=</code> is not a list value</td>
+    <td>🚧</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>The opening <code>[</code> must appear on the same logical line as <code>=</code>.</td>
   </tr>
 </table>
 
 ---
 
-### 🔲 — 10. Special & Validation Modes
+### 🚧 — 10. Special & Validation Modes
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -677,6 +787,37 @@ https://github.com/YINI-lang/YINI-spec
     <td>Still being refined; some behavior is controlled by rule options such as <code>requireDocTerminator</code> and <code>treatEmptyValueAsNull</code>.</td>
   </tr>
   <tr>
+    <td><code>@yini strict</code> / <code>@yini lenient</code> mode declarations</td>
+    <td>✅</td>
+    <td>Optional mode declaration after the YINI marker</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>
+      Declaration does not switch parser mode.
+      <code>@yini strict</code> parsed in lenient mode must produce a mode-mismatch error.
+      <code>@yini lenient</code> parsed in strict mode must remain valid, but must produce a mode-mismatch warning.
+    </td>
+  </tr>
+  <tr>
+    <td>Give error on empty document in strict mode</td>
+    <td>✅</td>
+    <td>Document contains only whitespace, comments, and/or disabled lines</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Must result in an error.</td>
+  </tr>  
+  <tr>
+    <td>Give warning on empty document in lenient mode</td>
+    <td>✅</td>
+    <td>Document contains only whitespace, comments, and/or disabled lines</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Must not fail, SHOULD produce a warning diagnostic that the file has no meaningful content.</td>
+  </tr>
+  <tr>
     <td>Optional Bail/Abort sensitivity levels</td>
     <td>🔲</td>
     <td>Level 0 = Ignore errors and try parse anyway (may remap faulty key/section names).<br/>
@@ -695,6 +836,24 @@ https://github.com/YINI-lang/YINI-spec
     <td>🔲</td>
     <td>🔲</td>
     <td>This requires updates in the grammar and its parser logic</td>
+  </tr>
+  <tr>
+    <td>Only one document terminator</td>
+    <td>🔲</td>
+    <td>Reject multiple <code>/END</code> markers</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Only one terminator is permitted per file.</td>
+  </tr>
+  <tr>
+    <td>Strict-mode filename suffix <code>.strict.yini</code></td>
+    <td>🔲</td>
+    <td>Optional filename convention for files intended to be parsed in strict mode</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Does not switch parser mode. Implementation SHOULD warn if a <code>.strict.yini</code> file is parsed in lenient mode.</td>
   </tr>
   <tr>
     <td>Meta: Count num of sections</td>
@@ -734,7 +893,7 @@ https://github.com/YINI-lang/YINI-spec
   <tr>
     <td><code>strictMode</code></td>
     <td>✅</td>
-    <td>Enable strict parsing<td>
+    <td>Enable strict parsing</td>
     <td>✅</td>
     <td>✅</td>
     <td>✅</td>
@@ -824,7 +983,7 @@ https://github.com/YINI-lang/YINI-spec
   <tr>
     <td><b>rules.onDuplicateKey</b></td>
     <td>🚧</td>
-    <td><code>'error' | 'warn-and-keep-first' | 'warn-and-overwrite' | 'keep-first' | 'overwrite'</code></td>
+    <td><code>'error' | 'warn-and-keep-first' | 'keep-first'</code></td>
     <td>✅</td>
     <td>🚧</td>
     <td>🚧</td>
@@ -899,6 +1058,6 @@ https://github.com/YINI-lang/YINI-spec
 ---
 
 **^YINI ≡**  
-> A simple, structured, and human-friendly configuration format.  
+> A clear, structured, and human-friendly configuration format.  
 
 [yini-lang.org](https://yini-lang.org) · [YINI-lang on GitHub](https://github.com/YINI-lang)  

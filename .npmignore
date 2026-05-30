@@ -1,0 +1,4 @@
+dist/src/
+dist/dev/
+dist/tools/
+*.tgz

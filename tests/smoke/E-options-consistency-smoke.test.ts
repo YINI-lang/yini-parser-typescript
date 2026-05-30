@@ -6,7 +6,7 @@
 import path from 'path'
 import YINI from '../../src'
 import { TExactMode } from '../../src/core/internalTypes'
-import { ParseOptions } from '../../src/types'
+import { ParseOptions, PreferredFailLevel } from '../../src/types'
 import { sortObjectKeys } from '../../src/utils/object'
 import { debugPrint, toPrettyJSON } from '../../src/utils/print'
 
@@ -521,5 +521,63 @@ describe('Options Consistency Smoke Tests:', () => {
                 sortObjectKeys(result.meta.diagnostics.effectiveOptions),
             ),
         ).toEqual(toPrettyJSON(sortObjectKeys(effectiveOptions)))
+    })
+
+    test('5. Should handle parsing of variose number forms, notations, including with separator "_".', () => {
+        // Arrange.
+        const failLevel: PreferredFailLevel = 'errors'
+        const input = `
+            ^ Title
+                ^^ Numbers
+                scientific = 1.23e4
+                binary_alt = %1010
+                duodecimal = 0z2EX9
+                positive = +123
+                negative = -321
+
+                ^^ WithSeparator
+                a = 1_000
+                b = +1_000
+                c = 1.23_45e4
+                d = 1.23e+4_5
+                e = 0x_FF_AA
+                f = hex:_FF_AA
+                g = 0b_1010_1100
+                h = %_1010_1100
+                i = %1010_1100
+                j = 0o_755_644
+                k = 0z_2E_X9
+        `
+
+        const answer = {
+            Title: {
+                Numbers: {
+                    scientific: 12300,
+                    binary_alt: 10,
+                    duodecimal: 5169,
+                    positive: 123,
+                    negative: -321,
+                },
+                WithSeparator: {
+                    a: 1000,
+                    b: 1000,
+                    c: 12345,
+                    d: 1.23e45,
+                    e: 65450,
+                    f: 65450,
+                    g: 172,
+                    h: 172,
+                    i: 172,
+                    j: 252836,
+                    k: 5169,
+                },
+            },
+        }
+
+        // Act.
+        const result = YINI.parse(input, false, failLevel)
+
+        // Assert.
+        expect(toPrettyJSON(result)).toEqual(toPrettyJSON(answer))
     })
 })

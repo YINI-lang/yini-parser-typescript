@@ -6,6 +6,7 @@ node_modules
 
 # Ignore compiled output (containing all emitted code and types).
 dist/
+dist/**/*.js.map
 
 # Ignore compiled output.
 src/**/*.d.ts

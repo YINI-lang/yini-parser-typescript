@@ -58,6 +58,7 @@ export const parseAndCatchWithConsole = (
     try {
         YINI.parse(yini, {
             strictMode: true,
+            logDiagnostics: true,
             silent: false,
             throwOnError: true,
         })

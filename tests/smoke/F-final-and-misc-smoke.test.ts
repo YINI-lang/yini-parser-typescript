@@ -186,17 +186,17 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
         expect(metaResult.meta.structure.memberCount).toEqual(14)
     })
 
-    test('F-4) Should throw on invalid inline # comment usage.', () => {
+    test('F-4) Should throw on invalid hex notation with whitespace before colon.', () => {
         // Arrange.
-        const invalidYini = `^ App
-            title = 'My App Title'
-            items = 25 #This comment is invalid, missing a space!
-            isDarkTheme = true`
+        const duplicateYini = `^ App
+        title = 'My App Title'
+        value = hex : F09   // INVALID! whitespace before colon
+        isDarkTheme = true`
 
         // Act & Assert.
         expect(() => {
-            parseUntilError(invalidYini)
-            debugPrint(invalidYini)
+            parseUntilError(duplicateYini)
+            debugPrint(duplicateYini)
         }).toThrow()
     })
 
@@ -263,7 +263,7 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
                             column: 10,
                             typeKey: 'syntax_error',
                             message: 'Syntax error.',
-                            advice: "Details: extraneous input '54_32' expecting NL",
+                            advice: "Details: extraneous input '54__32' expecting NL",
                         },
                         {
                             line: 12,
@@ -331,7 +331,6 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
                 },
                 environment: {
                     NODE_ENV: 'test',
-                    APP_ENV: '####',
                     lib: {
                         nodeEnv: 'test',
                         appEnv: '####',
@@ -340,6 +339,7 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
                             isDebug: false,
                         },
                     },
+                    APP_ENV: '####',
                 },
                 effectiveOptions: {
                     effectiveMode: 'strict',
@@ -359,6 +359,7 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
                     includeDiagnostics: true,
                     includeMetadata: true,
                     includeTiming: false,
+                    logDiagnostics: false,
                     onDuplicateKey: 'error',
                     preserveUndefinedInMeta: false,
                     quiet: false,
@@ -378,70 +379,158 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
         result.meta.source.fileName = '####'
         result.meta.source.byteSize = -1
         result.meta.source.sha256 = '####'
-        result.meta.diagnostics.environment.APP_ENV = '####'
-        result.meta.diagnostics.environment.lib.appEnv = '####'
+        result.meta.diagnostics.environment = {
+            NODE_ENV: result.meta.diagnostics.environment.NODE_ENV,
+            lib: {
+                ...result.meta.diagnostics.environment.lib,
+                appEnv: '####',
+            },
+            APP_ENV: '####',
+        }
 
         expect(toPrettyJSON(result.meta)).toEqual(
             toPrettyJSON(correctMetaDiagn),
         )
     })
 
-    test('F-6.a) Should throw on duplicate section name at level 1.', () => {
+    test('F-6.a.1) Should warn on duplicate section name at level 1 in lenient mode.', () => {
         // Arrange.
-        const invalidYini = `
-            < SubTitle
-            theme = "special-dark"
-            notifications = ON
+        const duplicateYini = `
+        @yini lenient
 
-            < SubTitle
-            theme2 = "special-dark"
-        `
+        ^ App
+        name = "first"
+
+        ^ App
+        name = "second"
+    `
+
+        // Act.
+        const result = YINI.parse(duplicateYini, {
+            strictMode: false,
+            includeMetadata: true,
+            includeDiagnostics: true,
+        })
+
+        const allText = JSON.stringify(result).toLowerCase()
+
+        // Assert.
+        expect(result).toBeTruthy()
+        expect(allText).toContain('duplicate')
+        expect(allText).toContain('section')
+    })
+
+    test('F-6.a.2) Should throw on duplicate section name at level 1 in strict mode.', () => {
+        // Arrange.
+        const duplicateYini = `
+        @yini strict
+
+        ^ App
+        name = "first"
+
+        ^ App
+        name = "second"
+
+        /END
+    `
 
         // Act & Assert.
         expect(() => {
-            parseUntilError(invalidYini)
+            YINI.parse(duplicateYini, {
+                strictMode: true,
+                requireDocTerminator: 'required',
+                failLevel: 'errors',
+            })
         }).toThrow()
     })
 
-    test('F-6.b) Should throw on duplicate section name at level 1 with prior section.', () => {
+    test('F-6.b) Should warn on duplicate section name at level 1 with prior section in lenient mode.', () => {
         // Arrange.
-        const invalidYini = `
-            < Title
-            username = 'tester three'
-            isSysOp = NO
+        const duplicateYini = `
+        @yini lenient
 
-            < SubTitle
+        < Title
+        username = 'tester three'
+        isSysOp = NO
+
+        < SubTitle
+        theme = "special-dark"
+        notifications = ON
+
+        < SubTitle
+        theme2 = "special-dark"
+    `
+
+        // Act.
+        const result = YINI.parse(duplicateYini, {
+            strictMode: false,
+            includeMetadata: true,
+            includeDiagnostics: true,
+        })
+
+        const allText = JSON.stringify(result).toLowerCase()
+
+        // Assert.
+        expect(result).toBeTruthy()
+        expect(allText).toContain('duplicate')
+        expect(allText).toContain('section')
+    })
+
+    test('F-6.c.1) Should warn on duplicate section name at level 2 in lenient mode.', () => {
+        // Arrange.
+        const duplicateYini = `
+        @yini lenient
+
+        ^ Title
+        username = 'tester three'
+        isSysOp = NO
+
+            ^^ SubSection
             theme = "special-dark"
             notifications = ON
 
-            < SubTitle
+            ^^ SubSection
             theme2 = "special-dark"
-        `
+    `
 
-        // Act & Assert.
-        expect(() => {
-            parseUntilError(invalidYini)
-        }).toThrow()
+        // Act.
+        const result = YINI.parse(duplicateYini, {
+            strictMode: false,
+            includeMetadata: true,
+            includeDiagnostics: true,
+        })
+
+        const allText = JSON.stringify(result).toLowerCase()
+
+        // Assert.
+        expect(result).toBeTruthy()
+        expect(allText).toContain('duplicate')
+        expect(allText).toContain('section')
     })
 
-    test('F-6.c) Should throw on duplicate section name at level 2.', () => {
+    test('F-6.c.2) Should throw on duplicate section name at level 2 in strict mode.', () => {
         // Arrange.
-        const invalidYini = `
-            ^ Title
-            username = 'tester three'
-            isSysOp = NO
+        const duplicateYini = `
+        @yini strict
 
-                ^^ SubSection
-                theme = "special-dark"
-                notifications = ON
+        ^ App
 
-                ^^ SubSection
-                theme2 = "special-dark"
-        `
+            ^^ Database
+            host = "first"
+
+            ^^ Database
+            host = "second"
+
+        /END
+    `
 
         // Act & Assert.
         expect(() => {
-            parseUntilError(invalidYini)
+            YINI.parse(duplicateYini, {
+                strictMode: true,
+                requireDocTerminator: 'required',
+                failLevel: 'errors',
+            })
         }).toThrow()
     })
 
@@ -483,7 +572,7 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
 
     test('F-6.e) Should throw in strict mode when /END is missing.', () => {
         // Arrange.
-        const invalidYini = `
+        const duplicateYini = `
             ^ App
             name = 'Demo App'
             version = '1.0.0'
@@ -495,13 +584,13 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
 
         // Act & Assert.
         expect(() => {
-            parseUntilError(invalidYini, true)
+            parseUntilError(duplicateYini, true)
         }).toThrow()
     })
 
     test('F-6.f) Should throw in strict mode when multiple top-level sections exist.', () => {
         // Arrange.
-        const invalidYini = `
+        const duplicateYini = `
             ^ App
             name = 'Demo App'
 
@@ -513,13 +602,13 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
 
         // Act & Assert.
         expect(() => {
-            parseUntilError(invalidYini, true)
+            parseUntilError(duplicateYini, true)
         }).toThrow()
     })
 
     test('F-6.g) Should throw in strict mode when top-level members exist outside the single root section.', () => {
         // Arrange.
-        const invalidYini = `
+        const duplicateYini = `
             title = 'Loose root member'
 
             ^ App
@@ -531,7 +620,7 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
 
         // Act & Assert.
         expect(() => {
-            parseUntilError(invalidYini, true)
+            parseUntilError(duplicateYini, true)
         }).toThrow()
     })
 
