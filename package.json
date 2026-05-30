@@ -1,6 +1,6 @@
 {
     "name": "yini-parser",
-    "version": "1.5.0",
+    "version": "1.6.0",
     "description": "Official Node.js (TypeScript) parser for YINI, an INI-inspired, indentation-insensitive configuration format with clear nested sections and explicit structure.",
     "keywords": [
         "yini",

@@ -109,11 +109,11 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>Duplicate sections under same parent</td>
-    <td>🚧</td>
+    <td>✅</td>
     <td>Same section name at the same nesting level and parent</td>
-    <td>🚧</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>Lenient mode: first section wins and later duplicate section blocks are ignored with warning. Strict mode: error. Must not merge, overwrite, or reinterpret duplicate section contents.</td>
   </tr>
 </table>
@@ -354,12 +354,12 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>Maximum section depth</td>
-    <td>🔲</td>
+    <td>🚧</td>
     <td>Maximum supported section depth is 255</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>Parser/validator should reject section depths above 255.</td>
+    <td>✅</td>
+    <td>🚧</td>
+    <td>🚧</td>
+    <td>Parser/validator rejects section depths above 255. Max accepted depth is tested; add a targeted test for rejecting depths above 255.</td>
   </tr>
   <tr>
     <td>(Implicit) Null</td>
@@ -391,11 +391,11 @@ https://github.com/YINI-lang/YINI-spec
 </tr>
 <tr>
   <td>Section marker separators</td>
-  <td>🚧</td>
+  <td>✅</td>
   <td><code>^^_^^_^ Section</code>, <code>^^^_^^^_^^^ Section</code></td>
-  <td>🚧</td>
-  <td>🔲</td>
-  <td>🔲</td>
+  <td>✅</td>
+  <td>✅</td>
+  <td>✅</td>
   <td>Underscores may appear only between repeated occurrences of the same section marker. They do not count toward section depth.</td>
 </tr>
 </table>
@@ -481,7 +481,7 @@ https://github.com/YINI-lang/YINI-spec
 
 ---
 
-### 🔲 — 7. String Literals
+### 🚧 — 7. String Literals
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -603,11 +603,11 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>Reject lists/objects as concatenation operands</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>"x" + [1, 2]</code>, <code>"x" + { a: 1 }</code></td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>Lists and inline objects must not be used as concatenation operands.</td>
   </tr>
 </table>
@@ -668,10 +668,10 @@ https://github.com/YINI-lang/YINI-spec
     <td>Duplicate inline object member keys</td>
     <td>🚧</td>
     <td><code>{ a: 1, a: 2 }</code></td>
+    <td>✅</td>
     <td>🚧</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>Lenient mode: first member wins and later duplicates are ignored with warning. Strict mode: error. Implementations must not silently overwrite.</td>
+    <td>🚧</td>
+    <td>Lenient mode: first member wins and later duplicates are ignored with warning. Strict mode: error. Implementations must not silently overwrite. Behavior is implemented and tested; add targeted warning-diagnostic assertions.</td>
   </tr>
   <tr>
     <td>Object member value same-line rule</td>
@@ -770,12 +770,12 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>Lenient mode (default)</td>
-    <td>🔲</td>
-    <td>Allows trailing commas, blank/null values, etc</td>
+    <td>✅</td>
+    <td>Allows trailing commas, blank/null values, multiple top-level sections, root-level members, and warning-based recovery where allowed by the rules.</td>
     <td>✅</td>
     <td>✅</td>
     <td>✅</td>
-    <td></td>
+    <td>Default parser mode.</td>
   </tr>
   <tr>
     <td>Strict mode</td>
@@ -819,22 +819,22 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>Optional Bail/Abort sensitivity levels</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>Level 0 = Ignore errors and try parse anyway (may remap faulty key/section names).<br/>
     Level 1 = Abort on errors only.<br/>
     Level 2 = Abort even on warnings.</td>
     <td>✅</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
     <td></td>
   </tr>
   <tr>
     <td>Detect multiple <code>@yini</code></td>
-    <td>🔲</td>
+    <td>✅</td>
     <td>If using multiple <code>@yini</code> should warn in lenient and cause error in strict mode</td>
     <td>✅</td>
-    <td>🔲</td>
-    <td>🔲</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>This requires updates in the grammar and its parser logic</td>
   </tr>
   <tr>
@@ -891,6 +891,15 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
 
   <tr>
+    <td><code>tools/yini-test-adapter.ts</code> adapter contract</td>
+    <td>✅</td>
+    <td>Adapter behavior for external conformance/tooling test runners.</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Defines command-line behavior, input handling, parser mode selection, and JSON output contract for yini-test integration.</td>
+  </tr>
+  <tr>
     <td><code>strictMode</code></td>
     <td>✅</td>
     <td>Enable strict parsing</td>
@@ -928,6 +937,15 @@ https://github.com/YINI-lang/YINI-spec
     <td>✅</td>
     <td>✅</td>
     <td>Ensure parity between <code>parse</code> and <code>parseFile</code></td>
+  </tr>
+  <tr>
+    <td><code>YINI.parseForTooling(...)</code></td>
+    <td>✅</td>
+    <td>Tooling-oriented parse API that returns structured result and diagnostics data.</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Intended for editor integrations, adapters, diagnostics, and non-throwing tooling workflows.</td>
   </tr>
 
   <tr>
