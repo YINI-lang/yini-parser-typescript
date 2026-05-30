@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## 1.5.0XX - 2026 xxx
+- **Improved:** Reduced the published npm package contents by excluding development-only build output, internal tool output, and duplicate `dist/src` declaration files from the package tarball.
 - **Updated:** Parser behavior aligned with YINI Specification `v1.0.0-RC.6`, including:
   * **Changed:** `#` now always starts a comment outside string literals. No whitespace is required before or after `#`.
   * **Added:** Support for explicit hexadecimal notation using `hex:` as an alternative to `0x...`.
