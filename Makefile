@@ -1,6 +1,6 @@
 
-PARSER_FILE=./grammar/v1.0.0-rc.5xxxx/YiniParser.g4
-LEXER_FILE=./grammar/v1.0.0-rc.5xxxx/YiniLexer.g4
+PARSER_FILE=./grammar/v1.0.0-rc.6/YiniParser.g4
+LEXER_FILE=./grammar/v1.0.0-rc.6/YiniLexer.g4
 
 ANTLR_JAR=./libs/antlr4/antlr-4.13.2-complete.jar
 
