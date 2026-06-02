@@ -306,7 +306,7 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
                             typeKey: 'syntax_error',
                             message: "Missing '/END' at end of document.",
                             advice: "The document terminator '/END' (case-insensitive) is required at the end of the document.",
-                            hint: "Add '/END' as the final significant line, or change requireDocTerminator to 'optional' or 'warn-if-missing'.",
+                            hint: "Add '/END' as the final significant line, parse in lenient mode, or change requireDocTerminator to 'optional' or 'warn-if-missing'.",
                         },
                     ],
                 },

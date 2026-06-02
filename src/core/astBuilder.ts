@@ -509,7 +509,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
                 'Syntax-Error',
                 "Missing '/END' at end of document.",
                 "The document terminator '/END' (case-insensitive) is required at the end of the document.",
-                "Add '/END' as the final significant line, or change requireDocTerminator to 'optional' or 'warn-if-missing'.",
+                "Add '/END' as the final significant line, parse in lenient mode, or change requireDocTerminator to 'optional' or 'warn-if-missing'.",
             )
         } else if (
             isMissingTerminator &&
@@ -521,7 +521,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
                 'Syntax-Warning',
                 "Missing '/END' at end of document.",
                 "The document terminator '/END' (case-insensitive) appears to be missing at the end of the document.",
-                "Add '/END' as the final significant line, or change requireDocTerminator to 'optional'.",
+                "Add '/END' as the final significant line, parse in lenient mode, or change requireDocTerminator to 'optional'.",
             )
         }
 

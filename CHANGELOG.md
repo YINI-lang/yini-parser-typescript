@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 1.6.1x - 2026 May + 
+- **Improved:** Parse errors now use a concise `YiniParseError`, and missing `/END` messages clearly explain that `/END` is required in strict mode but optional in the default lenient mode.
+
 ## 1.6.0 - 2026 May
 - **Improved:** Reduced the published npm package contents by excluding development-only build output, internal tool output, and duplicate `dist/src` declaration files from the package tarball.
 - **Added:** Implemented a `yini-test` adapter (`tools/yini-test-adapter.ts`) for testing this parser against an external conformance corpus. The `yini-test` corpus/test runner is planned to be made public and released separately in the future.

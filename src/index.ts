@@ -49,6 +49,9 @@ export const parseForTooling = YINI.parseForTooling
 export const getTabSize = YINI.getTabSize
 export const setTabSize = YINI.setTabSize
 
+export { YiniParseError } from './core/errorDataHandler'
+export type { YiniParseErrorDetails } from './core/errorDataHandler'
+
 /**
  * Public type exports for the YINI parser.
  *

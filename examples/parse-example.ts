@@ -11,6 +11,7 @@ import YINI from 'yini-parser'
 const configPath = path.resolve(__dirname, './basic.yini')
 
 // Parse the YINI config file.
+// By default the parser runs in lenient mode, where '/END' is optional.
 const config = YINI.parseFile(configPath)
 
 // Output some example values.

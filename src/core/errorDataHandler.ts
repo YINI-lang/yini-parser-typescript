@@ -48,6 +48,101 @@ interface ILocation {
     colNum: number // 1-based, if n/a use 0.
 }
 
+export interface YiniParseErrorDetails {
+    type: TIssueType
+    typeKey: string
+    sourceType: TSubjectType
+    fileName?: string
+    line?: number
+    column?: number
+    message: string
+    advice?: string
+    hint?: string
+}
+
+export class YiniParseError extends Error {
+    public readonly type: TIssueType
+    public readonly typeKey: string
+    public readonly sourceType: TSubjectType
+    public readonly fileName?: string
+    public readonly line?: number
+    public readonly column?: number
+    public readonly advice?: string
+    public readonly hint?: string
+
+    constructor(details: YiniParseErrorDetails) {
+        super(formatThrownMessage(details))
+        Object.setPrototypeOf(this, new.target.prototype)
+
+        this.name = getErrorName(details.type)
+        this.type = details.type
+        this.typeKey = details.typeKey
+        this.sourceType = details.sourceType
+        this.fileName = details.fileName
+        this.line = details.line
+        this.column = details.column
+        this.advice = details.advice
+        this.hint = details.hint
+
+        // Node prints `error.stack` for uncaught errors. Keep parser failures
+        // focused on the user's document instead of internal parser frames.
+        this.stack = `${this.name}: ${this.message}`
+    }
+}
+
+const getErrorName = (type: TIssueType): string => {
+    switch (type) {
+        case 'Syntax-Error':
+        case 'Syntax-Warning':
+            return 'YiniSyntaxError'
+        case 'Internal-Error':
+        case 'Fatal-Error':
+            return 'YiniInternalError'
+        default:
+            return 'YiniParseError'
+    }
+}
+
+const formatThrownMessage = (details: YiniParseErrorDetails): string => {
+    const lines: string[] = []
+    const location = formatThrownLocation(details)
+    const title = details.type.replace(/-/g, ' ')
+
+    lines.push(
+        location
+            ? `${title} in ${location}: ${details.message}`
+            : `${title}: ${details.message}`,
+    )
+
+    if (details.advice) {
+        lines.push(details.advice)
+    }
+
+    if (details.hint) {
+        lines.push(`Hint: ${details.hint}`)
+    }
+
+    return lines.join('\n')
+}
+
+const formatThrownLocation = (details: YiniParseErrorDetails): string => {
+    if (details.sourceType === 'None/Ignore') return ''
+
+    let location =
+        details.sourceType === 'File'
+            ? details.fileName || 'YINI file'
+            : 'inline YINI content'
+
+    if (details.line !== undefined) {
+        location += `:${details.line}`
+        if (details.column !== undefined) {
+            location += `:${details.column}`
+        }
+    }
+
+    return location
+}
+
 /**
  * This class handles all error/notice reporting and processes exit/throwing.
  */
@@ -121,6 +216,24 @@ export class ErrorDataHandler {
         return issue
     }
 
+    private throwParseError(
+        type: TIssueType,
+        issue: IssuePayload,
+        msgWhatInclLineNum: string,
+    ): never {
+        throw new YiniParseError({
+            type,
+            typeKey: issue.typeKey,
+            sourceType: this.subjectType,
+            fileName: this.fileName,
+            line: issue.line,
+            column: issue.column,
+            message: msgWhatInclLineNum,
+            advice: issue.advice,
+            hint: issue.hint,
+        })
+    }
+
     /**
      * After pushing processing may continue or exit, depending on the error
      * and/or the bail threshold (that can be optionally set by the user).
@@ -184,16 +297,17 @@ export class ErrorDataHandler {
         switch (type) {
             case 'Internal-Error':
                 this.numInternalErrors++
-                this.errors.push(
-                    this.makeIssue(
+                {
+                    const issue = this.makeIssue(
                         lineNum,
                         colNum,
                         type,
                         msgWhat,
                         msgWhy,
                         msgHint,
-                    ),
-                )
+                    )
+                    this.errors.push(issue)
+                }
                 this.emitInternalError(loc, msgWhatInclLineNum, msgWhy, msgHint)
                 if (
                     this.persistThreshold === '1-Abort-on-Errors' ||
@@ -202,26 +316,27 @@ export class ErrorDataHandler {
                     if (!this.isThrowOnError) {
                         debugPrint('Skipped throwing')
                     } else {
-                        const thrownMsg = msgWhy
-                            ? `Internal-Error: ${msgWhatInclLineNum}. ${msgWhy}`
-                            : `Internal-Error: ${msgWhatInclLineNum}`
-
-                        throw new Error(thrownMsg)
+                        this.throwParseError(
+                            type,
+                            this.errors[this.errors.length - 1],
+                            msgWhatInclLineNum,
+                        )
                     }
                 }
                 break
             case 'Syntax-Error':
                 this.numSyntaxErrors++
-                this.errors.push(
-                    this.makeIssue(
+                {
+                    const issue = this.makeIssue(
                         lineNum,
                         colNum,
                         type,
                         msgWhat,
                         msgWhy,
                         msgHint,
-                    ),
-                )
+                    )
+                    this.errors.push(issue)
+                }
                 this.emitSyntaxError(loc, msgWhatInclLineNum, msgWhy, msgHint)
                 if (
                     this.persistThreshold === '1-Abort-on-Errors' ||
@@ -230,26 +345,27 @@ export class ErrorDataHandler {
                     if (!this.isThrowOnError) {
                         debugPrint('Skipped throwing')
                     } else {
-                        const thrownMsg = msgWhy
-                            ? `Syntax-Error: ${msgWhatInclLineNum}. ${msgWhy}`
-                            : `Syntax-Error: ${msgWhatInclLineNum}`
-
-                        throw new Error(thrownMsg)
+                        this.throwParseError(
+                            type,
+                            this.errors[this.errors.length - 1],
+                            msgWhatInclLineNum,
+                        )
                     }
                 }
                 break
             case 'Syntax-Warning':
                 this.numSyntaxWarnings++
-                this.warnings.push(
-                    this.makeIssue(
+                {
+                    const issue = this.makeIssue(
                         lineNum,
                         colNum,
                         type,
                         msgWhat,
                         msgWhy,
                         msgHint,
-                    ),
-                )
+                    )
+                    this.warnings.push(issue)
+                }
                 if (!this.isQuiet) {
                     this.emitSyntaxWarning(
                         loc,
@@ -262,11 +378,11 @@ export class ErrorDataHandler {
                     if (!this.isThrowOnError) {
                         debugPrint('Skipped throwing')
                     } else {
-                        const thrownMsg = msgWhy
-                            ? `Syntax-Error: ${msgWhatInclLineNum}. ${msgWhy}`
-                            : `Syntax-Error: ${msgWhatInclLineNum}`
-
-                        throw new Error(thrownMsg)
+                        this.throwParseError(
+                            type,
+                            this.warnings[this.warnings.length - 1],
+                            msgWhatInclLineNum,
+                        )
                     }
                 }
                 break
@@ -323,11 +439,11 @@ export class ErrorDataHandler {
                 // IMPORTANT: Never exit with exit code since this is a library!
 
                 {
-                    const thrownMsg = msgWhy
-                        ? `Internal-Error: ${msgWhatInclLineNum}. ${msgWhy}`
-                        : `Internal-Error: ${msgWhatInclLineNum}`
-
-                    throw new Error(thrownMsg)
+                    this.throwParseError(
+                        'Internal-Error',
+                        this.errors[this.errors.length - 1],
+                        msgWhatInclLineNum,
+                    )
                 }
         }
     }

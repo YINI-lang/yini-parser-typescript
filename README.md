@@ -71,6 +71,20 @@ console.log(config.App.name)              // My App
 console.log(config.App.Features.caching)  // true
 ```
 
+### Modes and `/END`
+
+`yini-parser` runs in lenient mode by default. In lenient mode, the document terminator `/END` is optional.
+
+Strict mode requires `/END` unless you explicitly override `requireDocTerminator`:
+
+```ts
+const config = YINI.parseFile('./config.yini', {
+  strictMode: true,
+})
+```
+
+If strict mode reports a missing `/END`, either add `/END` as the final significant line or parse with the default lenient mode.
+
 See the [YINI specification and documentation](https://yini-lang.org/refs/specification?utm_source=github&utm_medium=referral&utm_campaign=yini_parser_ts&utm_content=readme).
 
 ---

@@ -8,7 +8,7 @@
 // tests/integration/1-core-parsing/parse-option-behavior.test.ts
 // tests/integration/1-core-parsing/parse-option-behavior.test.ts
 import path from 'path'
-import YINI from '../../../src'
+import YINI, { YiniParseError } from '../../../src'
 
 const FIXTURE_DIR = path.join(__dirname, '../../fixtures/invalid')
 
@@ -17,6 +17,50 @@ const FILE_DEFECT_COMBO_3 = path.join(FIXTURE_DIR, 'defectConfigCombo3.yini')
 const FILE_BAD_ESCAPING = path.join(FIXTURE_DIR, 'bad-escaping-1.yini')
 
 describe('Parse option behavior tests:', () => {
+    describe('Document terminator defaults:', () => {
+        test("A.0.1) Default lenient mode should not require '/END'.", () => {
+            const result = YINI.parse(`
+                @yini
+
+                ^ App
+                name = "demo"
+            `)
+
+            expect(result.App.name).toEqual('demo')
+        })
+
+        test("A.0.2) Strict mode should require '/END' and throw a concise YINI error.", () => {
+            try {
+                YINI.parse(
+                    `
+                        @yini
+
+                        ^ App
+                        name = "demo"
+                    `,
+                    {
+                        strictMode: true,
+                        throwOnError: true,
+                    },
+                )
+
+                throw new Error('Expected parser to throw, but it did not.')
+            } catch (err: unknown) {
+                expect(err).toBeInstanceOf(YiniParseError)
+
+                const error = err as YiniParseError
+
+                expect(error.name).toEqual('YiniSyntaxError')
+                expect(error.message).toMatch(/syntax error/i)
+                expect(error.message).toMatch(/missing '\/END'/i)
+                expect(error.message).toMatch(/lenient mode/i)
+                expect(error.stack).not.toMatch(
+                    /errorDataHandler|astBuilder|pipeline/i,
+                )
+            }
+        })
+    })
+
     describe('Recovery behavior:', () => {
         test('A.1) Lenient + ignore-errors should recover and return partial result.', () => {
             const result = YINI.parseFile(FILE_DEFECT_COMBO_2, {

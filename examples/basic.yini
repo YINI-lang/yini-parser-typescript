@@ -4,6 +4,7 @@
 title = 'My App'
 items = 10
 debug = ON
+isDarkTheme = ON
 
 ^ Server
 host = "localhost"
