@@ -1,7 +1,7 @@
 # CHANGELOG
 
 ## 1.6.1x - 2026 May + 
-- **Fixed:** Error line numbers now stay aligned with the original source when a valid shebang line is present.
+- **Fixed:** Diagnostic line numbers no longer shift by one after a valid shebang line; strict-mode trailing-comma errors now point to the actual physical source line.
 - **Improved:** Parse errors now use a concise `YiniParseError`, and missing `/END` messages clearly explain that `/END` is required in strict mode but optional in the default lenient mode.
 
 ## 1.6.0 - 2026 May
