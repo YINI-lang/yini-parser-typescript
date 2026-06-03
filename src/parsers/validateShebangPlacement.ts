@@ -63,5 +63,7 @@ export const stripBomAndValidShebang = (input: string): string => {
         return ''
     }
 
-    return text.slice(newlineIndex + 1)
+    // Keep the newline so downstream parser locations still match the
+    // original source line numbers after ignoring the shebang content.
+    return text.slice(newlineIndex)
 }

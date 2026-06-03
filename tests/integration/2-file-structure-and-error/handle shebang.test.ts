@@ -169,6 +169,31 @@ name = "Shebang-demo"
             })
         }).toThrow()
     })
+
+    test('A-9) Should preserve source line numbers after a valid shebang.', () => {
+        // Arrange.
+        const input = `#!/usr/bin/env yini
+^ App
+items = ["a", "b",]
+/END`
+
+        // Act.
+        try {
+            YINI.parse(input, {
+                strictMode: true,
+                failLevel: 'errors',
+                requireDocTerminator: 'required',
+            })
+
+            throw new Error('Expected parser to throw, but it did not.')
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : String(err)
+
+            // Assert.
+            expect(message).toMatch(/trailing comma/i)
+            expect(message).toMatch(/line 3|:3:/i)
+        }
+    })
 })
 
 /* ====================================================================
