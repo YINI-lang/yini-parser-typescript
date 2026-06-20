@@ -6,6 +6,8 @@ v1.0.0 RC 6
 
 https://github.com/YINI-lang/YINI-spec
 
+Status should be based primarily on the current source code and automated tests. If this checklist disagrees with implemented parser behavior or test coverage, inspect the source/tests first and then update this document to match.
+
 #### Legend
 - **Status:** (and **Table Title**)
   * ✅ All sub-features done
@@ -481,7 +483,7 @@ https://github.com/YINI-lang/YINI-spec
 
 ---
 
-### 🚧 — 7. String Literals
+### ✅ — 7. String Literals
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -513,12 +515,12 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td><strike>Hyper string (H-string)</strike></td>
-    <td>❌</td>
+    <td>✅</td>
     <td><code>H'...'</code>, <code>H"..."</code></td>
-    <td>❌</td>
     <td>✅</td>
     <td>✅</td>
-    <td>Removed after RC5 to simplify the language core and reduce parser complexity.</td>
+    <td>✅</td>
+    <td>Removed after RC5 to simplify the language core and reduce parser complexity. Not supporting H-strings is correct for RC6.</td>
   </tr>
   <tr>
     <td>Triple-quoted (raw)</td>
@@ -549,21 +551,21 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>Escape sequence validation</td>
-    <td>🚧</td>
+    <td>✅</td>
     <td>Reject invalid escapes such as <code>\z</code>, <code>\o378</code>, invalid Unicode scalar values, and surrogate code points</td>
-    <td>🚧</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>Escape sequences are valid only in C-Strings and C-Triple-Quoted Strings.</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Escape sequences are valid only in C-Strings and C-Triple-Quoted Strings. Implemented in <code>src/parsers/parseString.ts</code> and covered by Classic and C-Triple string tests.</td>
   </tr>
   <tr>
-    <td>Reject escape sequences in raw strings</td>
-    <td>🚧</td>
+    <td>Preserve escape-like sequences in raw strings</td>
+    <td>✅</td>
     <td>Raw strings do not interpret escapes</td>
-    <td>🚧</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>Backslashes are ordinary characters in raw strings.</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Backslashes are ordinary characters in raw strings; raw string tests cover this behavior.</td>
   </tr>
   <tr>
     <td>Lenient scalar-to-string concatenation</td>
@@ -666,30 +668,30 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>Duplicate inline object member keys</td>
-    <td>🚧</td>
+    <td>✅</td>
     <td><code>{ a: 1, a: 2 }</code></td>
     <td>✅</td>
-    <td>🚧</td>
-    <td>🚧</td>
-    <td>Lenient mode: first member wins and later duplicates are ignored with warning. Strict mode: error. Implementations must not silently overwrite. Behavior is implemented and tested; add targeted warning-diagnostic assertions.</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Lenient mode: first member wins and later duplicates are ignored with warning. Strict mode: error. Implementations must not silently overwrite. Implemented in the AST builder and covered by object literal tests.</td>
   </tr>
   <tr>
     <td>Object member value same-line rule</td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>a: 1</code> valid, but newline after <code>:</code> before value is invalid</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>Inside inline objects, the value must begin on the same logical line as the object member separator.</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Inside inline objects, the value must begin on the same logical line as the object member separator. Enforced by the grammar rule <code>object_member : KEY object_member_separator value</code>.</td>
   </tr>
   <tr>
     <td>Object opening brace same-line rule</td>
-    <td>🚧</td>
+    <td>✅</td>
     <td><code>obj = { ... }</code>; newline after <code>=</code> is not an object value</td>
-    <td>🚧</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>The opening <code>{</code> must appear on the same logical line as <code>=</code>.</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>The opening <code>{</code> must appear on the same logical line as <code>=</code>. Enforced through the same-line member/value grammar.</td>
   </tr>
 </table>
 
@@ -736,12 +738,12 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>List opening bracket same-line rule</td>
-    <td>🚧</td>
+    <td>✅</td>
     <td><code>items = [ ... ]</code>; newline after <code>=</code> is not a list value</td>
-    <td>🚧</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>The opening <code>[</code> must appear on the same logical line as <code>=</code>.</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>The opening <code>[</code> must appear on the same logical line as <code>=</code>. Enforced through the same-line member/value grammar.</td>
   </tr>
 </table>
 
@@ -761,12 +763,12 @@ https://github.com/YINI-lang/YINI-spec
 
   <tr>
     <td>Document terminator <code>/END</code></td>
-    <td>🔲</td>
+    <td>✅</td>
     <td><code>/END</code>, non-case-sensitive</td>
     <td>✅</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>⚠️ Only if option.requireDocTerminator = 'required'</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Case-insensitive terminator implemented. Missing-terminator behavior is controlled by <code>requireDocTerminator</code>: <code>optional</code>, <code>warn-if-missing</code>, or <code>required</code>.</td>
   </tr>
   <tr>
     <td>Lenient mode (default)</td>
@@ -839,12 +841,12 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>Only one document terminator</td>
-    <td>🔲</td>
+    <td>🚧</td>
     <td>Reject multiple <code>/END</code> markers</td>
+    <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
-    <td>🔲</td>
-    <td>Only one terminator is permitted per file.</td>
+    <td>Grammar and AST builder logic enforce a single document terminator position. Add a focused regression test for multiple <code>/END</code> markers.</td>
   </tr>
   <tr>
     <td>Strict-mode filename suffix <code>.strict.yini</code></td>
@@ -857,27 +859,27 @@ https://github.com/YINI-lang/YINI-spec
   </tr>
   <tr>
     <td>Meta: Count num of sections</td>
-    <td>🔲</td>
+    <td>🚧</td>
     <td>Meta info</td>
     <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
-    <td></td>
+    <td>Assigned by the AST builder; dedicated count assertion test is still skipped.</td>
   </tr>
   <tr>
     <td>Meta: Count num of members</td>
-    <td>🔲</td>
+    <td>🚧</td>
     <td>Meta info</td>
     <td>✅</td>
     <td>🔲</td>
     <td>🔲</td>
-    <td>Member literals</td>
+    <td>Assigned by the AST builder; dedicated count assertion test is still skipped.</td>
   </tr>
 </table>
 
 ---
 
-### 🚧 — 11. Public API & Options (ParseOptions)
+### ✅ — 11. Public API & Options (ParseOptions)
 
 <table>
   <tr>
@@ -1000,21 +1002,21 @@ https://github.com/YINI-lang/YINI-spec
 
   <tr>
     <td><b>rules.onDuplicateKey</b></td>
-    <td>🚧</td>
-    <td><code>'error' | 'warn-and-keep-first' | 'keep-first'</code></td>
     <td>✅</td>
-    <td>🚧</td>
-    <td>🚧</td>
-    <td>“overwrite” = keep last</td>
+    <td><code>'error' | 'warn-and-keep-first' | 'warn-and-overwrite' | 'keep-first' | 'overwrite'</code></td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Implemented in the AST builder. <code>overwrite</code> keeps the last value; <code>keep-first</code> keeps the first value.</td>
   </tr>
 
   <tr>
     <td><b>rules.requireDocTerminator</b></td>
-    <td>🚧</td>
+    <td>✅</td>
     <td><code>'optional' | 'warn-if-missing' | 'required'</code> — require <code>/END</code> at EOF</td>
     <td>✅</td>
-    <td>🚧</td>
-    <td>🚧</td>
+    <td>✅</td>
+    <td>✅</td>
     <td>Overrides strict default if needed</td>
   </tr>
 
