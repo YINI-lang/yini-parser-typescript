@@ -4,6 +4,8 @@
 > Read this before making any changes to the codebase.
 > If any instruction in this file is unclear, ambiguous, or conflicts with the repository state, stop and ask the human maintainer before proceeding.
 
+See also: [Shared AI agent instructions for the YINI project family](../AGENTS.md)
+
 ## Project Overview
 
 - **Name:** `yini-parser` (`yini-parser-typescript` repository).
