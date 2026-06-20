@@ -32,6 +32,25 @@ Status should be based primarily on the current source code and automated tests.
 
 ---
 
+### Progress Overview
+
+| # | Status | Section |
+|---|---|---|
+| 1 | ✅ | Core Parsing / Basic Members |
+| 2 | ✅ | File Structure & Errors |
+| 3 | ✅ | Basic / Simple Literals |
+| 4 | ✅ | Comments + Disable line |
+| 5 | 🚧 | Extended Parsing |
+| 6 | ✅ | Number Literals |
+| 7 | ✅ | String Literals |
+| 8 | ✅ | Object Literals |
+| 9 | ✅ | List Literals |
+| 10 | 🚧 | Special & Validation Modes |
+| 11 | ✅ | Public API & Options (ParseOptions) |
+| 12 | 🔲 | Reserved/Advanced Features |
+
+---
+
 ### ✅ — 1. Core Parsing / Basic Members
 <table>
   <tr>
