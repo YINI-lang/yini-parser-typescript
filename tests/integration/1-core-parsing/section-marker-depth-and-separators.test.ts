@@ -1,5 +1,32 @@
 // tests/integration/1-core-parsing/section-marker-depth-and-separators.test.ts
 import YINI from '../../../src'
+import { MAX_SECTION_DEPTH } from '../../../src/utils/yiniHelpers'
+
+const getSectionMarker = (level: number): string => {
+    return level <= 9 ? '^'.repeat(level) : `^${level}`
+}
+
+const buildSectionChain = (maxDepth: number): string => {
+    const lines: string[] = []
+
+    for (let level = 1; level <= maxDepth; level++) {
+        lines.push(`${getSectionMarker(level)} L${level}`)
+    }
+
+    lines.push('value = "deep"')
+
+    return lines.join('\n')
+}
+
+const getNestedSection = (result: any, maxDepth: number): any => {
+    let current = result
+
+    for (let level = 1; level <= maxDepth; level++) {
+        current = current[`L${level}`]
+    }
+
+    return current
+}
 
 /**
  * Section marker depth and separator tests.
@@ -274,6 +301,31 @@ describe('Section marker depth and separators:', () => {
                     failLevel: 'errors',
                 })
             }).toThrow()
+        })
+
+        test('6. Should parse numeric shorthand up to the maximum supported section depth.', () => {
+            // Arrange.
+            const validYini = buildSectionChain(MAX_SECTION_DEPTH)
+
+            // Act.
+            const result = YINI.parse(validYini)
+
+            // Assert.
+            expect(getNestedSection(result, MAX_SECTION_DEPTH).value).toEqual(
+                'deep',
+            )
+        })
+
+        test('7. Should throw when numeric shorthand exceeds the maximum supported section depth.', () => {
+            // Arrange.
+            const invalidYini = buildSectionChain(MAX_SECTION_DEPTH + 1)
+
+            // Act & Assert.
+            expect(() => {
+                YINI.parse(invalidYini, {
+                    failLevel: 'errors',
+                })
+            }).toThrow(/maximum supported section depth|section depth/i)
         })
     })
 

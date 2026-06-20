@@ -40,7 +40,7 @@ Status should be based primarily on the current source code and automated tests.
 | 2 | ✅ | File Structure & Errors |
 | 3 | ✅ | Basic / Simple Literals |
 | 4 | ✅ | Comments + Disable line |
-| 5 | 🚧 | Extended Parsing |
+| 5 | ✅ | Extended Parsing |
 | 6 | ✅ | Number Literals |
 | 7 | ✅ | String Literals |
 | 8 | ✅ | Object Literals |
@@ -325,7 +325,7 @@ Status should be based primarily on the current source code and automated tests.
 
 ---
 
-### 🚧 — 5. Extended Parsing
+### ✅ — 5. Extended Parsing
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -375,12 +375,12 @@ Status should be based primarily on the current source code and automated tests.
   </tr>
   <tr>
     <td>Maximum section depth</td>
-    <td>🚧</td>
+    <td>✅</td>
     <td>Maximum supported section depth is 255</td>
     <td>✅</td>
-    <td>🚧</td>
-    <td>🚧</td>
-    <td>Parser/validator rejects section depths above 255. Max accepted depth is tested; add a targeted test for rejecting depths above 255.</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Parser/validator rejects section depths above 255. Tests cover parsing through the maximum supported depth and rejecting max depth + 1 without skipping intermediate section levels.</td>
   </tr>
   <tr>
     <td>(Implicit) Null</td>
