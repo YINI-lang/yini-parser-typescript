@@ -34,6 +34,14 @@ name =
 `,
     },
     {
+        name: 'Value starts on the line after equals',
+        yini: `
+^ App
+name =
+    "demo"
+`,
+    },
+    {
         name: 'Invalid assignment operator',
         yini: `
 ^ App

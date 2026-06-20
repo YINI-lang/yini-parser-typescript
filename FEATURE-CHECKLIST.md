@@ -36,7 +36,7 @@ Status should be based primarily on the current source code and automated tests.
 
 | # | Status | Section |
 |---|---|---|
-| 1 | 🚧 | Core Parsing / Basic Members |
+| 1 | ✅ | Core Parsing / Basic Members |
 | 2 | ✅ | File Structure & Errors |
 | 3 | ✅ | Basic / Simple Literals |
 | 4 | ✅ | Comments + Disable line |
@@ -44,14 +44,14 @@ Status should be based primarily on the current source code and automated tests.
 | 6 | ✅ | Number Literals |
 | 7 | ✅ | String Literals |
 | 8 | ✅ | Object Literals |
-| 9 | 🚧 | List Literals |
+| 9 | ✅ | List Literals |
 | 10 | 🚧 | Special & Validation Modes |
 | 11 | ✅ | Public API & Options (ParseOptions) |
 | 12 | 🔲 | Reserved/Advanced Features |
 
 ---
 
-### 🚧 — 1. Core Parsing / Basic Members
+### ✅ — 1. Core Parsing / Basic Members
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -110,12 +110,12 @@ Status should be based primarily on the current source code and automated tests.
   </tr>
   <tr>
     <td>Assignment/member same-line rule</td>
-    <td>🚧</td>
+    <td>✅</td>
     <td><code>KEY</code>, <code>=</code>, and the first value token must appear on the same logical line</td>
     <td>✅</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>Implemented by the grammar rule <code>member : KEY EQ value?</code>. Add a focused integration test for <code>key =</code> followed by a value on the next line.</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Implemented by the grammar rule <code>member : KEY EQ value?</code> and covered by a focused integration test for <code>key =</code> followed by a value on the next line.</td>
   </tr>
   <tr>
     <td>Section nesting: Going deeper</td>
@@ -743,7 +743,7 @@ Status should be based primarily on the current source code and automated tests.
 
 ---
 
-### 🚧 — 9. List Literals
+### ✅ — 9. List Literals
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -766,21 +766,21 @@ Status should be based primarily on the current source code and automated tests.
   </tr>
   <tr>
     <td>Empty list literal</td>
-    <td>🚧</td>
+    <td>✅</td>
     <td><code>[]</code></td>
     <td>✅</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>Implemented by lexer/parser empty-list handling and covered by smoke tests. Add a focused integration test for empty lists in lenient and strict mode.</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Implemented by lexer/parser empty-list handling and covered by focused lenient and strict integration tests.</td>
   </tr>
   <tr>
     <td>Colon-list syntax removed / not supported</td>
-    <td>🚧</td>
+    <td>✅</td>
     <td>Old colon-list syntax must not be accepted; bracketed lists are the supported form</td>
     <td>✅</td>
-    <td>🔲</td>
-    <td>🔲</td>
-    <td>The RC6 grammar only defines bracketed lists. Add a focused invalid integration test proving colon-list syntax is rejected.</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>The RC6 grammar only defines bracketed lists. Covered by a focused invalid integration test proving colon-list syntax is rejected.</td>
   </tr>
   <tr>
     <td>Nested lists inside lists</td>
