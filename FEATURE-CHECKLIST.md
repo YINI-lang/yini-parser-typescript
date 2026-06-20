@@ -800,12 +800,12 @@ Status should be based primarily on the current source code and automated tests.
   </tr>
   <tr>
     <td>Strict mode</td>
-    <td>🚧</td>
+    <td>✅</td>
     <td>Enable stricter structural validation and stricter default rule behavior. In strict mode, there must be exactly one explicit top-level section. Some strict-related rules may also be overridden by parse options.</td>
     <td>✅</td>
-    <td>🚧</td>
-    <td>🚧</td>
-    <td>Still being refined; some behavior is controlled by rule options such as <code>requireDocTerminator</code> and <code>treatEmptyValueAsNull</code>.</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Strict-mode validation for the RC6 parser surface is implemented. Some strict-related behavior remains configurable through rule options such as <code>requireDocTerminator</code> and <code>treatEmptyValueAsNull</code>.</td>
   </tr>
   <tr>
     <td><code>@yini strict</code> / <code>@yini lenient</code> mode declarations</td>

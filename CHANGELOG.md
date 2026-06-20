@@ -2,6 +2,7 @@
 
 ## 1.6.1x - 2026 May + 
 - **Fixed:** Diagnostic line numbers no longer shift by one after a valid shebang line; strict-mode trailing-comma errors now point to the actual physical source line.
+- **Fixed:** Removed the outdated warning `Warning: Strict initialMode is not yet fully implemented.` Strict mode is now implemented against the latest YINI Specification RC 6.
 - **Improved:** Parse errors now use a concise `YiniParseError`, and missing `/END` messages clearly explain that `/END` is required in strict mode but optional in the default lenient mode.
 
 ## 1.6.0 - 2026 May

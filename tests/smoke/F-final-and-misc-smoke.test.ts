@@ -217,8 +217,8 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
             parserVersion: '####',
             mode: 'strict',
             totalErrors: 7,
-            totalWarnings: 1,
-            totalMessages: 8,
+            totalWarnings: 0,
+            totalMessages: 7,
             runStartedAt: '####',
             runFinishedAt: '####',
             durationMs: -1,
@@ -311,15 +311,8 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
                     ],
                 },
                 warnings: {
-                    warningCount: 1,
-                    payload: [
-                        {
-                            typeKey: 'syntax_warning',
-                            message:
-                                'Warning: Strict initialMode is not yet fully implemented.',
-                            advice: 'Some validation rules may still be missing or incomplete.',
-                        },
-                    ],
+                    warningCount: 0,
+                    payload: [],
                 },
                 notices: {
                     noticeCount: 0,

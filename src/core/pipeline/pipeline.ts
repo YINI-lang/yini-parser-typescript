@@ -300,14 +300,6 @@ export const runPipeline = (
     debugPrint()
 
     if (coreOptions.rules.initialMode === 'strict') {
-        // Note, after pushing processing may continue or exit, depending on the error and/or the bail threshold.
-        errorHandler.pushOrBail(
-            undefined,
-            'Syntax-Warning',
-            'Warning: Strict initialMode is not yet fully implemented.',
-            'Some validation rules may still be missing or incomplete.',
-        )
-
         if (coreOptions.bailSensitivity === '0-Ignore-Errors') {
             if (
                 coreOptions.isDiagnosticOutputEnabled &&
