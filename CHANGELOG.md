@@ -10,7 +10,7 @@
 
 ## 1.6.0 - 2026 May
 - **Improved:** Reduced the published npm package contents by excluding development-only build output, internal tool output, and duplicate `dist/src` declaration files from the package tarball.
-- **Added:** Implemented a `yini-test` adapter (`tools/yini-test-adapter.ts`) for testing this parser against an external conformance corpus. The `yini-test` corpus/test runner is planned to be made public and released separately in the future.
+- **Added:** Implemented a `yini-test-suite` adapter (`tools/yini-test-adapter.ts`) for testing this parser against an external conformance corpus. The `yini-test` corpus/test runner is planned to be made public and released separately in the future.
 - **Updated:** Parser behavior aligned with YINI Specification `v1.0.0-RC.6`, including:
   * **Changed:** `#` now always starts a comment outside string literals. No whitespace is required before or after `#`.
   * **Added:** Support for explicit hexadecimal notation using `hex:` as an alternative to `0x...`.
