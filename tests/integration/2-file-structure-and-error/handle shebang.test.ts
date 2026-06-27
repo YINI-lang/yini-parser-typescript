@@ -106,6 +106,23 @@ name = "Shebang-demo"`
         }).toThrow()
     })
 
+    test('A-4.b) Should treat a shebang-like line after @yini as a comment.', () => {
+        // Arrange.
+        const input = `@yini
+#!/usr/bin/env yini
+
+^ App
+name = "Shebang-demo"`
+
+        // Act.
+        const result = YINI.parse(input, {
+            strictMode: false,
+        })
+
+        // Assert.
+        expect(result).toEqual(expected)
+    })
+
     test("A-5) Should not treat '#!' inside a string value as a shebang.", () => {
         // Arrange.
         const input = `^ App

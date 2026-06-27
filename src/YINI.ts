@@ -313,6 +313,10 @@ export default class YINI {
             return 'YINI_MODE_MISMATCH'
         }
 
+        if (text.includes('directive') && text.includes('wrong place')) {
+            return 'misplaced-directive'
+        }
+
         if (text.includes('invalid escape sequence')) {
             return 'invalid-escape-sequence'
         }

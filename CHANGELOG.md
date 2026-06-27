@@ -1,6 +1,9 @@
 # CHANGELOG
 
-## 1.6.1x - 2026 May + 
+## 1.6.1 - 2026 June  
+- **Fixed:** Aligned parser behavior with the external `yini-test` conformance suite for shebang-like comment lines, misplaced `@yini` directives, and triple-quoted string line endings.
+- **Fixed:** `#!` lines after an opening `@yini` marker are now treated as comment trivia, while `@yini` directives after document content are reported as syntax errors in both lenient and strict mode.
+- **Fixed:** Triple-quoted raw and Classic strings now normalize physical `CRLF`/`CR` line endings to `LF`, producing stable output across platforms.
 - **Fixed:** Diagnostic line numbers no longer shift by one after a valid shebang line; strict-mode trailing-comma errors now point to the actual physical source line.
 - **Fixed:** Removed the outdated warning `Warning: Strict initialMode is not yet fully implemented.` Strict mode is now implemented against the latest YINI Specification RC 6.
 - **Improved:** Parse errors now use a concise `YiniParseError`, and missing `/END` messages clearly explain that `/END` is required in strict mode but optional in the default lenient mode.

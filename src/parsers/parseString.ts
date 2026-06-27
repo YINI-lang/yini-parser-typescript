@@ -208,19 +208,24 @@ const parseClassicEscapes = (
     return result
 }
 
+const normalizeRealLineBreaks = (value: string): string =>
+    value.replace(/\r\n?/g, '\n')
+
 const parseStringLiteral = ({ strKind, value }: IParsedStringInput): string => {
     switch (strKind) {
         case 'raw':
-        case 'triple-raw':
             // Raw strings preserve content exactly as provided by the lexer.
             // Single-line raw string constraints are enforced by the lexer.
             return value
+
+        case 'triple-raw':
+            return normalizeRealLineBreaks(value)
 
         case 'classic':
             return parseClassicEscapes(value, false)
 
         case 'triple-classic':
-            return parseClassicEscapes(value, true)
+            return parseClassicEscapes(normalizeRealLineBreaks(value), true)
 
         default:
             throw new CYiniStringParseError(`Unknown string kind: ${strKind}`)

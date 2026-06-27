@@ -3,6 +3,7 @@ import fs from 'fs'
 import { isDev } from '../config/env'
 import {
     getShebangPlacementIssue,
+    normalizeShebangCommentLines,
     stripBomAndValidShebang,
 } from '../parsers/validateShebangPlacement'
 import { ParsedObject, ParseOptions, PreferredFailLevel } from '../types'
@@ -130,6 +131,7 @@ export class YiniRuntime {
 
         const originalContent = yiniContent
         yiniContent = stripBomAndValidShebang(yiniContent)
+        yiniContent = normalizeShebangCommentLines(yiniContent)
 
         if (originalContent.startsWith('\uFEFF')) {
             devPrint(

@@ -312,6 +312,8 @@ When reporting parser behavior, it is helpful to include:
 
 This parser is covered by smoke, integration, and regression tests across lenient, strict, and metadata-enabled modes.
 
+It has also been run against `yini-test-suite` v0.3.0, the external YINI conformance test suite, with all TypeScript parser cases passing.
+
 ---
 
 ## Links

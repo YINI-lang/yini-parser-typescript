@@ -145,6 +145,30 @@ name = "Demo"
         )
     })
 
+    test('Returns a stable diagnostic code for misplaced directives.', () => {
+        const parsed = YINI.parseForTooling(
+            `
+^ App
+name = "Demo"
+
+@yini
+`,
+            {
+                strictMode: false,
+            },
+        )
+
+        expect(parsed.ok).toBe(false)
+        expect(parsed.result.App.name).toBe('Demo')
+
+        expect(parsed.diagnostics).toContainEqual(
+            expect.objectContaining({
+                severity: 'error',
+                code: 'misplaced-directive',
+            }),
+        )
+    })
+
     test('Does not let callers override the tooling-safe parser behavior.', () => {
         const parsed = YINI.parseForTooling(
             `
