@@ -86,6 +86,33 @@ Line B"""
             expect(toPrettyJSON(result)).toEqual(toPrettyJSON(expected))
         })
 
+        test('3.b. Should normalize CRLF line breaks in raw triple-quoted strings.', () => {
+            // Arrange.
+            const validYini =
+                '@yini\r\n\r\n' +
+                '^ Strings\r\n' +
+                'message = R"""Line one\r\n' +
+                'Line two with \\n kept raw\r\n' +
+                'Line three"""\r\n'
+
+            const expected = {
+                Strings: {
+                    message:
+                        'Line one\n' +
+                        'Line two with \\n kept raw\n' +
+                        'Line three',
+                },
+            }
+
+            // Act.
+            const result = YINI.parse(validYini, {
+                strictMode: false,
+            })
+
+            // Assert.
+            expect(toPrettyJSON(result)).toEqual(toPrettyJSON(expected))
+        })
+
         test('4. Should preserve backslashes in raw triple-quoted strings.', () => {
             // Arrange.
             const validYini = `
@@ -302,6 +329,35 @@ Line B"""
                 App: {
                     upperRaw: 'Line 1\nLine 2',
                     lowerRaw: 'Line A\nLine B',
+                },
+            }
+
+            // Act.
+            const result = YINI.parse(validYini, {
+                strictMode: true,
+                requireDocTerminator: 'required',
+            })
+
+            // Assert.
+            expect(toPrettyJSON(result)).toEqual(toPrettyJSON(expected))
+        })
+
+        test('3.b. Should normalize CRLF line breaks in raw triple-quoted strings.', () => {
+            // Arrange.
+            const validYini =
+                '@yini strict\r\n\r\n' +
+                '^ Strings\r\n' +
+                'message = R"""Line one\r\n' +
+                'Line two with \\n kept raw\r\n' +
+                'Line three"""\r\n\r\n' +
+                '/END\r\n'
+
+            const expected = {
+                Strings: {
+                    message:
+                        'Line one\n' +
+                        'Line two with \\n kept raw\n' +
+                        'Line three',
                 },
             }
 

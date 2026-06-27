@@ -374,11 +374,10 @@ describe('Mode declaration tests:', () => {
             }).toThrow()
         })
 
-        test('3. Should warn or throw when @yini appears after a section in lenient mode when warnings are fatal.', () => {
+        test('3. Should throw when @yini appears after a section in lenient mode.', () => {
             // Arrange.
             const invalidYini = `
                 ^ App
-                name = "demo"
 
                 @yini lenient
             `
@@ -387,7 +386,7 @@ describe('Mode declaration tests:', () => {
             expect(() => {
                 YINI.parse(invalidYini, {
                     strictMode: false,
-                    failLevel: 'warnings-and-errors',
+                    failLevel: 'errors',
                 })
             }).toThrow()
         })
@@ -407,6 +406,24 @@ describe('Mode declaration tests:', () => {
                 YINI.parse(invalidYini, {
                     strictMode: true,
                     requireDocTerminator: 'required',
+                    failLevel: 'errors',
+                })
+            }).toThrow()
+        })
+
+        test('5. Should throw when @yini appears after a member in lenient mode.', () => {
+            // Arrange.
+            const invalidYini = `
+                ^ App
+                name = "demo"
+
+                @yini lenient
+            `
+
+            // Act & Assert.
+            expect(() => {
+                YINI.parse(invalidYini, {
+                    strictMode: false,
                     failLevel: 'errors',
                 })
             }).toThrow()

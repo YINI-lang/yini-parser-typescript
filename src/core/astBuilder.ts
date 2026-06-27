@@ -756,8 +756,8 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
         if (this.mapSectionNamePaths.size || this._numOfMembers) {
             this.errorHandler!.pushOrBail(
                 toErrorLocation(ctx),
-                this.isStrict ? 'Syntax-Error' : 'Syntax-Warning',
-                `Found a directive statement in the wrong place ${this.isStrict ? '(strict mode)' : '(lenient mode)'}`,
+                'Syntax-Error',
+                'Found a directive statement in the wrong place',
                 `Directive '${rawText}' must appear only at the beginning of the document, before any sections or members.`,
                 'Move the directive to the top of the file, after a possible shebang, comments, or whitespace.',
             )
