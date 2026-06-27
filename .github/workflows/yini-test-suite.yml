@@ -18,20 +18,21 @@ jobs:
 
         steps:
             - name: Check out yini-parser-typescript
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
               with:
                   path: yini-parser-typescript
 
             - name: Check out yini-test-suite
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
               with:
                   repository: YINI-lang/yini-test-suite
-                  # Pin to the suite release this parser version was validated against.
-                  ref: v0.3.0
+                  # Pin to the commit for suite package version 0.3.0.
+                  # There is no v0.3.0 Git tag in yini-test-suite yet.
+                  ref: be6a8a71dcb086a970d6c046ab8453fa083259ef
                   path: yini-test-suite
 
             - name: Set up Node.js
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
                   node-version: 24
                   cache: npm
