@@ -26,9 +26,8 @@ jobs:
               uses: actions/checkout@v7
               with:
                   repository: YINI-lang/yini-test-suite
-                  # Pin to the commit for suite package version 0.3.0.
-                  # There is no v0.3.0 Git tag in yini-test-suite yet.
-                  ref: be6a8a71dcb086a970d6c046ab8453fa083259ef
+                  # Optional pin. Uncomment once yini-test-suite has a release tag.
+                  # ref: v0.3.0
                   path: yini-test-suite
 
             - name: Set up Node.js
