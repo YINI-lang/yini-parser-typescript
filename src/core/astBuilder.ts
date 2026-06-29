@@ -456,6 +456,10 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
                     msgWhat = 'Invalid escape sequence in string'
                     msgHint =
                         'Use double backslashes (\\\\) in C-strings, or use a raw string if escapes are not needed.'
+                } else if (/control character/i.test(msg)) {
+                    msgWhat = 'Control character in string'
+                    msgHint =
+                        'Use a C-string escape such as \\t for tabs, or remove the raw control character.'
                 } else if (/end of string/i.test(msg)) {
                     msgWhat = 'Incomplete escape sequence in string'
                     msgHint =

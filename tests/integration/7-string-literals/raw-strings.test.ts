@@ -237,6 +237,20 @@ Line 2"
                 })
             }).toThrow()
         })
+
+        test('10. Should throw when a raw string contains a literal tab.', () => {
+            // Arrange.
+            const invalidYini =
+                '@yini\n\n^ Strings\nkey = "alpha\tbeta"\n'
+
+            // Act & Assert.
+            expect(() => {
+                YINI.parse(invalidYini, {
+                    strictMode: false,
+                    failLevel: 'errors',
+                })
+            }).toThrow(/control character/i)
+        })
     })
 
     describe('Strict mode:', () => {
@@ -398,6 +412,21 @@ Line 2"
                     failLevel: 'errors',
                 })
             }).toThrow()
+        })
+
+        test('7. Should throw when a raw string contains a literal tab.', () => {
+            // Arrange.
+            const invalidYini =
+                '@yini strict\n\n^ App\ntext = "alpha\tbeta"\n\n/END\n'
+
+            // Act & Assert.
+            expect(() => {
+                YINI.parse(invalidYini, {
+                    strictMode: true,
+                    requireDocTerminator: 'required',
+                    failLevel: 'errors',
+                })
+            }).toThrow(/control character/i)
         })
     })
 })
