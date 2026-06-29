@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 1.6.1x - 2026 June + LATER  
+- **Fixed:** Raw single-line strings now reject literal control characters, such as tabs, and report a clearer string diagnostic.
+
 ## 1.6.1 - 2026 June  
 - **Fixed:** Aligned parser behavior with the external `yini-test` conformance suite for shebang-like comment lines, misplaced `@yini` directives, and triple-quoted string line endings.
 - **Fixed:** `#!` lines after an opening `@yini` marker are now treated as comment trivia, while `@yini` directives after document content are reported as syntax errors in both lenient and strict mode.

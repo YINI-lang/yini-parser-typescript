@@ -211,11 +211,27 @@ const parseClassicEscapes = (
 const normalizeRealLineBreaks = (value: string): string =>
     value.replace(/\r\n?/g, '\n')
 
+const rejectRawSingleLineControlCharacters = (input: string): void => {
+    for (let i = 0; i < input.length; i++) {
+        const code = input.charCodeAt(i)
+
+        if (code < 0x20) {
+            throw new CYiniStringParseError(
+                `Raw string contains control character U+${code
+                    .toString(16)
+                    .padStart(4, '0')}`,
+            )
+        }
+    }
+}
+
 const parseStringLiteral = ({ strKind, value }: IParsedStringInput): string => {
     switch (strKind) {
         case 'raw':
             // Raw strings preserve content exactly as provided by the lexer.
-            // Single-line raw string constraints are enforced by the lexer.
+            // Line breaks are enforced by the lexer; other C0 controls are
+            // reported here so callers get a structured parser diagnostic.
+            rejectRawSingleLineControlCharacters(value)
             return value
 
         case 'triple-raw':
