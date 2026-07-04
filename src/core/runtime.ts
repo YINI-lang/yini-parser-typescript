@@ -60,6 +60,25 @@ export class YiniRuntime {
         }
     }
 
+    private addInitialBomWarning(content: string): void {
+        if (!content.startsWith('\uFEFF')) {
+            return
+        }
+
+        this.#runtime.preflightIssues.push({
+            locInput: {
+                line: 1,
+                column: 1,
+                endColumn: 1,
+            },
+            type: 'Syntax-Warning',
+            msgWhat: 'UTF-8 BOM detected.',
+            msgWhy:
+                'YINI recommends UTF-8 without BOM. The initial BOM was accepted and ignored for compatibility.',
+            msgHint: 'Save the document as UTF-8 without BOM when possible.',
+        })
+    }
+
     // --- Method overload signature ---------------------------------------
     // (With no body + not declared with arrow function.)
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
@@ -130,6 +149,7 @@ export class YiniRuntime {
         }
 
         const originalContent = yiniContent
+        this.addInitialBomWarning(originalContent)
         yiniContent = stripBomAndValidShebang(yiniContent)
         yiniContent = normalizeShebangCommentLines(yiniContent)
 

@@ -51,6 +51,36 @@ port = 8080
         expect(warning.message).toMatch(/empty yini document/i)
     })
 
+    test('Returns ok true with a warning for an initial UTF-8 BOM.', () => {
+        const parsed = YINI.parseForTooling(
+            `\uFEFF@yini
+
+^ Encoding
+name = "utf8-bom"
+accepted = true
+`,
+            {
+                strictMode: false,
+            },
+        )
+
+        expect(parsed.ok).toBe(true)
+        expect(parsed.result).toEqual({
+            Encoding: {
+                name: 'utf8-bom',
+                accepted: true,
+            },
+        })
+
+        expect(parsed.diagnostics).toContainEqual(
+            expect.objectContaining({
+                severity: 'warning',
+                code: 'utf8-bom',
+                message: expect.stringContaining('BOM'),
+            }),
+        )
+    })
+
     test('Keeps the first duplicate section body in lenient mode.', () => {
         const parsed = YINI.parseForTooling(
             `

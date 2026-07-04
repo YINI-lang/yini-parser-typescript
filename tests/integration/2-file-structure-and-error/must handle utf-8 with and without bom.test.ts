@@ -70,6 +70,27 @@ name = "Demo"`
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(expected))
     })
 
+    test('A-3.b) Reports a warning for UTF-8 with BOM.', () => {
+        // Arrange.
+        const input = `\uFEFF^ App
+name = "Demo"`
+
+        // Act.
+        const result = YINI.parse(input, {
+            includeMetadata: true,
+            includeDiagnostics: true,
+        })
+
+        // Assert.
+        expect(toPrettyJSON(result.result)).toEqual(toPrettyJSON(expected))
+        expect(result.meta.diagnostics?.warnings.payload).toContainEqual(
+            expect.objectContaining({
+                typeKey: 'syntax_warning',
+                message: expect.stringContaining('BOM'),
+            }),
+        )
+    })
+
     test('A-4.a) Parses UTF-8 with BOM followed by newline before content.', () => {
         // Arrange.
         const input = `\uFEFF\n^ App

@@ -2,6 +2,7 @@
 
 ## 1.6.1x - 2026 June + LATER  
 - **Fixed:** Raw single-line strings now reject literal control characters, such as tabs, and report a clearer string diagnostic.
+- **Fixed:** Initial UTF-8 BOMs are still accepted and ignored, but now produce a structured compatibility warning.
 
 ## 1.6.1 - 2026 June  
 - **Fixed:** Aligned parser behavior with the external `yini-test` conformance suite for shebang-like comment lines, misplaced `@yini` directives, and triple-quoted string line endings.

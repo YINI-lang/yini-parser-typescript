@@ -298,6 +298,10 @@ export default class YINI {
             return 'empty-document'
         }
 
+        if (text.includes('bom') && text.includes('utf-8')) {
+            return 'utf8-bom'
+        }
+
         if (text.includes('duplicate key')) {
             return 'duplicate-key'
         }
