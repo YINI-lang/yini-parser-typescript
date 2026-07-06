@@ -59,7 +59,8 @@ jobs:
             - name: Install latest published yini-test-suite
               run: |
                   python -m pip install --upgrade pip
-                  python -m pip install --upgrade --pre yini-test-suite
+                  # python -m pip install --upgrade --pre yini-test-suite
+                  python -m pip install --upgrade --pre yini-test-suite==0.3.0b1
 
             - name: Run yini-test-suite against TypeScript parser
               working-directory: yini-parser-typescript
