@@ -1,7 +1,7 @@
 # Runs the shared YINI conformance test suite against this TypeScript parser.
-# The workflow checks out both repositories, builds the parser and adapter,
-# installs the Python test runner from source, and executes all lenient and
-# strict conformance cases through the Node.js adapter.
+# The workflow builds the parser and adapter, installs the latest published
+# Python test runner from PyPI, and executes all bundled lenient and strict
+# conformance cases through the Node.js adapter.
 
 name: YINI Test Suite
 
@@ -22,13 +22,15 @@ jobs:
               with:
                   path: yini-parser-typescript
 
-            - name: Check out yini-test-suite
-              uses: actions/checkout@v7
-              with:
-                  repository: YINI-lang/yini-test-suite
-                  # Optional pin. Uncomment once yini-test-suite has a release tag.
-                  # ref: v0.3.0
-                  path: yini-test-suite
+            # The published yini-test-suite package includes the shared case
+            # corpus, so the separate source checkout is no longer needed.
+            # - name: Check out yini-test-suite
+            #   uses: actions/checkout@v7
+            #   with:
+            #       repository: YINI-lang/yini-test-suite
+            #       # Optional pin. Uncomment once yini-test-suite has a release tag.
+            #       # ref: v0.3.0
+            #       path: yini-test-suite
 
             - name: Set up Node.js
               uses: actions/setup-node@v6
@@ -54,16 +56,17 @@ jobs:
               working-directory: yini-parser-typescript
               run: npm run build-tools
 
-            - name: Install yini-test-suite from GitHub checkout
-              working-directory: yini-test-suite
+            - name: Install latest published yini-test-suite
               run: |
                   python -m pip install --upgrade pip
-                  python -m pip install -e .
+                  python -m pip install --upgrade --pre yini-test-suite
 
             - name: Run yini-test-suite against TypeScript parser
               working-directory: yini-parser-typescript
+              # The PyPI package uses its bundled cases by default, so the old
+              # source-checkout path is no longer needed:
+              # --cases-root ../yini-test-suite/src/yini_test/cases
               run: >
-                  python -m yini_test all
+                  yini-test-suite all
                   --all-modes
-                  --cases-root ../yini-test-suite/src/yini_test/cases
-                  --adapter node ./dist-tools/tools/yini-test-adapter.js --input {input} --mode {mode}
+                  --adapter node ./dist-tools/tools/yini-test-adapter.js --input '{input}' --mode '{mode}'
