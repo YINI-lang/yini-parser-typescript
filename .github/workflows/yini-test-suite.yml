@@ -3,7 +3,7 @@
 # Python test runner from PyPI, and executes all bundled lenient and strict
 # conformance cases through the Node.js adapter.
 
-name: YINI Test Suite
+name: (external) YINI Test Suite
 
 on:
     push:
