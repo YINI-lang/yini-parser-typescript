@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 1.6.1x - 2026 June + LATER  
+## [Upcoming/Unreleased] 1.6.1x - FUTURE  
 - **Fixed:** Raw single-line strings now reject literal control characters, such as tabs, and report a clearer string diagnostic.
 - **Fixed:** Initial UTF-8 BOMs are still accepted and ignored, but now produce a structured compatibility warning.
 
