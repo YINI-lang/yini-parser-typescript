@@ -8,6 +8,12 @@ The official TypeScript / Node.js parser for **YINI** (by the YINI-lang project)
 [![Grammar Drift Check](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-grammar-drift-check.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-grammar-drift-check.yml)
 [![npm downloads](https://img.shields.io/npm/dm/yini-parser)](https://www.npmjs.com/package/yini-parser)  
 
+Useful links:
+- [YINI Homepage](https://yini-lang.org)
+- [yini-parser on GitHub](https://github.com/YINI-lang/yini-parser-typescript)
+- [Report an Issue](https://github.com/YINI-lang/yini-parser-typescript/issues)
+- [Start a Discussion](https://github.com/YINI-lang/yini-parser-typescript/discussions)
+
 YINI is intended to emphasize clarity, readability, explicit structure, and predictable parsing, while remaining simple, but not simplistic, and without relying on implicit or indentation-sensitive structure.
 
 ## Copy-paste test
@@ -299,16 +305,16 @@ The ANTLR generator JAR is only needed by maintainers when regenerating parser s
 
 ## Feedback and bug reports
 
-If you find a problem, please open an issue on GitHub:
+If you find a problem or want to give feedback, use GitHub:
 
 - [Report a bug or issue](https://github.com/YINI-lang/yini-parser-typescript/issues)
+- [Start a discussion](https://github.com/YINI-lang/yini-parser-typescript/discussions)
 
 When reporting parser behavior, it is helpful to include:
 - The YINI input that caused the issue.
 - The expected result.
 - The actual result or error message.
-- The installed `yini-parser` version.
-- The Node.js version used.
+- The installed `yini-parser` and Node.js version.
 
 ---
 

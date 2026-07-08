@@ -1,0 +1,5 @@
+External YINI test suite (conformance) workflow:
+
+- Builds this TypeScript parser and its Node.js test adapter.
+- Installs the latest published yini-test-suite package from PyPI.
+- Runs all bundled lenient and strict cases through the adapter.
