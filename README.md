@@ -9,7 +9,7 @@ The official TypeScript / Node.js parser for **YINI** (by the YINI-lang project)
 [![npm downloads](https://img.shields.io/npm/dm/yini-parser)](https://www.npmjs.com/package/yini-parser)  
 
 Useful links:
-- [YINI Homepage](https://yini-lang.org)
+- [YINI homepage](https://yini-lang.org?utm_source=github&utm_medium=referral&utm_campaign=yini_parser_ts&utm_content=readme_project_links)
 - [yini-parser on GitHub](https://github.com/YINI-lang/yini-parser-typescript)
 - [Report an Issue](https://github.com/YINI-lang/yini-parser-typescript/issues)
 - [Start a Discussion](https://github.com/YINI-lang/yini-parser-typescript/discussions)
