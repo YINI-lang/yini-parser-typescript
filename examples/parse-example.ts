@@ -2,6 +2,9 @@
  * parse-example.ts
  *
  * Demonstrates reading and parsing a YINI configuration file.
+ *
+ * Run from the repository root with:
+ *     npm run example1
  */
 
 import path from 'path'

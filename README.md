@@ -197,6 +197,17 @@ const configFromFile = YINI.parseFile('./config.yini');
 
 ## 📂 More Examples
 
+After cloning this repository and running `npm install`, you can run the local examples from the repository root:
+
+```sh
+npm run example1
+npm run example2
+npm run example3
+```
+
+- `example1` parses a basic YINI file.
+- `example2` parses nested YINI sections.
+- `example3` demonstrates tooling-style parsing with diagnostics.
 - Additional [YINI examples](https://yini-lang.org/learn-yini/examples/?utm_source=yini-parser-ts&utm_medium=github&utm_campaign=repo-link&utm_content=readme).
 
 ### Example 2

@@ -82,7 +82,10 @@
         "ci:antlr": "make ci-generate",
         "build": "tsc -p ./tsconfig.json",
         "build-tools": "tsc -p tsconfig.tools.json",
-        "prepublishOnly": "npm run lint && npm test && npm run build"
+        "prepublishOnly": "npm run lint && npm test && npm run build",
+        "example1": "npm run build && tsx examples/parse-example.ts",
+        "example2": "npm run build && tsx examples/nested-example.ts",
+        "example3": "npm run build && tsx examples/tooling-diagnostics-example.ts"
     },
     "author": "Marko K. Seppänen",
     "dependencies": {
