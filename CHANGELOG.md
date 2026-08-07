@@ -2,7 +2,9 @@
 
 **Changelog** for `yini-parser-typescript`.
 
-## [Upcoming/Unreleased] 1.6.1x - FUTURE  
+--## [Upcoming/Unreleased] - FUTURE  
+
+## 1.6.2 - 2026 Aug  
 - **Fixed:** Raw single-line strings now reject literal control characters, such as tabs, and report a clearer string diagnostic.
 - **Fixed:** Initial UTF-8 BOMs are still accepted and ignored, but now produce a structured compatibility warning.
 - **Security:** Updated dependency packages and the Lychee GitHub Action to resolve security advisories, reducing known high/moderate vulnerabilities to zero.
