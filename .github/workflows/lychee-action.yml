@@ -18,6 +18,11 @@ jobs:
             - name: Run lychee (check for dead links in README.md)
               uses: lycheeverse/lychee-action@v2.0.2
               with:
-                  args: --verbose --no-progress ./README.md
+                  args: >
+                      --verbose
+                      --no-progress
+                      --user-agent "Mozilla/5.0 (compatible; YINI-link-checker/1.0)"
+                      --exclude '^https://www\.npmjs\.com/package/yini-parser$'
+                      ./README.md
               env:
-                  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
