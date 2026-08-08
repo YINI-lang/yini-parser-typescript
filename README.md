@@ -81,7 +81,7 @@ console.log(config.App.name)              // My App
 console.log(config.App.Features.caching)  // true
 ```
 
-The parsed value has the same nested shape as the YINI sections:
+Conceptually, that parses to JSON-shaped data like this:
 
 ```json
 {
