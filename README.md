@@ -81,6 +81,25 @@ console.log(config.App.name)              // My App
 console.log(config.App.Features.caching)  // true
 ```
 
+The parsed value has the same nested shape as the YINI sections:
+
+```json
+{
+  "App": {
+    "name": "My App",
+    "list": ["web", "api"],
+    "darkMode": true,
+    "Features": {
+      "caching": true,
+      "object": {
+        "logging": true,
+        "mode": "debug"
+      }
+    }
+  }
+}
+```
+
 ### Modes and `/END`
 
 `yini-parser` runs in lenient mode by default. In lenient mode, the document terminator `/END` is optional.
