@@ -1,8 +1,10 @@
 # AGENTS.md
 
 > AI agent instructions for this repository.
+>
 > Read this before making any changes to the codebase.
-> If any instruction in this file is unclear, ambiguous, or conflicts with the repository state, stop and ask the human maintainer before proceeding.
+>
+> If any instruction in this file is unclear, ambiguous, or conflicts with the repository state, do not proceed with changes that depend on that instruction. Ask the human maintainer for clarification first.
 
 See also: [Shared AI agent instructions for the YINI project family](../AGENTS.md)
 
