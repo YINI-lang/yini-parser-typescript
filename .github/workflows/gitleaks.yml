@@ -22,7 +22,7 @@ jobs:
 
             - name: Gitleaks scan
               if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork }}
-              uses: gitleaks/gitleaks-action@v2
+              uses: gitleaks/gitleaks-action@v3
               continue-on-error: true # allow next steps to run even if leaks found
               env:
                   GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }} # empty for user repos (ok)
