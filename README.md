@@ -18,6 +18,8 @@ YINI is intended to emphasize clarity, readability, explicit structure, and pred
 
 ## Copy-paste test
 
+Requires Node.js 20 or later.
+
 Test the package in under one minute.
 
 Install:
@@ -26,12 +28,12 @@ Install:
 npm install yini-parser
 ```
 
-Parse a YINI string:
+Create `test.js`:
 
-```ts
-import YINI from 'yini-parser'
+```js
+const { parse } = require('yini-parser')
 
-const data = YINI.parse(`
+const data = parse(`
 ^ Application
 name = "demo"
 
@@ -42,9 +44,15 @@ port = 8080
 console.log(data)
 ```
 
+Run:
+
+```sh
+node test.js
+```
+
 Expected output:
 
-```ts
+```js
 {
   Application: {
     name: 'demo',
@@ -210,6 +218,17 @@ const configFromFile = YINI.parseFile('./config.yini');
       isDarkTheme: false
    }
 }
+```
+
+### Tooling and diagnostics
+
+Use `parseForTooling` for editors, linters, and other tools. It does not throw for normal parse errors and returns the partial result plus structured diagnostics.
+
+```js
+const { parseForTooling } = require('yini-parser')
+
+const parsed = parseForTooling('^ App\nname = "demo"')
+// { ok: true, result: { App: { name: 'demo' } }, diagnostics: [] }
 ```
 
 ---
