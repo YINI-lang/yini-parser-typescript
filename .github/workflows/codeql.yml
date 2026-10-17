@@ -28,7 +28,7 @@ jobs:
                   cache: npm
 
             # JS pack already handles TS; no need to specify both.
-            - uses: github/codeql-action/init@v3
+            - uses: github/codeql-action/init@v4
               with:
                   languages: javascript
                   # If there is a config file to exclude some dirs, uncomment:
@@ -37,4 +37,4 @@ jobs:
             - run: npm ci --ignore-scripts
             - run: npm run build --if-present
 
-            - uses: github/codeql-action/analyze@v3
+            - uses: github/codeql-action/analyze@v4
