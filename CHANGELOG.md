@@ -2,7 +2,8 @@
 
 **Changelog** for `yini-parser-typescript`.
 
---## [Upcoming/Unreleased] - FUTURE  
+## [Upcoming/Unreleased] - FUTURE
+- **Fixed:** Backticked member keys, section names, and inline object keys now decode `\\` to one backslash.
 - **Added:** Added **CI coverage** for `yini-test-suite`, so future changes are tested against the shared YINI conformance suite automatically.
 
 ## 1.6.2 - 2026 Aug  
