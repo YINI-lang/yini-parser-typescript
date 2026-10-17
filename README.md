@@ -9,7 +9,7 @@ The official TypeScript / Node.js parser for **YINI** (by the YINI-lang project)
 [![npm downloads](https://img.shields.io/npm/dm/yini-parser)](https://www.npmjs.com/package/yini-parser)  
 
 Useful links:
-- [YINI homepage](https://yini-lang.org?utm_source=github&utm_medium=referral&utm_campaign=yini_parser_ts&utm_content=readme_project_links)
+- [YINI homepage](https://yini-lang.org?utm_source=github&utm_campaign=yini_parser_ts&utm_content=readme_project_links&utm_medium=referral)
 - [yini-parser on GitHub](https://github.com/YINI-lang/yini-parser-typescript)
 - [Report an Issue](https://github.com/YINI-lang/yini-parser-typescript/issues)
 - [Start a Discussion](https://github.com/YINI-lang/yini-parser-typescript/discussions)
@@ -122,7 +122,7 @@ const config = YINI.parseFile('./config.yini', {
 
 If strict mode reports a missing `/END`, either add `/END` as the final significant line or parse with the default lenient mode.
 
-See the [YINI specification and documentation](https://yini-lang.org/refs/specification?utm_source=github&utm_medium=referral&utm_campaign=yini_parser_ts&utm_content=readme).
+See the [YINI specification and documentation](https://yini-lang.org/refs/specification?utm_source=github&utm_campaign=yini_parser_ts&utm_content=readme&utm_medium=referral).
 
 ---
 
@@ -246,12 +246,16 @@ npm run example3
 - `example1` parses a basic YINI file.
 - `example2` parses nested YINI sections.
 - `example3` demonstrates tooling-style parsing with diagnostics.
-- Additional [YINI examples](https://yini-lang.org/learn-yini/examples/?utm_source=yini-parser-ts&utm_medium=github&utm_campaign=repo-link&utm_content=readme).
+- Additional [YINI examples](https://yini-lang.org/learn-yini/examples/?utm_source=yini-parser-ts&utm_campaign=repo-link&utm_content=readme&utm_medium=github).
 
-### Example 2
+<details>
+<summary>View a larger YINI configuration example</summary>
+
 > A real-world YINI configuration example, showing sections, nesting, comments, and multiple data types:  
 ![YINI Config Example](./samples/config.yini.png)
 Source: [config.yini](./samples/config.yini)
+
+</details>
 
 ---
 
@@ -287,6 +291,9 @@ mode = 'optional'
 - `TLS` is nested under `Server`.
 - The section markers `^` make the nesting explicit. Indentation is optional and not required for structure.
 - Strings can use either `'` or `"`.
+
+<details>
+<summary>Compare this example with JSON, YAML, and TOML</summary>
 
 ### JSON
 ```json
@@ -336,6 +343,8 @@ enabled = true
 mode = "optional"
 ```
 
+</details>
+
 Note: YINI may not be the right choice when you need mature ecosystem support, existing schema tooling, or maximum compatibility with infrastructure that already expects JSON, YAML, or TOML.
 
 ---
@@ -384,8 +393,8 @@ Current conformance result:
 ---
 
 ## Links
-- [YINI Homepage](https://yini-lang.org)  
-- [YINI Specification](https://yini-lang.org/refs/specification)  
+- [YINI Homepage](https://yini-lang.org/?utm_source=github&utm_campaign=yini_parser_ts&utm_content=readme_links_homepage&utm_medium=referral)
+- [YINI Specification](https://yini-lang.org/refs/specification/?utm_source=github&utm_campaign=yini_parser_ts&utm_content=readme_links_specification&utm_medium=referral)
 - [YINI CLI on GitHub](https://github.com/YINI-lang/yini-cli)  
 - [YINI Demo Apps](https://github.com/YINI-lang/yini-demo-apps/tree/main)  
 - [YINI-lang Project](https://github.com/YINI-lang)  
@@ -417,4 +426,4 @@ In this project on GitHub, the `libs` directory contains third-party software an
 > 
 > See the specification for syntax and format details.  
 
-[yini-lang.org](https://yini-lang.org/?utm_source=github&utm_medium=referral&utm_campaign=yini_parser_ts&utm_content=readme_footer) · [YINI-lang on GitHub](https://github.com/YINI-lang)  
+[yini-lang.org](https://yini-lang.org/?utm_source=github&utm_campaign=yini_parser_ts&utm_content=readme_footer&utm_medium=referral) · [YINI-lang on GitHub](https://github.com/YINI-lang)
