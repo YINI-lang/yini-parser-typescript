@@ -49,7 +49,11 @@ import parseStringLiteral, {
 } from '../parsers/parseString'
 import { isInfinityValue, isNaNValue } from '../utils/number'
 import { debugPrint, printObject } from '../utils/print'
-import { isEnclosedInBackticks, trimBackticks } from '../utils/string'
+import {
+    decodeBacktickedIdent,
+    isEnclosedInBackticks,
+    trimBackticks,
+} from '../utils/string'
 import {
     isValidBacktickedIdent,
     isValidSimpleIdent,
@@ -895,7 +899,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
             }
         }
 
-        const resultKey = trimBackticks(rawKey)
+        const resultKey = decodeBacktickedIdent(rawKey)
         const rawMemberText = ctx.getText()
         const rawValue = ctx.value?.()?.getText()
         debugPrint(`visitMember(..): rawValue = ` + ctx.value?.()?.getText())
@@ -1569,7 +1573,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
         debugPrint('-> Entered visitObject_member(..)')
 
         const rawKey = ctx.KEY().getText()
-        const key = trimBackticks(rawKey)
+        const key = decodeBacktickedIdent(rawKey)
 
         const separator = this.visitObject_member_separator(
             ctx.object_member_separator(),

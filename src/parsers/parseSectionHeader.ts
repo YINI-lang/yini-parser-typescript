@@ -5,7 +5,7 @@ import { StmtContext } from '../grammar/generated/YiniParser'
 import extractHeaderParts from '../parsers/extractHeaderParts'
 import { extractYiniLine } from '../parsers/extractSignificantYiniLine'
 import { debugPrint } from '../utils/print'
-import { trimBackticks } from '../utils/string'
+import { decodeBacktickedIdent } from '../utils/string'
 import {
     countRepeatedSectionMarkers,
     hasInvalidSectionMarkerSeparatorPlacement,
@@ -188,7 +188,7 @@ const parseSectionHeader = (
             )
         }
 
-        strSectionName = trimBackticks(strSectionName)
+        strSectionName = decodeBacktickedIdent(strSectionName)
     } else {
         debugPrint('Naming constraints: Is not a BacktickedName.')
 
