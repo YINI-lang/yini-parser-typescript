@@ -122,7 +122,6 @@ export const runPipeline = (
     let timeEnd1Ms: number = 0
     let timeEnd2Ms: number = 0
     let timeEnd3Ms: number = 0
-    let timeEnd4Ms: number = 0
     //---------------------------------------------
 
     //---------------------------------------------
@@ -264,7 +263,7 @@ export const runPipeline = (
         console.log()
     }
     const finalJSResult = builder.finishResult()
-    timeEnd3Ms = timeEnd4Ms = performance.now()
+    timeEnd3Ms = performance.now()
     debugPrint(
         '=== Ended phase 3 =============================================',
     )
@@ -273,7 +272,7 @@ export const runPipeline = (
     // Below block should always be done despite isWithTiming to compute
     // total time and runStartedAt that should always be computed.
     {
-        durationMs = timeEnd4Ms - timeStartMs
+        durationMs = timeEnd3Ms - timeStartMs
         runFinishedAt = new Date().toISOString()
     }
     // -----------------------------
@@ -312,7 +311,6 @@ export const runPipeline = (
         timeEnd1Ms,
         timeEnd2Ms,
         timeEnd3Ms,
-        timeEnd4Ms,
     }
     const constructedMetadata: ResultMetadata = buildResultMetadata(params)
 

@@ -34,7 +34,6 @@ export interface IBuildResultMetadataParams {
     timeEnd1Ms: number
     timeEnd2Ms: number
     timeEnd3Ms: number
-    timeEnd4Ms: number
 }
 
 export const buildResultMetadata = (
@@ -90,7 +89,7 @@ export const buildResultMetadata = (
             // listCount: null,
             sectionNamePaths: p.ast.sectionNamePaths,
         },
-        metaSchemaVersion: '1.1.1',
+        metaSchemaVersion: '2.0.0',
     }
 
     // Attach optional diagnostics.
@@ -182,7 +181,7 @@ export const buildResultMetadata = (
             total: !p.coreOptions.isWithTiming
                 ? null
                 : {
-                      timeMs: to3(p.durationMs), // durationMs = timeEnd4Ms - timeStartMs
+                      timeMs: to3(p.durationMs), // durationMs = timeEnd3Ms - timeStartMs
                       name:
                           p.runtimeInfo.sourceType === 'Inline'
                               ? 'Total'
@@ -214,13 +213,7 @@ export const buildResultMetadata = (
                 ? null
                 : {
                       timeMs: to3(p.timeEnd3Ms - p.timeEnd2Ms),
-                      name: 'AST Building',
-                  },
-            phase4: !p.coreOptions.isWithTiming
-                ? null
-                : {
-                      timeMs: 0,
-                      name: 'Object Building',
+                      name: 'Validation and Result Construction',
                   },
         }
     }

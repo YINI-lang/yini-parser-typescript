@@ -109,7 +109,7 @@ export default class YINI {
      *   Requires: `includeMetadata = true`. Ignored otherwise.
      * @param options.includeMetadata - Attach a metadata object to the parse result
      *   (e.g., timings, diagnostics).
-     * @param options.includeTiming - Include timing information for parser phases in metadata.
+     * @param options.includeTiming - Include lexing, parsing, and validation/result-construction timings in metadata.
      *   Requires: `includeMetadata = true`. Ignored otherwise.
      * @param options.onDuplicateKey - Strategy/handler when encountering a duplicate key.
      *   Allowed values: `'warn-and-keep-first'` | `'warn-and-overwrite'` | `'keep-first'` (silent, first wins) | `'overwrite'` (silent, last wins) | `'error'`.
@@ -403,7 +403,7 @@ export default class YINI {
      *   Requires: `includeMetadata = true`. Ignored otherwise.
      * @param options.includeMetadata - Attach a metadata object to the parse result
      *   (e.g., timings, diagnostics).
-     * @param options.includeTiming - Include timing information for parser phases in metadata.
+     * @param options.includeTiming - Include lexing, parsing, and validation/result-construction timings in metadata.
      *   Requires: `includeMetadata = true`. Ignored otherwise.
      * @param options.onDuplicateKey - Strategy/handler when encountering a duplicate key.
      *   Allowed values: `'warn-and-keep-first'` | `'warn-and-overwrite'` | `'keep-first'` (silent, first wins) | `'overwrite'` (silent, last wins) | `'error'`.

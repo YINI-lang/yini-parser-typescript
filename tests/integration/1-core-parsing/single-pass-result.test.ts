@@ -79,18 +79,18 @@ describe('Result construction during the visitor', () => {
         expect(Object.getPrototypeOf(result.Root.value)).toBe(Object.prototype)
     })
 
-    test('Retains the fourth timing field as a zero-duration compatibility label', () => {
+    test('Reports result construction in phase3 without a phase4 field', () => {
         const parsed = YINI.parse('^ Root\nvalue = [1, 2]\n', {
             includeMetadata: true,
             includeTiming: true,
         }) as any
 
         expect(parsed.result).toEqual({ Root: { value: [1, 2] } })
-        expect(parsed.meta.timing.phase4).toEqual({
-            name: 'Object Building',
-            timeMs: 0,
-        })
-        expect(parsed.meta.timing.phase3.name).toBe('AST Building')
+        expect(parsed.meta.timing.phase3.name).toBe(
+            'Validation and Result Construction',
+        )
+        expect(parsed.meta.timing.phase3.timeMs).toBeGreaterThanOrEqual(0)
+        expect(parsed.meta.timing).not.toHaveProperty('phase4')
     })
 
     test('Keeps tooling diagnostics structured and quiet for collisions', () => {

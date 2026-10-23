@@ -247,7 +247,7 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
                     'Server.Security',
                 ],
             },
-            metaSchemaVersion: '1.1.1',
+            metaSchemaVersion: '2.0.0',
             diagnostics: {
                 failLevel: {
                     preferredLevel: 'ignore-errors',

@@ -82,7 +82,7 @@ describe('Smoke fixture tests: A, B, and C', () => {
             expect(result.meta.preservesOrder).toEqual(true)
             expect(result.meta.source).not.toEqual(undefined)
             expect(result.meta.structure).not.toEqual(undefined)
-            expect(result.meta.metaSchemaVersion).toEqual('1.1.1')
+            expect(result.meta.metaSchemaVersion).toEqual('2.0.0')
             expect(result.meta.source.lineCount).toEqual(lineCount)
         },
     )

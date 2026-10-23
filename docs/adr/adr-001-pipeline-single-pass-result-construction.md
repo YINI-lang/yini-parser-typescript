@@ -22,8 +22,9 @@ pass. The separate `astToObject` traversal was removed.
 `ASTBuilder` continues to extend the generated `YiniParserVisitor`; the grammar
 and generated ANTLR files are unchanged. Inputs, returned values, own-key
 order, public API and options, error handling and messages, recovery, and
-diagnostic output remain compatible. The timing result retains `phase4` named
-`Object Building` with `timeMs: 0`; `phase3` includes result construction.
+diagnostic output remain compatible. At adoption, the timing result retained
+`phase4` named `Object Building` with `timeMs: 0`; `phase3` included result
+construction.
 
 ## Consequences
 
@@ -58,3 +59,28 @@ The existing tests were unchanged. The full Jest suite passed 60 suites and
 TypeScript build checks passed. Focused [regression tests](../../tests/integration/1-core-parsing/single-pass-result.test.ts)
 cover collision order, partial results, throwing, special property names, key
 order, timing shape, and tooling diagnostics.
+
+## Outcome
+
+The parser now constructs returned objects during the parse-tree visit (walking
+the structure produced by the parser) and no longer runs the separate
+`astToObject` pass (the former second conversion step). Across the two accepted
+benchmark runs (repeated performance measurements), median parse time (the
+middle measured parsing time) improved by 24.3% to 33.2% on the three large
+workloads. Incremental peak RSS (resident set size: the highest observed RAM
+use above the idle baseline) ranged from 7.3% lower to 43.5% higher. The
+measured results met the 20% speed and 50% memory acceptance limits (agreed
+thresholds for parsing speed and RAM usage), though memory use did not improve
+consistently. The recorded test and build checks passed, including focused
+coverage of collision diagnostics (messages about conflicting names), partial
+results, key order, and tooling behavior (structured results and diagnostics
+for tools).
+
+## Subsequent timing schema change (2026-10-24)
+
+The zero-duration `phase4` field was removed from timing metadata and the
+public `ResultMetadata` type. `phase3` is named `Validation and Result
+Construction` and measures the parse-tree visit, semantic validation, and
+result construction. `metaSchemaVersion` is now `2.0.0` because consumers of
+timing metadata must stop reading `phase4`. The `includeTiming` option and
+the other timing fields remain available.
