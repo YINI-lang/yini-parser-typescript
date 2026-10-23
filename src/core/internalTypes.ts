@@ -65,7 +65,7 @@ export type TValueLiteral = TScalarValue | TListValue | TObjectValue
  */
 export type TListValue = {
     type: 'List'
-    elems: readonly TValueLiteral[]
+    elems: readonly unknown[]
     tag: string | undefined
 }
 
@@ -76,7 +76,7 @@ export type TListValue = {
  */
 export type TObjectValue = {
     type: 'Object'
-    entries: Readonly<Record<string, TValueLiteral>> // ORDER MATTERS!
+    entries: Readonly<Record<string, unknown>> // ORDER MATTERS!
     tag: string | undefined
 }
 
@@ -204,8 +204,10 @@ export interface IYiniAST extends IMetaBaseInfo {
 export interface IYiniSection {
     sectionName: string
     level: number // 1..n
-    members: Map<string, TValueLiteral> // Map used since ORDER MATTERS. Members at this section.
+    members: Set<string> // Member names needed for duplicate and collision checks.
     children: IYiniSection[] // Children sections (on the next level) of the current section.
+    result: Record<string, unknown>
+    order: number
 }
 
 export interface IBuildOptions {

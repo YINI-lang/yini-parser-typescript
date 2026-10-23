@@ -219,7 +219,7 @@ export const buildResultMetadata = (
             phase4: !p.coreOptions.isWithTiming
                 ? null
                 : {
-                      timeMs: to3(p.timeEnd4Ms - p.timeEnd3Ms),
+                      timeMs: 0,
                       name: 'Object Building',
                   },
         }

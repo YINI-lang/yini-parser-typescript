@@ -45,7 +45,7 @@ export default YINI // Public package API.
 
 export const parse = YINI.parse
 export const parseFile = YINI.parseFile
-export const parseForTooling = YINI.parseForTooling
+export const parseForTooling = YINI.parseForTooling.bind(YINI)
 export const getTabSize = YINI.getTabSize
 export const setTabSize = YINI.setTabSize
 

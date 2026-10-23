@@ -1,6 +1,4 @@
-/**
- * Here is where we walk the parse tree (CST) and build/validate the AST.
- */
+/** Walk the parse tree, validate it, and build the result objects. */
 // src/core/astBuilder.ts
 import { isDebug } from '../config/env'
 import {
@@ -118,7 +116,7 @@ const makeScalarValue = (
  *        must not be relied upon for any functional purpose.
  */
 const makeListValue = (
-    elems: TValueLiteral[] = [],
+    elems: unknown[] = [],
     tag: string | undefined = undefined,
 ): TValueLiteral => {
     return { type: 'List', elems, tag }
@@ -130,14 +128,44 @@ const makeListValue = (
  *        must not be relied upon for any functional purpose.
  */
 const makeObjectValue = (
-    entries: Record<string, TValueLiteral> = {},
+    entries: Record<string, unknown> = {},
     tag: string | undefined = undefined,
 ): TValueLiteral => {
     return { type: 'Object', entries, tag }
 }
 
 function makeSection(name: string, level: number): IYiniSection {
-    return { sectionName: name, level, members: new Map(), children: [] }
+    return {
+        sectionName: name,
+        level,
+        members: new Set(),
+        children: [],
+        result: {},
+        order: 0,
+    }
+}
+
+const defineResult = (
+    obj: Record<string, unknown>,
+    key: string,
+    value: unknown,
+): void => {
+    if (key === '__proto__') {
+        Object.defineProperty(obj, key, {
+            value,
+            enumerable: true,
+            configurable: true,
+            writable: true,
+        })
+    } else {
+        obj[key] = value
+    }
+}
+
+const resultValue = (value: TValueLiteral): unknown => {
+    if (value.type === 'List') return value.elems
+    if (value.type === 'Object') return value.entries
+    return value.value
 }
 
 // --- Builder Visitor -----------------------------------------------------
@@ -160,6 +188,9 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
     private readonly onDuplicateKey: IBuildOptions['onDuplicateKey']
     private ast: IYiniAST
     private sectionStack: IYiniSection[]
+    private readonly sectionParents = new WeakMap<IYiniSection, IYiniSection>()
+    private readonly collisions = new Set<IYiniSection>()
+    private sectionOrder = 0
     private ignoredSectionLevel: number | null = null
 
     private meta_hasYiniMarker = false // For stats.
@@ -169,6 +200,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
     private meta_maxLevel = 0 // For stats.
 
     public mapSectionNamePaths: Map<string, number> = new Map<string, number>()
+    private latestSectionPathByLevel = new Map<number, string>()
 
     /**
      * @param metaFileName If parsing from a file, provide the file name here so the meta information can be updated accordingly.
@@ -253,6 +285,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
 
     private setDefineSectionTitle = (keyPath: string, level: number) => {
         this.mapSectionNamePaths.set(keyPath, level)
+        this.latestSectionPathByLevel.set(level, keyPath)
     }
 
     private extractStringKindAndValue(raw: string): IParsedStringInput {
@@ -298,17 +331,8 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
 
         // ------------------------------
         // Construct section name path.
-        let keyPath = ''
-        let i = targetLevel - 1
-        for (const [key, value] of Array.from(
-            this.mapSectionNamePaths.entries(),
-        ).reverse()) {
-            if (value === i) {
-                keyPath += key + '.'
-                break
-            }
-        }
-        keyPath += sectionName // Append current section name last.
+        const parentPath = this.latestSectionPathByLevel.get(targetLevel - 1)
+        const keyPath = (parentPath ? parentPath + '.' : '') + sectionName
         debugPrint('section full path: keyPath = ' + keyPath)
         // ------------------------------
 
@@ -347,6 +371,16 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
         }
         const parent = stack[stack.length - 1] // root or higher-level section
         parent.children.push(section)
+        section.order = ++this.sectionOrder
+        this.sectionParents.set(section, parent)
+        if (
+            parent.members.has(section.sectionName) &&
+            (parent !== ast.root || !this.isStrict)
+        ) {
+            this.collisions.add(section)
+        } else {
+            defineResult(parent.result, section.sectionName, section.result)
+        }
         stack.push(section)
 
         if (targetLevel > this.meta_maxLevel) {
@@ -424,7 +458,51 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
             this._numOfMembers++
         }
 
-        sec.members.set(key, value)
+        sec.members.add(key)
+        if (sec !== this.ast.root || !this.isStrict) {
+            defineResult(sec.result, key, resultValue(value))
+            for (const child of sec.children) {
+                if (child.sectionName === key) this.collisions.add(child)
+            }
+        }
+    }
+
+    /** Emit object-construction collisions after visitor and empty-document issues. */
+    public finishResult(): Record<string, unknown> {
+        const suppressed = new Set<IYiniSection>()
+        const ordered = [...this.collisions].sort((a, b) => a.order - b.order)
+        for (const child of ordered) {
+            const parent = this.sectionParents.get(child)!
+            let ancestor: IYiniSection | undefined = parent
+            let hidden = false
+            while (ancestor) {
+                if (suppressed.has(ancestor)) {
+                    hidden = true
+                    break
+                }
+                ancestor = this.sectionParents.get(ancestor)
+            }
+            if (hidden) continue
+            suppressed.add(child)
+            if (parent === this.ast.root) {
+                this.errorHandler!.pushOrBail(
+                    undefined,
+                    'Syntax-Error',
+                    `Name collision between orphan member and section '${child.sectionName}'`,
+                    `The name '${child.sectionName}' is already used by a top-level member outside any explicit section and cannot also be used as a top-level section name.`,
+                    'Rename either the orphan member or the section to avoid the collision.',
+                )
+            } else {
+                this.errorHandler!.pushOrBail(
+                    undefined,
+                    'Syntax-Error',
+                    `Name collision between member and subsection '${child.sectionName}'`,
+                    `The name '${child.sectionName}' is already used by a member in section '${parent.sectionName}' and cannot also be used as a subsection name.`,
+                    'Rename either the member or the subsection.',
+                )
+            }
+        }
+        return this.ast.root.result
     }
 
     private stringifyConcatOperand(value: TScalarValue): string {
@@ -900,10 +978,23 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
         }
 
         const resultKey = decodeBacktickedIdent(rawKey)
-        const rawMemberText = ctx.getText()
-        const rawValue = ctx.value?.()?.getText()
-        debugPrint(`visitMember(..): rawValue = ` + ctx.value?.()?.getText())
-        debugPrint(`visitMember(..): rawMemberText = ` + rawMemberText)
+        const valueContext = ctx.value?.()
+        // Preserve the inexpensive source text for simple values. Recursive
+        // getText() on a composite walks the whole value tree again.
+        const isComposite = !!valueContext && (
+            !!valueContext.list_literal() || !!valueContext.object_literal()
+        )
+        const simpleRawValue = valueContext && !isComposite
+            ? valueContext.getText()
+            : undefined
+        const hasValue = !!valueContext && (isComposite || !!simpleRawValue)
+        const simpleRawMemberText = hasValue && !isComposite
+            ? ctx.getText()
+            : undefined
+        if (isDebug()) {
+            debugPrint(`visitMember(..): rawValue = ` + (simpleRawValue ?? valueContext?.getText()))
+            debugPrint(`visitMember(..): rawMemberText = ` + (simpleRawMemberText ?? ctx.getText()))
+        }
 
         /* NOTE:
             ctx.value() can be missing after parser recovery, even when the user did type something after ""=".
@@ -918,14 +1009,13 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
                 * rawMemberText lets one inspect the whole member text.
          */
 
-        let valueContext = ctx.value?.()
         let valueNode: TValueLiteral | undefined
 
-        const eqIndex = rawMemberText.indexOf('=')
-        const hasTextAfterEquals =
-            eqIndex >= 0 && rawMemberText.slice(eqIndex + 1).trim().length > 0
-
-        if (!valueContext || !rawValue) {
+        if (!hasValue) {
+            const rawMemberText = ctx.getText()
+            const eqIndex = rawMemberText.indexOf('=')
+            const hasTextAfterEquals =
+                eqIndex >= 0 && rawMemberText.slice(eqIndex + 1).trim().length > 0
             // Case 1: there is text after '=' but parser could not form a valid value.
             // Parser-level syntax error has likely already been reported.
             if (hasTextAfterEquals) {
@@ -979,7 +1069,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
                     )
             }
         } else {
-            valueNode = this.visitValue(valueContext) as TValueLiteral
+            valueNode = this.visitValue(valueContext!) as TValueLiteral
         }
 
         debugPrint('visitMember(..): valueNode:')
@@ -994,7 +1084,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
                 'Syntax-Error',
                 'Invalid value',
                 `Invalid value for key '${resultKey}' in member (<key> = <value> pair).`,
-                `Got '${rawValue}', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
+                `Got '${simpleRawValue ?? valueContext?.getText()}', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
             )
         } else if (
             valueNode.type === 'Undefined' &&
@@ -1008,7 +1098,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
                 'Syntax-Error',
                 'Invalid value',
                 `Invalid value for key '${resultKey}' in member (<key> = <value> pair).`,
-                `Got '${rawValue}', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
+                `Got '${simpleRawValue ?? valueContext?.getText()}', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
             )
         }
 
@@ -1458,23 +1548,20 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
             )
         }
 
-        const elems = !ctx?.value_list()
-            ? []
-            : ctx.value_list().map((elem) => {
-                  const valueNode = this.visitValue(elem)
-
-                  if (!valueNode) {
-                      this.errorHandler!.pushOrBail(
-                          toErrorLocation(ctx),
-                          'Syntax-Error',
-                          'Invalid list element',
-                          `Invalid list element: '${elem?.getText()}'`,
-                          `Expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
-                      )
-                  }
-
-                  return valueNode
-              })
+        const elems: unknown[] = []
+        for (const elem of ctx.value_list()) {
+            const valueNode = this.visitValue(elem)
+            if (!valueNode) {
+                this.errorHandler!.pushOrBail(
+                    toErrorLocation(ctx),
+                    'Syntax-Error',
+                    'Invalid list element',
+                    `Invalid list element: '${elem?.getText()}'`,
+                    `Expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
+                )
+            }
+            elems.push(valueNode ? resultValue(valueNode) : undefined)
+        }
 
         debugPrint('<- About to exit visitElements(..)')
         if (isDebug()) {
@@ -1533,7 +1620,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
             )
         }
 
-        const entries: Record<string, TValueLiteral> = {}
+        const entries: Record<string, unknown> = {}
 
         ctx.object_member_list().forEach((member) => {
             const { key, value }: any = this.visitObject_member(member)
@@ -1542,6 +1629,11 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
                 debugPrint('Skip inserting Undefined')
                 return
             }
+
+            // The previous inline-object conversion omitted this key because
+            // assigning it to its temporary entries object changed its
+            // prototype instead of creating an own property.
+            if (key === '__proto__') return
 
             if (Object.prototype.hasOwnProperty.call(entries, key)) {
                 this.errorHandler!.pushOrBail(
@@ -1557,7 +1649,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
                 return
             }
 
-            entries[key] = value
+            defineResult(entries, key, resultValue(value))
         })
 
         return entries
@@ -1600,7 +1692,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
         }
 
         const valueCtx = ctx.value()
-        const rawValue = valueCtx?.getText() ?? ''
+        const rawValue = isDebug() ? valueCtx?.getText() ?? '' : ''
 
         const valueNode: TValueLiteral = valueCtx
             ? this.visitValue(valueCtx)
@@ -1621,7 +1713,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
                 'Syntax-Error',
                 'Invalid object entry',
                 `Invalid object entry for key '${key}'.`,
-                `Got '${rawValue}', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
+                `Got '${valueCtx?.getText() ?? ''}', but expected a valid value/literal (string, number, boolean, null, list, or object). Optionally with a single leading minus sign '-'.`,
             )
         }
 
