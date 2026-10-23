@@ -2,6 +2,11 @@
 
 **Changelog** for `yini-parser-typescript`.
 
+## 1.7.0+ - Upcoming
+- **Improved:** Construct parser results during the parse-tree visit, removing the separate `AST-to-object pass`. Local benchmarks of three large workloads measured 24–33% faster median parsing; incremental peak memory varied from 7.3% lower to 43.5% higher. See [ADR-001](docs/adr/adr-001-pipeline-single-pass-result-construction.md).
+- **Changed:** With `includeTiming`, `phase3` now includes result construction. The `phase4` field and its `Object Building` name remain for compatibility, with `timeMs: 0`.
+- **Fixed:** The named `parseForTooling` export now retains its class binding, so named imports return structured tooling results instead of a `parser-error`.
+
 ## 1.6.3 - 2026 Oct
 - **Fixed:** Backticked member keys, section names, and inline object keys now decode `\\` to one backslash.
 - **Added:** Added **CI coverage** for `yini-test-suite`, so future changes are tested against the shared YINI conformance suite automatically.
