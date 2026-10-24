@@ -35,7 +35,21 @@ jobs:
               run: npm run build # Optional, if you have a build step
 
             - name: Publish to npm
-              # run: npm publish --provenance --tag beta --access public # Use this if a beta release.
-              run: npm publish --provenance --access public
+              run: |
+                  version=$(node -p "require('./package.json').version")
+                  version_without_build="${version%%+*}"
+                  tag=latest
+
+                  if [[ "$version_without_build" == *-* ]]; then
+                      prerelease="${version_without_build#*-}"
+                      if [[ "$prerelease" == beta || "$prerelease" == beta.* ]]; then
+                          tag=beta
+                      else
+                          echo "::error::Unsupported prerelease version: $version"
+                          exit 1
+                      fi
+                  fi
+
+                  npm publish --provenance --tag "$tag" --access public
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
