@@ -22,26 +22,21 @@ jobs:
 
             - name: Gitleaks scan
               if: ${{ github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork }}
-              uses: gitleaks/gitleaks-action@v2
+              uses: gitleaks/gitleaks-action@v3
               continue-on-error: true # allow next steps to run even if leaks found
               env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }} # empty for user repos (ok)
-              with:
-                  # Write SARIF explicitly into the workspace
-                  args: >
-                      detect --source . --no-git --redact --verbose
-                      --report-format sarif
-                      --report-path ${{ github.workspace }}/gitleaks.sarif
 
             # (Optional) Inspect whether the file was created
             # - name: Debug: list files
             #   run: ls -la ${{ github.workspace }}
 
             - name: Upload SARIF to GitHub Security
-              if: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork) && hashFiles('gitleaks.sarif') != '' }}
+              if: ${{ (github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork) && hashFiles('results.sarif') != '' }}
               uses: github/codeql-action/upload-sarif@v3
               with:
-                  sarif_file: gitleaks.sarif
+                  sarif_file: results.sarif
 
             - name: Skipped on forked PRs
               if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork }}
