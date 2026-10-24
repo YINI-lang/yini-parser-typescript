@@ -69,7 +69,7 @@ export type FailLevelKey =
 export type PreferredFailLevel = 'auto' | FailLevelKey
 
 /** Version tag for the public metadata schema. */
-export type MetaSchemaVersion = '1.1.1'
+export type MetaSchemaVersion = '2.0.0'
 
 /** Source of the order guarantee. */
 export type OrderGuarantee =
@@ -134,14 +134,14 @@ export interface PrimaryUserParams extends BasicOptions {
  *   Requires: `includeMetadata = true`. Ignored otherwise.
  * @param options.includeMetadata - Attach a metadata object to the parse result
  *   (e.g., timings, diagnostics).
- * @param options.includeTiming - Include timing information for parser phases in metadata.
+ * @param options.includeTiming - Include lexing, parsing, and validation/result-construction timings in metadata.
  *   Requires: `includeMetadata = true`. Ignored otherwise.
  * @param options.onDuplicateKey - Strategy/handler when encountering a duplicate key.
  *   Allowed values: `'warn-and-keep-first'` | `'warn-and-overwrite'` | `'keep-first'` (silent, first wins) | `'overwrite'` (silent, last wins) | `'error'`.
  * @param options.preserveUndefinedInMeta - Keep properties with value `undefined` inside
  *   the returned metadata. Requires: `includeMetadata = true`. Ignored otherwise.
- * @param options.logDiagnostics - Opt in to writing diagnostics to stderr.
- *   Library calls do not write diagnostics by default.
+ * @param options.logDiagnostics - Print human-readable error and warning messages to stderr.
+ *   Enabled by default; set to `false` when the caller handles diagnostics itself.
  * @param options.quiet - When `logDiagnostics = true`, print **errors only** to stderr;
  *   warnings and info are not printed. Structured diagnostics are unaffected.
  * @param options.requireDocTerminator - Whether a document terminator is required.
@@ -162,12 +162,12 @@ export interface PrimaryUserParams extends BasicOptions {
 // NOTE: (!) All props MUST be optional.
 export interface ParseOptions extends BasicOptions {
     includeDiagnostics?: boolean // (Requires includeMetadata) Include diagnostics in meta data, when isIncludeMeta.
-    includeTiming?: boolean // (Requires includeMetadata) Include timing data of the different phases in meta data, when isIncludeMeta.
+    includeTiming?: boolean // (Requires includeMetadata) Include lexing, parsing, and validation/result-construction timings.
     preserveUndefinedInMeta?: boolean // (Requires includeMetadata) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
     onDuplicateKey?: OnDuplicateKey
     requireDocTerminator?: DocumentTerminatorRule
     treatEmptyValueAsNull?: EmptyValueRule
-    logDiagnostics?: boolean // Opt in to writing diagnostics to stderr. Library calls do not write diagnostics by default.
+    logDiagnostics?: boolean // Print human-readable diagnostic messages to stderr. Defaults to true.
     quiet?: boolean // When logDiagnostics is true, reduce output to errors only. Does not affect diagnostics in metadata.
     silent?: boolean // Suppress all output (even errors, exit code only). Silent overrides quiet if both are enabled.
     throwOnError?: boolean // Will throw on first parse error encountered.
@@ -270,7 +270,7 @@ export interface ResultMetadata {
         phase0: undefined | { timeMs: number; name: string } // NOTE: When source is 'inline' phase0 is set to undefined as phase0 times I/O.
         phase1: null | { timeMs: number; name: string }
         phase2: null | { timeMs: number; name: string }
+        /** Parse-tree visit, semantic validation, and result construction. */
         phase3: null | { timeMs: number; name: string }
-        phase4: null | { timeMs: number; name: string }
     }
 }

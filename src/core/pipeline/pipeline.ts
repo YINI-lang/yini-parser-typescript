@@ -1,6 +1,5 @@
 /**
- * This file is the orchestrator that wires up the pipeline (lexer → parser →
- * astBuilder → objectBuilder, etc.)
+ * Orchestrate lexing, parsing, and handwritten visitor result construction.
  */
 
 // src/core/pipeline/pipeline.ts
@@ -20,7 +19,6 @@ import { debugPrint, printObject } from '../../utils/print'
 import ASTBuilder from '../astBuilder'
 import { ErrorDataHandler } from '../errorDataHandler'
 import { IParseCoreOptions, IRuntimeInfo, IYiniAST } from '../internalTypes'
-import { astToObject } from '../objectBuilder'
 import {
     buildResultMetadata,
     IBuildResultMetadataParams,
@@ -34,7 +32,7 @@ import {
  * @internal Single source of truth.
  *
  * Entrypoint for the YINI parsing pipeline:
- * tokenization → grammar parse → AST build → object build → result.
+ * tokenization → grammar parse → handwritten validation and result construction.
  *
  * @param _meta_userOpts The user options from which the core options were
  *        derived/resolved from. This object is provided only for debugging
@@ -124,7 +122,6 @@ export const runPipeline = (
     let timeEnd1Ms: number = 0
     let timeEnd2Ms: number = 0
     let timeEnd3Ms: number = 0
-    let timeEnd4Ms: number = 0
     //---------------------------------------------
 
     //---------------------------------------------
@@ -206,7 +203,7 @@ export const runPipeline = (
     isDebug() && console.log()
 
     debugPrint(
-        '=== Phase 3 - AST Model build & validation ===================================================',
+        '=== Phase 3 - Validation and Result Construction ===================================================',
     )
     if (coreOptions.isWithTiming) {
         timeEnd2Ms = performance.now()
@@ -265,32 +262,17 @@ export const runPipeline = (
         )
         console.log()
     }
+    const finalJSResult = builder.finishResult()
+    timeEnd3Ms = performance.now()
     debugPrint(
         '=== Ended phase 3 =============================================',
     )
     isDebug() && console.log()
-
-    debugPrint(
-        '=== Phase 4 - Object Building Construction / Binding / Evaluation) ===================================================',
-    )
-    if (coreOptions.isWithTiming) {
-        timeEnd3Ms = performance.now()
-    }
-
-    // Construct.
-    // const finalJSResult = constructFinalObject(syntaxTreeC, errorHandler)
-    // const finalJSResult = builder.build(parseTree)
-    // const finalJSResult = ast //NOTE: ONLY TEMP so code runs
-    const finalJSResult = astToObject(ast, errorHandler)
-    debugPrint(
-        '=== Ended phase 4 =============================================',
-    )
     // -----------------------------
     // Below block should always be done despite isWithTiming to compute
     // total time and runStartedAt that should always be computed.
     {
-        timeEnd4Ms = performance.now()
-        durationMs = timeEnd4Ms - timeStartMs
+        durationMs = timeEnd3Ms - timeStartMs
         runFinishedAt = new Date().toISOString()
     }
     // -----------------------------
@@ -329,7 +311,6 @@ export const runPipeline = (
         timeEnd1Ms,
         timeEnd2Ms,
         timeEnd3Ms,
-        timeEnd4Ms,
     }
     const constructedMetadata: ResultMetadata = buildResultMetadata(params)
 

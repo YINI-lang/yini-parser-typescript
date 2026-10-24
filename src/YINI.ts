@@ -109,14 +109,14 @@ export default class YINI {
      *   Requires: `includeMetadata = true`. Ignored otherwise.
      * @param options.includeMetadata - Attach a metadata object to the parse result
      *   (e.g., timings, diagnostics).
-     * @param options.includeTiming - Include timing information for parser phases in metadata.
+     * @param options.includeTiming - Include lexing, parsing, and validation/result-construction timings in metadata.
      *   Requires: `includeMetadata = true`. Ignored otherwise.
      * @param options.onDuplicateKey - Strategy/handler when encountering a duplicate key.
      *   Allowed values: `'warn-and-keep-first'` | `'warn-and-overwrite'` | `'keep-first'` (silent, first wins) | `'overwrite'` (silent, last wins) | `'error'`.
      * @param options.preserveUndefinedInMeta - Keep properties with value `undefined` inside
      *   the returned metadata. Requires: `includeMetadata = true`. Ignored otherwise.
-     * @param options.logDiagnostics - Opt in to writing diagnostics to stderr.
-     *   Library calls do not write diagnostics by default.
+     * @param options.logDiagnostics - Print human-readable error and warning messages to stderr.
+     *   Enabled by default; set to `false` when the caller handles diagnostics itself.
      * @param options.quiet - When `logDiagnostics = true`, show only errors.
      *   Does not affect diagnostics included in returned metadata.
      * @param options.requireDocTerminator - Controls whether a document terminator is required.
@@ -403,14 +403,14 @@ export default class YINI {
      *   Requires: `includeMetadata = true`. Ignored otherwise.
      * @param options.includeMetadata - Attach a metadata object to the parse result
      *   (e.g., timings, diagnostics).
-     * @param options.includeTiming - Include timing information for parser phases in metadata.
+     * @param options.includeTiming - Include lexing, parsing, and validation/result-construction timings in metadata.
      *   Requires: `includeMetadata = true`. Ignored otherwise.
      * @param options.onDuplicateKey - Strategy/handler when encountering a duplicate key.
      *   Allowed values: `'warn-and-keep-first'` | `'warn-and-overwrite'` | `'keep-first'` (silent, first wins) | `'overwrite'` (silent, last wins) | `'error'`.
      * @param options.preserveUndefinedInMeta - Keep properties with value `undefined` inside
      *   the returned metadata. Requires: `includeMetadata = true`. Ignored otherwise.
-     * @param options.logDiagnostics - Opt in to writing diagnostics to stderr.
-     *   Library calls do not write diagnostics by default.
+     * @param options.logDiagnostics - Print human-readable error and warning messages to stderr.
+     *   Enabled by default; set to `false` when the caller handles diagnostics itself.
      * @param options.quiet - When `logDiagnostics = true`, show only errors.
      *   Does not affect diagnostics included in returned metadata.
      * @param options.requireDocTerminator - Controls whether a document terminator is required.

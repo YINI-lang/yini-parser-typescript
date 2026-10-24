@@ -35,7 +35,7 @@ const BASE_DEFAULTS: TNormalizedUserOptions = {
     onDuplicateKey: 'error',
     requireDocTerminator: 'optional',
     treatEmptyValueAsNull: 'allow-with-warning',
-    logDiagnostics: false,
+    logDiagnostics: true,
     quiet: false, // When logDiagnostics is true, suppress warnings in stderr output.
     silent: false,
     //@todo: Change default throwOnError to false

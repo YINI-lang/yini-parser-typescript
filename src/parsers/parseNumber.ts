@@ -1,6 +1,23 @@
 // src/parsers/parseNumber.ts
 import { debugPrint } from '../utils/print'
 
+const decDigits = String.raw`\d(?:_?\d)*`
+const hexDigits = String.raw`[0-9a-fA-F](?:_?[0-9a-fA-F])*`
+const binDigits = String.raw`[01](?:_?[01])*`
+const octDigits = String.raw`[0-7](?:_?[0-7])*`
+const duoDigits = String.raw`[0-9aAbBxXeE](?:_?[0-9aAbBxXeE])*`
+const expPattern = new RegExp(
+    `^(?:${decDigits}(?:\\.${decDigits})?|\\.${decDigits})[eE][+-]?${decDigits}$`,
+)
+const hexPattern = new RegExp(`^0[xX]_?${hexDigits}$`)
+const explicitHexPattern = new RegExp(`^hex:_?${hexDigits}$`, 'i')
+const binPattern = new RegExp(`^(?:0[bB]|%)_?${binDigits}$`)
+const octPattern = new RegExp(`^0[oO]_?${octDigits}$`)
+const duoPattern = new RegExp(`^0[zZ]_?${duoDigits}$`)
+const decimalPattern = new RegExp(
+    `^(?:${decDigits}(?:\\.${decDigits})?|\\.${decDigits})$`,
+)
+
 /**
  * Parses a YINI number literal into a JavaScript number.
  *
@@ -35,19 +52,9 @@ export function parseNumberLiteral(rawText: string): {
     const signFactor = signChar === '-' ? -1 : 1
     const unsigned = signChar ? raw.slice(1) : raw
 
-    const decDigits = String.raw`\d(?:_?\d)*`
-    const hexDigits = String.raw`[0-9a-fA-F](?:_?[0-9a-fA-F])*`
-    const binDigits = String.raw`[01](?:_?[01])*`
-    const octDigits = String.raw`[0-7](?:_?[0-7])*`
-    const duoDigits = String.raw`[0-9aAbBxXeE](?:_?[0-9aAbBxXeE])*`
-
     // --- Exponent notation ---------
     // Examples: 1e3, 1.23e4, 1_000e2, 1.23e-4, .5e2.
     // Underscores may appear between digits, but not adjacent or at the end.
-    const expPattern = new RegExp(
-        `^(?:${decDigits}(?:\\.${decDigits})?|\\.${decDigits})[eE][+-]?${decDigits}$`,
-    )
-
     if (expPattern.test(unsigned)) {
         debugPrint('* Identified as an exp number')
 
@@ -63,7 +70,6 @@ export function parseNumberLiteral(rawText: string): {
     // Prefix: 0x or 0X.
     // Allows underscores immediately after the prefix or between hex digits.
     // Examples: 0xFF, 0x_FF, 0xFF_AA.
-    const hexPattern = new RegExp(`^0[xX]_?${hexDigits}$`)
 
     if (hexPattern.test(unsigned)) {
         debugPrint('* Identified as a hex number')
@@ -81,7 +87,6 @@ export function parseNumberLiteral(rawText: string): {
     // Whitespace after hex: is not allowed.
     // Allows underscores immediately after the prefix or between hex digits.
     // Examples: hex:FF, hex:_FF, hex:FF_AA.
-    const explicitHexPattern = new RegExp(`^hex:_?${hexDigits}$`, 'i')
 
     if (explicitHexPattern.test(unsigned)) {
         debugPrint('* Identified as an explicit hex number')
@@ -98,7 +103,6 @@ export function parseNumberLiteral(rawText: string): {
     // Prefix: 0b, 0B, or %.
     // Allows underscores immediately after the prefix or between binary digits.
     // Examples: 0b1010, 0b_1010, 0b1010_1100, %1010, %_1010.
-    const binPattern = new RegExp(`^(?:0[bB]|%)_?${binDigits}$`)
 
     if (binPattern.test(unsigned)) {
         debugPrint('* Identified as a bin number')
@@ -117,7 +121,6 @@ export function parseNumberLiteral(rawText: string): {
     // Prefix: 0o or 0O.
     // Allows underscores immediately after the prefix or between octal digits.
     // Examples: 0o755, 0o_755, 0o755_644.
-    const octPattern = new RegExp(`^0[oO]_?${octDigits}$`)
 
     if (octPattern.test(unsigned)) {
         debugPrint('* Identified as an oct number')
@@ -135,7 +138,6 @@ export function parseNumberLiteral(rawText: string): {
     // x/X = A/a = 10, e/E = B/b = 11.
     // Allows underscores immediately after the prefix or between duodecimal digits.
     // Examples: 0z2EX9, 0z_2EX9, 0z2E_X9.
-    const duoPattern = new RegExp(`^0[zZ]_?${duoDigits}$`)
 
     if (duoPattern.test(unsigned)) {
         debugPrint('* Identified as a duodecimal number')
@@ -155,10 +157,6 @@ export function parseNumberLiteral(rawText: string): {
     // --- Decimal integer / float ---------
     // Allows underscores between decimal digits.
     // Examples: 1000, +1000, -1000, 1_000, 3.14, 3.141_592, .5.
-    const decimalPattern = new RegExp(
-        `^(?:${decDigits}(?:\\.${decDigits})?|\\.${decDigits})$`,
-    )
-
     if (decimalPattern.test(unsigned)) {
         debugPrint(
             /\./.test(unsigned)

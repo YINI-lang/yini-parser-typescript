@@ -222,6 +222,8 @@ const configFromFile = YINI.parseFile('./config.yini');
 
 ### Tooling and diagnostics
 
+`parse` and `parseFile` print human-readable error and warning messages to stderr by default. Set `logDiagnostics: false` to suppress this output. This option does not control the structured diagnostics returned in metadata; request those with `includeMetadata: true` and `includeDiagnostics: true`.
+
 Use `parseForTooling` for editors, linters, and other tools. It does not throw for normal parse errors and returns the partial result plus structured diagnostics.
 
 ```js

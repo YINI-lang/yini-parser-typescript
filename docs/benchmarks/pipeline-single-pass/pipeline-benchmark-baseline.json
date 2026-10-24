@@ -1,0 +1,132 @@
+{
+  "node": "v24.14.0",
+  "runs": 9,
+  "results": {
+    "scalars": {
+      "samples": [
+        {
+          "durationMs": 124.0276,
+          "incrementalPeakRssBytes": 8339456
+        },
+        {
+          "durationMs": 125.16109999999998,
+          "incrementalPeakRssBytes": 6975488
+        },
+        {
+          "durationMs": 124.50869999999998,
+          "incrementalPeakRssBytes": 5816320
+        },
+        {
+          "durationMs": 127.44149999999996,
+          "incrementalPeakRssBytes": 5840896
+        },
+        {
+          "durationMs": 125.82539999999995,
+          "incrementalPeakRssBytes": 7811072
+        },
+        {
+          "durationMs": 123.74270000000001,
+          "incrementalPeakRssBytes": 7892992
+        },
+        {
+          "durationMs": 124.29229999999995,
+          "incrementalPeakRssBytes": 5718016
+        },
+        {
+          "durationMs": 120.97879999999998,
+          "incrementalPeakRssBytes": 5509120
+        },
+        {
+          "durationMs": 124.738,
+          "incrementalPeakRssBytes": 6553600
+        }
+      ],
+      "medianDurationMs": 124.50869999999998,
+      "medianIncrementalPeakRssBytes": 6553600
+    },
+    "composites": {
+      "samples": [
+        {
+          "durationMs": 279.9796,
+          "incrementalPeakRssBytes": 9842688
+        },
+        {
+          "durationMs": 279.56229999999994,
+          "incrementalPeakRssBytes": 8667136
+        },
+        {
+          "durationMs": 280.6368,
+          "incrementalPeakRssBytes": 9895936
+        },
+        {
+          "durationMs": 280.7695000000001,
+          "incrementalPeakRssBytes": 9453568
+        },
+        {
+          "durationMs": 281.17499999999995,
+          "incrementalPeakRssBytes": 8081408
+        },
+        {
+          "durationMs": 283.6095999999999,
+          "incrementalPeakRssBytes": 9359360
+        },
+        {
+          "durationMs": 283.1055000000001,
+          "incrementalPeakRssBytes": 9228288
+        },
+        {
+          "durationMs": 277.41149999999993,
+          "incrementalPeakRssBytes": 9515008
+        },
+        {
+          "durationMs": 278.51279999999986,
+          "incrementalPeakRssBytes": 9134080
+        }
+      ],
+      "medianDurationMs": 280.6368,
+      "medianIncrementalPeakRssBytes": 9359360
+    },
+    "nested-sections": {
+      "samples": [
+        {
+          "durationMs": 142.85940000000005,
+          "incrementalPeakRssBytes": 3022848
+        },
+        {
+          "durationMs": 148.67179999999996,
+          "incrementalPeakRssBytes": 3006464
+        },
+        {
+          "durationMs": 148.36300000000006,
+          "incrementalPeakRssBytes": 2981888
+        },
+        {
+          "durationMs": 149.7774,
+          "incrementalPeakRssBytes": 2842624
+        },
+        {
+          "durationMs": 148.08859999999999,
+          "incrementalPeakRssBytes": 3878912
+        },
+        {
+          "durationMs": 147.6261,
+          "incrementalPeakRssBytes": 3092480
+        },
+        {
+          "durationMs": 151.08170000000007,
+          "incrementalPeakRssBytes": 2605056
+        },
+        {
+          "durationMs": 150.50320000000005,
+          "incrementalPeakRssBytes": 2899968
+        },
+        {
+          "durationMs": 146.13169999999997,
+          "incrementalPeakRssBytes": 2854912
+        }
+      ],
+      "medianDurationMs": 148.36300000000006,
+      "medianIncrementalPeakRssBytes": 2981888
+    }
+  }
+}
