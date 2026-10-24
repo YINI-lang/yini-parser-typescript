@@ -2,8 +2,9 @@
 
 **Changelog** for `yini-parser-typescript`.
 
-## 1.7.0+ - Upcoming
-- **Fixed:** `parse(..)` and `parseFile(..)` again print human-readable errors and warnings to `stderr` by default. Set `logDiagnostics: false` to suppress them; `parseForTooling` remains silent and returns structured diagnostics.
+## 1.7.0-beta - 2026 Oct
+- **Fixed:** `parse(..)` and `parseFile(..)` again print human-readable errors and warnings to `stderr` by default, restoring the behavior that was unintentionally changed in v1.6.0. Set `logDiagnostics: false` to suppress them; `parseForTooling` remains silent and returns structured diagnostics.  
+Report bugs and other issues [here](https://github.com/YINI-lang/yini-parser-typescript/discussions).
 - **Improved:** Construct parser results during the parse-tree visit, removing the separate `AST-to-object pass`. Local benchmarks of three large workloads measured 24–33% faster median parsing; incremental peak memory varied from 7.3% lower to 43.5% higher. See [ADR-001](docs/adr/adr-001-pipeline-single-pass-result-construction.md).
 - **Changed:** With `includeTiming`, `phase3` is named `Validation and Result Construction` and measures the parse-tree visit, validation, and result construction. Removed the unused `phase4` timing field and raised `metaSchemaVersion` to `2.0.0`; consumers of timing metadata need to stop reading `phase4`.
 - **Fixed:** The named `parseForTooling` export now retains its class binding, so named imports return structured tooling results instead of a `parser-error`.
