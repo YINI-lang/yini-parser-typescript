@@ -2,7 +2,7 @@
 
 **Changelog** for `yini-parser-typescript`.
 
-## 1.7.0-beta - 2026 Oct
+## 1.7.0 / 1.7.0-beta - 2026 Oct
 - **Fixed:** `parse(..)` and `parseFile(..)` again print human-readable errors and warnings to `stderr` by default, restoring the behavior that was unintentionally changed in v1.6.0. Set `logDiagnostics: false` to suppress them; `parseForTooling` remains silent and returns structured diagnostics.  
 Report bugs and other issues [here](https://github.com/YINI-lang/yini-parser-typescript/discussions).
 - **Improved:** Construct parser results during the parse-tree visit, removing the separate `AST-to-object pass`. Local benchmarks of three large workloads measured 24–33% faster median parsing; incremental peak memory varied from 7.3% lower to 43.5% higher. See [ADR-001](docs/adr/adr-001-pipeline-single-pass-result-construction.md).
