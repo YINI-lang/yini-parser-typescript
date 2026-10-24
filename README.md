@@ -5,8 +5,6 @@ The official TypeScript / Node.js parser for **YINI** (by the YINI-lang project)
 [![npm version](https://img.shields.io/npm/v/yini-parser.svg)](https://www.npmjs.com/package/yini-parser)
 [![YINI Test Suite](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/yini-test-suite.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/yini-test-suite.yml)
 [![All Test Suites](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml)
-[![Grammar Drift Check](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-grammar-drift-check.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-grammar-drift-check.yml)
-[![npm downloads](https://img.shields.io/npm/dm/yini-parser)](https://www.npmjs.com/package/yini-parser)  
 
 Useful links:
 - [YINI homepage](https://yini-lang.org?utm_source=github&utm_campaign=yini_parser_ts&utm_content=readme_project_links&utm_medium=referral)
