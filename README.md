@@ -1,4 +1,4 @@
-# yini-parser
+# yini-parser-typescript
 
 The official TypeScript / Node.js parser for **YINI** (by the YINI-lang project) — a human-readable, INI-inspired, indentation-insensitive configuration format with clear nested sections, explicit structure, comments, and predictable parsing.  
 
