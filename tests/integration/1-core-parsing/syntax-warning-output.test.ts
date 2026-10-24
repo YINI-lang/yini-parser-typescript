@@ -2,7 +2,7 @@ import YINI from '../../../src'
 
 /**
  * Protect the human-readable warning blocks printed during successful parsing.
- * The header goes to stderr; the explanation and optional hint go to stdout.
+ * The header, explanation, and optional hint go to stderr by default.
  */
 const captureWarningOutput = (parse: () => unknown): string[] => {
     const output: string[] = []
@@ -10,15 +10,14 @@ const captureWarningOutput = (parse: () => unknown): string[] => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation((...args) => {
         output.push(args.map(String).join(' '))
     })
-    const logSpy = jest.spyOn(console, 'log').mockImplementation((...args) => {
-        output.push(args.map(String).join(' '))
-    })
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {})
 
     try {
         // Test mode adds an extra location line inside the message.
         // Development mode matches the output from npm run start:main.
         process.env.NODE_ENV = 'development'
         parse()
+        expect(logSpy).not.toHaveBeenCalled()
     } finally {
         if (previousNodeEnv === undefined) {
             delete process.env.NODE_ENV

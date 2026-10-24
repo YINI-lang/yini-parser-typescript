@@ -21,7 +21,6 @@ import {
     localNodeEnv,
 } from '../config/env'
 import { debugPrint, printObject, toPrettyJSON } from '../utils/print'
-import { forceExit } from '../utils/system'
 import YINI from '../YINI'
 import {
     defectConfig2Combo3,
@@ -70,27 +69,31 @@ if (isProdEnv()) {
         //         const yiniContent = `#!/usr/bin/env yini
         // ^ App
         // name = "Shebang-demo"`
-        const yiniContent = `  #!/usr/bin/env yini
-^ HexNumbers
-            hex1 = hex:0
-            hex2 = hex:1
-            hex3 = hex:A
-            hex4 = hex:FF
-            hex5 = hex:7F
-            hex6 = hex:0060BB
+        const yiniContentInvalid = `#!/usr/bin/env yini
+@yini
 
-            hex7 = hex: 0
-            hex8 = hex: 1
-            hex9 = hex: A
-            hex10 = hex: FF
-            hex11 = hex: 7F
-            hex12 = hex: 0060BB
-            /END`
+^ StringsAndBooleans
+            name = "YINI"
+            message = "Hello, world!"
+            empty = ""
+            path = "config/settings.yini"
+            broken d = "invalid" // ERROR here
+
+            enabled = true
+            disabled = false
+            debug = true
+            production = false
+
+            description = "Human-friendly configuration"
+            ready = true
+
+            /END
+`
 
         console.log('--start0------------------------------------------')
-        const res0 = YINI.parse(yiniContent, {
+        const res0 = YINI.parse(yiniContentInvalid, {
             strictMode: false,
-            treatEmptyValueAsNull: 'disallow',
+            // treatEmptyValueAsNull: 'disallow',
             // throwOnError: true,
             // failLevel: 'errors',
         })
@@ -98,15 +101,14 @@ if (isProdEnv()) {
         console.log(res0)
         console.log('--end------------------------------------------\n')
 
-        forceExit()
-        // process.exit()
+        // forceExit()
 
         console.log('--start1------------------------------------------')
-        const res1 = YINI.parse(yiniContent, {
-            strictMode: false,
-            treatEmptyValueAsNull: 'disallow',
-            throwOnError: true,
-            failLevel: 'errors',
+        const res1 = YINI.parse(yiniContentInvalid, {
+            strictMode: true,
+            // treatEmptyValueAsNull: 'disallow',
+            // throwOnError: true,
+            // failLevel: 'errors',
         })
         console.log('res1:')
         console.log(res1)

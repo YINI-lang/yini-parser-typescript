@@ -27,7 +27,7 @@ describe('Library diagnostic output contract:', () => {
         jest.restoreAllMocks()
     })
 
-    test('does not write diagnostics to stdout or stderr by default.', () => {
+    test('prints human-readable errors and warnings to stderr by default.', () => {
         const result = YINI.parse(ERROR_DOC + WARNING_DOC, {
             failLevel: 'ignore-errors',
             requireDocTerminator: 'warn-if-missing',
@@ -37,8 +37,12 @@ describe('Library diagnostic output contract:', () => {
         expect(result).toBeDefined()
         expect(logSpy).not.toHaveBeenCalled()
         expect(infoSpy).not.toHaveBeenCalled()
-        expect(errSpy).not.toHaveBeenCalled()
-        expect(warnSpy).not.toHaveBeenCalled()
+        expect(errSpy).toHaveBeenCalledWith(
+            expect.stringMatching(/^Syntax error in inline YINI content/),
+        )
+        expect(warnSpy).toHaveBeenCalledWith(
+            expect.stringMatching(/^Syntax warning in inline YINI content/),
+        )
     })
 
     test('returns structured diagnostics when diagnostics are requested.', () => {
@@ -57,13 +61,13 @@ describe('Library diagnostic output contract:', () => {
         )
         expect(logSpy).not.toHaveBeenCalled()
         expect(infoSpy).not.toHaveBeenCalled()
-        expect(errSpy).not.toHaveBeenCalled()
-        expect(warnSpy).not.toHaveBeenCalled()
+        expect(errSpy).toHaveBeenCalled()
+        expect(warnSpy).toHaveBeenCalled()
     })
 
-    test('writes diagnostics to stderr only when explicitly requested.', () => {
+    test('logDiagnostics: false suppresses printing but keeps structured diagnostics.', () => {
         const result = YINI.parse(ERROR_DOC + WARNING_DOC, {
-            logDiagnostics: true,
+            logDiagnostics: false,
             includeDiagnostics: true,
             failLevel: 'ignore-errors',
             requireDocTerminator: 'warn-if-missing',
@@ -74,15 +78,14 @@ describe('Library diagnostic output contract:', () => {
         expect(result.meta.diagnostics!.warnings.warningCount).toBeGreaterThan(
             0,
         )
-        expect(errSpy).toHaveBeenCalled()
-        expect(warnSpy).toHaveBeenCalled()
+        expect(errSpy).not.toHaveBeenCalled()
+        expect(warnSpy).not.toHaveBeenCalled()
         expect(logSpy).not.toHaveBeenCalled()
         expect(infoSpy).not.toHaveBeenCalled()
     })
 
-    test('silent suppresses diagnostics even when stderr logging is requested.', () => {
+    test('silent suppresses the default human-readable output.', () => {
         const result = YINI.parse(ERROR_DOC + WARNING_DOC, {
-            logDiagnostics: true,
             silent: true,
             includeDiagnostics: true,
             failLevel: 'ignore-errors',
@@ -100,9 +103,8 @@ describe('Library diagnostic output contract:', () => {
         expect(warnSpy).not.toHaveBeenCalled()
     })
 
-    test('quiet limits opt-in stderr diagnostics to errors.', () => {
+    test('quiet limits the default stderr output to errors.', () => {
         const result = YINI.parse(ERROR_DOC + WARNING_DOC, {
-            logDiagnostics: true,
             quiet: true,
             includeDiagnostics: true,
             failLevel: 'ignore-errors',
@@ -115,6 +117,20 @@ describe('Library diagnostic output contract:', () => {
             0,
         )
         expect(errSpy).toHaveBeenCalled()
+        expect(warnSpy).not.toHaveBeenCalled()
+        expect(logSpy).not.toHaveBeenCalled()
+        expect(infoSpy).not.toHaveBeenCalled()
+    })
+
+    test('parseForTooling returns diagnostics without printing them.', () => {
+        const parsed = YINI.parseForTooling(ERROR_DOC + WARNING_DOC, {
+            requireDocTerminator: 'warn-if-missing',
+            strictMode: false,
+        })
+
+        expect(parsed.diagnostics.some((item) => item.severity === 'error')).toBe(true)
+        expect(parsed.diagnostics.some((item) => item.severity === 'warning')).toBe(true)
+        expect(errSpy).not.toHaveBeenCalled()
         expect(warnSpy).not.toHaveBeenCalled()
         expect(logSpy).not.toHaveBeenCalled()
         expect(infoSpy).not.toHaveBeenCalled()

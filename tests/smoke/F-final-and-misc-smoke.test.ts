@@ -352,7 +352,7 @@ describe('Final, miscellaneous & complementary smoke tests', () => {
                     includeDiagnostics: true,
                     includeMetadata: true,
                     includeTiming: false,
-                    logDiagnostics: false,
+                    logDiagnostics: true,
                     onDuplicateKey: 'error',
                     preserveUndefinedInMeta: false,
                     quiet: false,

@@ -2,7 +2,7 @@ import YINI from '../../../src'
 
 /**
  * Protect the human-readable error blocks for inline syntax errors.
- * The header is written to stderr; the explanation and hint go to stdout.
+ * The header, explanation, and hint are written to stderr by default.
  */
 const captureThrownOutput = (parse: () => unknown): string[] => {
     const output: string[] = []
@@ -10,15 +10,14 @@ const captureThrownOutput = (parse: () => unknown): string[] => {
     const errorSpy = jest.spyOn(console, 'error').mockImplementation((...args) => {
         output.push(args.map(String).join(' '))
     })
-    const logSpy = jest.spyOn(console, 'log').mockImplementation((...args) => {
-        output.push(args.map(String).join(' '))
-    })
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {})
 
     try {
         // Test mode adds an extra location line inside the message.
         // Development mode matches the output from npm run start:main.
         process.env.NODE_ENV = 'development'
         expect(parse).toThrow()
+        expect(logSpy).not.toHaveBeenCalled()
     } finally {
         if (previousNodeEnv === undefined) {
             delete process.env.NODE_ENV

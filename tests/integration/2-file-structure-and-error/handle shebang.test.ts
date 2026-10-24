@@ -61,7 +61,9 @@ name = "Shebang-demo"`
             // Assert.
             expect(result.result).toEqual(expected)
 
-            expect(warnSpy).not.toHaveBeenCalled()
+            expect(warnSpy).toHaveBeenCalledWith(
+                expect.stringMatching(/^Syntax warning in inline YINI content/),
+            )
             expect(
                 result.meta.diagnostics!.warnings.payload.some((issue) =>
                     /shebang/i.test(issue.message),
@@ -266,7 +268,9 @@ describe('Shebang handling via parseFile(..):', () => {
             // Assert.
             expect(result.result).toEqual(expected)
 
-            expect(warnSpy).not.toHaveBeenCalled()
+            expect(warnSpy).toHaveBeenCalledWith(
+                expect.stringMatching(/^Syntax warning in /),
+            )
             expect(
                 result.meta.diagnostics!.warnings.payload.some((issue) =>
                     /shebang/i.test(issue.message),

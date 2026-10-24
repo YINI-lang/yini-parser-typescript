@@ -172,7 +172,7 @@ export interface IParseCoreOptions {
     isWithTiming: boolean // (Requires isIncludeMeta) Include timing data of the different phases in meta data, when isIncludeMeta.
     isKeepUndefinedInMeta: boolean // (Requires isIncludeMeta) If true, keeps properties with undefined values in the returned meta data, when isIncludeMeta.
     // isAvoidWarningsInConsole: boolean // (!) Dup of quiet! - Suppress warnings (make quiet) in console (does not affect warnings in meta data).
-    isDiagnosticOutputEnabled: boolean // Opt in to writing diagnostics to stderr.
+    isDiagnosticOutputEnabled: boolean // Print human-readable diagnostic messages to stderr.
     isQuiet: boolean // When diagnostic output is enabled, suppress warnings and lower severities.
     isSilent: boolean // Suppress all output (even errors, exit code only).
     isThrowOnError: boolean // Will throw on first parse error encountered.

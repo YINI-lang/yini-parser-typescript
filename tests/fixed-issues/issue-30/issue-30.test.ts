@@ -21,6 +21,7 @@ describe('Issue #30 Tests:', () => {
         const result = YINI.parseFile(fullPath, {
             strictMode: false,
             includeDiagnostics: true,
+            logDiagnostics: false,
         }) as YiniParseResult
         debugPrint('fullPath = ' + fullPath)
         debugPrint('result:')
@@ -46,6 +47,7 @@ describe('Issue #30 Tests:', () => {
         const result = YINI.parseFile(fullPath, {
             strictMode: true,
             includeDiagnostics: true,
+            logDiagnostics: false,
         }) as YiniParseResult
         debugPrint('fullPath = ' + fullPath)
         debugPrint('result:')

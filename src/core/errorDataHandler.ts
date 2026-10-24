@@ -180,7 +180,7 @@ export class ErrorDataHandler {
         subjectType: TSubjectType,
         fileName: string | undefined = undefined,
         bailSensitivityLevel: TBailSensitivityLevel = '1-Abort-on-Errors',
-        isDiagnosticOutputEnabled: boolean = false, // Opt in to writing diagnostics to stderr.
+        isDiagnosticOutputEnabled: boolean = false, // Direct handlers stay quiet; the pipeline passes the human-readable output option.
         isQuiet: boolean = false, // When diagnostic output is enabled, show errors only.
         isSilent: boolean = false, // Suppress all output (even errors, exit code only).
         isThrowOnError: boolean = false, // Will throw on first parse error encountered.

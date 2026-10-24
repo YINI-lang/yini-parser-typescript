@@ -2,7 +2,7 @@ import YINI from '../../../src'
 
 /**
  * Protect the human-readable error block for a missing inline value.
- * The header is written to stderr; the explanation and hint go to stdout.
+ * The header, explanation, and hint are written to stderr by default.
  */
 describe('Missing value error output', () => {
     test('prints the location, key, and guidance on consecutive lines', () => {
