@@ -5,6 +5,54 @@ import { debugPrint } from '../utils/print'
 import { isMarkerCharacter } from '../utils/yiniHelpers'
 import { extractYiniLine } from './extractSignificantYiniLine'
 
+const stripHeaderBlockComments = (text: string): string => {
+    let result = ''
+    let inBackticks = false
+    let inLineComment = false
+
+    for (let pos = 0; pos < text.length; pos++) {
+        const char = text[pos]
+
+        if (char === '\n' || char === '\r') {
+            inLineComment = false
+        }
+
+        if (inLineComment) {
+            result += char
+            continue
+        }
+
+        if (inBackticks && char === '\\') {
+            result += text.slice(pos, pos + 2)
+            pos++
+            continue
+        }
+
+        if (char === '`') {
+            inBackticks = !inBackticks
+        } else if (
+            !inBackticks &&
+            (char === '#' || text.startsWith('//', pos))
+        ) {
+            inLineComment = true
+        } else if (!inBackticks && text.startsWith('/*', pos)) {
+            const end = text.indexOf('*/', pos + 2)
+            if (end === -1) {
+                result += text.slice(pos)
+                break
+            }
+
+            result += ' '
+            pos = end + 1
+            continue
+        }
+
+        result += char
+    }
+
+    return result
+}
+
 /**
  * Extracts the marker sequence, optional numeric shorthand depth,
  * section name, and backticked-name flag from a YINI section header line.
@@ -35,7 +83,7 @@ const extractHeaderParts = (
 
     rawLine = rawLine.trim()
 
-    const str = extractYiniLine(rawLine)
+    const str = extractYiniLine(stripHeaderBlockComments(rawLine))
     debugPrint('rawLine: >>>' + rawLine + '<<<')
     debugPrint('    str: >>>' + str + '<<<')
 

@@ -1658,13 +1658,13 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
     /**
      * Visit a parse tree produced by `YiniParser.object_member`.
      * @param ctx the parse tree
-     * @grammarRule KEY object_member_separator NL* value
+     * @grammarRule identifier object_member_separator value
      * @return the object member key and value
      */
     visitObject_member = (ctx: Object_memberContext): any => {
         debugPrint('-> Entered visitObject_member(..)')
 
-        const rawKey = ctx.KEY().getText()
+        const rawKey = ctx.identifier().getText()
         const key = decodeBacktickedIdent(rawKey)
 
         const separator = this.visitObject_member_separator(
