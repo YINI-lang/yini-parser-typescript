@@ -1,4 +1,4 @@
-// Generated from ./grammar/v1.0.0-rc.6/YiniParser.g4 by ANTLR 4.13.2
+// Generated from ./grammar/v1.0.0-rc.6x/YiniParser.g4 by ANTLR 4.13.2
 
 import {ParseTreeVisitor} from 'antlr4';
 
@@ -17,7 +17,9 @@ import { Yini_directiveContext } from "./YiniParser.js";
 import { Yini_mode_declarationContext } from "./YiniParser.js";
 import { AnnotationContext } from "./YiniParser.js";
 import { EolContext } from "./YiniParser.js";
+import { Line_endContext } from "./YiniParser.js";
 import { AssignmentContext } from "./YiniParser.js";
+import { IdentifierContext } from "./YiniParser.js";
 import { MemberContext } from "./YiniParser.js";
 import { ValueContext } from "./YiniParser.js";
 import { Scalar_valueContext } from "./YiniParser.js";
@@ -31,6 +33,7 @@ import { Object_memberContext } from "./YiniParser.js";
 import { Object_member_separatorContext } from "./YiniParser.js";
 import { List_literalContext } from "./YiniParser.js";
 import { ElementsContext } from "./YiniParser.js";
+import { Multiline_triviaContext } from "./YiniParser.js";
 import { Number_literalContext } from "./YiniParser.js";
 import { Null_literalContext } from "./YiniParser.js";
 import { Boolean_literalContext } from "./YiniParser.js";
@@ -131,11 +134,23 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 */
 	visitEol?: (ctx: EolContext) => Result;
 	/**
+	 * Visit a parse tree produced by `YiniParser.line_end`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitLine_end?: (ctx: Line_endContext) => Result;
+	/**
 	 * Visit a parse tree produced by `YiniParser.assignment`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	visitAssignment?: (ctx: AssignmentContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.identifier`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitIdentifier?: (ctx: IdentifierContext) => Result;
 	/**
 	 * Visit a parse tree produced by `YiniParser.member`.
 	 * @param ctx the parse tree
@@ -214,6 +229,12 @@ export default class YiniParserVisitor<Result> extends ParseTreeVisitor<Result> 
 	 * @return the visitor result
 	 */
 	visitElements?: (ctx: ElementsContext) => Result;
+	/**
+	 * Visit a parse tree produced by `YiniParser.multiline_trivia`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitMultiline_trivia?: (ctx: Multiline_triviaContext) => Result;
 	/**
 	 * Visit a parse tree produced by `YiniParser.number_literal`.
 	 * @param ctx the parse tree

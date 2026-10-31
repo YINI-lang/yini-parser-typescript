@@ -5,6 +5,7 @@ Here you'll find some info for install/setup/directory structure.
 ## Pre-requisites
 - `nvm` (Node Version Manager)
 - `java` (Optional, needed to generate new code ANTLR, Java 22+)
+- `task` (Optional, needed to generate ANTLR code; on Windows, install with `winget install Task.Task`)
 
 **Only if Windows:**
 - `Git Bash`
@@ -83,18 +84,13 @@ To run all tests (smoke, unit, integration):
 
 ### To Test the Grammar
 
-1. In `Git Bash`, `Bash` (or possibly in `CMD` depending on your setup). In the root, type:
-    > make tokens
+From the project root, run `task parse:tokens`. This uses `antlr4-parse` and reads `samples/basic.yini` by default. To inspect another file, run `task parse:tokens INPUT=path/to/file.yini`.
 
 ### Generating Source
 
 Generating source code from grammar files with ANTLR4. Usually this is not needed, only if new or updated grammar files are used.
 
-- Prefferably you can use option A or optionally with option B:
-  * A. In console:
-    > `npm run antlr`
-  * B. In `Git Bash`, `Bash` (or possibly in `CMD` depending on your setup). In the root, type:
-    > make generate
+From the project root, run `npm run antlr` or `task generate`. Both use the pinned ANTLR jar and generate the lexer before the parser.
 
 ---
 
@@ -136,7 +132,7 @@ Here's an overview of the project's directory structure — to help users unders
 │   └── workflows/
 ├── .husky/                       // Git hooks (managed by husky)
 ├── .vscode/                      // VSCode project settings (optional)
-├── Makefile                      // Build automation (ANTLR4 code generation, etc.)
+├── Taskfile.yml                  // ANTLR4 code generation tasks
 ├── package.json                  // Node.js dependencies, scripts, etc.
 ├── tsconfig.json                 // Config for TypeScript
 ├── jest.config.js                // Config for Jest testing

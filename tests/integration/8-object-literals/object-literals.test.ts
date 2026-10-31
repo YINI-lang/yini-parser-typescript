@@ -237,4 +237,28 @@ describe('Object literal tests:', () => {
             expect(result.App.config).toEqual({})
         })
     })
+
+    // Boolean and null spellings may be used as inline object key names.
+    // For example, { true: 1, false: 2, null: 3 } has three keys with those names.
+    test.each([false, true])(
+        '15. Should parse boolean and null spellings as inline object keys (strictMode: %s).',
+        (strictMode) => {
+            // 1. Assign.
+            const source =
+                `^ Config\nflags = { true: 1, false: 2, null: 3 }\n` +
+                (strictMode ? '/END\n' : '')
+
+            // 2. Act.
+            const result = YINI.parse(source, {
+                strictMode,
+                failLevel: 'errors',
+                logDiagnostics: false,
+            })
+
+            // 3. Assert.
+            expect(result).toEqual({
+                Config: { flags: { true: 1, false: 2, null: 3 } },
+            })
+        },
+    )
 })
