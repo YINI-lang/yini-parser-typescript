@@ -49,7 +49,7 @@ See also: [Shared AI agent instructions for the YINI project family](../AGENTS.m
 |-- scripts/                            # Maintenance scripts.
 |-- libs/antlr4/                        # Vendored ANTLR jar.
 |-- dist/                               # TypeScript build output.
-|-- Makefile                            # ANTLR generation helpers.
+|-- Taskfile.yml                        # ANTLR generation helpers.
 |-- package.json
 |-- tsconfig.json
 `-- jest.config.js
@@ -86,8 +86,8 @@ ANTLR generation is only needed when grammar files change:
 
 ```bash
 npm run antlr
-make generate
-make ci-generate
+task generate
+task ci-generate
 ```
 
 ## Required Checks
@@ -191,7 +191,7 @@ When fixing parser behavior, test both the intended valid path and the nearest i
 
 The files under `spec/` and `grammar/` are reference copies maintained outside this repository. Do not edit or regenerate them here. Updates to those files must be made at their authoritative source and manually copied into this repository only at the maintainer's explicit direction.
 
-Current grammar source is under `grammar/v1.0.0-rc.6/`.
+Current grammar source is under `grammar/v1.0.0-rc.6x/` or later.
 
 ANTLR-generated files live in `src/grammar/generated/`. Do not hand-edit generated files unless the user explicitly asks for an emergency generated-output patch. Prefer editing grammar source and regenerating.
 

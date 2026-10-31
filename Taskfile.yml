@@ -1,0 +1,59 @@
+version: '3'
+
+vars:
+  GRAMMAR_BASE: ./grammar/v1.0.0-rc.6x
+  LEXER_FILE: '{{.GRAMMAR_BASE}}/YiniLexer.g4'
+  PARSER_FILE: '{{.GRAMMAR_BASE}}/YiniParser.g4'
+  ANTLR_JAR: ./libs/antlr4/antlr-4.13.2-complete.jar
+  DIR_OUTPUT: ./src/grammar/generated
+  START_RULE: yini
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
+
+  antlr-help:
+    desc: Show ANTLR help
+    cmds:
+      - java -jar {{.ANTLR_JAR}}
+
+  generate:
+    desc: Generate the TypeScript lexer and parser from the checked-in grammar
+    cmds:
+      - task: generate:lexer
+      - task: generate:parser
+
+  ci-generate:
+    desc: Generate grammar files for the CI drift check
+    cmds:
+      - task: generate
+
+  generate:lexer:
+    internal: true
+    cmds:
+      - >
+        java -Xmx1g -jar {{.ANTLR_JAR}}
+        -Werror -long-messages
+        -Dlanguage=TypeScript
+        -no-listener -visitor
+        -o {{.DIR_OUTPUT}} -Xexact-output-dir
+        {{.LEXER_FILE}}
+
+  generate:parser:
+    internal: true
+    cmds:
+      - >
+        java -Xmx1g -jar {{.ANTLR_JAR}}
+        -Werror -long-messages
+        -Dlanguage=TypeScript
+        -no-listener -visitor
+        -o {{.DIR_OUTPUT}} -Xexact-output-dir
+        -lib {{.DIR_OUTPUT}}
+        {{.PARSER_FILE}}
+
+  parse:tokens:
+    desc: Print tokens for a YINI file with antlr4-parse
+    cmds:
+      - antlr4-parse {{.PARSER_FILE}} {{.LEXER_FILE}} {{.START_RULE}} {{default "samples/basic.yini" .INPUT}} -tokens

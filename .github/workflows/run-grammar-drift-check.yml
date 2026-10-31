@@ -12,13 +12,14 @@ jobs:
     drift-check:
         runs-on: ubuntu-latest
 
-        env:
-            # Absolute paths anchored at the workspace.
-            OUT_DIR: ${{ github.workspace }}/src/grammar/generated
-
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+
+            - name: Install Task
+              uses: go-task/setup-task@v2
+              with:
+                  version: '3.50.0'
 
             # Install Java (Temurin distribution).
             - name: Setup Java
@@ -42,18 +43,13 @@ jobs:
             - name: Install dependencies (no scripts)
               run: npm ci --ignore-scripts # npm clean-install (installs without changing package-lock.json)
 
-            - name: Clean generated
-              run: npm run clean:antlr --if-present
-
-            # IMPORTANT: To avoid: Error with "cannot find tokens file .../YiniLexer.tokens"
-            # Run the ci:antlr that is customized for Linux runners.
             - name: Re-generate grammar files
               run: npm run ci:antlr
 
             - name: Fail if uncommitted changes
               run: |
                   if ! git diff --quiet; then
-                    echo "::error::Grammar artifacts are out of date. Run 'npm run clean:grammar && npm run gen:grammar' and commit."
+                    echo "::error::Grammar artifacts are out of date. Run 'npm run ci:antlr' and commit the generated files."
                     git status --porcelain
                     exit 1
                   fi
