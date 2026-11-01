@@ -2,6 +2,12 @@
 
 **Changelog** for `yini-parser-typescript`.
 
+## Upcoming
+- **Added:** `E` and `e` prefixes for escaped strings, including triple-quoted strings, as aliases for `C` and `c`.
+- **Fixed:** Section headers now handle block comments between markers and names or after names, while preserving comment-like text inside backticked names.
+- **Fixed:** Boolean and null spellings now work as inline object keys in both lenient and strict modes.
+- **Changed:** Moved ANTLR generation from Makefile to Taskfile. CI now tests Node.js 22 and 24, pins `yini-test-suite` to 0.3.0rc1, and includes `tests/unit` in unit test runs.
+
 ## 1.7.0 / 1.7.0-beta - 2026 Oct
 - **Fixed:** `parse(..)` and `parseFile(..)` again print human-readable errors and warnings to `stderr` by default, restoring the behavior that was unintentionally changed in v1.6.0. Set `logDiagnostics: false` to suppress them; `parseForTooling` remains silent and returns structured diagnostics.  
 Report bugs and other issues [here](https://github.com/YINI-lang/yini-parser-typescript/discussions).
