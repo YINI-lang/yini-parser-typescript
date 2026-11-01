@@ -289,21 +289,21 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
     }
 
     private extractStringKindAndValue(raw: string): IParsedStringInput {
-        const hasClassicPrefix = /^[Cc]/.test(raw)
+        const hasEscapedPrefix = /^[CcEe]/.test(raw)
         const hasRawPrefix = /^[Rr]/.test(raw)
-        const hasPrefix = hasClassicPrefix || hasRawPrefix
+        const hasPrefix = hasEscapedPrefix || hasRawPrefix
 
         const body = hasPrefix ? raw.slice(1) : raw
 
         if (body.startsWith('"""')) {
             return {
-                strKind: hasClassicPrefix ? 'triple-classic' : 'triple-raw',
+                strKind: hasEscapedPrefix ? 'triple-classic' : 'triple-raw',
                 value: body.slice(3, -3),
             }
         }
 
         return {
-            strKind: hasClassicPrefix ? 'classic' : 'raw',
+            strKind: hasEscapedPrefix ? 'classic' : 'raw',
             value: body.slice(1, -1),
         }
     }
@@ -537,15 +537,15 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
                 if (/Invalid escape sequence/i.test(msg)) {
                     msgWhat = 'Invalid escape sequence in string'
                     msgHint =
-                        'Use double backslashes (\\\\) in C-strings, or use a raw string if escapes are not needed.'
+                        'Use double backslashes (\\\\) in escaped strings, or use a raw string if escapes are not needed.'
                 } else if (/control character/i.test(msg)) {
                     msgWhat = 'Control character in string'
                     msgHint =
-                        'Use a C-string escape such as \\t for tabs, or remove the raw control character.'
+                        'Use an escaped string such as E"\\t" for tabs, or remove the raw control character.'
                 } else if (/end of string/i.test(msg)) {
                     msgWhat = 'Incomplete escape sequence in string'
                     msgHint =
-                        'Check that all escape sequences in the C-string are complete and valid.'
+                        'Check that all escape sequences in the escaped string are complete and valid.'
                 }
             }
 

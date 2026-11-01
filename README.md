@@ -122,6 +122,16 @@ If strict mode reports a missing `/END`, either add `/END` as the final signific
 
 See the [YINI specification and documentation](https://yini-lang.org/refs/specification?utm_source=github&utm_campaign=yini_parser_ts&utm_content=readme&utm_medium=referral).
 
+### Escaped strings
+
+Strings are raw by default. Prefix a string with `E` or `e` to interpret escape sequences such as `\n` and `\t`. The older `C` and `c` prefixes remain valid aliases, including for triple-quoted strings.
+
+```yini
+^ Message
+raw = "Line 1\nLine 2"       // Keeps the backslash and n.
+escaped = E"Line 1\nLine 2"  // Contains a newline.
+```
+
 ---
 
 ## Format characteristics
