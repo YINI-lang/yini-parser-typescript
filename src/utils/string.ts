@@ -61,11 +61,11 @@ export const trimBackticks = (str: string): string => {
     return str
 }
 
-/** Returns an identifier name, decoding escaped backslashes inside backticks. */
+/** Returns an identifier name, decoding valid backtick escapes. */
 export const decodeBacktickedIdent = (str: string): string => {
     if (!isEnclosedInBackticks(str)) return str
 
-    return str.slice(1, -1).replace(/\\\\/g, '\\')
+    return str.slice(1, -1).replace(/\\([\\`])/g, '$1')
 }
 
 /**

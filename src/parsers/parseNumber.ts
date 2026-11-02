@@ -18,8 +18,75 @@ const decimalPattern = new RegExp(
     `^(?:${decDigits}(?:\\.${decDigits})?|\\.${decDigits})$`,
 )
 
+const minInteger = -(1n << 63n)
+const maxInteger = (1n << 63n) - 1n
+const maxSafeInteger = BigInt(Number.MAX_SAFE_INTEGER)
+
+const invalidNumber = (message: string) => ({
+    value: Number.NaN,
+    tag: 'From invalid number/value',
+    error: message,
+})
+
+const parseInteger = (digits: string, base: number, negative: boolean) => {
+    let value: bigint
+    if (base === 12) {
+        value = 0n
+        for (const digit of digits) {
+            const dozenalDigit = /[aAxX]/.test(digit)
+                ? 10
+                : /[bBeE]/.test(digit)
+                  ? 11
+                  : Number(digit)
+            value = value * 12n + BigInt(dozenalDigit)
+        }
+    } else {
+        const prefix = base === 16 ? '0x' : base === 8 ? '0o' : base === 2 ? '0b' : ''
+        value = BigInt(prefix + digits)
+    }
+
+    if (negative) value = -value
+    if (value < minInteger || value > maxInteger) {
+        return invalidNumber('Integer literal is outside the signed 64-bit range.')
+    }
+
+    return {
+        value:
+            value >= -maxSafeInteger && value <= maxSafeInteger
+                ? Number(value)
+                : value,
+    }
+}
+
+const parseFloatValue = (normalized: string) => {
+    const value = Number(normalized)
+    if (!Number.isFinite(value)) {
+        return invalidNumber('Floating-point literal overflows binary64.')
+    }
+
+    const significand = normalized.split(/[eE]/)[0]
+    if (value === 0 && /[1-9]/.test(significand)) {
+        return invalidNumber('Floating-point literal underflows to zero.')
+    }
+
+    return { value }
+}
+
+/** Normalizes a validated numeric source literal for lenient concatenation. */
+export const normalizeNumberForConcatenation = (
+    rawText: string,
+    parsedValue: number | bigint,
+): string => {
+    const raw = rawText.trim().replace(/_/g, '')
+    const unsigned = raw.replace(/^[+-]/, '')
+    if (/^(?:0[xXbBoOzZ]|%|hex:)/i.test(unsigned)) {
+        return String(parsedValue)
+    }
+    return raw.replace(/^\+/, '').replace(/E/g, 'e').replace(/e\+/, 'e')
+}
+
 /**
- * Parses a YINI number literal into a JavaScript number.
+ * Parses a YINI number literal without losing signed 64-bit integer precision.
  *
  * @property {string | undefined} [tag]
  *           This property is for debugging only. Its contents may change
@@ -43,13 +110,13 @@ const decimalPattern = new RegExp(
  * j = 0z_2E_X9
  */
 export function parseNumberLiteral(rawText: string): {
-    value: number
+    value: number | bigint
     tag?: string
+    error?: string
 } {
     const raw = rawText.trim()
 
     const signChar = raw.startsWith('-') || raw.startsWith('+') ? raw[0] : ''
-    const signFactor = signChar === '-' ? -1 : 1
     const unsigned = signChar ? raw.slice(1) : raw
 
     // --- Exponent notation ---------
@@ -60,10 +127,7 @@ export function parseNumberLiteral(rawText: string): {
 
         const normalized = `${signChar}${unsigned.replace(/_/g, '')}`
 
-        return {
-            value: Number(normalized),
-            tag: 'From exp number, Number-Float',
-        }
+        return { ...parseFloatValue(normalized), tag: 'From exp number, Number-Float' }
     }
 
     // --- Hexadecimal with prefix 0x / 0X ---------
@@ -76,10 +140,7 @@ export function parseNumberLiteral(rawText: string): {
 
         const normalized = unsigned.replace(/^0[xX]_?/, '').replace(/_/g, '')
 
-        return {
-            value: signFactor * Number.parseInt(normalized, 16),
-            tag: 'From hex number, Number-Integer',
-        }
+        return { ...parseInteger(normalized, 16, signChar === '-'), tag: 'From hex number, Number-Integer' }
     }
 
     // --- Hexadecimal with explicit prefix hex: ---------
@@ -93,10 +154,7 @@ export function parseNumberLiteral(rawText: string): {
 
         const normalized = unsigned.replace(/^hex:_?/i, '').replace(/_/g, '')
 
-        return {
-            value: signFactor * Number.parseInt(normalized, 16),
-            tag: 'From explicit hex number, Number-Integer',
-        }
+        return { ...parseInteger(normalized, 16, signChar === '-'), tag: 'From explicit hex number, Number-Integer' }
     }
 
     // --- Binary with prefix 0b / 0B or % ---------
@@ -111,10 +169,7 @@ export function parseNumberLiteral(rawText: string): {
             .replace(/^(?:0[bB]|%)_?/, '')
             .replace(/_/g, '')
 
-        return {
-            value: signFactor * Number.parseInt(normalized, 2),
-            tag: 'From bin number, Number-Integer',
-        }
+        return { ...parseInteger(normalized, 2, signChar === '-'), tag: 'From bin number, Number-Integer' }
     }
 
     // --- Octal with prefix 0o / 0O ---------
@@ -127,10 +182,7 @@ export function parseNumberLiteral(rawText: string): {
 
         const normalized = unsigned.replace(/^0[oO]_?/, '').replace(/_/g, '')
 
-        return {
-            value: signFactor * Number.parseInt(normalized, 8),
-            tag: 'From oct number, Number-Integer',
-        }
+        return { ...parseInteger(normalized, 8, signChar === '-'), tag: 'From oct number, Number-Integer' }
     }
 
     // --- Duodecimal / dozenal with prefix 0z / 0Z ---------
@@ -142,16 +194,8 @@ export function parseNumberLiteral(rawText: string): {
     if (duoPattern.test(unsigned)) {
         debugPrint('* Identified as a duodecimal number')
 
-        const normalized = unsigned
-            .replace(/^0[zZ]_?/, '')
-            .replace(/_/g, '')
-            .replace(/[xX]/g, 'A')
-            .replace(/[eE]/g, 'B')
-
-        return {
-            value: signFactor * Number.parseInt(normalized, 12),
-            tag: 'From doz (duodecimal) number, Number-Integer',
-        }
+        const normalized = unsigned.replace(/^0[zZ]_?/, '').replace(/_/g, '')
+        return { ...parseInteger(normalized, 12, signChar === '-'), tag: 'From doz (duodecimal) number, Number-Integer' }
     }
 
     // --- Decimal integer / float ---------
@@ -166,21 +210,16 @@ export function parseNumberLiteral(rawText: string): {
 
         const normalized = `${signChar}${unsigned.replace(/_/g, '')}`
 
-        return {
-            value: Number(normalized),
-            tag: /\./.test(unsigned)
-                ? 'From float number, Number-Float'
-                : 'From int number, Number-Integer',
+        if (/\./.test(unsigned)) {
+            return { ...parseFloatValue(normalized), tag: 'From float number, Number-Float' }
         }
+        return { ...parseInteger(unsigned.replace(/_/g, ''), 10, signChar === '-'), tag: 'From int number, Number-Integer' }
     }
 
     // --- Invalid number literal ---------
     debugPrint('* Identified as invalid number')
 
-    return {
-        value: Number.NaN,
-        tag: 'From invalid number/value',
-    }
+    return invalidNumber('Invalid number literal.')
 }
 
 export default parseNumberLiteral

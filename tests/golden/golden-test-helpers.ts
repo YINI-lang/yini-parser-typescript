@@ -2,7 +2,6 @@
 import fs from 'node:fs'
 import path from 'path'
 import YINI from '../../src'
-import { toPrettyJSON } from '../../src/utils/print'
 
 // import { parseFileUntilError } from '../test-helpers'
 
@@ -52,14 +51,68 @@ const wrapFixtureContentForStrictMode = (
     // /END
     // `
     //         : content
+    const lineEnding = /\r\n|\r|\n/.exec(content)?.[0] ?? '\n'
     const input = isStrictMode
-        ? `${content}
-/END
-`
+        ? `${content}${lineEnding}/END${lineEnding}`
         : content
 
     return input
 }
+
+const bigintMarker = '__YINI_TEST_BIGINT:'
+
+/** Keep large JSON integers exact when reading golden expectations. */
+const parseExpectedJson = (source: string): unknown => {
+    let quoted = false
+    let escaped = false
+    let transformed = ''
+
+    for (let index = 0; index < source.length; index++) {
+        const character = source[index]
+        if (quoted) {
+            transformed += character
+            if (escaped) escaped = false
+            else if (character === '\\') escaped = true
+            else if (character === '"') quoted = false
+            continue
+        }
+        if (character === '"') {
+            quoted = true
+            transformed += character
+            continue
+        }
+
+        const number = /^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?/.exec(
+            source.slice(index),
+        )?.[0]
+        if (number) {
+            const integer = /[.eE]/.test(number) ? null : BigInt(number)
+            transformed +=
+                integer !== null &&
+                (integer > BigInt(Number.MAX_SAFE_INTEGER) ||
+                    integer < -BigInt(Number.MAX_SAFE_INTEGER))
+                    ? JSON.stringify(`${bigintMarker}${number}`)
+                    : number
+            index += number.length - 1
+            continue
+        }
+        transformed += character
+    }
+
+    return JSON.parse(transformed, (_key, value) =>
+        typeof value === 'string' && value.startsWith(bigintMarker)
+            ? BigInt(value.slice(bigintMarker.length))
+            : value,
+    )
+}
+
+const comparableJson = (value: unknown): string =>
+    JSON.stringify(
+        value,
+        (_key, item) =>
+            typeof item === 'bigint' ? `${bigintMarker}${item}` : item,
+        4,
+    )
 
 /**
  * Unwrap the temporary strict-mode top-level section from the parsed result.
@@ -101,7 +154,7 @@ export function testValidCases(
 
         const content = fs.readFileSync(yiniFile, 'utf-8')
         const input = wrapFixtureContentForStrictMode(content, isStrictMode)
-        const correct = JSON.parse(fs.readFileSync(jsonFile, 'utf-8'))
+        const correct = parseExpectedJson(fs.readFileSync(jsonFile, 'utf-8'))
 
         // Act.
         const parsed = YINI.parse(input, {
@@ -112,7 +165,7 @@ export function testValidCases(
         const result = unwrapStrictModeTopSection(parsed, isStrictMode)
 
         // Assert.
-        expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
+        expect(comparableJson(result)).toEqual(comparableJson(correct))
     })
 }
 

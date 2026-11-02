@@ -106,7 +106,7 @@ describe('Binary number literal tests:', () => {
             bin3 = %1111111                            // Decimal 127 (max signed 8-bit)
             bin4 = %11111111                           // Decimal 255 (max unsigned 8-bit)
             bin5 = %1111111111111111111111111111111    // Decimal 2,147,483,647 (max signed 32-bit)
-            bin6 = %1111111111111111111111111111111111111111111111111111111111111111
+            bin6 = %11111111111111111111111111111111 // Max unsigned 32-bit
             /END
         `
 
@@ -123,7 +123,7 @@ describe('Binary number literal tests:', () => {
                 bin3: 127,
                 bin4: 255,
                 bin5: 2147483647,
-                bin6: 18446744073709551615,
+                bin6: 4294967295,
             },
         }
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
@@ -137,7 +137,7 @@ describe('Binary number literal tests:', () => {
             bin3 = 0b1111111                            // Decimal 127 (max signed 8-bit)
             bin4 = 0b11111111                           // Decimal 255 (max unsigned 8-bit)
             bin5 = 0b1111111111111111111111111111111    // Decimal 2,147,483,647 (max signed 32-bit)
-            bin6 = 0b1111111111111111111111111111111111111111111111111111111111111111
+            bin6 = 0b11111111111111111111111111111111 // Max unsigned 32-bit
             /END
         `
 
@@ -154,7 +154,7 @@ describe('Binary number literal tests:', () => {
                 bin3: 127,
                 bin4: 255,
                 bin5: 2147483647,
-                bin6: 18446744073709551615,
+                bin6: 4294967295,
             },
         }
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
@@ -168,7 +168,7 @@ describe('Binary number literal tests:', () => {
             bin3 = 0B1111111                            // Decimal 127 (max signed 8-bit)
             bin4 = 0B11111111                           // Decimal 255 (max unsigned 8-bit)
             bin5 = 0B1111111111111111111111111111111    // Decimal 2,147,483,647 (max signed 32-bit)
-            bin6 = 0B1111111111111111111111111111111111111111111111111111111111111111
+            bin6 = 0B11111111111111111111111111111111 // Max unsigned 32-bit
             /END
         `
 
@@ -185,7 +185,7 @@ describe('Binary number literal tests:', () => {
                 bin3: 127,
                 bin4: 255,
                 bin5: 2147483647,
-                bin6: 18446744073709551615,
+                bin6: 4294967295,
             },
         }
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))

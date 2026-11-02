@@ -27,7 +27,7 @@ describe('Integer number literal tests:', () => {
         // Assert.
         expect(!!result).toEqual(true)
         expect(result.Ints.value1).toEqual(0)
-        expect(result.Ints.value2).toEqual(-0)
+        expect(result.Ints.value2).toEqual(0)
         expect(result.Ints.value3).toEqual(-1)
         expect(result.Ints.value4).toEqual(111)
         expect(result.Ints.value5).toEqual(-42)

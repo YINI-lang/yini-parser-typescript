@@ -80,7 +80,7 @@
         "clean:ts-js": "bash scripts/clean-ts-js.sh",
         "antlr": "task generate",
         "ci:antlr": "task ci-generate",
-        "build": "tsc -p ./tsconfig.json",
+        "build": "tsc -p ./tsconfig.json && npm run build-tools",
         "build-tools": "tsc -p tsconfig.tools.json",
         "prepublishOnly": "npm run lint && npm test && npm run build",
         "example1": "npm run build && tsx examples/parse-example.ts",

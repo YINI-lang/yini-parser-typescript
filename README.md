@@ -122,6 +122,12 @@ If strict mode reports a missing `/END`, either add `/END` as the final signific
 
 See the [YINI specification and documentation](https://yini-lang.org/refs/specification?utm_source=github&utm_campaign=yini_parser_ts&utm_content=readme&utm_medium=referral).
 
+### Integer values
+
+Signed 64-bit YINI integers are parsed exactly. Integers within JavaScript's safe integer range are returned as `number`; integers outside that range are returned as `bigint`. For example, `9007199254740993` becomes `9007199254740993n`.
+
+`JSON.stringify` cannot serialize `bigint` directly. Use a serializer that writes these values as JSON number literals when exact JSON output is required.
+
 ### Escaped strings
 
 Strings are raw by default. Prefix a string with `E` or `e` to interpret escape sequences such as `\n` and `\t`. The older `C` and `c` prefixes remain valid aliases, including for triple-quoted strings.

@@ -116,6 +116,31 @@ function getErrorMessage(error: unknown): string {
     return error instanceof Error ? error.message : String(error)
 }
 
+function stringifyResult(value: unknown, depth = 0): string {
+    if (typeof value === 'bigint') return value.toString()
+    if (value === null || typeof value !== 'object') {
+        return JSON.stringify(value)
+    }
+
+    const indent = '  '.repeat(depth + 1)
+    const closingIndent = '  '.repeat(depth)
+    if (Array.isArray(value)) {
+        if (value.length === 0) return '[]'
+        const items = value.map((item) =>
+            `${indent}${stringifyResult(item, depth + 1)}`,
+        )
+        return `[\n${items.join(',\n')}\n${closingIndent}]`
+    }
+
+    const entries = Object.entries(value).filter(([, item]) => item !== undefined)
+    if (entries.length === 0) return '{}'
+    const members = entries.map(
+        ([key, item]) =>
+            `${indent}${JSON.stringify(key)}: ${stringifyResult(item, depth + 1)}`,
+    )
+    return `{\n${members.join(',\n')}\n${closingIndent}}`
+}
+
 function main(): void {
     try {
         const args = parseArgs(process.argv.slice(2))
@@ -130,7 +155,7 @@ function main(): void {
 
         writeWarnings(result)
 
-        process.stdout.write(`${JSON.stringify(result.result, null, 2)}\n`)
+        process.stdout.write(`${stringifyResult(result.result)}\n`)
         process.exit(0)
     } catch (error: unknown) {
         process.stderr.write(`${getErrorMessage(error)}\n`)

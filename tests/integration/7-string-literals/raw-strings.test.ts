@@ -238,18 +238,19 @@ Line 2"
             }).toThrow()
         })
 
-        test('10. Should throw when a raw string contains a literal tab.', () => {
+        test('10. Should preserve a literal tab in a raw string.', () => {
             // Arrange.
-            const invalidYini =
+            const validYini =
                 '@yini\n\n^ Strings\nkey = "alpha\tbeta"\n'
 
-            // Act & Assert.
-            expect(() => {
-                YINI.parse(invalidYini, {
-                    strictMode: false,
-                    failLevel: 'errors',
-                })
-            }).toThrow(/control character/i)
+            // Act.
+            const result = YINI.parse(validYini, {
+                strictMode: false,
+                failLevel: 'errors',
+            })
+
+            // Assert.
+            expect(result.Strings.key).toBe('alpha\tbeta')
         })
     })
 
@@ -414,19 +415,44 @@ Line 2"
             }).toThrow()
         })
 
-        test('7. Should throw when a raw string contains a literal tab.', () => {
+        test('7. Should preserve a literal tab in a raw string.', () => {
             // Arrange.
-            const invalidYini =
+            const validYini =
                 '@yini strict\n\n^ App\ntext = "alpha\tbeta"\n\n/END\n'
 
-            // Act & Assert.
-            expect(() => {
-                YINI.parse(invalidYini, {
-                    strictMode: true,
-                    requireDocTerminator: 'required',
-                    failLevel: 'errors',
-                })
-            }).toThrow(/control character/i)
+            // Act.
+            const result = YINI.parse(validYini, {
+                strictMode: true,
+                requireDocTerminator: 'required',
+                failLevel: 'errors',
+            })
+
+            // Assert.
+            expect(result.App.text).toBe('alpha\tbeta')
         })
     })
 })
+
+describe.each([false, true])(
+    'Raw string control characters (strictMode: %s):',
+    (strictMode) => {
+        test('Rejects a control character other than tab.', () => {
+            // 1. Assign.
+            const input = `^ Strings\nvalue = "alpha\x01beta"\n${strictMode ? '/END\n' : ''}`
+
+            // 2. Act.
+            const parsed = YINI.parseForTooling(input, { strictMode })
+
+            // 3. Assert.
+            expect(parsed.ok).toBe(false)
+            expect(parsed.diagnostics).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({
+                        severity: 'error',
+                        message: expect.stringMatching(/control character/i),
+                    }),
+                ]),
+            )
+        })
+    },
+)

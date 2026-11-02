@@ -276,7 +276,7 @@ const rejectRawSingleLineControlCharacters = (input: string): void => {
     for (let i = 0; i < input.length; i++) {
         const code = input.charCodeAt(i)
 
-        if (code < 0x20) {
+        if (code < 0x20 && input[i] !== '\t') {
             throw new CYiniStringParseError(
                 `Raw string contains control character U+${code
                     .toString(16)

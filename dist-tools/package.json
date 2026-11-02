@@ -1,6 +1,6 @@
 {
     "name": "yini-parser",
-    "version": "1.6.0",
+    "version": "1.7.0",
     "description": "Official Node.js (TypeScript) parser for YINI, an INI-inspired, indentation-insensitive configuration format with clear nested sections and explicit structure.",
     "keywords": [
         "yini",
@@ -58,7 +58,7 @@
         "test": "cross-env NODE_ENV=test APP_ENV=local jest --bail --verbose --runInBand",
         "test:debug": "cross-env npm run test -- --isDebug=1",
         "test:smoke": "cross-env NODE_ENV=test APP_ENV=local jest tests/smoke --bail --verbose --runInBand",
-        "test:unit": "cross-env NODE_ENV=test APP_ENV=local jest src/ --bail --verbose --runInBand",
+        "test:unit": "cross-env NODE_ENV=test APP_ENV=local jest src/ tests/unit --bail --verbose --runInBand",
         "test:integr": "cross-env NODE_ENV=test APP_ENV=local jest tests/integration --bail --verbose --runInBand",
         "test:issues": "cross-env NODE_ENV=test APP_ENV=local jest tests/fixed-issues --bail --verbose --runInBand",
         "test:gold": "cross-env NODE_ENV=test APP_ENV=local jest tests/golden --bail --verbose --runInBand",
@@ -72,17 +72,20 @@
         "test:cov:lcov": "jest --coverage --coverageReporters=lcov",
         "ci:test": "cross-env NODE_ENV=test APP_ENV=ci jest --verbose --runInBand",
         "ci:test:smoke": "cross-env NODE_ENV=test APP_ENV=ci jest tests/smoke --verbose --runInBand",
-        "ci:test:unit": "cross-env NODE_ENV=test APP_ENV=ci jest src/ --verbose --runInBand",
+        "ci:test:unit": "cross-env NODE_ENV=test APP_ENV=ci jest src/ tests/unit --verbose --runInBand",
         "yini-test:adapter": "tsx tools/yini-test-adapter.ts",
         "test:yini-test:adapter": "npx tsx tools/yini-test-adapter.ts --input some-file.yini --mode lenient",
         "tsc": "npx tsc -p ./tsconfig.json",
         "lint": "eslint src --ext .ts",
         "clean:ts-js": "bash scripts/clean-ts-js.sh",
-        "antlr": "make generate",
-        "ci:antlr": "make ci-generate",
-        "build": "tsc -p ./tsconfig.json",
+        "antlr": "task generate",
+        "ci:antlr": "task ci-generate",
+        "build": "tsc -p ./tsconfig.json && npm run build-tools",
         "build-tools": "tsc -p tsconfig.tools.json",
-        "prepublishOnly": "npm run lint && npm test && npm run build"
+        "prepublishOnly": "npm run lint && npm test && npm run build",
+        "example1": "npm run build && tsx examples/parse-example.ts",
+        "example2": "npm run build && tsx examples/nested-example.ts",
+        "example3": "npm run build && tsx examples/tooling-diagnostics-example.ts"
     },
     "author": "Marko K. Seppänen",
     "dependencies": {

@@ -75,7 +75,7 @@ describe('Octal number literal tests:', () => {
             oct3 = 0o177                    // Max signed 8-bit)
             oct4 = 0o377                    // Max unsigned 8-bit)
             oct5 = 0o17777777777            // Max signed 32-bit)
-            oct6 = 0o1777777777777777777777 // Max unsigned 64-bit)
+            oct6 = 0o37777777777            // Max unsigned 32-bit)
             /END
         `
 
@@ -92,7 +92,7 @@ describe('Octal number literal tests:', () => {
                 oct3: 127,
                 oct4: 255,
                 oct5: 2147483647,
-                oct6: 18446744073709551615,
+                oct6: 4294967295,
             },
         }
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
@@ -106,7 +106,7 @@ describe('Octal number literal tests:', () => {
             oct3 = 0O177                    // Max signed 8-bit)
             oct4 = 0O377                    // Max unsigned 8-bit)
             oct5 = 0O17777777777            // Max signed 32-bit)
-            oct6 = 0O1777777777777777777777 // Max unsigned 64-bit)
+            oct6 = 0O37777777777            // Max unsigned 32-bit)
             /END
         `
 
@@ -123,7 +123,7 @@ describe('Octal number literal tests:', () => {
                 oct3: 127,
                 oct4: 255,
                 oct5: 2147483647,
-                oct6: 18446744073709551615,
+                oct6: 4294967295,
             },
         }
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
@@ -137,7 +137,7 @@ describe('Octal number literal tests:', () => {
             oct3 = -0o177                    // Max signed 8-bit)
             oct4 = +0o377                    // Max unsigned 8-bit)
             oct5 = -0o17777777777            // Max signed 32-bit)
-            oct6 = +0o1777777777777777777777 // Max unsigned 64-bit)
+            oct6 = +0o37777777777            // Max unsigned 32-bit)
             /END
         `
 
@@ -154,7 +154,7 @@ describe('Octal number literal tests:', () => {
                 oct3: -127,
                 oct4: 255,
                 oct5: -2147483647,
-                oct6: 18446744073709551615,
+                oct6: 4294967295,
             },
         }
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))
@@ -168,7 +168,7 @@ describe('Octal number literal tests:', () => {
             oct3 = -0O177                    // Max signed 8-bit)
             oct4 = +0O377                    // Max unsigned 8-bit)
             oct5 = -0O17777777777            // Max signed 32-bit)
-            oct6 = +0O1777777777777777777777 // Max unsigned 64-bit)
+            oct6 = +0O37777777777            // Max unsigned 32-bit)
             /END
         `
 
@@ -185,7 +185,7 @@ describe('Octal number literal tests:', () => {
                 oct3: -127,
                 oct4: 255,
                 oct5: -2147483647,
-                oct6: 18446744073709551615,
+                oct6: 4294967295,
             },
         }
         expect(toPrettyJSON(result)).toEqual(toPrettyJSON(correct))

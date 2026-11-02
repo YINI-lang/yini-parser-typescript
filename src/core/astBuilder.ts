@@ -40,12 +40,13 @@ import YiniParserVisitor from '../grammar/generated/YiniParserVisitor'
 import { extractYiniLine } from '../parsers/extractSignificantYiniLine'
 import parseBoolean from '../parsers/parseBoolean'
 import parseNullLiteral from '../parsers/parseNull'
-import parseNumberLiteral from '../parsers/parseNumber'
+import parseNumberLiteral, {
+    normalizeNumberForConcatenation,
+} from '../parsers/parseNumber'
 import parseSectionHeader from '../parsers/parseSectionHeader'
 import parseStringLiteral, {
     CYiniStringParseError,
 } from '../parsers/parseString'
-import { isInfinityValue, isNaNValue } from '../utils/number'
 import { debugPrint, printObject } from '../utils/print'
 import {
     decodeBacktickedIdent,
@@ -84,14 +85,14 @@ let _sourceType: TSourceType
  */
 const makeScalarValue = (
     type: 'String' | 'Number' | 'Boolean' | 'Null' | 'Undefined',
-    value: string | number | boolean | null | undefined = null,
+    value: string | number | bigint | boolean | null | undefined = null,
     tag: string | undefined = undefined,
 ): TScalarValue => {
     switch (type) {
         case 'String':
             return { type, value: value as string, tag }
         case 'Number':
-            return { type, value: value as number, tag }
+            return { type, value: value as number | bigint, tag }
         case 'Boolean':
             return { type, value: !!value, tag }
         case 'Null':
@@ -517,7 +518,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
             case 'String':
                 return value.value
             case 'Number':
-                return String(value.value)
+                return value.concatText ?? String(value.value)
             case 'Boolean':
                 return value.value ? 'true' : 'false'
             case 'Null':
@@ -1133,6 +1134,8 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
         } else if (
             valueNode.type === 'Undefined' &&
             valueNode.tag !== 'Invalid string literal already reported' &&
+            valueNode.tag !== 'Invalid number literal already reported' &&
+            valueNode.tag !== 'Invalid concatenation operand already reported' &&
             valueNode.tag !== 'Missing value already reported' &&
             valueNode.tag !== 'Parser syntax error already reported'
         ) {
@@ -1152,6 +1155,8 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
         const shouldSkipMemberInsertion =
             valueNode?.type === 'Undefined' &&
             (valueNode.tag === 'Invalid string literal already reported' ||
+                valueNode.tag === 'Invalid number literal already reported' ||
+                valueNode.tag === 'Invalid concatenation operand already reported' ||
                 valueNode.tag === 'Missing value already reported' ||
                 valueNode.tag === 'Parser syntax error already reported')
 
@@ -1375,22 +1380,27 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
         }
 
         if (ctx.NUMBER()) {
-            const parsedNum = parseNumberLiteral(ctx.NUMBER().getText())
-
-            if (
-                parsedNum?.value !== 0 &&
-                (!parsedNum?.value ||
-                    isNaNValue(parsedNum.value) ||
-                    isInfinityValue(parsedNum.value))
-            ) {
+            const rawText = ctx.NUMBER().getText()
+            const parsedNum = parseNumberLiteral(rawText)
+            if (parsedNum.error) {
+                this.errorHandler!.pushOrBail(
+                    toErrorLocation(ctx),
+                    'Syntax-Error',
+                    parsedNum.error,
+                )
                 return makeScalarValue(
                     'Undefined',
                     undefined,
-                    parsedNum?.tag ?? 'Invalid number literal',
+                    'Invalid number literal already reported',
                 )
             }
 
-            return makeScalarValue('Number', parsedNum.value, parsedNum.tag)
+            return {
+                type: 'Number',
+                value: parsedNum.value,
+                tag: parsedNum.tag,
+                concatText: normalizeNumberForConcatenation(rawText, parsedNum.value),
+            }
         }
 
         if (ctx.BOOLEAN_TRUE() || ctx.BOOLEAN_FALSE()) {
@@ -1482,24 +1492,17 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
             printObject(parsedNum)
         }
 
-        // Check if number is JS special type NaN, Infinity or -Infinity.
-        // Note: Value with a zero (0) should pass OK!
-        if (
-            parsedNum?.value !== 0 &&
-            (!parsedNum?.value ||
-                isNaNValue(parsedNum.value) ||
-                isInfinityValue(parsedNum.value))
-        ) {
-            // **************************************************
-            // NOTE: (!) Currently a bit unsure if to return
-            // option 1 or 2..!?, 2025-08-23
-
-            // Option 1.
-            // return makeScalarValue('Undefined', undefined, parsedNum?.tag)
-
-            // Option 2.
-            return undefined
-            // **************************************************
+        if (parsedNum.error) {
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                parsedNum.error,
+            )
+            return makeScalarValue(
+                'Undefined',
+                undefined,
+                'Invalid number literal already reported',
+            )
         }
 
         const value: TScalarValue = makeScalarValue(

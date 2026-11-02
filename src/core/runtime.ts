@@ -79,6 +79,22 @@ export class YiniRuntime {
         })
     }
 
+    private addMixedLineEndingIssue(content: string, strictMode: boolean): void {
+        const endings = content.match(/\r\n|\r|\n/g) ?? []
+        const firstEnding = endings[0]
+        const mixedAt = endings.findIndex((ending) => ending !== firstEnding)
+        if (mixedAt < 0) return
+
+        this.#runtime.preflightIssues.push({
+            locInput: { line: mixedAt + 1 },
+            type: strictMode ? 'Syntax-Error' : 'Syntax-Warning',
+            msgWhat: 'Mixed line endings.',
+            msgWhy: strictMode
+                ? 'Strict mode requires one line-ending form throughout the document.'
+                : 'Lenient mode accepts mixed line endings.',
+        })
+    }
+
     // --- Method overload signature ---------------------------------------
     // (With no body + not declared with arrow function.)
     // NOTE: Must be method declaration with NO =, arrow functions not (currently) supported for this type of method overloading.
@@ -150,6 +166,7 @@ export class YiniRuntime {
 
         const originalContent = yiniContent
         this.addInitialBomWarning(originalContent)
+        this.addMixedLineEndingIssue(originalContent, userOpts.strictMode)
         yiniContent = stripBomAndValidShebang(yiniContent)
         yiniContent = normalizeShebangCommentLines(yiniContent)
 
@@ -189,7 +206,7 @@ export class YiniRuntime {
         }
 
         // IMPORTANT: Makes sure input ends with an empty NL!
-        if (!yiniContent.endsWith('\n')) {
+        if (!yiniContent.endsWith('\n') && !yiniContent.endsWith('\r')) {
             yiniContent += '\n'
         }
 
@@ -311,14 +328,13 @@ export class YiniRuntime {
             this.#runtime.sha256 = computeSha256(content) // NOTE: Compute BEFORE any possible tampering of content.
         }
 
-        if (!content.endsWith('\n')) {
+        if (!content.endsWith('\n') && !content.endsWith('\r')) {
             this.#runtime.preflightIssues.push({
                 locInput: undefined,
                 type: 'Syntax-Warning',
                 msgWhat: 'No newline at end of file.',
                 msgWhy: `It's recommended to end a YINI file with a newline. File: "${filePath}"`,
             })
-            content += '\n'
         }
 
         const result = this.runParse(content, {

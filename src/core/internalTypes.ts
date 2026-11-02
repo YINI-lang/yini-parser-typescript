@@ -50,7 +50,7 @@ export type TBailSensitivityLevel =
  */
 export type TScalarValue =
     | { type: 'String'; value: string; tag: string | undefined }
-    | { type: 'Number'; value: number; tag: string | undefined }
+    | { type: 'Number'; value: number | bigint; tag: string | undefined; concatText?: string }
     | { type: 'Boolean'; value: boolean; tag: string | undefined }
     | { type: 'Null'; value: null; tag: string | undefined }
     | { type: 'Undefined'; value: undefined; tag: string | undefined } // NOTE: Although JSON cannot represent undefined, but JS objects can (and it's sometimes useful in debugging etc).

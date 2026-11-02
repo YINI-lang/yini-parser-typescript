@@ -3,6 +3,9 @@
 **Changelog** for `yini-parser-typescript`.
 
 ## Upcoming
+- **Changed:** Integers outside JavaScript's safe integer range are returned as `bigint` to preserve the signed 64-bit YINI range exactly. The test adapter emits them as JSON numbers.
+- **Fixed:** Reject signed 64-bit overflow, floating-point underflow to zero, and mixed line endings in strict mode; normalize numeric source spelling in lenient concatenation.
+- **Fixed:** Decode escaped backticks in identifiers and accept literal tabs in raw strings.
 - **Added:** `E` and `e` prefixes for escaped strings, including triple-quoted strings, as aliases for `C` and `c`.
 - **Added:** Command strings using the multiline `command"""` form, with structural indentation removed and literal content preserved.
 - **Changed:** Triple-quoted strings now preserve source `CRLF` and `CR` line endings instead of normalizing them to `LF`, matching the rc6x specification.
