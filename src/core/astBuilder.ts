@@ -289,6 +289,13 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
     }
 
     private extractStringKindAndValue(raw: string): IParsedStringInput {
+        if (raw.startsWith('command"""')) {
+            return {
+                strKind: 'command',
+                value: raw.slice('command"""'.length, -3),
+            }
+        }
+
         const hasEscapedPrefix = /^[CcEe]/.test(raw)
         const hasRawPrefix = /^[Rr]/.test(raw)
         const hasPrefix = hasEscapedPrefix || hasRawPrefix
@@ -524,6 +531,27 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
         const parsed = this.extractStringKindAndValue(tokenText)
 
         try {
+            if (parsed.strKind === 'command') {
+                const token = ctx.start
+                const input = token.getInputStream()
+                const nextIndex = token.stop + 1
+                const nextChar =
+                    nextIndex < input.size
+                        ? input.getText(nextIndex, nextIndex)
+                        : ''
+
+                if (nextChar && nextChar !== '\r' && nextChar !== '\n') {
+                    const lineOffset = (tokenText.match(/\r\n|\r|\n/g) ?? [])
+                        .length
+                    const closingLine = tokenText.split(/\r\n|\r|\n/).at(-1)!
+                    throw new CYiniStringParseError(
+                        'Command string closing delimiter must be alone on its line.',
+                        lineOffset,
+                        closingLine.length + 1,
+                    )
+                }
+            }
+
             const value = parseStringLiteral(parsed)
             return makeScalarValue('String', value)
         } catch (err: unknown) {
@@ -534,7 +562,10 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
             let msgHint = ''
 
             if (err instanceof CYiniStringParseError) {
-                if (/Invalid escape sequence/i.test(msg)) {
+                if (parsed.strKind === 'command') {
+                    msgWhat = `Invalid command string: ${msg}`
+                    msgWhy = ''
+                } else if (/Invalid escape sequence/i.test(msg)) {
                     msgWhat = 'Invalid escape sequence in string'
                     msgHint =
                         'Use double backslashes (\\\\) in escaped strings, or use a raw string if escapes are not needed.'
@@ -549,8 +580,21 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
                 }
             }
 
+            let location = toErrorLocation(ctx)
+            if (
+                parsed.strKind === 'command' &&
+                err instanceof CYiniStringParseError &&
+                err.lineOffset !== undefined &&
+                location?.line !== undefined
+            ) {
+                location = {
+                    line: location.line + err.lineOffset,
+                    column: err.column ?? 1,
+                }
+            }
+
             this.errorHandler!.pushOrBail(
-                toErrorLocation(ctx),
+                location,
                 'Syntax-Error',
                 msgWhat,
                 msgWhy,

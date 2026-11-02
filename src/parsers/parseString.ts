@@ -10,7 +10,11 @@ import { IParsedStringInput } from '../core/internalTypes'
 import { debugPrint } from '../utils/print'
 
 export class CYiniStringParseError extends Error {
-    constructor(message: string) {
+    constructor(
+        message: string,
+        readonly lineOffset?: number,
+        readonly column?: number,
+    ) {
         super(message)
         this.name = 'YiniStringParseError'
     }
@@ -208,8 +212,65 @@ const parseClassicEscapes = (
     return result
 }
 
-const normalizeRealLineBreaks = (value: string): string =>
-    value.replace(/\r\n?/g, '\n')
+const parseCommandString = (value: string): string => {
+    const openingBreak = /^(?:\r\n|\r|\n)/.exec(value)?.[0]
+    if (!openingBreak) {
+        throw new CYiniStringParseError(
+            'Command string opening delimiter must be followed by a line break.',
+        )
+    }
+
+    const afterOpening = value.slice(openingBreak.length)
+    const closingBreak = /(?:\r\n|\r|\n)[ ]*$/.exec(afterOpening)
+    const content = closingBreak
+        ? afterOpening.slice(0, closingBreak.index)
+        : /^[ ]*$/.test(afterOpening)
+          ? ''
+          : null
+
+    if (content === null) {
+        throw new CYiniStringParseError(
+            'Command string closing delimiter must be on its own line.',
+        )
+    }
+
+    const parts = content.split(/(\r\n|\r|\n)/)
+    const contentLines = parts.filter((_, index) => index % 2 === 0)
+    const firstNonemptyLine = contentLines.findIndex((line) => /[^ ]/.test(line))
+    let indentation = 0
+    if (firstNonemptyLine === -1) {
+        for (const line of contentLines) {
+            indentation = Math.max(indentation, line.length)
+        }
+    } else {
+        indentation = /^ */.exec(contentLines[firstNonemptyLine])![0].length
+    }
+    const prefix = ' '.repeat(indentation)
+
+    for (let index = 0; index < contentLines.length; index++) {
+        const line = contentLines[index]
+
+        if (index < firstNonemptyLine && line.length > indentation) {
+            throw new CYiniStringParseError(
+                'Command string leading blank line exceeds structural indentation.',
+                index + 1,
+                1,
+            )
+        }
+
+        if (/[^ ]/.test(line) && !line.startsWith(prefix)) {
+            throw new CYiniStringParseError(
+                'Command string content line has insufficient indentation.',
+                index + 1,
+                1,
+            )
+        }
+
+        parts[index * 2] = line.slice(Math.min(indentation, line.length))
+    }
+
+    return parts.join('')
+}
 
 const rejectRawSingleLineControlCharacters = (input: string): void => {
     for (let i = 0; i < input.length; i++) {
@@ -235,13 +296,16 @@ const parseStringLiteral = ({ strKind, value }: IParsedStringInput): string => {
             return value
 
         case 'triple-raw':
-            return normalizeRealLineBreaks(value)
+            return value
 
         case 'classic':
             return parseClassicEscapes(value, false)
 
         case 'triple-classic':
-            return parseClassicEscapes(normalizeRealLineBreaks(value), true)
+            return parseClassicEscapes(value, true)
+
+        case 'command':
+            return parseCommandString(value)
 
         default:
             throw new CYiniStringParseError(`Unknown string kind: ${strKind}`)

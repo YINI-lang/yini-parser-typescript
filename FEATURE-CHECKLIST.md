@@ -2,7 +2,7 @@ YINI Parser – Feature Implementation Status
 ===========================================
 
 Features are based on the YINI Specification with parser-side implementation updates:  
-v1.0.0 RC 6
+v1.0.0 RC 6x / RC 7 WIP
 
 https://github.com/YINI-lang/YINI-spec
 
@@ -36,13 +36,13 @@ Status should be based primarily on the current source code and automated tests.
 
 | # | Status | Section |
 |---|---|---|
-| 1 | ✅ | Core Parsing / Basic Members |
-| 2 | ✅ | File Structure & Errors |
+| 1 | 🚧 | Core Parsing / Basic Members |
+| 2 | 🚧 | File Structure & Errors |
 | 3 | ✅ | Basic / Simple Literals |
 | 4 | ✅ | Comments + Disable line |
-| 5 | ✅ | Extended Parsing |
+| 5 | 🚧 | Extended Parsing |
 | 6 | ✅ | Number Literals |
-| 7 | ✅ | String Literals |
+| 7 | 🚧 | String Literals |
 | 8 | ✅ | Object Literals |
 | 9 | ✅ | List Literals |
 | 10 | 🚧 | Special & Validation Modes |
@@ -51,7 +51,7 @@ Status should be based primarily on the current source code and automated tests.
 
 ---
 
-### ✅ — 1. Core Parsing / Basic Members
+### 🚧 — 1. Core Parsing / Basic Members
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -74,17 +74,17 @@ Status should be based primarily on the current source code and automated tests.
   </tr>
   <tr>
     <td>Identifier validation rules</td>
-    <td>✅</td>
-    <td>Reject invalid simple identifiers and invalid backticked identifiers</td>
-    <td>✅</td>
-    <td>✅</td>
-    <td>✅</td>
-    <td>Simple identifiers must not start with digits and must not contain spaces, hyphens, dots, slashes, colons, or non-ASCII letters. Backticked identifiers reject raw tabs, newlines, carriage returns, raw backticks, trailing backslashes, and invalid escape-like sequences. Covered by helper unit tests and section-header integration tests for dotted names.</td>
+    <td>🚧</td>
+    <td>Reject invalid simple identifiers and invalid backticked identifiers, including raw C0 and C1 controls</td>
+    <td>🚧</td>
+    <td>🚧</td>
+    <td>🚧</td>
+    <td>Simple identifiers must begin with a letter or underscore and must not contain spaces, hyphens, dots, slashes, colons, or non-ASCII letters. Backticked identifiers allow only <code>\`</code> and <code>\\</code> escapes; current helper validation still allows <code>\n</code>, <code>\r</code>, and <code>\t</code> and does not reject raw C1 controls.</td>
   </tr>
   <tr>
     <td>Throw error if using section repeating markers higher than supported</td>
     <td>✅</td>
-    <td>Per spec only nesting levels 1–9 supported with repeating markers, e.g. <code>^^^^^^^</code> is invalid</td>
+    <td>Per spec only nesting levels 1–9 are supported with repeating markers; 10 repeated markers are invalid</td>
     <td>✅</td>
     <td>✅</td>
     <td>✅</td>
@@ -159,7 +159,7 @@ Status should be based primarily on the current source code and automated tests.
 
 ---
 
-### ✅ — 2. File Structure & Errors
+### 🚧 — 2. File Structure & Errors
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -179,6 +179,24 @@ Status should be based primarily on the current source code and automated tests.
     <td>✅</td>
     <td>✅</td>
     <td>Must handle UTF-8 with/without BOM</td>
+  </tr>
+  <tr>
+    <td>Final logical line at EOF</td>
+    <td>✅</td>
+    <td>An otherwise complete final line needs no trailing <code>LF</code>, <code>CRLF</code>, or <code>CR</code></td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Valid in both lenient and strict mode, including a final <code>/END</code> in strict mode.</td>
+  </tr>
+  <tr>
+    <td>Unicode separators are not line endings</td>
+    <td>🚧</td>
+    <td><code>U+2028</code> and <code>U+2029</code> must not terminate YINI logical lines</td>
+    <td>🚧</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>The lexer recognizes <code>LF</code>, <code>CRLF</code>, and <code>CR</code> as line endings; add focused parser tests for Unicode separators.</td>
   </tr>
   <tr>
     <td>Shebang handling</td>
@@ -343,7 +361,7 @@ Status should be based primarily on the current source code and automated tests.
 
 ---
 
-### ✅ — 5. Extended Parsing
+### 🚧 — 5. Extended Parsing
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -372,6 +390,15 @@ Status should be based primarily on the current source code and automated tests.
     <td>✅</td>
     <td>✅</td>
     <td>Section names with spaces etc.</td>
+  </tr>
+  <tr>
+    <td>Backticked identifier escapes and controls</td>
+    <td>🚧</td>
+    <td>Decode <code>\`</code> and <code>\\</code>; reject all other escapes and raw C0/C1 controls</td>
+    <td>🚧</td>
+    <td>🚧</td>
+    <td>🚧</td>
+    <td>Current decoding does not handle <code>\`</code>; validation still accepts <code>\n</code>, <code>\r</code>, <code>\t</code>, and raw C1 controls.</td>
   </tr>
   <tr>
     <td>Standard/basic/classic section marks (^, §, >, <)</td>
@@ -416,7 +443,7 @@ Status should be based primarily on the current source code and automated tests.
   <td>✅</td>
   <td>✅</td>
   <td>✅</td>
-  <td><b>⚠️ Mounted directly on the parsed result, or under an implicit <code>base</code> object if required by the implementation</b></td>
+  <td>Lenient mode: mounted directly on the document root alongside top-level sections, with no implicit <code>base</code> object. Strict mode: root-level members are invalid.</td>
 </tr>
 <tr>
   <td>Multiple top-level sections</td>
@@ -520,7 +547,7 @@ Status should be based primarily on the current source code and automated tests.
 
 ---
 
-### ✅ — 7. String Literals
+### 🚧 — 7. String Literals
 <table>
   <tr>
     <th>Sub-Feature</th>
@@ -542,13 +569,13 @@ Status should be based primarily on the current source code and automated tests.
     <td>Single line, enclosed in ' or "</td>
   </tr>
   <tr>
-    <td>Classic string (C-string)</td>
+    <td>Escaped string (E/e; C/c aliases)</td>
     <td>✅</td>
-    <td><code>C'...'</code>, <code>C"..."</code>, with escapes</td>
+    <td><code>E'...'</code>, <code>e"..."</code>; <code>C/c</code> aliases</td>
     <td>✅</td>
     <td>✅</td>
     <td>✅</td>
-    <td>Single line, escape codes, prefixed either with C or c</td>
+    <td>Single-line string with decoded escapes. <code>C/c</code> remains accepted as a deprecated alias.</td>
   </tr>
   <tr>
     <td><strike>Hyper string (H-string)</strike></td>
@@ -557,7 +584,7 @@ Status should be based primarily on the current source code and automated tests.
     <td>✅</td>
     <td>✅</td>
     <td>✅</td>
-    <td>Removed after RC5 to simplify the language core and reduce parser complexity. Not supporting H-strings is correct for RC6.</td>
+    <td>Removed after RC5 to simplify the language core and reduce parser complexity. Not supporting H-strings is correct for RC6x.</td>
   </tr>
   <tr>
     <td>Triple-quoted (raw)</td>
@@ -569,13 +596,31 @@ Status should be based primarily on the current source code and automated tests.
     <td>Raw by default</td>
   </tr>
   <tr>
-    <td>C-Triple-quoted</td>
+    <td>Escaped triple-quoted string (E/e; C/c aliases)</td>
     <td>✅</td>
-    <td><code>C"""..."""</code>, with escapes</td>
+    <td><code>E"""..."""</code>, <code>e"""..."""</code>; <code>C/c</code> aliases</td>
     <td>✅</td>
     <td>✅</td>
     <td>✅</td>
-    <td>Multi-line, supports escapes</td>
+    <td>Multi-line, supports escapes. <code>C/c</code> remains accepted as a deprecated alias.</td>
+  </tr>
+  <tr>
+    <td>Command triple-quoted string</td>
+    <td>✅</td>
+    <td><code>command"""</code> followed by a line break, content, and an own-line <code>"""</code> closer</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Removes structural indentation while keeping command text and escape-like sequences literal. Blank-line and closing-line rules are covered by integration tests.</td>
+  </tr>
+  <tr>
+    <td>Preserve line endings in triple-quoted strings</td>
+    <td>✅</td>
+    <td>Keep source <code>LF</code>, <code>CRLF</code>, or <code>CR</code> in raw, escaped, and command triple-quoted values</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>Indentation handling must not normalize line endings.</td>
   </tr>
   <tr>
     <td>String concatenation</td>
@@ -584,7 +629,7 @@ Status should be based primarily on the current source code and automated tests.
     <td>✅</td>
     <td>✅</td>
     <td>✅</td>
-    <td>All string types</td>
+    <td>Includes command strings.</td>
   </tr>
   <tr>
     <td>Escape sequence validation</td>
@@ -593,7 +638,16 @@ Status should be based primarily on the current source code and automated tests.
     <td>✅</td>
     <td>✅</td>
     <td>✅</td>
-    <td>Escape sequences are valid only in C-Strings and C-Triple-Quoted Strings. Implemented in <code>src/parsers/parseString.ts</code> and covered by Classic and C-Triple string tests.</td>
+    <td>Escapes apply to <code>E/e</code> strings and their <code>C/c</code> aliases, including triple-quoted forms. <code>\xhh</code> denotes Unicode <code>U+00hh</code>. Implemented in <code>src/parsers/parseString.ts</code>.</td>
+  </tr>
+  <tr>
+    <td>Escaped backtick in escaped strings</td>
+    <td>🔲</td>
+    <td><code>\`</code> must decode to a backtick in <code>E/e</code> strings and <code>C/c</code> aliases</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>The lexer accepts the escape, but the runtime string decoder currently rejects it.</td>
   </tr>
   <tr>
     <td>Preserve escape-like sequences in raw strings</td>
@@ -612,6 +666,15 @@ Status should be based primarily on the current source code and automated tests.
     <td>✅</td>
     <td>✅</td>
     <td>Lenient mode only. Strict mode allows concatenation only between string literals.</td>
+  </tr>
+  <tr>
+    <td>Deterministic number-to-string concatenation</td>
+    <td>🚧</td>
+    <td>Use normalized source spelling for decimal numbers, base-10 text for nondecimal numbers, and preserve negative zero</td>
+    <td>🚧</td>
+    <td>🔲</td>
+    <td>🔲</td>
+    <td>Lenient concatenation currently uses JavaScript <code>String(value.value)</code>, which can change decimal exponent spelling.</td>
   </tr>
   <tr>
     <td>Multi-line concatenation after <code>+</code></td>
@@ -709,8 +772,17 @@ Status should be based primarily on the current source code and automated tests.
     <td>✅</td>
     <td>✅</td>
      <td>Recognizes both <code>:</code> and <code>=</code> as inline object member separators.<br/>
-     In lenient mode, both are accepted for flexibility.<br/>
+     In lenient mode, both are accepted, including mixed separators in one object.<br/>
      In strict mode, <code>=</code> is rejected as a syntax error to enforce the canonical <code>key: value</code> form.</td>
+  </tr>
+  <tr>
+    <td>Boolean and null spellings as inline object keys</td>
+    <td>✅</td>
+    <td><code>{ true: 1, false: 2, null: 3 }</code></td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>These spellings are keys in this position, not boolean or null values.</td>
   </tr>
   <tr>
     <td>Duplicate inline object member keys</td>
@@ -850,7 +922,7 @@ Status should be based primarily on the current source code and automated tests.
     <td>✅</td>
     <td>✅</td>
     <td>✅</td>
-    <td>Strict-mode validation for the RC6 parser surface is implemented. Some strict-related behavior remains configurable through rule options such as <code>requireDocTerminator</code> and <code>treatEmptyValueAsNull</code>.</td>
+    <td>Strict-mode validation for the RC6x parser surface is implemented. Some strict-related behavior remains configurable through rule options such as <code>requireDocTerminator</code> and <code>treatEmptyValueAsNull</code>.</td>
   </tr>
   <tr>
     <td><code>@yini strict</code> / <code>@yini lenient</code> mode declarations</td>
@@ -886,13 +958,13 @@ Status should be based primarily on the current source code and automated tests.
   <tr>
     <td>Optional Bail/Abort sensitivity levels</td>
     <td>✅</td>
-    <td>Level 0 = Ignore errors and try parse anyway (may remap faulty key/section names).<br/>
+    <td>Level 0 = Continue parsing after errors where possible.<br/>
     Level 1 = Abort on errors only.<br/>
     Level 2 = Abort even on warnings.</td>
     <td>✅</td>
     <td>✅</td>
     <td>✅</td>
-    <td></td>
+    <td>Invalid key and section names still produce errors in lenient mode and must not be remapped during recovery.</td>
   </tr>
   <tr>
     <td>Detect multiple <code>@yini</code></td>
@@ -1144,4 +1216,4 @@ Status should be based primarily on the current source code and automated tests.
 **^YINI ≡**  
 > A clear, structured, and human-friendly configuration format.  
 
-[yini-lang.org](https://yini-lang.org) · [YINI-lang on GitHub](https://github.com/YINI-lang)  
+[yini-lang.org](https://yini-lang.org/?utm_source=github&utm_campaign=yini_parser_ts&utm_content=feature_checklist_footer&utm_medium=referral) · [YINI-lang on GitHub](https://github.com/YINI-lang)

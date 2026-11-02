@@ -4,6 +4,8 @@
 
 ## Upcoming
 - **Added:** `E` and `e` prefixes for escaped strings, including triple-quoted strings, as aliases for `C` and `c`.
+- **Added:** Command strings using the multiline `command"""` form, with structural indentation removed and literal content preserved.
+- **Changed:** Triple-quoted strings now preserve source `CRLF` and `CR` line endings instead of normalizing them to `LF`, matching the rc6x specification.
 - **Fixed:** Section headers now handle block comments between markers and names or after names, while preserving comment-like text inside backticked names.
 - **Fixed:** Boolean and null spellings now work as inline object keys in both lenient and strict modes.
 - **Changed:** Moved ANTLR generation from Makefile to Taskfile. CI now tests Node.js 22 and 24, pins `yini-test-suite` to 0.3.0rc1, and includes `tests/unit` in unit test runs.
