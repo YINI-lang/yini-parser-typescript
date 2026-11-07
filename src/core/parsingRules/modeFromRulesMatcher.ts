@@ -25,7 +25,7 @@ import { toCoreOptions } from '../options/optionsFunctions'
  * - treatEmptyValueAsNull: 'disallow' →    2
  */
 const MODE_PROFILES: Record<TParserMode, TVec3> = {
-    lenient: [0, 0, 0],
+    lenient: [0, 0, 1],
     //   moderate: [1, 0, 1],
     strict: [2, 2, 2],
     //'pedantic'

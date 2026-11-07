@@ -53,7 +53,7 @@ const DEFAULT_LENIENT_OPTS: TNormalizedUserOptions = {
     // Below are options for pure rules:
     onDuplicateKey: 'warn-and-keep-first',
     requireDocTerminator: 'optional',
-    treatEmptyValueAsNull: 'allow',
+    treatEmptyValueAsNull: 'allow-with-warning',
 }
 
 /**

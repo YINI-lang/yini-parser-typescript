@@ -3,12 +3,17 @@
 **Changelog** for `yini-parser-typescript`.
 
 ## Upcoming
+- **Changed:** Duplicate sections and either `@yini` mode mismatch now produce errors in both modes, following the current RC.6x draft. Duplicate keys still keep the first value and warn in lenient mode.
+- **Fixed:** Regenerated the parser from the updated authoritative grammar to accept compact concatenation such as `"a"+42` and `"a"++42`; separated numeric signs remain invalid.
+- **Fixed:** Accept underscore-prefixed section names without marker whitespace and escaped backticks in escaped strings.
+- **Fixed:** Reject values moved onto another logical line by block comments and invalid UTF-8 file bytes.
+- **Fixed:** Warn on empty values in lenient mode, report misplaced shebang comments in both modes, and identify mixed-line-ending diagnostics with `mixed-line-endings`.
 - **Changed:** Integers outside JavaScript's safe integer range are returned as `bigint` to preserve the signed 64-bit YINI range exactly. The test adapter emits them as JSON numbers.
 - **Fixed:** Reject signed 64-bit overflow, floating-point underflow to zero, and mixed line endings in strict mode; normalize numeric source spelling in lenient concatenation.
 - **Fixed:** Decode escaped backticks in identifiers and accept literal tabs in raw strings.
 - **Added:** `E` and `e` prefixes for escaped strings, including triple-quoted strings, as aliases for `C` and `c`.
 - **Added:** Command strings using the multiline `command"""` form, with structural indentation removed and literal content preserved.
-- **Changed:** Triple-quoted strings now preserve source `CRLF` and `CR` line endings instead of normalizing them to `LF`, matching the rc6x specification.
+- **Changed:** Triple-quoted and command strings normalize source `CRLF` and `CR` line endings to `LF`, following the current RC.6x draft. Escape results such as `\r\n` remain unchanged.
 - **Fixed:** Section headers now handle block comments between markers and names or after names, while preserving comment-like text inside backticked names.
 - **Fixed:** Boolean and null spellings now work as inline object keys in both lenient and strict modes.
 - **Changed:** Moved ANTLR generation from Makefile to Taskfile. CI now tests Node.js 22 and 24, pins `yini-test-suite` to 0.3.0rc1, and includes `tests/unit` in unit test runs.

@@ -158,6 +158,26 @@ export const runPipeline = (
     // Important: force tokenization here so lexing is measured separately.
     tokenStream.fill()
 
+    // The runtime removes the valid initial shebang. Any remaining shebang
+    // token is a misplaced comment; strings and block comments are separate tokens.
+    let reportedShebang = false
+    for (const token of tokenStream.tokens) {
+        if (token.type !== YiniLexer.SHEBANG) continue
+        if (!reportedShebang) {
+            errorHandler.pushOrBail(
+                { line: token.line, column: token.column + 1 },
+                coreOptions.rules.initialMode === 'strict'
+                    ? 'Syntax-Error'
+                    : 'Syntax-Warning',
+                'Misplaced shebang-like sequence.',
+                'A shebang must be the first two non-BOM characters of the document.',
+            )
+            reportedShebang = true
+        }
+        token.type = YiniLexer.NL
+        token.text = /(?:\r\n|\r|\n)$/.exec(token.text)?.[0] ?? '\n'
+    }
+
     debugPrint('--- Parsing done. ---')
     debugPrint(
         '=== Ended phase 1 =============================================',

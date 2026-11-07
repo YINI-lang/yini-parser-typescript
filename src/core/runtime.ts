@@ -1,11 +1,8 @@
 // src/core/runtime.ts
 import fs from 'fs'
+import { isUtf8 } from 'node:buffer'
 import { isDev } from '../config/env'
-import {
-    getShebangPlacementIssue,
-    normalizeShebangCommentLines,
-    stripBomAndValidShebang,
-} from '../parsers/validateShebangPlacement'
+import { stripBomAndValidShebang } from '../parsers/validateShebangPlacement'
 import { ParsedObject, ParseOptions, PreferredFailLevel } from '../types'
 import { getFileNameExtension } from '../utils/pathAndFileName'
 import { debugPrint, devPrint, printObject } from '../utils/print'
@@ -156,19 +153,10 @@ export class YiniRuntime {
             }
         }
 
-        const shebangIssue = getShebangPlacementIssue(
-            yiniContent,
-            userOpts.strictMode,
-        )
-        if (shebangIssue) {
-            this.#runtime.preflightIssues.push(shebangIssue)
-        }
-
         const originalContent = yiniContent
         this.addInitialBomWarning(originalContent)
         this.addMixedLineEndingIssue(originalContent, userOpts.strictMode)
         yiniContent = stripBomAndValidShebang(yiniContent)
-        yiniContent = normalizeShebangCommentLines(yiniContent)
 
         if (originalContent.startsWith('\uFEFF')) {
             devPrint(
@@ -312,6 +300,15 @@ export class YiniRuntime {
         // let content = fs.readFileSync(filePath, 'utf8')
         const rawBuffer = fs.readFileSync(filePath) // Raw buffer for size.
         const fileByteSize = rawBuffer.byteLength // Byte size in UTF-8.
+
+        if (!isUtf8(rawBuffer)) {
+            this.#runtime.preflightIssues.push({
+                locInput: undefined,
+                type: 'Syntax-Error',
+                msgWhat: 'Invalid UTF-8 encoding.',
+                msgWhy: 'YINI files must contain valid UTF-8 bytes.',
+            })
+        }
 
         let content = rawBuffer.toString('utf8')
         const timeEndMs = performance.now()

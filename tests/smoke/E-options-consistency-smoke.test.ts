@@ -86,7 +86,7 @@ describe('Options Consistency Smoke Tests:', () => {
             quiet: false, // Suppress warnings in console (does not effect warnings in meta data).
             onDuplicateKey: 'warn-and-keep-first',
             requireDocTerminator: 'optional',
-            treatEmptyValueAsNull: 'allow',
+            treatEmptyValueAsNull: 'allow-with-warning',
         }
         expect(!!result.meta).toEqual(true)
         expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)
@@ -312,7 +312,7 @@ describe('Options Consistency Smoke Tests:', () => {
             quiet: false, // Suppress warnings in console (does not effect warnings in meta data).
             onDuplicateKey: 'warn-and-keep-first',
             requireDocTerminator: 'optional',
-            treatEmptyValueAsNull: 'allow',
+            treatEmptyValueAsNull: 'allow-with-warning',
         }
         expect(!!result.meta).toEqual(true)
         expect(!!result.meta.diagnostics.effectiveOptions).toEqual(true)

@@ -61,7 +61,7 @@ describe.each([false, true])(
         })
 
         test.each(['\n', '\r\n', '\r'])(
-            'preserves physical %j line endings',
+            'normalizes physical %j line endings',
             (lineBreak) => {
                 const lines = [
                     '^ Scripts',
@@ -77,7 +77,7 @@ describe.each([false, true])(
                 const result = YINI.parse(input, { strictMode })
 
                 expect(result.Scripts.script).toBe(
-                    `first${lineBreak}  second${lineBreak}third`,
+                    'first\n  second\nthird',
                 )
             },
         )

@@ -140,7 +140,7 @@ escaped = E"Line 1\nLine 2"  // Contains a newline.
 
 ### Command strings
 
-Use lowercase `command"""` followed immediately by a line break for multiline command or script text. The parser removes the number of leading spaces on the first nonempty content line from each content line, preserves additional spaces and source line endings, and leaves backslashes literal. The closing `"""` must be alone on its line, apart from leading spaces.
+Use lowercase `command"""` followed immediately by a line break for multiline command or script text. The parser removes the number of leading spaces on the first nonempty content line from each content line, preserves additional spaces, normalizes source line endings to LF, and leaves backslashes literal. The closing `"""` must be alone on its line, apart from leading spaces.
 
 ```yini
 ^ Scripts

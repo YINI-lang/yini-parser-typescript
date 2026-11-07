@@ -337,6 +337,10 @@ export default class YINI {
             return 'misplaced-shebang'
         }
 
+        if (text.includes('mixed line endings')) {
+            return 'mixed-line-endings'
+        }
+
         if (text.includes('trailing comma')) {
             return 'trailing-comma'
         }

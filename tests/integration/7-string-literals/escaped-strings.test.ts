@@ -63,7 +63,7 @@ lower = e'it\'s \\ here'
     })
 
     test.each(['\n', '\r\n', '\r'])(
-        'preserves physical %j line endings in E and e triple-quoted strings',
+        'normalizes physical %j line endings in E and e triple-quoted strings',
         (lineBreak) => {
             const input =
                 [
@@ -77,8 +77,8 @@ lower = e'it\'s \\ here'
 
             const result = YINI.parse(input, { strictMode })
 
-            expect(result.Strings.upper).toBe(`first${lineBreak}second`)
-            expect(result.Strings.lower).toBe(`third${lineBreak}fourth`)
+            expect(result.Strings.upper).toBe('first\nsecond')
+            expect(result.Strings.lower).toBe('third\nfourth')
         },
     )
 

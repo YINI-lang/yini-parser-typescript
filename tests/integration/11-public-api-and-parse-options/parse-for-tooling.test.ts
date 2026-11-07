@@ -81,7 +81,7 @@ accepted = true
         )
     })
 
-    test('Keeps the first duplicate section body in lenient mode.', () => {
+    test('Reports duplicate sections as errors and keeps the first body during recovery.', () => {
         const parsed = YINI.parseForTooling(
             `
 ^ Application
@@ -97,7 +97,7 @@ status = "replaced"
             },
         )
 
-        expect(parsed.ok).toBe(true)
+        expect(parsed.ok).toBe(false)
         expect(parsed.result).toEqual({
             Application: {
                 name: 'first-section',
@@ -105,12 +105,12 @@ status = "replaced"
             },
         })
 
-        const warning = requireDiagnostic(parsed, 'warning')
-        expect(warning.code).toBe('duplicate-section')
-        expect(warning.message).toMatch(/duplicate section/i)
+        const error = requireDiagnostic(parsed, 'error')
+        expect(error.code).toBe('duplicate-section')
+        expect(error.message).toMatch(/duplicate section/i)
     })
 
-    test('Keeps the first duplicate subsection body in lenient mode.', () => {
+    test('Reports duplicate subsections as errors and recovers later sibling sections.', () => {
         const parsed = YINI.parseForTooling(
             `
 ^ Application
@@ -130,7 +130,7 @@ level = "info"
             },
         )
 
-        expect(parsed.ok).toBe(true)
+        expect(parsed.ok).toBe(false)
         expect(parsed.result).toEqual({
             Application: {
                 Database: {
@@ -142,12 +142,12 @@ level = "info"
             },
         })
 
-        const warning = requireDiagnostic(parsed, 'warning')
-        expect(warning.code).toBe('duplicate-section')
-        expect(warning.message).toMatch(/duplicate section/i)
+        const error = requireDiagnostic(parsed, 'error')
+        expect(error.code).toBe('duplicate-section')
+        expect(error.message).toMatch(/duplicate section/i)
     })
 
-    test('Returns a stable diagnostic code for YINI mode mismatch warnings.', () => {
+    test('Returns a stable diagnostic code for YINI mode mismatch errors.', () => {
         const parsed = YINI.parseForTooling(
             `
 @yini lenient
@@ -161,7 +161,7 @@ name = "Demo"
             },
         )
 
-        expect(parsed.ok).toBe(true)
+        expect(parsed.ok).toBe(false)
         expect(parsed.result).toEqual({
             App: {
                 name: 'Demo',
@@ -169,7 +169,7 @@ name = "Demo"
         })
         expect(parsed.diagnostics).toContainEqual(
             expect.objectContaining({
-                severity: 'warning',
+                severity: 'error',
                 code: 'YINI_MODE_MISMATCH',
             }),
         )

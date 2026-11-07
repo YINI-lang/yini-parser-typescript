@@ -35,6 +35,7 @@ describe('Mixed line endings:', () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     severity: 'warning',
+                    code: 'mixed-line-endings',
                     message: expect.stringMatching(/mixed line endings/i),
                 }),
             ]),

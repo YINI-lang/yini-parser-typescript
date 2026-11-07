@@ -86,7 +86,7 @@ Line B"""
             expect(toPrettyJSON(result)).toEqual(toPrettyJSON(expected))
         })
 
-        test('3.b. Should preserve CRLF line breaks in raw triple-quoted strings.', () => {
+        test('3.b. Should normalize CRLF line breaks in raw triple-quoted strings.', () => {
             // Arrange.
             const validYini =
                 '@yini\r\n\r\n' +
@@ -98,8 +98,8 @@ Line B"""
             const expected = {
                 Strings: {
                     message:
-                        'Line one\r\n' +
-                        'Line two with \\n kept raw\r\n' +
+                        'Line one\n' +
+                        'Line two with \\n kept raw\n' +
                         'Line three',
                 },
             }
@@ -342,7 +342,7 @@ Line B"""
             expect(toPrettyJSON(result)).toEqual(toPrettyJSON(expected))
         })
 
-        test('3.b. Should preserve CRLF line breaks in raw triple-quoted strings.', () => {
+        test('3.b. Should normalize CRLF line breaks in raw triple-quoted strings.', () => {
             // Arrange.
             const validYini =
                 '@yini strict\r\n\r\n' +
@@ -355,8 +355,8 @@ Line B"""
             const expected = {
                 Strings: {
                     message:
-                        'Line one\r\n' +
-                        'Line two with \\n kept raw\r\n' +
+                        'Line one\n' +
+                        'Line two with \\n kept raw\n' +
                         'Line three',
                 },
             }
