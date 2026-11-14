@@ -1,4 +1,5 @@
 // tools/yini-test-adapter.ts
+import { isUtf8 } from 'node:buffer'
 import fs from 'node:fs'
 import path from 'node:path'
 import YINI, { ToolingDiagnostic, YiniToolingParseResult } from '../src'
@@ -145,7 +146,13 @@ function main(): void {
     try {
         const args = parseArgs(process.argv.slice(2))
         const inputPath = path.resolve(args.input)
-        const source = fs.readFileSync(inputPath, 'utf8')
+        const bytes = fs.readFileSync(inputPath)
+        if (!isUtf8(bytes)) {
+            throw new Error(
+                'Invalid UTF-8 encoding. YINI files must contain valid UTF-8 bytes.',
+            )
+        }
+        const source = bytes.toString('utf8')
         const result = parseForYiniTest(source, args.mode)
 
         if (!result.ok) {

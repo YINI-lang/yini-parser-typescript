@@ -140,7 +140,7 @@ escaped = E"Line 1\nLine 2"  // Contains a newline.
 
 ### Command strings
 
-Use lowercase `command"""` followed immediately by a line break for multiline command or script text. The parser removes the number of leading spaces on the first nonempty content line from each content line, preserves additional spaces and source line endings, and leaves backslashes literal. The closing `"""` must be alone on its line, apart from leading spaces.
+Use lowercase `command"""` followed immediately by a line break for multiline command or script text. The parser removes the number of leading spaces on the first nonempty content line from each content line, preserves additional spaces, normalizes source line endings to LF, and leaves backslashes literal. The closing `"""` must be alone on its line, apart from leading spaces.
 
 ```yini
 ^ Scripts
@@ -274,7 +274,7 @@ npm run example3
 - `example1` parses a basic YINI file.
 - `example2` parses nested YINI sections.
 - `example3` demonstrates tooling-style parsing with diagnostics.
-- Additional [YINI examples](https://yini-lang.org/learn-yini/examples/?utm_source=yini-parser-ts&utm_campaign=repo-link&utm_content=readme&utm_medium=github).
+- Additional [YINI examples](https://yini-lang.org/learn-yini/examples/?utm_source=github&utm_campaign=yini_parser_ts&utm_content=readme&utm_medium=referral).
 
 <details>
 <summary>View a larger YINI configuration example</summary>

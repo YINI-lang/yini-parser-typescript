@@ -45,6 +45,7 @@ lerna-debug.log*
 .pnpm-debug.log*
 
 *.local
+*.local.md
 
 # Ignore generated Jest coverage (test) report.
 coverage

@@ -93,7 +93,7 @@ name = "Shebang-demo"
         }).toThrow(/shebang|syntax-error|syntax error/i)
     })
 
-    test('A-4) Should reject shebang after the first line.', () => {
+    test('A-4) Should reject shebang after the first line in strict mode.', () => {
         // Arrange.
         const input = `
 #!/usr/bin/env yini
@@ -103,6 +103,7 @@ name = "Shebang-demo"`
         // Act & Assert.
         expect(() => {
             YINI.parse(input, {
+                strictMode: true,
                 failLevel: 'errors',
             })
         }).toThrow()
@@ -295,25 +296,27 @@ describe('Shebang handling via parseFile(..):', () => {
         }).toThrow(/shebang|syntax-error|syntax error/i)
     })
 
-    test('B-4) Should reject file with shebang on the second line.', () => {
+    test('B-4) Should reject file with shebang on the second line in strict mode.', () => {
         // Arrange.
         const fullPath = join(baseDir, 'shebang-4-invalid-second-line.yini')
 
         // Act & Assert.
         expect(() => {
             YINI.parseFile(fullPath, {
+                strictMode: true,
                 failLevel: 'errors',
             })
         }).toThrow()
     })
 
-    test('B-5) Should reject alternate second-line shebang case.', () => {
+    test('B-5) Should reject alternate second-line shebang case in strict mode.', () => {
         // Arrange.
         const fullPath = join(baseDir, 'shebang-5-invalid-second-line.yini')
 
         // Act & Assert.
         expect(() => {
             YINI.parseFile(fullPath, {
+                strictMode: true,
                 failLevel: 'errors',
             })
         }).toThrow()

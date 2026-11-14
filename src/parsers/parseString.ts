@@ -83,6 +83,9 @@ const parseClassicEscapes = (
             case "'":
                 result += "'"
                 break
+            case '`':
+                result += '`'
+                break
             case '/':
                 result += '/'
                 break
@@ -296,16 +299,16 @@ const parseStringLiteral = ({ strKind, value }: IParsedStringInput): string => {
             return value
 
         case 'triple-raw':
-            return value
+            return value.replace(/\r\n|\r/g, '\n')
 
         case 'classic':
             return parseClassicEscapes(value, false)
 
         case 'triple-classic':
-            return parseClassicEscapes(value, true)
+            return parseClassicEscapes(value.replace(/\r\n|\r/g, '\n'), true)
 
         case 'command':
-            return parseCommandString(value)
+            return parseCommandString(value.replace(/\r\n|\r/g, '\n'))
 
         default:
             throw new CYiniStringParseError(`Unknown string kind: ${strKind}`)

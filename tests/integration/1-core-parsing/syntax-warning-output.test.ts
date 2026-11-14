@@ -58,7 +58,7 @@ describe('Human-readable syntax warning output', () => {
         )
 
         expectWarningBlock(output, /^Syntax warning in inline YINI content:\d+:\d+$/, [
-            /^Empty value treated as null for key 'num6'\. at line \d+, column \d+$/,
+            /^An empty value was treated as null for key 'num6'\. at line \d+, column \d+$/,
             /^An empty value after '=' was encountered\. Per 'treatEmptyValueAsNull = allow-with-warning'/,
             /^If you intended null, write it explicitly: num6 = null\./,
         ])

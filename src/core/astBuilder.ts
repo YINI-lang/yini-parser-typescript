@@ -1,5 +1,6 @@
 /** Walk the parse tree, validate it, and build the result objects. */
 // src/core/astBuilder.ts
+import { Token } from 'antlr4'
 import { isDebug } from '../config/env'
 import {
     AnnotationContext,
@@ -37,7 +38,6 @@ import {
     YiniContext,
 } from '../grammar/generated/YiniParser.js'
 import YiniParserVisitor from '../grammar/generated/YiniParserVisitor'
-import { extractYiniLine } from '../parsers/extractSignificantYiniLine'
 import parseBoolean from '../parsers/parseBoolean'
 import parseNullLiteral from '../parsers/parseNull'
 import parseNumberLiteral, {
@@ -185,6 +185,37 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
     private readonly options: IParseCoreOptions
     private readonly isStrict: boolean
 
+    private validateNumberSign(ctx: Number_literalContext): boolean {
+        const number = ctx.NUMBER()?.symbol
+        if (!number) return false
+        const sign = ctx.PLUS()?.symbol ?? ctx.MINUS()?.symbol
+        if (sign && sign.stop + 1 !== number.start) {
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(ctx),
+                'Syntax-Error',
+                'A numeric sign must immediately precede its digits.',
+                'Whitespace and comments are not allowed between a numeric sign and its number.',
+            )
+            return false
+        }
+        return true
+    }
+
+    private validateValueLine(separator: Token, value: ValueContext): void {
+        const gap = separator.getInputStream().getText(
+            separator.stop + 1,
+            value.start.start - 1,
+        )
+        if (/[\r\n]/.test(gap)) {
+            this.errorHandler!.pushOrBail(
+                toErrorLocation(value),
+                'Syntax-Error',
+                'Value must begin on the same logical line as its separator.',
+                'Line endings inside block comments remain logical-line boundaries.',
+            )
+        }
+    }
+
     // private readonly mode: 'lenient' | 'strict'
     private readonly onDuplicateKey: IBuildOptions['onDuplicateKey']
     private ast: IYiniAST
@@ -249,6 +280,17 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
     }
 
     // --- Private helper methods --------------------------------
+
+    private warnDeprecatedBinaryPrefix(ctx: Number_literalContext): void {
+        const token = ctx.NUMBER().symbol
+        if (!token.text.startsWith('%')) return
+
+        this.errorHandler!.pushOrBail(
+            { line: token.line, column: token.column + 1 },
+            'Syntax-Warning',
+            "The '%' binary prefix is deprecated. Use '0b' instead.",
+        )
+    }
 
     private validateStrictTopLevelStructure() {
         if (!this.isStrict) return
@@ -347,12 +389,10 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
         if (this.hasDefinedSectionTitle(keyPath)) {
             this.errorHandler!.pushOrBail(
                 toErrorLocation(ctx),
-                this.isStrict ? 'Syntax-Error' : 'Syntax-Warning',
+                'Syntax-Error',
                 'Duplicate section name',
                 `Section name: '${sectionName}' at level ${targetLevel} is already defined and cannot be redefined.`,
-                this.isStrict
-                    ? 'Duplicate sections are not allowed in strict mode.'
-                    : 'The first section definition is kept; later duplicate sections are ignored.',
+                'Duplicate sections are not allowed in either mode. During recovery, later duplicate sections are ignored.',
             )
 
             this.ignoredSectionLevel = targetLevel
@@ -799,11 +839,9 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
 
         debugPrint('S1')
 
-        let header = ctx.SECTION_HEAD()?.getText().trim() || ''
+        const header = ctx.SECTION_HEAD()?.getText().trim() || ''
         // debugPrint('S2, lineAlt: >>>' + lineAlt + '<<<')
         debugPrint('S2, header: >>>' + header + '<<<')
-        header = extractYiniLine(header)
-        debugPrint('S3, header: >>>' + header + '<<<')
 
         if (!!header) {
             const { sectionName, sectionLevel } = parseSectionHeader(
@@ -1024,6 +1062,9 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
 
         const resultKey = decodeBacktickedIdent(rawKey)
         const valueContext = ctx.value?.()
+        if (valueContext) {
+            this.validateValueLine(ctx.EQ().symbol, valueContext)
+        }
         // Preserve the inexpensive source text for simple values. Recursive
         // getText() on a composite walks the whole value tree again.
         const isComposite = !!valueContext && (
@@ -1091,7 +1132,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
                     this.errorHandler!.pushOrBail(
                         toErrorLocation(ctx),
                         'Syntax-Warning',
-                        `Empty value treated as null for key '${resultKey}'.`,
+                        `An empty value was treated as null for key '${resultKey}'.`,
                         `An empty value after '=' was encountered. Per 'treatEmptyValueAsNull = allow-with-warning', interpreted as null.`,
                         `If you intended null, write it explicitly: ${resultKey} = null. Otherwise provide a non-empty value or set 'treatEmptyValueAsNull' to 'disallow'.`,
                     )
@@ -1366,8 +1407,8 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
     /**
      * Visit a parse tree produced by `YiniParser.concat_operand`.
      *
-     * @note Must use token accessors, not literal visitors.
-     *       Use STRING() instead of string_literal(), etc.
+     * @note String and keyword operands are tokens; signed numbers use a
+     *       number_literal context so sign placement can be validated.
      *
      * @param ctx the parse tree
      * @return the visitor result
@@ -1379,8 +1420,12 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
             return this.parseStringToken(ctx.STRING().getText(), ctx)
         }
 
-        if (ctx.NUMBER()) {
-            const rawText = ctx.NUMBER().getText()
+        const numberContext = ctx.number_literal()
+        if (numberContext) {
+            if (!this.validateNumberSign(numberContext)) {
+                return makeScalarValue('Undefined', undefined, 'Invalid numeric sign')
+            }
+            const rawText = numberContext.getText()
             const parsedNum = parseNumberLiteral(rawText)
             if (parsedNum.error) {
                 this.errorHandler!.pushOrBail(
@@ -1395,6 +1440,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
                 )
             }
 
+            this.warnDeprecatedBinaryPrefix(numberContext)
             return {
                 type: 'Number',
                 value: parsedNum.value,
@@ -1485,6 +1531,14 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
     visitNumber_literal = (ctx: Number_literalContext): any => {
         debugPrint('-> Entered visitNumber_literal(..)')
 
+        // Keep the existing null recovery when a sign has no number token.
+        // The grammar has already reported the malformed literal as an error.
+        if (!ctx.NUMBER()) {
+            return makeScalarValue('Null', null, 'Missing number after parser recovery')
+        }
+        if (!this.validateNumberSign(ctx)) {
+            return makeScalarValue('Undefined', undefined, 'Invalid numeric sign')
+        }
         const rawText = ctx.getText()
         const parsedNum = parseNumberLiteral(rawText)
         debugPrint('parseNumberLiteral(..) returned, parsedNum:')
@@ -1505,6 +1559,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
             )
         }
 
+        this.warnDeprecatedBinaryPrefix(ctx)
         const value: TScalarValue = makeScalarValue(
             'Number',
             parsedNum.value,
@@ -1739,6 +1794,9 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
         }
 
         const valueCtx = ctx.value()
+        if (valueCtx) {
+            this.validateValueLine(ctx.object_member_separator().start, valueCtx)
+        }
         const rawValue = isDebug() ? valueCtx?.getText() ?? '' : ''
 
         const valueNode: TValueLiteral = valueCtx
@@ -1863,9 +1921,9 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
             this.errorHandler!.pushOrBail(
                 toErrorLocation(ctx),
                 'Syntax-Warning',
-                'YINI mode declaration does not match active parser mode',
+                "YINI mode declaration 'lenient' does not match active parser mode 'strict'.",
                 'Document declares lenient mode but parser is running in strict mode.',
-                'The document remains valid if it satisfies strict-mode rules, but the declared parsing intent is lenient.',
+                'Strict-mode validation still applies to the document content and structure.',
             )
         }
 
