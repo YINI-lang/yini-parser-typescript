@@ -191,7 +191,7 @@ When fixing parser behavior, test both the intended valid path and the nearest i
 
 The files under `spec/` and `grammar/` are reference copies maintained outside this repository. Do not edit or regenerate them here. Updates to those files must be made at their authoritative source and manually copied into this repository only at the maintainer's explicit direction.
 
-Current grammar source is under `grammar/v1.0.0-rc.6x/` or later.
+Current grammar source is under `grammar/v1.0.0-rc.7/` or later.
 
 ANTLR-generated files live in `src/grammar/generated/`. Do not hand-edit generated files unless the user explicitly asks for an emergency generated-output patch. Prefer editing grammar source and regenerating.
 
