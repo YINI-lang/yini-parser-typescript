@@ -142,9 +142,15 @@ const extractHeaderParts = (
             )
         }
     } else {
-        // 4. Repeated marker sequence. Separators '_' are collected here too,
-        //    so parseSectionHeader.ts can validate their placement.
-        while (pos < len && (str[pos] === '_' || isMarkerCharacter(str[pos]))) {
+        // 4. An underscore belongs to the marker sequence only before another
+        // marker. Otherwise it begins the section name.
+        while (
+            pos < len &&
+            (isMarkerCharacter(str[pos]) ||
+                (str[pos] === '_' &&
+                    pos + 1 < len &&
+                    isMarkerCharacter(str[pos + 1])))
+        ) {
             markerCharsPart += str[pos]
             pos++
         }
