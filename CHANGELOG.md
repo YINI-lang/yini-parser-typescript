@@ -22,7 +22,7 @@
 - **Changed:** Triple-quoted and command strings normalize source `CRLF` and `CR` line endings to `LF`, following the current RC.6x draft. Escape results such as `\r\n` remain unchanged.
 - **Fixed:** Section headers now handle block comments between markers and names or after names, while preserving comment-like text inside backticked names.
 - **Fixed:** Boolean and null spellings now work as inline object keys in both lenient and strict modes.
-- **Changed:** Moved ANTLR generation from Makefile to Taskfile. CI now tests Node.js 22 and 24, pins `yini-test-suite` to 0.3.0rc1, and includes `tests/unit` in unit test runs.
+- **Changed:** Moved ANTLR generation from Makefile to Taskfile. CI now tests Node.js 22 and 24, pins `yini-test-suite` to 0.4.0rc1, and includes `tests/unit` in unit test runs.
 - **Tests:** Added regression coverage for multiline header comments, compact object keys, binary-prefix warnings, and mode declarations. All 542 cases in `yini-test-suite` 0.4.0rc1 now pass across lenient and strict modes.
 
 ## 1.7.0 / 1.7.0-beta - 2026 Oct
