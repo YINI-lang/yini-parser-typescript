@@ -274,7 +274,7 @@ npm run example3
 - `example1` parses a basic YINI file.
 - `example2` parses nested YINI sections.
 - `example3` demonstrates tooling-style parsing with diagnostics.
-- Additional [YINI examples](https://yini-lang.org/learn-yini/examples/?utm_source=yini-parser-ts&utm_campaign=repo-link&utm_content=readme&utm_medium=github).
+- Additional [YINI examples](https://yini-lang.org/learn-yini/examples/?utm_source=github&utm_campaign=yini_parser_ts&utm_content=readme&utm_medium=referral).
 
 <details>
 <summary>View a larger YINI configuration example</summary>
