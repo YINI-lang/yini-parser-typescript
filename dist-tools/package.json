@@ -19,7 +19,7 @@
         "read",
         "files"
     ],
-    "homepage": "https://yini-lang.org/",
+    "homepage": "https://yini-lang.org/?utm_source=npm&utm_campaign=yini_parser_ts&utm_medium=referral",
     "license": "Apache-2.0",
     "files": [
         "dist/",

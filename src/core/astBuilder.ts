@@ -38,7 +38,6 @@ import {
     YiniContext,
 } from '../grammar/generated/YiniParser.js'
 import YiniParserVisitor from '../grammar/generated/YiniParserVisitor'
-import { extractYiniLine } from '../parsers/extractSignificantYiniLine'
 import parseBoolean from '../parsers/parseBoolean'
 import parseNullLiteral from '../parsers/parseNull'
 import parseNumberLiteral, {
@@ -281,6 +280,17 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
     }
 
     // --- Private helper methods --------------------------------
+
+    private warnDeprecatedBinaryPrefix(ctx: Number_literalContext): void {
+        const token = ctx.NUMBER().symbol
+        if (!token.text.startsWith('%')) return
+
+        this.errorHandler!.pushOrBail(
+            { line: token.line, column: token.column + 1 },
+            'Syntax-Warning',
+            "The '%' binary prefix is deprecated. Use '0b' instead.",
+        )
+    }
 
     private validateStrictTopLevelStructure() {
         if (!this.isStrict) return
@@ -829,11 +839,9 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
 
         debugPrint('S1')
 
-        let header = ctx.SECTION_HEAD()?.getText().trim() || ''
+        const header = ctx.SECTION_HEAD()?.getText().trim() || ''
         // debugPrint('S2, lineAlt: >>>' + lineAlt + '<<<')
         debugPrint('S2, header: >>>' + header + '<<<')
-        header = extractYiniLine(header)
-        debugPrint('S3, header: >>>' + header + '<<<')
 
         if (!!header) {
             const { sectionName, sectionLevel } = parseSectionHeader(
@@ -1432,6 +1440,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
                 )
             }
 
+            this.warnDeprecatedBinaryPrefix(numberContext)
             return {
                 type: 'Number',
                 value: parsedNum.value,
@@ -1550,6 +1559,7 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
             )
         }
 
+        this.warnDeprecatedBinaryPrefix(ctx)
         const value: TScalarValue = makeScalarValue(
             'Number',
             parsedNum.value,
@@ -1910,10 +1920,10 @@ export default class ASTBuilder extends YiniParserVisitor<any> {
         if (modeText === 'lenient' && activeMode === 'strict') {
             this.errorHandler!.pushOrBail(
                 toErrorLocation(ctx),
-                'Syntax-Error',
-                'YINI mode declaration does not match active parser mode',
+                'Syntax-Warning',
+                "YINI mode declaration 'lenient' does not match active parser mode 'strict'.",
                 'Document declares lenient mode but parser is running in strict mode.',
-                "Parse this document in lenient mode, or change/remove the '@yini lenient' declaration.",
+                'Strict-mode validation still applies to the document content and structure.',
             )
         }
 

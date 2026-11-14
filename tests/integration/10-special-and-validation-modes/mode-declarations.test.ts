@@ -153,7 +153,7 @@ describe('Mode declaration tests:', () => {
             expect(result.App.name).toEqual('demo')
         })
 
-        test('2. Should report @yini lenient in strict mode as an error.', () => {
+        test('2. Should warn about @yini lenient in strict mode and accept strict-valid content.', () => {
             // Arrange.
             const validYini = `
             @yini lenient
@@ -171,7 +171,6 @@ describe('Mode declaration tests:', () => {
                 includeMetadata: true,
                 includeDiagnostics: true,
                 failLevel: 'errors',
-                throwOnError: false,
             })
 
             // Assert.
@@ -180,8 +179,9 @@ describe('Mode declaration tests:', () => {
             const diagnostics = result.meta?.diagnostics ?? []
             const allDiagnosticsText = JSON.stringify(diagnostics).toLowerCase()
 
-            expect(result.meta.totalErrors).toBeGreaterThan(0)
-            expect(allDiagnosticsText).toContain('error')
+            expect(result.meta.totalErrors).toBe(0)
+            expect(result.meta.totalWarnings).toBe(1)
+            expect(allDiagnosticsText).toContain('warning')
             expect(allDiagnosticsText).toContain('mode')
             expect(allDiagnosticsText).toContain('lenient')
             expect(allDiagnosticsText).toContain('strict')

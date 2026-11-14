@@ -147,7 +147,7 @@ level = "info"
         expect(error.message).toMatch(/duplicate section/i)
     })
 
-    test('Returns a stable diagnostic code for YINI mode mismatch errors.', () => {
+    test('Returns a stable diagnostic code for a lenient declaration parsed in strict mode.', () => {
         const parsed = YINI.parseForTooling(
             `
 @yini lenient
@@ -161,7 +161,7 @@ name = "Demo"
             },
         )
 
-        expect(parsed.ok).toBe(false)
+        expect(parsed.ok).toBe(true)
         expect(parsed.result).toEqual({
             App: {
                 name: 'Demo',
@@ -169,8 +169,9 @@ name = "Demo"
         })
         expect(parsed.diagnostics).toContainEqual(
             expect.objectContaining({
-                severity: 'error',
+                severity: 'warning',
                 code: 'YINI_MODE_MISMATCH',
+                message: expect.stringMatching(/lenient.*strict/),
             }),
         )
     })

@@ -27,6 +27,7 @@ import {
     createLexerErrorListener,
     createParserErrorListener,
 } from './errorListeners'
+import ObjectKeyLexer from './ObjectKeyLexer'
 
 /**
  * @internal Single source of truth.
@@ -145,7 +146,7 @@ export const runPipeline = (
     // -----------------------------
 
     const inputStream = CharStreams.fromString(yiniContent)
-    const lexer = new YiniLexer(inputStream)
+    const lexer = new ObjectKeyLexer(inputStream)
 
     // Remove the default ConsoleErrorListener
     lexer.removeErrorListeners() // Removes the default lexer console error output.
