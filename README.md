@@ -1,6 +1,9 @@
 # yini-parser-typescript
 
-The official TypeScript / Node.js parser for **YINI** (by the YINI-lang project) — a human-readable, INI-inspired, indentation-insensitive configuration format with clear nested sections, explicit structure, comments, and predictable parsing.  
+The official **YINI** parser for JavaScript and TypeScript on Node.js.
+
+YINI is a configuration format with comments, lists, and nested sections.
+Section markers define the nesting, so indentation is optional.
 
 [![npm version](https://img.shields.io/npm/v/yini-parser.svg)](https://www.npmjs.com/package/yini-parser)
 [![YINI Test Suite](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/yini-test-suite.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/yini-test-suite.yml)
@@ -12,13 +15,9 @@ Useful links:
 - [Report an Issue](https://github.com/YINI-lang/yini-parser-typescript/issues)
 - [Start a Discussion](https://github.com/YINI-lang/yini-parser-typescript/discussions)
 
-YINI is intended to emphasize clarity, readability, explicit structure, and predictable parsing, while remaining simple, but not simplistic, and without relying on implicit or indentation-sensitive structure.
-
-## Copy-paste test
+## Quickstart
 
 Requires Node.js 20 or later.
-
-Test the package in under one minute.
 
 Install:
 
@@ -26,7 +25,7 @@ Install:
 npm install yini-parser
 ```
 
-Create `test.js`:
+Create `example.cjs`:
 
 ```js
 const { parse } = require('yini-parser')
@@ -45,7 +44,7 @@ console.log(data)
 Run:
 
 ```sh
-node test.js
+node example.cjs
 ```
 
 Expected output:
@@ -63,74 +62,62 @@ Expected output:
 
 ---
 
-## Quick Start
+## Parsing modes
 
-```sh
-npm install yini-parser
-```
+The default mode is lenient. Strict mode adds stricter checks on the document's
+structure and syntax:
+
+| Rule | Lenient mode | Strict mode |
+| --- | --- | --- |
+| `/END` document terminator | Optional | Required |
+| Top-level members outside sections | Allowed | Rejected |
+| Top-level sections | Any number | Exactly one |
+| Duplicate keys | Keep the first value and warn | Error |
+| Duplicate sections under the same parent | Error | Error |
+| Empty values in top-level or section members | Treat as `null` and warn | Error |
+
+Enable strict mode when reading a file:
 
 ```ts
 import YINI from 'yini-parser'
 
-const config = YINI.parse(`
-^ App
-name     = 'My App'
-list     = ['web', 'api']
-darkMode = true  // Yes/On works too
-
-    ^^ Features
-    caching = on
-    object  = { logging: true, mode: 'debug' }
-`)
-
-console.log(config.App.name)              // My App
-console.log(config.App.Features.caching)  // true
-```
-
-Conceptually, that parses to JSON-shaped data like this:
-
-```json
-{
-  "App": {
-    "name": "My App",
-    "list": ["web", "api"],
-    "darkMode": true,
-    "Features": {
-      "caching": true,
-      "object": {
-        "logging": true,
-        "mode": "debug"
-      }
-    }
-  }
-}
-```
-
-### Modes and `/END`
-
-`yini-parser` runs in lenient mode by default. In lenient mode, the document terminator `/END` is optional.
-
-Strict mode requires `/END` unless you explicitly override `requireDocTerminator`:
-
-```ts
 const config = YINI.parseFile('./config.yini', {
   strictMode: true,
 })
 ```
 
-If strict mode reports a missing `/END`, either add `/END` as the final significant line or parse with the default lenient mode.
+The file must contain one top-level section and end with `/END`. Some rules can
+be overridden with options such as `requireDocTerminator` and `onDuplicateKey`.
+
+Lenient mode tries to recover from errors and may return partial data. Set
+`failLevel: 'errors'` to stop and throw on an error. See
+[Error handling and diagnostics](#error-handling-and-diagnostics) below.
 
 See the [YINI specification and documentation](https://yini-lang.org/refs/specification?utm_source=github&utm_campaign=yini_parser_ts&utm_content=readme&utm_medium=referral).
 
-### Integer values
+## Numbers and strings
 
-Signed 64-bit YINI integers are parsed exactly. Integers within JavaScript's safe integer range are returned as `number`; integers outside that range are returned as `bigint`. For example, `9007199254740993` becomes `9007199254740993n`.
+### Integers and upgrading to 2.0
 
-`JSON.stringify` cannot serialize `bigint` directly. Use a serializer that writes these values as JSON number literals when exact JSON output is required.
+Version 2.0 returns integers outside JavaScript's safe integer range as `bigint`
+so their values stay exact. Smaller integers are still returned as `number`.
+For example, `9007199254740993` becomes `9007199254740993n`. Integers outside the
+signed 64-bit range are rejected.
+
+This is a breaking change for code that expects every number to be a JavaScript
+`number`. `JSON.stringify` cannot serialize `bigint` directly, and converting a
+large `bigint` to `number` can lose precision. Choose a JSON representation that
+keeps the values your application needs. See [CHANGELOG.md](./CHANGELOG.md) for
+the release changes.
+
+For binary numbers, use the `0b` prefix. The older `%` prefix is accepted with a
+deprecation warning in both modes.
 
 ### Escaped strings
 
-Strings are raw by default. Prefix a string with `E` or `e` to interpret escape sequences such as `\n` and `\t`. The older `C` and `c` prefixes remain valid aliases, including for triple-quoted strings.
+Backslashes are literal in ordinary quoted strings. Prefix a string with `E` or
+`e` to interpret escape sequences such as `\n` and `\t`. The deprecated `C` and
+`c` prefixes remain accepted aliases, including for triple-quoted strings.
 
 ```yini
 ^ Message
@@ -140,7 +127,11 @@ escaped = E"Line 1\nLine 2"  // Contains a newline.
 
 ### Command strings
 
-Use lowercase `command"""` followed immediately by a line break for multiline command or script text. The parser removes the number of leading spaces on the first nonempty content line from each content line, preserves additional spaces, normalizes source line endings to LF, and leaves backslashes literal. The closing `"""` must be alone on its line, apart from leading spaces.
+Use lowercase `command"""` followed immediately by a line break for multiline command or
+script text. The first nonempty line sets the indentation to remove from each
+content line. Extra indentation and literal backslashes are kept. Source line
+endings become LF (`\n`). The closing `"""` must be alone on its line, apart from
+leading spaces.
 
 ```yini
 ^ Scripts
@@ -150,44 +141,16 @@ build = command"""
 """
 ```
 
----
-
-## Format characteristics
-
-- **Human-readable** — Uses explicit syntax and indentation-independent structure.
-- **Structured configuration model** — Supports sections, nested sections, lists, objects, booleans, and null.
-- **Predictable parsing** — Explicit syntax with clear rules and deterministic parsing behavior.
-- **TypeScript and Node.js integration** — Supports parsing from strings and files.
-  
----
-
-## What YINI looks like in practice
-> A basic YINI configuration example, showing a section, a nested section, and comments:  
-![YINI Config Example](./samples/basic.yini.png)
-Source: [basic.yini](./samples/basic.yini)
-
-- [Demo Apps](https://github.com/YINI-lang/yini-demo-apps/tree/main) with usage examples.
-
----
-
-## Configuration-oriented design
-- **Indentation-independent structure:** Spaces and tabs never change meaning, so files can be reformatted without changing structure.
-- **Explicit nesting:** Hierarchy is defined with section markers such as `^`, `^^`, and `^^^`, rather than by indentation.
-- **Multiple data types:** Supports booleans (`true` / `false`, `yes` / `no`, etc.), numbers, lists, and inline objects, with explicit string syntax.
-- **Comment support:** YINI supports `//`, `#`, block comments (`/* ... */`), and full-line `;` comments for documenting configuration directly in the file.
-- **Clear hash comments:** Outside string literals, `#` always starts a comment; hexadecimal values use `0x...` or `hex:...`.
-- **Predictable parsing:** Clear rules with optional strict and lenient modes (enforced by the parser) for different use cases.
+Command strings produce text. The parser does not run the commands. Ordinary
+triple-quoted strings also support multiple lines, but keep their indentation.
+Source line endings become LF in all multiline string values; characters
+produced by escapes, such as `\r\n`, stay unchanged.
 
 ---
 
 ## Usage
 
-### Install with your package manager
-
-With **npm**:
-```sh
-npm install yini-parser
-```
+### Other package managers
 
 With **yarn**:
 ```sh
@@ -200,11 +163,12 @@ pnpm add yini-parser
 ```
 
 ### Node.js (CommonJS)
-**Note:** The default export is the main API. Named exports such as `parse`, `parseFile`, and `parseForTooling` are also available from the package entry.
+Use `.default` to access the `YINI` class with `require`. Named functions such as
+`parse`, `parseFile`, and `parseForTooling` are also available, as shown in the
+quickstart.
+
 ```js
-const YINI = require('yini-parser').default;
-// If your setup handles default interop differently, try:
-// const YINI = require('yini-parser');
+const YINI = require('yini-parser').default
 
 // Parse from string.
 const config = YINI.parse(`
@@ -212,15 +176,15 @@ const config = YINI.parse(`
     title = 'My App Title'
     items = 25
     isDarkTheme = true
-`);
+`)
 
 // Parse from file.
-const configFromFile = YINI.parseFile('./config.yini');
+const configFromFile = YINI.parseFile('./config.yini')
 ```
 
 ### TypeScript (with `"esModuleInterop": true`)
 ```ts
-import YINI from 'yini-parser';
+import YINI from 'yini-parser'
 
 // Parse from string.
 const config = YINI.parse(`
@@ -228,13 +192,13 @@ const config = YINI.parse(`
     title = "My App Title"
     items = 25
     isDarkTheme = OFF
-`);
+`)
 
 // Parse from file.
-const configFromFile = YINI.parseFile('./config.yini');
+const configFromFile = YINI.parseFile('./config.yini')
 ```
 
-### Example Output
+`config` in the TypeScript example contains:
 ```js
 // JS object
 {
@@ -246,11 +210,40 @@ const configFromFile = YINI.parseFile('./config.yini');
 }
 ```
 
-### Tooling and diagnostics
+### JavaScript (ES modules)
 
-`parse` and `parseFile` print human-readable error and warning messages to stderr by default. Set `logDiagnostics: false` to suppress this output. This option does not control the structured diagnostics returned in metadata; request those with `includeMetadata: true` and `includeDiagnostics: true`.
+```js
+import { parse } from 'yini-parser'
 
-Use `parseForTooling` for editors, linters, and other tools. It does not throw for normal parse errors and returns the partial result plus structured diagnostics.
+const config = parse('^ App\nenabled = true\n')
+console.log(config.App.enabled) // true
+```
+
+### Error handling and diagnostics
+
+`parse` and `parseFile` print errors and warnings to standard error (stderr) by default. Set
+`logDiagnostics: false` when your application handles the messages itself.
+
+To stop on errors in either mode, set `failLevel: 'errors'`. With the default
+`throwOnError: true`, an error then throws an exception:
+
+```js
+const { parseFile } = require('yini-parser')
+
+try {
+  const config = parseFile('./config.yini', {
+    failLevel: 'errors',
+    logDiagnostics: false,
+  })
+  console.log(config)
+} catch (error) {
+  console.error(error.message)
+}
+```
+
+Use `parseForTooling` for editors, linters, and other tools. It returns
+`{ ok, result, diagnostics }` without printing diagnostics or throwing for
+normal parse errors. If `ok` is `false`, `result` may contain partial data.
 
 ```js
 const { parseForTooling } = require('yini-parser')
@@ -258,6 +251,11 @@ const { parseForTooling } = require('yini-parser')
 const parsed = parseForTooling('^ App\nname = "demo"')
 // { ok: true, result: { App: { name: 'demo' } }, diagnostics: [] }
 ```
+
+For the full metadata from `parse` or `parseFile`, set `includeMetadata: true`.
+Add `includeDiagnostics: true` for structured diagnostics and
+`includeTiming: true` for timing information. See the
+[public option types](./src/types/index.ts) for all available options.
 
 ---
 
@@ -275,6 +273,13 @@ npm run example3
 - `example2` parses nested YINI sections.
 - `example3` demonstrates tooling-style parsing with diagnostics.
 - Additional [YINI examples](https://yini-lang.org/learn-yini/examples/?utm_source=github&utm_campaign=yini_parser_ts&utm_content=readme&utm_medium=referral).
+- [Demo apps](https://github.com/YINI-lang/yini-demo-apps/tree/main) with usage examples.
+
+A YINI file with nested sections and comments:
+
+![YINI file with nested sections and comments](./samples/basic.yini.png)
+
+Source: [basic.yini](./samples/basic.yini)
 
 <details>
 <summary>View a larger YINI configuration example</summary>
@@ -289,18 +294,20 @@ Source: [config.yini](./samples/config.yini)
 
 ## Why YINI?
 
-YINI is intended for configuration files where human readability, explicit structure, and predictable parsing are more important than minimal syntax or maximum flexibility.
+YINI is designed for configuration files that people read and edit by hand.
+It uses section markers for nesting, supports comments, and provides strings,
+numbers, booleans, null, lists, and inline objects.
 
 Compared with common configuration formats:
-- **INI:** YINI supports clearer nested sections and typed values.
-- **JSON:** YINI supports comments and is easier to edit by hand.
+- **INI:** YINI defines nested sections and value types.
+- **JSON:** YINI allows comments and uses section headers to group settings.
 - **YAML:** YINI does not use indentation to define structure.
 - **TOML:** YINI uses explicit section markers for hierarchy instead of dotted table names.
 
 The same small configuration can be written in several formats:
 
 ### YINI
-```ini
+```yini
 ^ Application
 name = 'demo'
 environment = 'dev'
@@ -317,7 +324,7 @@ mode = 'optional'
 - `Application` contains the top-level application settings.
 - `Server` is nested under `Application`.
 - `TLS` is nested under `Server`.
-- The section markers `^` make the nesting explicit. Indentation is optional and not required for structure.
+- The section markers `^` define the nesting. Spaces and tabs inside strings still matter.
 - Strings can use either `'` or `"`.
 
 <details>
@@ -373,26 +380,18 @@ mode = "optional"
 
 </details>
 
-Note: YINI may not be the right choice when you need mature ecosystem support, existing schema tooling, or maximum compatibility with infrastructure that already expects JSON, YAML, or TOML.
-
----
-
 ## Parser implementation
 
-`yini-parser` uses TypeScript/JavaScript parser code generated by ANTLR, a parser-generator tool.
-
-The generated parser files are included in the published npm package. Users do **not** need Java or the ANTLR generator tool to install or use `yini-parser`.
-
-The `antlr4` dependency is the small runtime library that the generated lexer and parser call while reading YINI input. It is needed at runtime, but you normally do not interact with it directly.
-
-The ANTLR generator JAR is only needed by maintainers when regenerating parser sources from the grammar, and it is not included in the published npm package.
+The parser uses code generated by ANTLR together with handwritten TypeScript.
+The npm package includes the generated code and uses the `antlr4` runtime.
+Java and the ANTLR generator are only needed when maintainers regenerate the
+parser sources.
 
 ---
 
 ## Feedback and bug reports
 
-If you find a problem or want to give feedback, use GitHub:
-
+Use GitHub to report problems or ask questions:
 - [Report a bug or issue](https://github.com/YINI-lang/yini-parser-typescript/issues)
 - [Start a discussion](https://github.com/YINI-lang/yini-parser-typescript/discussions)
 
@@ -406,17 +405,18 @@ When reporting parser behavior, it is helpful to include:
 
 ## 🧪 Testing and Stability
 
-This parser is covered by smoke, integration, and regression tests across lenient, strict, and metadata-enabled modes.
+The repository includes unit, integration, smoke, and regression tests for both
+parsing modes and the public API. Run them from the repository root:
 
-It has also been run against the shared external
-[`yini-test-suite`](https://github.com/YINI-lang/yini-test-suite) conformance suite
-for YINI Specification 1.0.0 RC 6.
+```sh
+npm test
+```
 
-Current conformance result:
-- 360 passed
-- 0 failed
-- Lenient and strict modes covered
-- Smoke and golden test suites covered
+The parser also passes all **542 cases** in
+[`yini-test-suite` 0.4.0rc1](https://github.com/YINI-lang/yini-test-suite), covering
+the YINI Specification **1.0.0-RC.7** snapshot. This includes smoke and golden
+cases in lenient and strict modes, with **0 failures**. The language
+specification is still a release candidate.
 
 ---
 
@@ -430,22 +430,18 @@ Current conformance result:
 ---
 
 ## 🤝 Contributing
-Bug reports, feature requests, discussions, and code contributions are welcome.
-- [Open an Issue](https://github.com/YINI-lang/yini-parser-typescript/issues)
-- [Start a Discussion](https://github.com/YINI-lang/yini-parser-typescript/discussions)
-  
-GitHub Issues and Discussions are available for feedback and project discussion.
+Bug reports, feature requests, documentation fixes, and code contributions are welcome.
 
 ### Documentation
-- [Project Setup](https://github.com/YINI-lang/yini-parser-typescript/blob/main/docs/Project-Setup.md) — How to run, test, and build the project, etc.
-- [Conventions](https://github.com/YINI-lang/yini-parser-typescript/blob/main/docs/Conventions.md) — Project conventions, naming patterns, etc.
+- [Project setup](./docs/Project-Setup.md) — How to run, test, and build the project.
+- [Conventions](./docs/Conventions.md) — Code style and naming rules.
 
 ---
 
 ## License
 This project is licensed under the Apache License 2.0 — see the [LICENSE](./LICENSE) file for details.
 
-In this project on GitHub, the `libs` directory contains third-party software and each is licensed under its own license which is described in its own license file under the respective directory under `libs`.
+Third-party tools under `libs` have their own licenses.
 
 ---
 

@@ -2,7 +2,7 @@
 
 **Changelog** for `yini-parser-typescript`.
 
-## Upcoming
+## 2.0.0 - 2026 Nov
 - **Fixed:** Accept multiline block comments after section headers, including assignments following the comment's closing delimiter on the next logical line.
 - Implement parser updates to align with YINI Spec RC6x:
   * **Fixed:** Recognize compact inline object members such as `hex:10` as key `hex` and decimal value `10`, while preserving hexadecimal literals in value positions.
