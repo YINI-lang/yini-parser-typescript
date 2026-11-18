@@ -2,8 +2,9 @@ import YINI from '../../../src'
 
 describe('Number conversion in concatenation:', () => {
     test('Normalizes numeric source spelling in lenient mode.', () => {
-        // 1. Assign.
-        const input = '^ Concat\nfraction = "n: " + 1.50\nexponent = "n: " + 3E+04\nnegativeZero = "n: " + -0\nbase = "n: " + 0xFF\nlarge = "n: " + 9007199254740993\n'
+        // 1. Arrange.
+        const input =
+            '^ Concat\nfraction = "n: " + 1.50\nexponent = "n: " + 3E+04\nnegativeZero = "n: " + -0\nbase = "n: " + 0xFF\nlarge = "n: " + 9007199254740993\n'
 
         // 2. Act.
         const result = YINI.parse(input, { strictMode: false })
@@ -19,7 +20,7 @@ describe('Number conversion in concatenation:', () => {
     })
 
     test('Rejects numeric concatenation operands in strict mode.', () => {
-        // 1. Assign.
+        // 1. Arrange.
         const input = '^ Concat\nvalue = "n: " + 1.50\n/END\n'
 
         // 2. Act.

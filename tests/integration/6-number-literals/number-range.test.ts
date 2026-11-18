@@ -5,7 +5,7 @@ const document = (members: string, strictMode: boolean): string =>
 
 describe.each([false, true])('Number range (strictMode: %s):', (strictMode) => {
     test('Preserves signed 64-bit integers exactly.', () => {
-        // 1. Assign.
+        // 1. Arrange.
         const input = document(
             'safe = 9007199254740991\naboveSafe = 9007199254740993\nminimum = -9223372036854775808\nmaximum = 9223372036854775807\nhexMaximum = 0x7FFFFFFFFFFFFFFF\nitems = [9007199254740993]\nobject = { large: 9007199254740993 }\n',
             strictMode,
@@ -30,7 +30,7 @@ describe.each([false, true])('Number range (strictMode: %s):', (strictMode) => {
         '0x8000000000000000',
         '1e-400',
     ])('Rejects out-of-range or underflowing literal %s.', (literal) => {
-        // 1. Assign.
+        // 1. Arrange.
         const input = document(`value = ${literal}\n`, strictMode)
 
         // 2. Act.
@@ -50,7 +50,7 @@ describe.each([false, true])('Number range (strictMode: %s):', (strictMode) => {
     })
 
     test('Accepts zero and a nonzero binary64 subnormal.', () => {
-        // 1. Assign.
+        // 1. Arrange.
         const input = document(
             'zero = 0e-400\nsubnormal = 5e-324\nnegativeZero = -0.0\n',
             strictMode,

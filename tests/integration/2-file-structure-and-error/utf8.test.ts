@@ -18,7 +18,7 @@ describe.each([false, true])('UTF-8 files (strictMode: %s):', (strictMode) => {
     })
 
     test('Rejects invalid byte sequences before lossy decoding.', () => {
-        // 1. Assign.
+        // 1. Arrange.
         const bytes = Buffer.concat([
             Buffer.from('^ Encoding\nvalue = "caf'),
             Buffer.from([0xe9]),
@@ -39,7 +39,7 @@ describe.each([false, true])('UTF-8 files (strictMode: %s):', (strictMode) => {
     })
 
     test('Accepts valid Unicode, including a literal replacement character.', () => {
-        // 1. Assign.
+        // 1. Arrange.
         fs.writeFileSync(
             filePath,
             '^ Encoding\nvalue = "café \uFFFD 😀"\n/END\n',

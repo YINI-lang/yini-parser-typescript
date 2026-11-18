@@ -4,7 +4,7 @@ describe.each([false, true])(
     'RC.7 draft conformance (strictMode: %s):',
     (strictMode) => {
         test('Keeps assignments following multiline section-header comments.', () => {
-            // 1. Assign.
+            // 1. Arrange.
             const input =
                 '^ Root /* note\n*/ rootValue = 1\n^^CompactChild /* note */\nvalue = 2\n^2 NumberedChild /* note\n*/ value = 3\n/END\n'
 
@@ -24,7 +24,7 @@ describe.each([false, true])(
         })
 
         test('Rejects a section member on the same logical line as its header.', () => {
-            // 1. Assign.
+            // 1. Arrange.
             const input = '^ Root /* note */ value = 1\n/END\n'
 
             // 2. Act.
@@ -40,7 +40,7 @@ describe.each([false, true])(
         test.each(['%1010', '+%_1010', '-%1010'])(
             'Warns on the deprecated binary prefix in %s.',
             (literal) => {
-                // 1. Assign.
+                // 1. Arrange.
                 const input = `^ Numbers\nvalue = ${literal}\n/END\n`
 
                 // 2. Act.
@@ -62,7 +62,7 @@ describe.each([false, true])(
         )
 
         test('Does not warn on the recommended binary prefix or literal percent text.', () => {
-            // 1. Assign.
+            // 1. Arrange.
             const input = '^ Numbers\nvalue = 0b1010\ntext = "%1010"\n/END\n'
 
             // 2. Act.
@@ -86,7 +86,7 @@ describe.each([false, true])(
         ])(
             'Accepts the object member %s without changing its value.',
             (member, key, value) => {
-                // 1. Assign.
+                // 1. Arrange.
                 const input = `^ Objects\nvalue = { nested: [{ ${member} }], hexadecimal: [hex:10] }\n/END\n`
 
                 // 2. Act.
@@ -109,7 +109,7 @@ describe.each([false, true])(
         test.each(['hex:FF', 'hex:_10', 'hex:01', 'hex:10.'])(
             'Rejects an invalid object value in %s.',
             (member) => {
-                // 1. Assign.
+                // 1. Arrange.
                 const input = `^ Objects\nvalue = { ${member} }\n/END\n`
 
                 // 2. Act.
@@ -124,7 +124,7 @@ describe.each([false, true])(
         )
 
         test('Retains object-key context across nested values and comment trivia.', () => {
-            // 1. Assign.
+            // 1. Arrange.
             const input =
                 '^ Objects\nvalue = { first: [hex:10, { hex:10 }],\n; comment\nhex:0xF,\n-- disabled\nHEX:1e+3, actual: hex:10 }\n/END\n'
 
@@ -147,7 +147,7 @@ describe.each([false, true])(
         })
 
         test('Preserves diagnostic columns after a compact hex member.', () => {
-            // 1. Assign.
+            // 1. Arrange.
             const memberLine = 'value = { hex:10, other: }'
             const input = `^ Objects\n${memberLine}\n/END\n`
 
@@ -167,7 +167,7 @@ describe.each([false, true])(
         })
 
         test('Reports a syntax error for a compact member at an unfinished EOF.', () => {
-            // 1. Assign.
+            // 1. Arrange.
             const input = '^ Objects\nvalue = { hex:10'
 
             // 2. Act.
@@ -189,7 +189,7 @@ describe.each([false, true])(
 )
 
 test('Warns on deprecated binary operands during lenient concatenation.', () => {
-    // 1. Assign.
+    // 1. Arrange.
     const input = '^ Values\nvalue = "n: " + -%1010\n'
 
     // 2. Act.
@@ -210,7 +210,7 @@ test('Warns on deprecated binary operands during lenient concatenation.', () => 
 test.each(['^ App\nvalue = 1\n', '^ App\nvalue = [1,]\n/END\n'])(
     'Continues strict validation after a lenient declaration: %s.',
     (content) => {
-        // 1. Assign.
+        // 1. Arrange.
         const input = '@yini lenient\n' + content
 
         // 2. Act.

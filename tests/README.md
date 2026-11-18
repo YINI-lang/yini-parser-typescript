@@ -5,7 +5,7 @@ The conventions for this tests directory are:
 - Make each test easy to follow with numbered steps:
 
 ```ts
-// 1. Assign.
+// 1. Arrange.
 ...code...
 
 // 2. Act.

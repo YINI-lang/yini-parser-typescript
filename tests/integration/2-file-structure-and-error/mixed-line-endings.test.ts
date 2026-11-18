@@ -2,7 +2,7 @@ import YINI from '../../../src'
 
 describe('Mixed line endings:', () => {
     test('Rejects mixed line endings in strict mode at the changed line.', () => {
-        // 1. Assign.
+        // 1. Arrange.
         const input = '@yini strict\r\n^ Encoding\nvalue = true\r\n/END\r\n'
 
         // 2. Act.
@@ -22,7 +22,7 @@ describe('Mixed line endings:', () => {
     })
 
     test('Accepts mixed line endings with a warning in lenient mode.', () => {
-        // 1. Assign.
+        // 1. Arrange.
         const input = '@yini\r\n^ Encoding\nvalue = true\r\n'
 
         // 2. Act.
@@ -43,7 +43,7 @@ describe('Mixed line endings:', () => {
     })
 
     test('Accepts consistent CR line endings in strict mode.', () => {
-        // 1. Assign.
+        // 1. Arrange.
         const input = '^ Encoding\rvalue = true\r/END\r'
 
         // 2. Act.

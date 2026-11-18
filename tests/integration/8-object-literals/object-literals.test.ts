@@ -243,7 +243,7 @@ describe('Object literal tests:', () => {
     test.each([false, true])(
         '15. Should parse boolean and null spellings as inline object keys (strictMode: %s).',
         (strictMode) => {
-            // 1. Assign.
+            // 1. Arrange.
             const source =
                 `^ Config\nflags = { true: 1, false: 2, null: 3 }\n` +
                 (strictMode ? '/END\n' : '')

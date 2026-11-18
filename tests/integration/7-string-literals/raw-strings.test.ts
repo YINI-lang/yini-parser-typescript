@@ -240,8 +240,7 @@ Line 2"
 
         test('10. Should preserve a literal tab in a raw string.', () => {
             // Arrange.
-            const validYini =
-                '@yini\n\n^ Strings\nkey = "alpha\tbeta"\n'
+            const validYini = '@yini\n\n^ Strings\nkey = "alpha\tbeta"\n'
 
             // Act.
             const result = YINI.parse(validYini, {
@@ -437,7 +436,7 @@ describe.each([false, true])(
     'Raw string control characters (strictMode: %s):',
     (strictMode) => {
         test('Rejects a control character other than tab.', () => {
-            // 1. Assign.
+            // 1. Arrange.
             const input = `^ Strings\nvalue = "alpha\x01beta"\n${strictMode ? '/END\n' : ''}`
 
             // 2. Act.

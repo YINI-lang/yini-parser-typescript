@@ -32,7 +32,7 @@ const headerCases = [
 
 describe.each(headerCases)('$name', ({ headerLines, expectedResult }) => {
     test.each(commentCases)('$name in lenient mode', ({ comment }) => {
-        // 1. Assign.
+        // 1. Arrange.
         const source = `${headerLines}${comment}\nvalue = 1\n`
 
         // 2. Act.
@@ -46,7 +46,7 @@ describe.each(headerCases)('$name', ({ headerLines, expectedResult }) => {
     })
 
     test.each(commentCases)('$name in strict mode', ({ comment }) => {
-        // 1. Assign.
+        // 1. Arrange.
         const source = `${headerLines}${comment}\nvalue = 1\n/END\n`
 
         // 2. Act.
@@ -77,7 +77,7 @@ describe.each([
         { mode: 'lenient', strictMode: false },
         { mode: 'strict', strictMode: true },
     ])('Parses in $mode mode', ({ strictMode }) => {
-        // 1. Assign.
+        // 1. Arrange.
         const source = `${header}\nvalue = 1\n${strictMode ? '/END\n' : ''}`
 
         // 2. Act.

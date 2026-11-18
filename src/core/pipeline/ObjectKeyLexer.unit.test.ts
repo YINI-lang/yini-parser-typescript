@@ -6,7 +6,7 @@ describe('Object-key lexing:', () => {
     test.each(['10', '10.5', '1e+3', '0xFF'])(
         'Re-lexes a compact value %s ending directly at EOF.',
         (value) => {
-            // 1. Assign.
+            // 1. Arrange.
             const lexer = new ObjectKeyLexer(
                 CharStreams.fromString(`{hex:${value}`),
             )
@@ -37,7 +37,7 @@ describe('Object-key lexing:', () => {
     )
 
     test('Resets object context when tokenization restarts partway through an object.', () => {
-        // 1. Assign.
+        // 1. Arrange.
         const lexer = new ObjectKeyLexer(
             CharStreams.fromString('{hex:10},hex:20'),
         )
