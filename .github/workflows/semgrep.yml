@@ -2,6 +2,7 @@
 name: Semgrep (pragmatic static analysis)
 
 on:
+    workflow_dispatch: # allows manual run from GitHub UI
     push:
     pull_request:
     schedule:
