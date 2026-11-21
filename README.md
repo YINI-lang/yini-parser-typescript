@@ -422,7 +422,7 @@ specification is still a release candidate.
 ## Links
 - [YINI Cheat Sheet](https://yini-lang.org/refs/yini-cheat-sheet/?utm_source=github&utm_campaign=yini_parser_ts&utm_content=readme_links_cheat_sheet&utm_medium=referral)
 - [YINI Specification](https://yini-lang.org/refs/specification/?utm_source=github&utm_campaign=yini_parser_ts&utm_content=readme_links_specification&utm_medium=referral)
-- [YINI Demo Apps](https://github.com/YINI-lang/yini-demo-apps/tree/main)  
+- [YINI Demo Apps (source code)](https://github.com/YINI-lang/yini-demo-apps/tree/main)  
 
 ---
 
