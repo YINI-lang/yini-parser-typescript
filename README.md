@@ -11,7 +11,7 @@ Section markers define the nesting, so indentation is optional.
 
 Useful links:
 - [Try YINI in Playground](https://yini-lang.org/playground/?utm_source=github&utm_campaign=yini_parser_ts&utm_content=readme_project_links&utm_medium=referral)
-- [yini-parser on GitHub](https://github.com/YINI-lang/yini-parser-typescript)
+- [This yini-parser on GitHub](https://github.com/YINI-lang/yini-parser-typescript)
 - [Report an Issue or give Feedback](https://github.com/YINI-lang/yini-parser-typescript/issues)
 
 ## Quickstart
