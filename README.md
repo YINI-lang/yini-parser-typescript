@@ -10,10 +10,9 @@ Section markers define the nesting, so indentation is optional.
 [![All Test Suites](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml/badge.svg)](https://github.com/YINI-lang/yini-parser-typescript/actions/workflows/run-all-tests.yml)
 
 Useful links:
-- [YINI homepage](https://yini-lang.org?utm_source=github&utm_campaign=yini_parser_ts&utm_content=readme_project_links&utm_medium=referral)
+- [Try YINI in Playground](https://yini-lang.org/playground/?utm_source=github&utm_campaign=yini_parser_ts&utm_content=readme_project_links&utm_medium=referral)
 - [yini-parser on GitHub](https://github.com/YINI-lang/yini-parser-typescript)
-- [Report an Issue](https://github.com/YINI-lang/yini-parser-typescript/issues)
-- [Start a Discussion](https://github.com/YINI-lang/yini-parser-typescript/discussions)
+- [Report an Issue or give Feedback](https://github.com/YINI-lang/yini-parser-typescript/issues)
 
 ## Quickstart
 
@@ -421,11 +420,9 @@ specification is still a release candidate.
 ---
 
 ## Links
-- [YINI Homepage](https://yini-lang.org/?utm_source=github&utm_campaign=yini_parser_ts&utm_content=readme_links_homepage&utm_medium=referral)
+- [YINI Cheat Sheet](https://yini-lang.org/refs/yini-cheat-sheet/?utm_source=github&utm_campaign=yini_parser_ts&utm_content=readme_links_cheat_sheet&utm_medium=referral)
 - [YINI Specification](https://yini-lang.org/refs/specification/?utm_source=github&utm_campaign=yini_parser_ts&utm_content=readme_links_specification&utm_medium=referral)
-- [YINI CLI on GitHub](https://github.com/YINI-lang/yini-cli)  
 - [YINI Demo Apps](https://github.com/YINI-lang/yini-demo-apps/tree/main)  
-- [YINI-lang Project](https://github.com/YINI-lang)  
 
 ---
 
